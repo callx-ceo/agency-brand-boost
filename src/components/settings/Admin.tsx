@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BrandingSettings from "./BrandingSettings";
 import DomainSettings from "./DomainSettings";
+import PlaceholderSection from "./PlaceholderSection";
 
 const Admin = () => {
   const handleSave = () => {
@@ -22,6 +23,7 @@ const Admin = () => {
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="branding">Branding & Appearance</TabsTrigger>
           <TabsTrigger value="domain">Custom Domain</TabsTrigger>
+          <TabsTrigger value="billing">Billing & Payment</TabsTrigger>
         </TabsList>
         
         <TabsContent value="general">
@@ -58,6 +60,10 @@ const Admin = () => {
         
         <TabsContent value="domain">
           <DomainSettings />
+        </TabsContent>
+
+        <TabsContent value="billing">
+          <PlaceholderSection title="Billing & Payment" />
         </TabsContent>
       </Tabs>
     </div>

@@ -2,10 +2,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { 
-  Palette, 
-  Globe, 
   Settings, 
-  CreditCard, 
   Users,
   Mail
 } from "lucide-react";
@@ -18,9 +15,6 @@ interface AdminSidebarProps {
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
   const menuItems = [
     { id: "general", label: "Admin", icon: <Settings className="w-5 h-5" /> },
-    { id: "branding", label: "Branding & Appearance", icon: <Palette className="w-5 h-5" /> },
-    { id: "domain", label: "Custom Domain", icon: <Globe className="w-5 h-5" /> },
-    { id: "billing", label: "Billing & Payment", icon: <CreditCard className="w-5 h-5" /> },
     { id: "team", label: "Team Members", icon: <Users className="w-5 h-5" /> },
     { id: "notifications", label: "Notifications", icon: <Mail className="w-5 h-5" /> },
   ];

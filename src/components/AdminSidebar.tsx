@@ -17,7 +17,7 @@ interface AdminSidebarProps {
 
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
   const menuItems = [
-    { id: "general", label: "General Settings", icon: <Settings className="w-5 h-5" /> },
+    { id: "general", label: "Admin", icon: <Settings className="w-5 h-5" /> },
     { id: "branding", label: "Branding & Appearance", icon: <Palette className="w-5 h-5" /> },
     { id: "domain", label: "Custom Domain", icon: <Globe className="w-5 h-5" /> },
     { id: "billing", label: "Billing & Payment", icon: <CreditCard className="w-5 h-5" /> },

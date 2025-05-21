@@ -1,0 +1,58 @@
+
+import React from "react";
+import { cn } from "@/lib/utils";
+import { 
+  Palette, 
+  Globe, 
+  Settings, 
+  CreditCard, 
+  Users,
+  Mail
+} from "lucide-react";
+
+interface AdminSidebarProps {
+  activeSection: string;
+  setActiveSection: (section: string) => void;
+}
+
+const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
+  const menuItems = [
+    { id: "general", label: "General Settings", icon: <Settings className="w-5 h-5" /> },
+    { id: "branding", label: "Branding & Appearance", icon: <Palette className="w-5 h-5" /> },
+    { id: "domain", label: "Custom Domain", icon: <Globe className="w-5 h-5" /> },
+    { id: "billing", label: "Billing & Payment", icon: <CreditCard className="w-5 h-5" /> },
+    { id: "team", label: "Team Members", icon: <Users className="w-5 h-5" /> },
+    { id: "notifications", label: "Notifications", icon: <Mail className="w-5 h-5" /> },
+  ];
+
+  return (
+    <div className="w-64 bg-white shadow-md min-h-screen p-4">
+      <div className="mb-6 px-4 pt-2">
+        <h2 className="text-xl font-bold">CallX</h2>
+        <p className="text-sm text-gray-500">Agency Admin</p>
+      </div>
+      <nav>
+        <ul>
+          {menuItems.map((item) => (
+            <li key={item.id} className="mb-1">
+              <button
+                onClick={() => setActiveSection(item.id)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-4 py-3 rounded-md text-left transition-colors",
+                  activeSection === item.id
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  );
+};
+
+export default AdminSidebar;

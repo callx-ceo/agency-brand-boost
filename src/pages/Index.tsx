@@ -5,7 +5,7 @@ import AdminSidebar from "../components/AdminSidebar";
 import { Toaster } from "sonner";
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState("branding");
+  const [activeSection, setActiveSection] = useState("general");
 
   return (
     <div className="min-h-screen bg-gray-100">

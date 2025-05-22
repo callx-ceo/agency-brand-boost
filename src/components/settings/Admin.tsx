@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BrandingSettings from "./BrandingSettings";
 import DomainSettings from "./DomainSettings";
 import PlaceholderSection from "./PlaceholderSection";
+import BillingTab from "./BillingTab";
 
 const Admin = () => {
   const handleSave = () => {
@@ -63,7 +64,7 @@ const Admin = () => {
         </TabsContent>
 
         <TabsContent value="billing">
-          <PlaceholderSection title="Billing & Payment" />
+          <BillingTab />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { WalletCards } from "lucide-react";
 
 // Mock data for demo purposes
 const mockBillingOverview = {
@@ -86,29 +86,35 @@ const mockTransactions = [
   }
 ];
 
-// New mock data for agent billing management
+// Updated mock data for agent billing management
 const mockAgentSettings = [
   {
     agentId: "agent_user_123",
     agentName: "John Doe",
     agentEmail: "john.doe@example.com",
-    billingModel: "AGENCY_BILLED"
+    billingModel: "AGENCY_BILLED",
+    concurrencyCap: 10,
+    balance: 250.75
   },
   {
     agentId: "agent_user_456",
     agentName: "Jane Smith",
     agentEmail: "jane.smith@example.com",
-    billingModel: "AGENT_BILLED"
+    billingModel: "AGENT_BILLED",
+    concurrencyCap: null,
+    balance: 0
   },
   {
     agentId: "agent_user_789",
     agentName: "Michael Johnson",
     agentEmail: "michael.johnson@example.com",
-    billingModel: "AGENCY_BILLED"
+    billingModel: "AGENCY_BILLED",
+    concurrencyCap: "unlimited",
+    balance: 125.50
   }
 ];
 
-// New mock data for agency billing settings
+// Mock data for agency billing settings
 const mockAgencyBillingSettings = {
   aiToolsEnabled: true,
   defaultNewAgentBillingModel: "AGENCY_BILLED"
@@ -392,11 +398,16 @@ const TransactionHistory = () => {
   );
 };
 
-// New component for Agent Billing Management
+// Updated Agent Billing Management component
 const AgentBillingManagement = () => {
   const handleBillingModelChange = (agentId: string, newBillingModel: string) => {
     // In a real implementation, this would call an API to update the agent's billing model
     toast.success(`Updated billing model for agent ID ${agentId} to ${newBillingModel}`);
+  };
+
+  const handleConcurrencyCapChange = (agentId: string, cap: number | "unlimited") => {
+    // In a real implementation, this would call an API to update the agent's concurrency cap
+    toast.success(`Updated concurrency cap for agent ID ${agentId} to ${cap === "unlimited" ? "unlimited" : cap}`);
   };
 
   return (
@@ -415,6 +426,8 @@ const AgentBillingManagement = () => {
             <TableHead>Agent Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Current Billing Model</TableHead>
+            <TableHead>Balance</TableHead>
+            <TableHead>Call Concurrency</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -430,6 +443,40 @@ const AgentBillingManagement = () => {
                 }`}>
                   {agent.billingModel === 'AGENCY_BILLED' ? 'Billed to Agency' : 'Billed to Agent'}
                 </span>
+              </TableCell>
+              <TableCell>
+                {agent.billingModel === 'AGENCY_BILLED' ? (
+                  <div className="flex items-center">
+                    <WalletCards className="h-4 w-4 mr-1 text-gray-500" />
+                    ${agent.balance.toFixed(2)}
+                  </div>
+                ) : (
+                  <span className="text-gray-400">N/A</span>
+                )}
+              </TableCell>
+              <TableCell>
+                {agent.billingModel === 'AGENCY_BILLED' && (
+                  <div className="flex items-center gap-2">
+                    <select
+                      className="border rounded p-1 text-sm"
+                      value={agent.concurrencyCap === "unlimited" ? "unlimited" : agent.concurrencyCap || 0}
+                      onChange={(e) => {
+                        const value = e.target.value === "unlimited" ? "unlimited" : parseInt(e.target.value);
+                        handleConcurrencyCapChange(agent.agentId, value);
+                      }}
+                    >
+                      <option value="5">5 calls/day</option>
+                      <option value="10">10 calls/day</option>
+                      <option value="25">25 calls/day</option>
+                      <option value="50">50 calls/day</option>
+                      <option value="100">100 calls/day</option>
+                      <option value="unlimited">Unlimited</option>
+                    </select>
+                  </div>
+                )}
+                {agent.billingModel === 'AGENT_BILLED' && (
+                  <span className="text-gray-400">Managed by agent</span>
+                )}
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
@@ -468,7 +515,6 @@ const AgentBillingManagement = () => {
   );
 };
 
-// New component for Billing Settings
 const BillingSettings = () => {
   const [settings, setSettings] = useState({
     aiToolsEnabled: mockAgencyBillingSettings.aiToolsEnabled,

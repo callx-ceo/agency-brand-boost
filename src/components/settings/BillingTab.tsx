@@ -86,7 +86,7 @@ const mockTransactions = [
   }
 ];
 
-// Updated mock data for agent billing management
+// Updated mock data for agent billing management with AI tool settings
 const mockAgentSettings = [
   {
     agentId: "agent_user_123",
@@ -94,7 +94,18 @@ const mockAgentSettings = [
     agentEmail: "john.doe@example.com",
     billingModel: "AGENCY_BILLED",
     concurrencyCap: 10,
-    balance: 250.75
+    balance: 250.75,
+    aiTools: {
+      status: "AGENCY_PAID",
+      transcription: {
+        status: "AGENCY_PAID",
+        enabledByAgent: false
+      },
+      sentimentAnalysis: {
+        status: "AGENCY_PAID",
+        enabledByAgent: false
+      }
+    }
   },
   {
     agentId: "agent_user_456",
@@ -102,7 +113,18 @@ const mockAgentSettings = [
     agentEmail: "jane.smith@example.com",
     billingModel: "AGENT_BILLED",
     concurrencyCap: null,
-    balance: 0
+    balance: 0,
+    aiTools: {
+      status: "DISABLED",
+      transcription: {
+        status: "DISABLED",
+        enabledByAgent: false
+      },
+      sentimentAnalysis: {
+        status: "DISABLED",
+        enabledByAgent: false
+      }
+    }
   },
   {
     agentId: "agent_user_789",
@@ -110,14 +132,54 @@ const mockAgentSettings = [
     agentEmail: "michael.johnson@example.com",
     billingModel: "AGENCY_BILLED",
     concurrencyCap: "unlimited",
-    balance: 125.50
+    balance: 125.50,
+    aiTools: {
+      status: "MIXED",
+      transcription: {
+        status: "AGENCY_PAID",
+        enabledByAgent: false
+      },
+      sentimentAnalysis: {
+        status: "AGENT_SELF_PAID",
+        enabledByAgent: true
+      }
+    }
+  },
+  {
+    agentId: "agent_user_101",
+    agentName: "Sarah Williams",
+    agentEmail: "sarah.williams@example.com",
+    billingModel: "AGENCY_BILLED",
+    concurrencyCap: 25,
+    balance: 75.25,
+    aiTools: {
+      status: "AGENT_SELF_PAID",
+      transcription: {
+        status: "AGENT_SELF_PAID",
+        enabledByAgent: true
+      },
+      sentimentAnalysis: {
+        status: "AGENT_SELF_PAID",
+        enabledByAgent: true
+      }
+    }
   }
 ];
 
-// Mock data for agency billing settings
+// Updated mock data for agency billing settings
 const mockAgencyBillingSettings = {
   aiToolsEnabled: true,
-  defaultNewAgentBillingModel: "AGENCY_BILLED"
+  defaultNewAgentBillingModel: "AGENCY_BILLED",
+  agencyPaidAiTools: {
+    transcription: true,
+    sentimentAnalysis: true,
+    callScoring: false
+  },
+  allowAgentSelfPayAiTools: {
+    transcription: true,
+    sentimentAnalysis: true,
+    callScoring: true
+  }
 };
 
 const BillingDashboard = () => {
@@ -398,7 +460,7 @@ const TransactionHistory = () => {
   );
 };
 
-// Updated Agent Billing Management component
+// Updated Agent Billing Management component with AI tool status
 const AgentBillingManagement = () => {
   const handleBillingModelChange = (agentId: string, newBillingModel: string) => {
     // In a real implementation, this would call an API to update the agent's billing model
@@ -409,6 +471,23 @@ const AgentBillingManagement = () => {
     // In a real implementation, this would call an API to update the agent's concurrency cap
     toast.success(`Updated concurrency cap for agent ID ${agentId} to ${cap === "unlimited" ? "unlimited" : cap}`);
   };
+
+  const getAiToolStatusBadge = (status: string) => {
+    switch(status) {
+      case "AGENCY_PAID":
+        return <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">Agency Paid</span>;
+      case "AGENT_SELF_PAID":
+        return <span className="px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">Agent Self-Paid</span>;
+      case "DISABLED":
+        return <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">Disabled</span>;
+      case "MIXED":
+        return <span className="px-2 py-1 rounded text-xs font-medium bg-amber-100 text-amber-800">Mixed</span>;
+      default:
+        return <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">{status}</span>;
+    }
+  };
+
+  const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);
 
   return (
     <div className="space-y-4">
@@ -428,84 +507,125 @@ const AgentBillingManagement = () => {
             <TableHead>Current Billing Model</TableHead>
             <TableHead>Balance</TableHead>
             <TableHead>Call Concurrency</TableHead>
+            <TableHead>AI Tools Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {mockAgentSettings.map((agent) => (
-            <TableRow key={agent.agentId}>
-              <TableCell>{agent.agentName}</TableCell>
-              <TableCell>{agent.agentEmail}</TableCell>
-              <TableCell>
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  agent.billingModel === 'AGENCY_BILLED' ? 'bg-blue-100 text-blue-800' : 
-                  'bg-purple-100 text-purple-800'
-                }`}>
-                  {agent.billingModel === 'AGENCY_BILLED' ? 'Billed to Agency' : 'Billed to Agent'}
-                </span>
-              </TableCell>
-              <TableCell>
-                {agent.billingModel === 'AGENCY_BILLED' ? (
-                  <div className="flex items-center">
-                    <WalletCards className="h-4 w-4 mr-1 text-gray-500" />
-                    ${agent.balance.toFixed(2)}
-                  </div>
-                ) : (
-                  <span className="text-gray-400">N/A</span>
-                )}
-              </TableCell>
-              <TableCell>
-                {agent.billingModel === 'AGENCY_BILLED' && (
-                  <div className="flex items-center gap-2">
-                    <select
-                      className="border rounded p-1 text-sm"
-                      value={agent.concurrencyCap === "unlimited" ? "unlimited" : agent.concurrencyCap || 0}
-                      onChange={(e) => {
-                        const value = e.target.value === "unlimited" ? "unlimited" : parseInt(e.target.value);
-                        handleConcurrencyCapChange(agent.agentId, value);
-                      }}
-                    >
-                      <option value="5">5 calls/day</option>
-                      <option value="10">10 calls/day</option>
-                      <option value="25">25 calls/day</option>
-                      <option value="50">50 calls/day</option>
-                      <option value="100">100 calls/day</option>
-                      <option value="unlimited">Unlimited</option>
-                    </select>
-                  </div>
-                )}
-                {agent.billingModel === 'AGENT_BILLED' && (
-                  <span className="text-gray-400">Managed by agent</span>
-                )}
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
+            <React.Fragment key={agent.agentId}>
+              <TableRow>
+                <TableCell>{agent.agentName}</TableCell>
+                <TableCell>{agent.agentEmail}</TableCell>
+                <TableCell>
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    agent.billingModel === 'AGENCY_BILLED' ? 'bg-blue-100 text-blue-800' : 
+                    'bg-purple-100 text-purple-800'
+                  }`}>
+                    {agent.billingModel === 'AGENCY_BILLED' ? 'Billed to Agency' : 'Billed to Agent'}
+                  </span>
+                </TableCell>
+                <TableCell>
                   {agent.billingModel === 'AGENCY_BILLED' ? (
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleBillingModelChange(agent.agentId, 'AGENT_BILLED')}
-                    >
-                      Set to Agent Billing
-                    </Button>
+                    <div className="flex items-center">
+                      <WalletCards className="h-4 w-4 mr-1 text-gray-500" />
+                      ${agent.balance.toFixed(2)}
+                    </div>
                   ) : (
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleBillingModelChange(agent.agentId, 'AGENCY_BILLED')}
-                    >
-                      Set to Agency Billing
-                    </Button>
+                    <span className="text-gray-400">N/A</span>
                   )}
-                </div>
-              </TableCell>
-            </TableRow>
+                </TableCell>
+                <TableCell>
+                  {agent.billingModel === 'AGENCY_BILLED' && (
+                    <div className="flex items-center gap-2">
+                      <select
+                        className="border rounded p-1 text-sm"
+                        value={agent.concurrencyCap === "unlimited" ? "unlimited" : agent.concurrencyCap || 0}
+                        onChange={(e) => {
+                          const value = e.target.value === "unlimited" ? "unlimited" : parseInt(e.target.value);
+                          handleConcurrencyCapChange(agent.agentId, value);
+                        }}
+                      >
+                        <option value="5">5 calls/day</option>
+                        <option value="10">10 calls/day</option>
+                        <option value="25">25 calls/day</option>
+                        <option value="50">50 calls/day</option>
+                        <option value="100">100 calls/day</option>
+                        <option value="unlimited">Unlimited</option>
+                      </select>
+                    </div>
+                  )}
+                  {agent.billingModel === 'AGENT_BILLED' && (
+                    <span className="text-gray-400">Managed by agent</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1">
+                    {getAiToolStatusBadge(agent.aiTools.status)}
+                    <button 
+                      onClick={() => setExpandedAgentId(expandedAgentId === agent.agentId ? null : agent.agentId)}
+                      className="text-xs text-blue-600 hover:underline mt-1"
+                    >
+                      {expandedAgentId === agent.agentId ? "Hide details" : "Show details"}
+                    </button>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    {agent.billingModel === 'AGENCY_BILLED' ? (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleBillingModelChange(agent.agentId, 'AGENT_BILLED')}
+                      >
+                        Set to Agent Billing
+                      </Button>
+                    ) : (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleBillingModelChange(agent.agentId, 'AGENCY_BILLED')}
+                      >
+                        Set to Agency Billing
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+              {expandedAgentId === agent.agentId && (
+                <TableRow className="bg-gray-50">
+                  <TableCell colSpan={7}>
+                    <div className="p-3">
+                      <h4 className="text-sm font-medium mb-2">AI Tool Details</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white p-2 rounded border">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">Transcription</span>
+                            {getAiToolStatusBadge(agent.aiTools.transcription.status)}
+                          </div>
+                        </div>
+                        <div className="bg-white p-2 rounded border">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">Sentiment Analysis</span>
+                            {getAiToolStatusBadge(agent.aiTools.sentimentAnalysis.status)}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-3">
+                        Note: Agents can only self-pay for tools if they are not covered by agency billing and if the agency allows self-payment.
+                        Agent self-pay settings are managed by the agent in their own billing settings.
+                      </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>
       
       <div className="flex justify-between items-center pt-4">
-        <div className="text-sm text-gray-500">Showing 1 to 3 of 3 entries</div>
+        <div className="text-sm text-gray-500">Showing 1 to 4 of 4 entries</div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" disabled>Previous</Button>
           <Button variant="outline" size="sm" disabled>Next</Button>
@@ -515,10 +635,13 @@ const AgentBillingManagement = () => {
   );
 };
 
+// Updated Billing Settings component with expanded AI tool configuration
 const BillingSettings = () => {
   const [settings, setSettings] = useState({
     aiToolsEnabled: mockAgencyBillingSettings.aiToolsEnabled,
-    defaultNewAgentBillingModel: mockAgencyBillingSettings.defaultNewAgentBillingModel
+    defaultNewAgentBillingModel: mockAgencyBillingSettings.defaultNewAgentBillingModel,
+    agencyPaidAiTools: { ...mockAgencyBillingSettings.agencyPaidAiTools },
+    allowAgentSelfPayAiTools: { ...mockAgencyBillingSettings.allowAgentSelfPayAiTools }
   });
 
   const handleSaveSettings = () => {
@@ -526,19 +649,40 @@ const BillingSettings = () => {
     toast.success("Billing settings updated successfully");
   };
 
+  const handleAgencyPaidToolToggle = (tool: string, checked: boolean) => {
+    setSettings({
+      ...settings,
+      agencyPaidAiTools: {
+        ...settings.agencyPaidAiTools,
+        [tool]: checked
+      }
+    });
+  };
+
+  const handleAgentSelfPayToolToggle = (tool: string, checked: boolean) => {
+    setSettings({
+      ...settings,
+      allowAgentSelfPayAiTools: {
+        ...settings.allowAgentSelfPayAiTools,
+        [tool]: checked
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Agency-Paid AI Tools Section */}
       <Card>
         <CardHeader>
-          <CardTitle>AI Feature Usage</CardTitle>
-          <CardDescription>Configure AI-powered features for your agency</CardDescription>
+          <CardTitle>Agency-Paid AI Features</CardTitle>
+          <CardDescription>Configure which AI-powered features will be billed to your agency</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="ai-tools-toggle">Enable AI Tools (Transcription, Sentiment, etc.)</Label>
+              <Label htmlFor="ai-tools-toggle">Enable AI Tools (Agency Billing)</Label>
               <div className="text-sm text-gray-500">
-                Enable AI-powered call analysis tools. Usage may incur additional costs.
+                Master switch for all agency-paid AI tools. When enabled, specific tools selected below will be billed to your agency.
               </div>
             </div>
             <Switch
@@ -547,9 +691,109 @@ const BillingSettings = () => {
               onCheckedChange={(checked) => setSettings({...settings, aiToolsEnabled: checked})}
             />
           </div>
+
+          <div className="border-t pt-4">
+            <h4 className="text-sm font-medium mb-3">Specific AI Tools (Agency Paid)</h4>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="transcription-toggle">Transcription</Label>
+                  <div className="text-xs text-gray-500">Convert call audio to searchable text</div>
+                </div>
+                <Switch
+                  id="transcription-toggle"
+                  checked={settings.agencyPaidAiTools.transcription}
+                  onCheckedChange={(checked) => handleAgencyPaidToolToggle('transcription', checked)}
+                  disabled={!settings.aiToolsEnabled}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="sentiment-toggle">Sentiment Analysis</Label>
+                  <div className="text-xs text-gray-500">Detect customer emotions during calls</div>
+                </div>
+                <Switch
+                  id="sentiment-toggle"
+                  checked={settings.agencyPaidAiTools.sentimentAnalysis}
+                  onCheckedChange={(checked) => handleAgencyPaidToolToggle('sentimentAnalysis', checked)}
+                  disabled={!settings.aiToolsEnabled}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="call-scoring-toggle">AI Call Scoring</Label>
+                  <div className="text-xs text-gray-500">Automated quality assessment of calls</div>
+                </div>
+                <Switch
+                  id="call-scoring-toggle"
+                  checked={settings.agencyPaidAiTools.callScoring}
+                  onCheckedChange={(checked) => handleAgencyPaidToolToggle('callScoring', checked)}
+                  disabled={!settings.aiToolsEnabled}
+                />
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
+      {/* Agent Self-Pay AI Tools Policy Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Agent Self-Paid AI Features</CardTitle>
+          <CardDescription>Define which features agents can choose to pay for themselves if not covered by agency billing</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="agent-transcription-toggle">Transcription</Label>
+                <div className="text-xs text-gray-500">Allow agents to self-pay for transcription</div>
+              </div>
+              <Switch
+                id="agent-transcription-toggle"
+                checked={settings.allowAgentSelfPayAiTools.transcription}
+                onCheckedChange={(checked) => handleAgentSelfPayToolToggle('transcription', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="agent-sentiment-toggle">Sentiment Analysis</Label>
+                <div className="text-xs text-gray-500">Allow agents to self-pay for sentiment analysis</div>
+              </div>
+              <Switch
+                id="agent-sentiment-toggle"
+                checked={settings.allowAgentSelfPayAiTools.sentimentAnalysis}
+                onCheckedChange={(checked) => handleAgentSelfPayToolToggle('sentimentAnalysis', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="agent-call-scoring-toggle">AI Call Scoring</Label>
+                <div className="text-xs text-gray-500">Allow agents to self-pay for call scoring</div>
+              </div>
+              <Switch
+                id="agent-call-scoring-toggle"
+                checked={settings.allowAgentSelfPayAiTools.callScoring}
+                onCheckedChange={(checked) => handleAgentSelfPayToolToggle('callScoring', checked)}
+              />
+            </div>
+          </div>
+
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-md mt-4">
+            <p className="text-sm text-amber-800">
+              <strong>Note:</strong> When you allow agents to self-pay for features, they will need to set up their own payment methods. 
+              Agents will only be charged for tools they explicitly enable in their own billing settings, and only if those tools aren't already 
+              covered by agency billing.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Default Billing Model Section */}
       <Card>
         <CardHeader>
           <CardTitle>Default Agent Billing Settings</CardTitle>

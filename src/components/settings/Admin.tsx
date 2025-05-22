@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BrandingSettings from "./BrandingSettings";
 import DomainSettings from "./DomainSettings";
-import PlaceholderSection from "./PlaceholderSection";
 import BillingTab from "./BillingTab";
 
 const Admin = () => {

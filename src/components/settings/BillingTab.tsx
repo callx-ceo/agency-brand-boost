@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 // Mock data for demo purposes
@@ -83,6 +85,34 @@ const mockTransactions = [
     status: "Completed"
   }
 ];
+
+// New mock data for agent billing management
+const mockAgentSettings = [
+  {
+    agentId: "agent_user_123",
+    agentName: "John Doe",
+    agentEmail: "john.doe@example.com",
+    billingModel: "AGENCY_BILLED"
+  },
+  {
+    agentId: "agent_user_456",
+    agentName: "Jane Smith",
+    agentEmail: "jane.smith@example.com",
+    billingModel: "AGENT_BILLED"
+  },
+  {
+    agentId: "agent_user_789",
+    agentName: "Michael Johnson",
+    agentEmail: "michael.johnson@example.com",
+    billingModel: "AGENCY_BILLED"
+  }
+];
+
+// New mock data for agency billing settings
+const mockAgencyBillingSettings = {
+  aiToolsEnabled: true,
+  defaultNewAgentBillingModel: "AGENCY_BILLED"
+};
 
 const BillingDashboard = () => {
   return (
@@ -362,6 +392,145 @@ const TransactionHistory = () => {
   );
 };
 
+// New component for Agent Billing Management
+const AgentBillingManagement = () => {
+  const handleBillingModelChange = (agentId: string, newBillingModel: string) => {
+    // In a real implementation, this would call an API to update the agent's billing model
+    toast.success(`Updated billing model for agent ID ${agentId} to ${newBillingModel}`);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">Agent Billing Management</h3>
+        <div className="flex gap-2">
+          <Input className="w-60" placeholder="Search agents..." />
+          <Button variant="outline">Filter</Button>
+        </div>
+      </div>
+      
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Agent Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Current Billing Model</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {mockAgentSettings.map((agent) => (
+            <TableRow key={agent.agentId}>
+              <TableCell>{agent.agentName}</TableCell>
+              <TableCell>{agent.agentEmail}</TableCell>
+              <TableCell>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  agent.billingModel === 'AGENCY_BILLED' ? 'bg-blue-100 text-blue-800' : 
+                  'bg-purple-100 text-purple-800'
+                }`}>
+                  {agent.billingModel === 'AGENCY_BILLED' ? 'Billed to Agency' : 'Billed to Agent'}
+                </span>
+              </TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  {agent.billingModel === 'AGENCY_BILLED' ? (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleBillingModelChange(agent.agentId, 'AGENT_BILLED')}
+                    >
+                      Set to Agent Billing
+                    </Button>
+                  ) : (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleBillingModelChange(agent.agentId, 'AGENCY_BILLED')}
+                    >
+                      Set to Agency Billing
+                    </Button>
+                  )}
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      
+      <div className="flex justify-between items-center pt-4">
+        <div className="text-sm text-gray-500">Showing 1 to 3 of 3 entries</div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" disabled>Previous</Button>
+          <Button variant="outline" size="sm" disabled>Next</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// New component for Billing Settings
+const BillingSettings = () => {
+  const [settings, setSettings] = useState({
+    aiToolsEnabled: mockAgencyBillingSettings.aiToolsEnabled,
+    defaultNewAgentBillingModel: mockAgencyBillingSettings.defaultNewAgentBillingModel
+  });
+
+  const handleSaveSettings = () => {
+    // In a real implementation, this would call an API to update the agency's billing settings
+    toast.success("Billing settings updated successfully");
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>AI Feature Usage</CardTitle>
+          <CardDescription>Configure AI-powered features for your agency</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="ai-tools-toggle">Enable AI Tools (Transcription, Sentiment, etc.)</Label>
+              <div className="text-sm text-gray-500">
+                Enable AI-powered call analysis tools. Usage may incur additional costs.
+              </div>
+            </div>
+            <Switch
+              id="ai-tools-toggle"
+              checked={settings.aiToolsEnabled}
+              onCheckedChange={(checked) => setSettings({...settings, aiToolsEnabled: checked})}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Default Agent Billing Settings</CardTitle>
+          <CardDescription>Configure default billing settings for new agents</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="default-billing-model">Default billing for new agents:</Label>
+            <select
+              id="default-billing-model"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              value={settings.defaultNewAgentBillingModel}
+              onChange={(e) => setSettings({...settings, defaultNewAgentBillingModel: e.target.value})}
+            >
+              <option value="AGENCY_BILLED">Billed to Agency</option>
+              <option value="AGENT_BILLED">Billed to Agent</option>
+            </select>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button onClick={handleSaveSettings}>Save Settings</Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+};
+
 const BillingTab = () => {
   return (
     <Tabs defaultValue="dashboard" className="w-full">
@@ -370,6 +539,8 @@ const BillingTab = () => {
         <TabsTrigger value="invoices">Invoices</TabsTrigger>
         <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
         <TabsTrigger value="transactions">Transactions</TabsTrigger>
+        <TabsTrigger value="agent-billing">Agent Billing</TabsTrigger>
+        <TabsTrigger value="settings">Settings</TabsTrigger>
       </TabsList>
       
       <TabsContent value="dashboard">
@@ -386,6 +557,14 @@ const BillingTab = () => {
       
       <TabsContent value="transactions">
         <TransactionHistory />
+      </TabsContent>
+      
+      <TabsContent value="agent-billing">
+        <AgentBillingManagement />
+      </TabsContent>
+      
+      <TabsContent value="settings">
+        <BillingSettings />
       </TabsContent>
     </Tabs>
   );

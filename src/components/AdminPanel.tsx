@@ -3,6 +3,7 @@ import React from "react";
 import Admin from "./settings/Admin";
 import PlaceholderSection from "./settings/PlaceholderSection";
 import ReferralProgramTab from "./settings/ReferralProgramTab";
+import TeamMembersTab from "./settings/TeamMembersTab";
 
 interface AdminPanelProps {
   activeSection: string;
@@ -12,7 +13,7 @@ const AdminPanel = ({ activeSection }: AdminPanelProps) => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       {activeSection === "general" && <Admin />}
-      {activeSection === "team" && <PlaceholderSection title="Team Members" />}
+      {activeSection === "team" && <TeamMembersTab />}
       {activeSection === "referrals" && <ReferralProgramTab />}
       {activeSection === "notifications" && <PlaceholderSection title="Notifications" />}
     </div>

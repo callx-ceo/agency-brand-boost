@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ const mockBaseRates = {
   aiCoaching: 0.01, // per minute
   aiScoring: 0.005, // per minute
   callBalance: 97.00, // monthly seat license
-  inboundCalls: 2.50 // minimum bid per inbound call
+  inboundCalls: 50.00 // minimum bid per inbound call
 };
 
 // Agency markup percentages

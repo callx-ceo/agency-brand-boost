@@ -7,6 +7,7 @@ import TeamMembersTab from "./settings/TeamMembersTab";
 import ScriptsAITab from "./settings/ScriptsAITab";
 import CampaignsTab from "./settings/CampaignsTab";
 import PublishersTab from "./settings/PublishersTab";
+import NotificationsTab from "./settings/NotificationsTab";
 import UpgradePlans from "./settings/UpgradePlans";
 import ImpersonationBanner from "./ImpersonationBanner";
 import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
@@ -26,7 +27,7 @@ const AdminPanel = ({ activeSection }: AdminPanelProps) => {
         {activeSection === "scripts" && <ScriptsAITab />}
         {activeSection === "publishers" && <PublishersTab />}
         {activeSection === "referrals" && <ReferralProgramTab />}
-        {activeSection === "notifications" && <PlaceholderSection title="Notifications" />}
+        {activeSection === "notifications" && <NotificationsTab />}
         {activeSection === "upgrade" && <UpgradePlans />}
       </div>
     </ImpersonationProvider>

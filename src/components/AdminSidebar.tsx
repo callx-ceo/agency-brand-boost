@@ -9,8 +9,10 @@ import {
   FileText,
   PhoneCall,
   UsersRound,
-  Lock
+  Lock,
+  Bell
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface AdminSidebarProps {
   activeSection: string;
@@ -23,6 +25,9 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
   // Mock current plan - starting with starter to show gating
   const currentPlan = "agency_starter" as PlanTier;
   const isEnterprise = currentPlan === "enterprise";
+
+  // Mock unread notifications count
+  const unreadNotifications = 3;
 
   const menuItems = [
     { id: "general", label: "Admin", icon: <Settings className="w-5 h-5" /> },
@@ -37,7 +42,12 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       requiredPlan: "Enterprise"
     },
     { id: "referrals", label: "Referral Program", icon: <Link className="w-5 h-5" /> },
-    { id: "notifications", label: "Notifications", icon: <Mail className="w-5 h-5" /> },
+    { 
+      id: "notifications", 
+      label: "Notifications", 
+      icon: <Bell className="w-5 h-5" />,
+      badge: unreadNotifications > 0 ? unreadNotifications : undefined
+    },
     { id: "upgrade", label: "Upgrade Plan", icon: <Settings className="w-5 h-5" /> },
   ];
 
@@ -69,6 +79,11 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
                   <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
                     {item.requiredPlan}
                   </span>
+                )}
+                {item.badge && (
+                  <Badge variant="destructive" className="text-xs">
+                    {item.badge}
+                  </Badge>
                 )}
               </button>
             </li>

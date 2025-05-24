@@ -3,60 +3,67 @@ import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Phone, Brain, BarChart3, FileText, DollarSign, Calendar } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Phone, Brain, BarChart3, FileText, DollarSign, Calendar, TrendingUp } from "lucide-react";
+import BillingPeriodSelector from "./BillingPeriodSelector";
 
-// Mock data for detailed cost breakdown
+// Enhanced mock data with agency profit tracking
 const mockAgentCostData = [
   {
     agentId: "agent_user_123",
     agentName: "John Doe",
     agentEmail: "john.doe@example.com",
+    billingType: "agent-paid", // agent pays their own bills
     usage: {
-      telephony: { minutes: 450, cost: 22.50 },
-      transcription: { minutes: 430, cost: 4.30 },
-      aiCoaching: { minutes: 200, cost: 2.00 },
-      aiScoring: { minutes: 450, cost: 2.25 },
-      callBalance: { cost: 25.00 }
+      telephony: { minutes: 450, baseCost: 22.50, markup: 10, chargedCost: 24.75, agencyProfit: 2.25 },
+      transcription: { minutes: 430, baseCost: 4.30, markup: 15, chargedCost: 4.95, agencyProfit: 0.65 },
+      aiCoaching: { minutes: 200, baseCost: 2.00, markup: 20, chargedCost: 2.40, agencyProfit: 0.40 },
+      aiScoring: { minutes: 450, baseCost: 2.25, markup: 15, chargedCost: 2.59, agencyProfit: 0.34 },
+      callBalance: { baseCost: 25.00, markup: 0, chargedCost: 25.00, agencyProfit: 0 }
     },
-    totalCost: 56.05
+    totalBaseCost: 56.05,
+    totalChargedCost: 59.69,
+    totalAgencyProfit: 3.64
   },
   {
     agentId: "agent_user_456",
     agentName: "Jane Smith",
     agentEmail: "jane.smith@example.com",
+    billingType: "agency-paid", // agency pays for this agent
     usage: {
-      telephony: { minutes: 320, cost: 16.00 },
-      transcription: { minutes: 320, cost: 3.20 },
-      aiCoaching: { minutes: 150, cost: 1.50 },
-      aiScoring: { minutes: 320, cost: 1.60 },
-      callBalance: { cost: 25.00 }
+      telephony: { minutes: 320, baseCost: 16.00, markup: 0, chargedCost: 16.00, agencyProfit: 0 },
+      transcription: { minutes: 320, baseCost: 3.20, markup: 0, chargedCost: 3.20, agencyProfit: 0 },
+      aiCoaching: { minutes: 150, baseCost: 1.50, markup: 0, chargedCost: 1.50, agencyProfit: 0 },
+      aiScoring: { minutes: 320, baseCost: 1.60, markup: 0, chargedCost: 1.60, agencyProfit: 0 },
+      callBalance: { baseCost: 25.00, markup: 0, chargedCost: 25.00, agencyProfit: 0 }
     },
-    totalCost: 47.30
+    totalBaseCost: 47.30,
+    totalChargedCost: 47.30,
+    totalAgencyProfit: 0
   },
   {
     agentId: "agent_user_789",
     agentName: "Michael Johnson",
     agentEmail: "michael.johnson@example.com",
+    billingType: "agent-paid",
     usage: {
-      telephony: { minutes: 680, cost: 34.00 },
-      transcription: { minutes: 650, cost: 6.50 },
-      aiCoaching: { minutes: 300, cost: 3.00 },
-      aiScoring: { minutes: 680, cost: 3.40 },
-      callBalance: { cost: 25.00 }
+      telephony: { minutes: 680, baseCost: 34.00, markup: 10, chargedCost: 37.40, agencyProfit: 3.40 },
+      transcription: { minutes: 650, baseCost: 6.50, markup: 15, chargedCost: 7.48, agencyProfit: 0.98 },
+      aiCoaching: { minutes: 300, baseCost: 3.00, markup: 20, chargedCost: 3.60, agencyProfit: 0.60 },
+      aiScoring: { minutes: 680, baseCost: 3.40, markup: 15, chargedCost: 3.91, agencyProfit: 0.51 },
+      callBalance: { baseCost: 25.00, markup: 0, chargedCost: 25.00, agencyProfit: 0 }
     },
-    totalCost: 71.90
+    totalBaseCost: 71.90,
+    totalChargedCost: 77.39,
+    totalAgencyProfit: 5.49
   }
 ];
 
-const mockAgencySummary = {
-  totalCosts: {
-    telephony: 72.50,
-    transcription: 14.00,
-    aiCoaching: 6.50,
-    aiScoring: 7.25,
-    callBalance: 75.00
-  },
-  totalAgents: 3,
+const mockAgencyFinancials = {
+  agencyPaidCosts: 47.30, // what agency pays for agency-billed agents
+  agentPaidRevenue: 137.08, // what agency collects from agent-billed agents
+  totalAgencyProfit: 9.13, // markup profit from agent-billed agents
+  totalBaseCosts: 175.25, // total base costs across all agents
   billingPeriod: "December 2024"
 };
 
@@ -74,36 +81,64 @@ const CostBreakdownDashboard = () => {
     }
   };
 
+  const getBillingBadge = (billingType: string) => {
+    return billingType === "agent-paid" ? (
+      <Badge variant="default" className="bg-green-100 text-green-800">Agent Paid</Badge>
+    ) : (
+      <Badge variant="secondary" className="bg-blue-100 text-blue-800">Agency Paid</Badge>
+    );
+  };
+
   return (
     <div className="space-y-6">
-      {/* Agency Cost Summary */}
+      <BillingPeriodSelector 
+        selectedPeriod={selectedPeriod} 
+        onPeriodChange={setSelectedPeriod} 
+      />
+
+      {/* Agency Financial Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Agency Cost Summary - {mockAgencySummary.billingPeriod}
+            <TrendingUp className="h-5 w-5" />
+            Agency Financial Summary - {mockAgencyFinancials.billingPeriod}
           </CardTitle>
           <CardDescription>
-            Total costs across all {mockAgencySummary.totalAgents} agents
+            Breakdown of agency costs, revenue, and profit
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {Object.entries(mockAgencySummary.totalCosts).map(([service, cost]) => (
-              <div key={service} className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  {getServiceIcon(service)}
-                  <span className="text-sm font-medium capitalize">
-                    {service === 'callBalance' ? 'Seat Licenses' : service}
-                  </span>
-                </div>
-                <div className="text-2xl font-bold">${cost.toFixed(2)}</div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="text-sm font-medium text-red-700 mb-1">Agency Paid Costs</div>
+              <div className="text-2xl font-bold text-red-800">
+                -${mockAgencyFinancials.agencyPaidCosts.toFixed(2)}
               </div>
-            ))}
-          </div>
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="text-lg font-semibold">
-              Total Agency Cost: ${Object.values(mockAgencySummary.totalCosts).reduce((sum, cost) => sum + cost, 0).toFixed(2)}
+              <div className="text-xs text-red-600">Costs for agency-billed agents</div>
+            </div>
+            
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="text-sm font-medium text-blue-700 mb-1">Agent Revenue</div>
+              <div className="text-2xl font-bold text-blue-800">
+                +${mockAgencyFinancials.agentPaidRevenue.toFixed(2)}
+              </div>
+              <div className="text-xs text-blue-600">Revenue from agent-billed services</div>
+            </div>
+            
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="text-sm font-medium text-green-700 mb-1">Markup Profit</div>
+              <div className="text-2xl font-bold text-green-800">
+                +${mockAgencyFinancials.totalAgencyProfit.toFixed(2)}
+              </div>
+              <div className="text-xs text-green-600">Profit from markups</div>
+            </div>
+            
+            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+              <div className="text-sm font-medium text-purple-700 mb-1">Net Profit</div>
+              <div className="text-2xl font-bold text-purple-800">
+                +${(mockAgencyFinancials.totalAgencyProfit - mockAgencyFinancials.agencyPaidCosts + mockAgencyFinancials.agentPaidRevenue - (mockAgencyFinancials.totalBaseCosts - mockAgencyFinancials.agencyPaidCosts)).toFixed(2)}
+              </div>
+              <div className="text-xs text-purple-600">Total agency profit</div>
             </div>
           </div>
         </CardContent>
@@ -112,9 +147,9 @@ const CostBreakdownDashboard = () => {
       {/* Detailed Agent Breakdown */}
       <Card>
         <CardHeader>
-          <CardTitle>Agent Cost Breakdown</CardTitle>
+          <CardTitle>Agent Cost & Profit Breakdown</CardTitle>
           <CardDescription>
-            Detailed usage and costs per agent for the current billing period
+            Detailed breakdown showing base costs, markups, and agency profits
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -129,12 +164,11 @@ const CostBreakdownDashboard = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Agent</TableHead>
-                    <TableHead>Telephony</TableHead>
-                    <TableHead>Transcription</TableHead>
-                    <TableHead>AI Coaching</TableHead>
-                    <TableHead>AI Scoring</TableHead>
-                    <TableHead>Seat License</TableHead>
-                    <TableHead>Total Cost</TableHead>
+                    <TableHead>Billing Type</TableHead>
+                    <TableHead>Base Cost</TableHead>
+                    <TableHead>Charged Amount</TableHead>
+                    <TableHead>Agency Profit</TableHead>
+                    <TableHead>Profit Margin</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -147,34 +181,23 @@ const CostBreakdownDashboard = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm">
-                          <div className="font-medium">${agent.usage.telephony.cost.toFixed(2)}</div>
-                          <div className="text-gray-500">{agent.usage.telephony.minutes} min</div>
+                        {getBillingBadge(agent.billingType)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">${agent.totalBaseCost.toFixed(2)}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">${agent.totalChargedCost.toFixed(2)}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className={`font-medium ${agent.totalAgencyProfit > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+                          ${agent.totalAgencyProfit.toFixed(2)}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm">
-                          <div className="font-medium">${agent.usage.transcription.cost.toFixed(2)}</div>
-                          <div className="text-gray-500">{agent.usage.transcription.minutes} min</div>
+                        <div className={`font-medium ${agent.totalAgencyProfit > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+                          {agent.totalBaseCost > 0 ? ((agent.totalAgencyProfit / agent.totalBaseCost) * 100).toFixed(1) : '0.0'}%
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div className="font-medium">${agent.usage.aiCoaching.cost.toFixed(2)}</div>
-                          <div className="text-gray-500">{agent.usage.aiCoaching.minutes} min</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div className="font-medium">${agent.usage.aiScoring.cost.toFixed(2)}</div>
-                          <div className="text-gray-500">{agent.usage.aiScoring.minutes} min</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-medium">${agent.usage.callBalance.cost.toFixed(2)}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-bold text-lg">${agent.totalCost.toFixed(2)}</div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -187,30 +210,29 @@ const CostBreakdownDashboard = () => {
                 {mockAgentCostData.map((agent) => (
                   <Card key={agent.agentId}>
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-lg">{agent.agentName}</CardTitle>
-                      <CardDescription>{agent.agentEmail}</CardDescription>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-lg">{agent.agentName}</CardTitle>
+                          <CardDescription>{agent.agentEmail}</CardDescription>
+                        </div>
+                        {getBillingBadge(agent.billingType)}
+                      </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-2">
-                        {Object.entries(agent.usage).map(([service, data]) => (
-                          <div key={service} className="flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                              {getServiceIcon(service)}
-                              <span className="text-sm capitalize">
-                                {service === 'callBalance' ? 'Seat License' : service}
-                              </span>
-                            </div>
-                            <div className="text-sm">
-                              <span className="font-medium">${data.cost.toFixed(2)}</span>
-                              {'minutes' in data && (
-                                <span className="text-gray-500 ml-1">({data.minutes}m)</span>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                        <div className="pt-2 border-t flex justify-between items-center">
-                          <span className="font-medium">Total:</span>
-                          <span className="font-bold text-lg">${agent.totalCost.toFixed(2)}</span>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                          <span className="text-sm">Base Cost:</span>
+                          <span className="font-medium">${agent.totalBaseCost.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-2 bg-blue-50 rounded">
+                          <span className="text-sm">Charged Amount:</span>
+                          <span className="font-medium">${agent.totalChargedCost.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-2 bg-green-50 rounded">
+                          <span className="text-sm">Agency Profit:</span>
+                          <span className={`font-bold ${agent.totalAgencyProfit > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+                            ${agent.totalAgencyProfit.toFixed(2)}
+                          </span>
                         </div>
                       </div>
                     </CardContent>

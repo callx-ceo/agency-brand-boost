@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, ChevronUp, Search } from "lucide-react";
 
 interface TeamMember {
   id: string;
@@ -116,15 +117,37 @@ const TeamMembersTab = () => {
   ]);
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [showAllMembers, setShowAllMembers] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [newMember, setNewMember] = useState({
     name: "",
     email: "",
     role: "agent" as "admin" | "manager" | "agent"
   });
 
-  const displayedMembers = showAllMembers ? teamMembers : teamMembers.slice(0, 5);
-  const hasMoreMembers = teamMembers.length > 5;
+  // Filter members based on search query
+  const filteredMembers = useMemo(() => {
+    if (!searchQuery) return teamMembers;
+    
+    return teamMembers.filter(member =>
+      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.status.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [teamMembers, searchQuery]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedMembers = filteredMembers.slice(startIndex, endIndex);
+
+  // Reset to first page when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -205,6 +228,90 @@ const TeamMembersTab = () => {
 
   const handleResendInvite = (email: string) => {
     toast.success(`Invitation resent to ${email}`);
+  };
+
+  const renderPaginationItems = () => {
+    const items = [];
+    const showEllipsis = totalPages > 7;
+    
+    if (showEllipsis) {
+      // Show first page
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink
+            onClick={() => setCurrentPage(1)}
+            isActive={currentPage === 1}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+
+      // Show ellipsis if current page is far from start
+      if (currentPage > 4) {
+        items.push(
+          <PaginationItem key="ellipsis-start">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      // Show pages around current page
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      
+      for (let i = start; i <= end; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              onClick={() => setCurrentPage(i)}
+              isActive={currentPage === i}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+
+      // Show ellipsis if current page is far from end
+      if (currentPage < totalPages - 3) {
+        items.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      // Show last page
+      if (totalPages > 1) {
+        items.push(
+          <PaginationItem key={totalPages}>
+            <PaginationLink
+              onClick={() => setCurrentPage(totalPages)}
+              isActive={currentPage === totalPages}
+            >
+              {totalPages}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      // Show all pages if total is 7 or less
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              onClick={() => setCurrentPage(i)}
+              isActive={currentPage === i}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    }
+
+    return items;
   };
 
   return (
@@ -323,127 +430,156 @@ const TeamMembersTab = () => {
         </Card>
       </div>
 
-      {/* Team Members Table */}
+      {/* Search and Team Members Table */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>All Team Members</CardTitle>
-            {hasMoreMembers && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAllMembers(!showAllMembers)}
-                className="flex items-center gap-2"
-              >
-                {showAllMembers ? (
-                  <>
-                    <ChevronUp className="w-4 h-4" />
-                    Show Less
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown className="w-4 h-4" />
-                    Show All ({teamMembers.length})
-                  </>
-                )}
-              </Button>
-            )}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Search members..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-64"
+                />
+              </div>
+              {filteredMembers.length > 0 && (
+                <p className="text-sm text-gray-600">
+                  Showing {startIndex + 1}-{Math.min(endIndex, filteredMembers.length)} of {filteredMembers.length} members
+                </p>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Join Date</TableHead>
-                <TableHead>Last Active</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {displayedMembers.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell className="font-medium">{member.name}</TableCell>
-                  <TableCell>{member.email}</TableCell>
-                  <TableCell>
-                    <Badge className={`${getRoleBadgeColor(member.role)} flex items-center gap-1 w-fit`}>
-                      {getRoleIcon(member.role)}
-                      {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Badge className={`${getStatusBadgeColor(member.status)} w-fit`}>
-                        {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
-                      </Badge>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                            <ChevronDown className="w-3 h-3" />
+          {filteredMembers.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No team members found matching your search.</p>
+            </div>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Join Date</TableHead>
+                    <TableHead>Last Active</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {displayedMembers.map((member) => (
+                    <TableRow key={member.id}>
+                      <TableCell className="font-medium">{member.name}</TableCell>
+                      <TableCell>{member.email}</TableCell>
+                      <TableCell>
+                        <Badge className={`${getRoleBadgeColor(member.role)} flex items-center gap-1 w-fit`}>
+                          {getRoleIcon(member.role)}
+                          {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Badge className={`${getStatusBadgeColor(member.status)} w-fit`}>
+                            {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                          </Badge>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                <ChevronDown className="w-3 h-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="bg-white">
+                              <DropdownMenuItem 
+                                onClick={() => handleStatusChange(member.id, "active")}
+                                className="cursor-pointer"
+                              >
+                                Active
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleStatusChange(member.id, "pending")}
+                                className="cursor-pointer"
+                              >
+                                Pending
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleStatusChange(member.id, "paused")}
+                                className="cursor-pointer"
+                              >
+                                Paused
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleStatusChange(member.id, "inactive")}
+                                className="cursor-pointer"
+                              >
+                                Inactive
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </TableCell>
+                      <TableCell>{member.joinDate}</TableCell>
+                      <TableCell>{member.lastActive}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {member.status === "pending" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleResendInvite(member.email)}
+                            >
+                              <Mail className="w-4 h-4" />
+                            </Button>
+                          )}
+                          <Button variant="outline" size="sm">
+                            <Edit className="w-4 h-4" />
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="bg-white">
-                          <DropdownMenuItem 
-                            onClick={() => handleStatusChange(member.id, "active")}
-                            className="cursor-pointer"
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRemoveMember(member.id)}
+                            className="text-red-600 hover:text-red-700"
                           >
-                            Active
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={() => handleStatusChange(member.id, "pending")}
-                            className="cursor-pointer"
-                          >
-                            Pending
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={() => handleStatusChange(member.id, "paused")}
-                            className="cursor-pointer"
-                          >
-                            Paused
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={() => handleStatusChange(member.id, "inactive")}
-                            className="cursor-pointer"
-                          >
-                            Inactive
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </TableCell>
-                  <TableCell>{member.joinDate}</TableCell>
-                  <TableCell>{member.lastActive}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      {member.status === "pending" && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleResendInvite(member.email)}
-                        >
-                          <Mail className="w-4 h-4" />
-                        </Button>
-                      )}
-                      <Button variant="outline" size="sm">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRemoveMember(member.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-6 flex justify-center">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      
+                      {renderPaginationItems()}
+                      
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
+          )}
         </CardContent>
       </Card>
 

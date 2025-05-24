@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -14,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { X, Clock, Users, Phone, AlertTriangle } from "lucide-react";
+import { X, Clock, Users, Phone, AlertTriangle, Building2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface CampaignSetupModalProps {
@@ -26,6 +25,7 @@ interface CampaignSetupModalProps {
 const CampaignSetupModal = ({ isOpen, onClose, onCampaignCreated }: CampaignSetupModalProps) => {
   const [formData, setFormData] = useState({
     name: "",
+    vertical: "",
     targetStates: [] as string[],
     hoursOfOperation: {
       monday: { start: "09:00", end: "17:00", enabled: true },
@@ -55,6 +55,15 @@ const CampaignSetupModal = ({ isOpen, onClose, onCampaignCreated }: CampaignSetu
     "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
     "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
     "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+  ];
+
+  const availableVerticals = [
+    "Final Expense",
+    "Medicare",
+    "Auto Insurance",
+    "Debt Settlement",
+    "Home Services",
+    "Legal"
   ];
 
   const availableAgents = [
@@ -106,6 +115,11 @@ const CampaignSetupModal = ({ isOpen, onClose, onCampaignCreated }: CampaignSetu
       return;
     }
 
+    if (!formData.vertical) {
+      toast.error("Please select a vertical");
+      return;
+    }
+
     if (formData.targetStates.length === 0) {
       toast.error("Please select at least one target state");
       return;
@@ -116,6 +130,7 @@ const CampaignSetupModal = ({ isOpen, onClose, onCampaignCreated }: CampaignSetu
 
     const newCampaign = {
       name: formData.name,
+      vertical: formData.vertical,
       promoNumber,
       status: "active" as const,
       callsReceived: 0,
@@ -132,6 +147,7 @@ const CampaignSetupModal = ({ isOpen, onClose, onCampaignCreated }: CampaignSetu
     // Reset form
     setFormData({
       name: "",
+      vertical: "",
       targetStates: [],
       hoursOfOperation: {
         monday: { start: "09:00", end: "17:00", enabled: true },
@@ -179,6 +195,28 @@ const CampaignSetupModal = ({ isOpen, onClose, onCampaignCreated }: CampaignSetu
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="vertical">Vertical *</Label>
+                <Select
+                  value={formData.vertical}
+                  onValueChange={(value) => setFormData({ ...formData, vertical: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a vertical" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableVerticals.map((vertical) => (
+                      <SelectItem key={vertical} value={vertical}>
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4" />
+                          {vertical}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>

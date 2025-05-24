@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -18,12 +17,14 @@ import {
   XCircle, 
   AlertTriangle,
   TrendingUp,
-  Activity
+  Activity,
+  Building2
 } from "lucide-react";
 
 interface Campaign {
   id: string;
   name: string;
+  vertical: string;
   promoNumber: string;
   status: "active" | "paused" | "no_agents";
   callsReceived: number;
@@ -149,6 +150,25 @@ const CampaignDetailModal = ({ campaign, isOpen, onClose }: CampaignDetailModalP
     }
   };
 
+  const getVerticalColor = (vertical: string) => {
+    switch (vertical) {
+      case "Final Expense":
+        return "bg-purple-100 text-purple-800";
+      case "Medicare":
+        return "bg-blue-100 text-blue-800";
+      case "Auto Insurance":
+        return "bg-green-100 text-green-800";
+      case "Debt Settlement":
+        return "bg-orange-100 text-orange-800";
+      case "Home Services":
+        return "bg-cyan-100 text-cyan-800";
+      case "Legal":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
   // Calculate metrics
   const connectionRate = campaign.callsReceived > 0 
     ? Math.round((campaign.connectedToAgent / campaign.callsReceived) * 100) 
@@ -173,6 +193,10 @@ const CampaignDetailModal = ({ campaign, isOpen, onClose }: CampaignDetailModalP
           </DialogTitle>
           <div className="flex items-center gap-4 text-sm text-gray-600">
             <span className="font-mono">{campaign.promoNumber}</span>
+            <Badge className={getVerticalColor(campaign.vertical)}>
+              <Building2 className="w-3 h-3 mr-1" />
+              {campaign.vertical}
+            </Badge>
             <Badge className={getStatusColor(campaign.status)}>
               {getStatusText(campaign.status)}
             </Badge>
@@ -187,6 +211,34 @@ const CampaignDetailModal = ({ campaign, isOpen, onClose }: CampaignDetailModalP
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            {/* Campaign Info Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5" />
+                  Campaign Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Vertical</p>
+                    <Badge className={getVerticalColor(campaign.vertical)}>
+                      {campaign.vertical}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Promo Number</p>
+                    <p className="font-mono text-sm">{campaign.promoNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Created</p>
+                    <p className="text-sm">{campaign.createdAt}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* KPI Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +10,7 @@ import CampaignDetailModal from "./CampaignDetailModal";
 interface Campaign {
   id: string;
   name: string;
+  vertical: string;
   promoNumber: string;
   status: "active" | "paused" | "no_agents";
   callsReceived: number;
@@ -24,6 +24,7 @@ const CampaignsTab = () => {
     {
       id: "1",
       name: "Holiday Sale Campaign",
+      vertical: "Final Expense",
       promoNumber: "+1 (555) 123-4567",
       status: "active",
       callsReceived: 156,
@@ -34,6 +35,7 @@ const CampaignsTab = () => {
     {
       id: "2",
       name: "Spring Promotion",
+      vertical: "Medicare",
       promoNumber: "+1 (555) 234-5678",
       status: "paused",
       callsReceived: 89,
@@ -44,6 +46,7 @@ const CampaignsTab = () => {
     {
       id: "3",
       name: "Summer Lead Gen",
+      vertical: "Auto Insurance",
       promoNumber: "+1 (555) 345-6789",
       status: "no_agents",
       callsReceived: 203,
@@ -80,6 +83,25 @@ const CampaignsTab = () => {
         return "No Agents Available";
       default:
         return "Unknown";
+    }
+  };
+
+  const getVerticalColor = (vertical: string) => {
+    switch (vertical) {
+      case "Final Expense":
+        return "bg-purple-100 text-purple-800";
+      case "Medicare":
+        return "bg-blue-100 text-blue-800";
+      case "Auto Insurance":
+        return "bg-green-100 text-green-800";
+      case "Debt Settlement":
+        return "bg-orange-100 text-orange-800";
+      case "Home Services":
+        return "bg-cyan-100 text-cyan-800";
+      case "Legal":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -163,6 +185,7 @@ const CampaignsTab = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Campaign Name</TableHead>
+                <TableHead>Vertical</TableHead>
                 <TableHead>Promo Number</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Calls Received</TableHead>
@@ -175,6 +198,11 @@ const CampaignsTab = () => {
               {campaigns.map((campaign) => (
                 <TableRow key={campaign.id}>
                   <TableCell className="font-medium">{campaign.name}</TableCell>
+                  <TableCell>
+                    <Badge className={getVerticalColor(campaign.vertical)}>
+                      {campaign.vertical}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="font-mono text-sm">{campaign.promoNumber}</TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(campaign.status)}>

@@ -19,7 +19,6 @@ interface AdminSidebarProps {
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
   // Mock current plan - this would come from your auth/billing context in a real app
   const currentPlan = "agency_pro"; // Could be "agency_starter", "agency_pro", "enterprise"
-  const isProOrHigher = currentPlan === "agency_pro" || currentPlan === "enterprise";
   const isEnterprise = currentPlan === "enterprise";
 
   const menuItems = [

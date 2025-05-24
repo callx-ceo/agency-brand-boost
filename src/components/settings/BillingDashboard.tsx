@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CheckCircle, Users, Crown, Zap, HelpCircle, Phone, Clock, TrendingUp, DollarSign, Bot, Headphones } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { CheckCircle, Users, Crown, Zap, HelpCircle, Phone, Clock, TrendingUp, DollarSign, Bot, Headphones, ChevronDown } from "lucide-react";
 import DowngradeModal from "./DowngradeModal";
 
-// Mock data for billing overview with new Agency pricing tiers
+// Mock data for billing overview with new Agency pricing tiers and split costs
 const mockBillingOverview = {
   currentBalance: 125.50,
   nextInvoiceDate: "2023-11-01",
@@ -30,9 +31,21 @@ const mockBillingOverview = {
     billableMinutes: 7800,
     avgCallDurationMinutes: 3.6,
     callConversionRate: 78.5,
-    estimatedCallSpend: 4125.00,
-    aiUsageCost: 186.75,
-    telephonyCharges: 94.10,
+    estimatedCallSpend: {
+      total: 4515.00,
+      agencyPaid: 3215.00,
+      agentPaid: 1300.00
+    },
+    aiUsageCost: {
+      total: 259.00,
+      agencyPaid: 186.75,
+      agentPaid: 72.25
+    },
+    telephonyCharges: {
+      total: 123.00,
+      agencyPaid: 94.10,
+      agentPaid: 28.90
+    },
     activeAgents: 11,
     concurrencyUtilization: 63
   },
@@ -42,6 +55,7 @@ const mockBillingOverview = {
 const BillingDashboard = () => {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
+  const [showFullCostBreakdown, setShowFullCostBreakdown] = useState(false);
   const { currentPlan, usageSummary } = mockBillingOverview;
   
   const extraSeats = Math.max(0, currentPlan.usedSeats - currentPlan.includedSeats);
@@ -54,6 +68,13 @@ const BillingDashboard = () => {
     // This would typically call Stripe checkout or billing portal
     console.log("Initiating upgrade to Pro plan");
     setShowUpgradeModal(false);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
   };
 
   const MetricCard = ({ 
@@ -87,6 +108,56 @@ const BillingDashboard = () => {
         </TooltipProvider>
       </div>
       <div className="text-xl font-medium">{value}</div>
+    </div>
+  );
+
+  const CostBreakdownCard = ({ 
+    icon: Icon, 
+    label, 
+    agencyPaid, 
+    agentPaid, 
+    total 
+  }: {
+    icon: React.ElementType;
+    label: string;
+    agencyPaid: number;
+    agentPaid: number;
+    total: number;
+  }) => (
+    <div className="p-4 bg-gray-50 rounded-md">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Icon className="h-4 w-4 text-gray-600" />
+          <div className="text-sm text-gray-500">{label}</div>
+        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <HelpCircle className="h-3 w-3 text-gray-400" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-xs text-xs">Shows only costs currently paid by the agency. Agent-paid usage is excluded.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <div className="text-xl font-medium mb-2">{formatCurrency(agencyPaid)}</div>
+      {showFullCostBreakdown && (
+        <div className="text-xs text-gray-600 space-y-1">
+          <div className="flex justify-between">
+            <span>Paid by Agency:</span>
+            <span>{formatCurrency(agencyPaid)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Paid by Agents:</span>
+            <span>{formatCurrency(agentPaid)}</span>
+          </div>
+          <div className="flex justify-between font-medium border-t border-gray-300 pt-1">
+            <span>Total:</span>
+            <span>{formatCurrency(total)}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -245,11 +316,11 @@ const BillingDashboard = () => {
         </Card>
       </div>
 
-      {/* Enhanced Usage Summary */}
+      {/* Enhanced Usage Summary with Agency-Paid Focus */}
       <Card>
         <CardHeader>
           <CardTitle>Usage Summary (Current Period)</CardTitle>
-          <CardDescription>Comprehensive view of your agency's performance and billing metrics</CardDescription>
+          <CardDescription>Agency performance metrics and costs you're responsible for</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -282,26 +353,29 @@ const BillingDashboard = () => {
               tooltip="Percentage of calls that were considered qualified."
             />
             
-            {/* Billing-Related Usage */}
-            <MetricCard
+            {/* Agency-Paid Billing Metrics */}
+            <CostBreakdownCard
               icon={DollarSign}
-              label="Estimated Call Spend"
-              value={`$${usageSummary.estimatedCallSpend.toFixed(2)}`}
-              tooltip="Estimated cost of all qualified calls based on campaign pricing or minute rates."
+              label="Call Spend (Agency-Paid)"
+              agencyPaid={usageSummary.estimatedCallSpend.agencyPaid}
+              agentPaid={usageSummary.estimatedCallSpend.agentPaid}
+              total={usageSummary.estimatedCallSpend.total}
             />
             
-            <MetricCard
+            <CostBreakdownCard
               icon={Bot}
-              label="AI Tool Spend"
-              value={`$${usageSummary.aiUsageCost.toFixed(2)}`}
-              tooltip="Estimated cost from AI features like transcription, scoring, or coaching."
+              label="AI Tool Spend (Agency-Paid)"
+              agencyPaid={usageSummary.aiUsageCost.agencyPaid}
+              agentPaid={usageSummary.aiUsageCost.agentPaid}
+              total={usageSummary.aiUsageCost.total}
             />
             
-            <MetricCard
+            <CostBreakdownCard
               icon={Phone}
-              label="Telephony Charges"
-              value={`$${usageSummary.telephonyCharges.toFixed(2)}`}
-              tooltip="Estimated cost of telephony usage (if metered)."
+              label="Telephony Charges (Agency-Paid)"
+              agencyPaid={usageSummary.telephonyCharges.agencyPaid}
+              agentPaid={usageSummary.telephonyCharges.agentPaid}
+              total={usageSummary.telephonyCharges.total}
             />
             
             {/* Agent Metrics */}
@@ -326,6 +400,22 @@ const BillingDashboard = () => {
               value={usageSummary.billableMinutes.toLocaleString()}
               tooltip="Total billable minutes across all qualified calls."
             />
+          </div>
+          
+          {/* Cost Breakdown Toggle */}
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <button
+              onClick={() => setShowFullCostBreakdown(!showFullCostBreakdown)}
+              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ChevronDown className={`h-4 w-4 transition-transform ${showFullCostBreakdown ? 'rotate-180' : ''}`} />
+              {showFullCostBreakdown ? 'Hide' : 'Show'} Full Cost Breakdown
+            </button>
+            {showFullCostBreakdown && (
+              <p className="text-xs text-gray-500 mt-2">
+                Breakdown shows costs paid by agency vs. costs paid by individual agents for transparency.
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -23,7 +23,7 @@ interface Publisher {
 
 const PublishersTab = () => {
   // Mock current plan - this would come from your auth/billing context
-  const currentPlan = "agency_starter"; // Change to "enterprise" to test the feature
+  const currentPlan = "enterprise"; // Change to "enterprise" to test the feature
   const isEnterprise = currentPlan === "enterprise";
 
   const [publishers, setPublishers] = useState<Publisher[]>([

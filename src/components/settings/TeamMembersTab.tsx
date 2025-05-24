@@ -199,6 +199,15 @@ const TeamMembersTab = () => {
     toast.success(`Status updated to ${newStatus}`);
   };
 
+  const handleRoleChange = (memberId: string, newRole: "admin" | "manager" | "agent") => {
+    setTeamMembers(teamMembers.map(member => 
+      member.id === memberId 
+        ? { ...member, role: newRole }
+        : member
+    ));
+    toast.success(`Role updated to ${newRole}`);
+  };
+
   const handleAddMember = () => {
     if (!newMember.name || !newMember.email) {
       toast.error("Please fill in all required fields");
@@ -478,10 +487,42 @@ const TeamMembersTab = () => {
                       <TableCell className="font-medium">{member.name}</TableCell>
                       <TableCell>{member.email}</TableCell>
                       <TableCell>
-                        <Badge className={`${getRoleBadgeColor(member.role)} flex items-center gap-1 w-fit`}>
-                          {getRoleIcon(member.role)}
-                          {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge className={`${getRoleBadgeColor(member.role)} flex items-center gap-1 w-fit`}>
+                            {getRoleIcon(member.role)}
+                            {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                          </Badge>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                <ChevronDown className="w-3 h-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="bg-white">
+                              <DropdownMenuItem 
+                                onClick={() => handleRoleChange(member.id, "admin")}
+                                className="cursor-pointer flex items-center gap-2"
+                              >
+                                <Shield className="w-4 h-4 text-red-600" />
+                                Admin
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleRoleChange(member.id, "manager")}
+                                className="cursor-pointer flex items-center gap-2"
+                              >
+                                <Users className="w-4 h-4 text-blue-600" />
+                                Manager
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleRoleChange(member.id, "agent")}
+                                className="cursor-pointer flex items-center gap-2"
+                              >
+                                <User className="w-4 h-4 text-green-600" />
+                                Agent
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">

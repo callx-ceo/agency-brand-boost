@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { CheckCircle, Users, Crown, Zap } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { CheckCircle, Users, Crown, Zap, HelpCircle, Phone, Clock, TrendingUp, DollarSign, Bot, Headphones } from "lucide-react";
 import DowngradeModal from "./DowngradeModal";
 
 // Mock data for billing overview with new Agency pricing tiers
@@ -23,14 +24,25 @@ const mockBillingOverview = {
     description: "Includes 10 agent seats. White label, custom domains, full branding."
   },
   primaryPaymentMethod: { type: "card", last4: "1234", brand: "Visa", expiryMonth: "08", expiryYear: "2024", isAutoPayEnabled: true },
-  usageSummary: { qualifiedCalls: 350, billableMinutes: 7800, aiUsageCost: 15.00 },
+  usageSummary: { 
+    totalCalls: 782,
+    qualifiedCalls: 614,
+    billableMinutes: 7800,
+    avgCallDurationMinutes: 3.6,
+    callConversionRate: 78.5,
+    estimatedCallSpend: 4125.00,
+    aiUsageCost: 186.75,
+    telephonyCharges: 94.10,
+    activeAgents: 11,
+    concurrencyUtilization: 63
+  },
   wallet: { balance: 50.00, currency: "USD" }
 };
 
 const BillingDashboard = () => {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
-  const { currentPlan } = mockBillingOverview;
+  const { currentPlan, usageSummary } = mockBillingOverview;
   
   const extraSeats = Math.max(0, currentPlan.usedSeats - currentPlan.includedSeats);
   const totalMonthlyCharges = currentPlan.price + (extraSeats * currentPlan.extraSeatPrice);
@@ -43,6 +55,40 @@ const BillingDashboard = () => {
     console.log("Initiating upgrade to Pro plan");
     setShowUpgradeModal(false);
   };
+
+  const MetricCard = ({ 
+    icon: Icon, 
+    label, 
+    value, 
+    tooltip,
+    className = ""
+  }: {
+    icon: React.ElementType;
+    label: string;
+    value: string | number;
+    tooltip: string;
+    className?: string;
+  }) => (
+    <div className={`p-4 bg-gray-50 rounded-md ${className}`}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Icon className="h-4 w-4 text-gray-600" />
+          <div className="text-sm text-gray-500">{label}</div>
+        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <HelpCircle className="h-3 w-3 text-gray-400" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-xs text-xs">{tooltip}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <div className="text-xl font-medium">{value}</div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -199,25 +245,87 @@ const BillingDashboard = () => {
         </Card>
       </div>
 
-      {/* Usage Summary */}
+      {/* Enhanced Usage Summary */}
       <Card>
         <CardHeader>
           <CardTitle>Usage Summary (Current Period)</CardTitle>
+          <CardDescription>Comprehensive view of your agency's performance and billing metrics</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-gray-50 rounded-md">
-              <div className="text-sm text-gray-500">Qualified Calls</div>
-              <div className="text-xl font-medium mt-1">{mockBillingOverview.usageSummary.qualifiedCalls}</div>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-md">
-              <div className="text-sm text-gray-500">Billable Minutes</div>
-              <div className="text-xl font-medium mt-1">{mockBillingOverview.usageSummary.billableMinutes}</div>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-md">
-              <div className="text-sm text-gray-500">AI Usage Cost</div>
-              <div className="text-xl font-medium mt-1">${mockBillingOverview.usageSummary.aiUsageCost.toFixed(2)}</div>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            {/* Call Performance Metrics */}
+            <MetricCard
+              icon={Phone}
+              label="Total Calls Received"
+              value={usageSummary.totalCalls.toLocaleString()}
+              tooltip="All inbound calls received this period, including unqualified or short-duration calls."
+            />
+            
+            <MetricCard
+              icon={CheckCircle}
+              label="Qualified Calls"
+              value={usageSummary.qualifiedCalls.toLocaleString()}
+              tooltip="Calls that met your qualification criteria and generated billable activity."
+            />
+            
+            <MetricCard
+              icon={Clock}
+              label="Avg Call Duration"
+              value={`${usageSummary.avgCallDurationMinutes}m`}
+              tooltip="Average duration of qualified calls in minutes."
+            />
+            
+            <MetricCard
+              icon={TrendingUp}
+              label="Call Conversion Rate"
+              value={`${usageSummary.callConversionRate}%`}
+              tooltip="Percentage of calls that were considered qualified."
+            />
+            
+            {/* Billing-Related Usage */}
+            <MetricCard
+              icon={DollarSign}
+              label="Estimated Call Spend"
+              value={`$${usageSummary.estimatedCallSpend.toFixed(2)}`}
+              tooltip="Estimated cost of all qualified calls based on campaign pricing or minute rates."
+            />
+            
+            <MetricCard
+              icon={Bot}
+              label="AI Tool Spend"
+              value={`$${usageSummary.aiUsageCost.toFixed(2)}`}
+              tooltip="Estimated cost from AI features like transcription, scoring, or coaching."
+            />
+            
+            <MetricCard
+              icon={Phone}
+              label="Telephony Charges"
+              value={`$${usageSummary.telephonyCharges.toFixed(2)}`}
+              tooltip="Estimated cost of telephony usage (if metered)."
+            />
+            
+            {/* Agent Metrics */}
+            <MetricCard
+              icon={Users}
+              label="Active Agents"
+              value={usageSummary.activeAgents}
+              tooltip="Agents who received at least 1 call this billing period."
+            />
+            
+            <MetricCard
+              icon={Headphones}
+              label="Concurrency Utilization"
+              value={`${usageSummary.concurrencyUtilization}%`}
+              tooltip="Average percentage of max call concurrency used across agents."
+            />
+            
+            {/* Legacy metric for backward compatibility */}
+            <MetricCard
+              icon={Clock}
+              label="Billable Minutes"
+              value={usageSummary.billableMinutes.toLocaleString()}
+              tooltip="Total billable minutes across all qualified calls."
+            />
           </div>
         </CardContent>
       </Card>

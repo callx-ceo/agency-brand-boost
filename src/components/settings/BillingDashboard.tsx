@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CheckCircle, Users, Crown, Zap } from "lucide-react";
+import DowngradeModal from "./DowngradeModal";
 
 // Mock data for billing overview with new Agency pricing tiers
 const mockBillingOverview = {
@@ -29,6 +29,7 @@ const mockBillingOverview = {
 
 const BillingDashboard = () => {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const { currentPlan } = mockBillingOverview;
   
   const extraSeats = Math.max(0, currentPlan.usedSeats - currentPlan.includedSeats);
@@ -174,14 +175,24 @@ const BillingDashboard = () => {
                 </DialogContent>
               </Dialog>
             ) : (
-              <div className="w-full text-center">
-                <Badge variant="outline" className="text-green-700 border-green-200 bg-green-50">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  On White Label Plan
-                </Badge>
-                <p className="text-xs text-gray-500 mt-2">
-                  Contact support to upgrade to Enterprise
-                </p>
+              <div className="w-full space-y-3">
+                <div className="text-center">
+                  <Badge variant="outline" className="text-green-700 border-green-200 bg-green-50">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    On White Label Plan
+                  </Badge>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Contact support to upgrade to Enterprise
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full text-red-600 border-red-200 hover:bg-red-50"
+                  onClick={() => setShowDowngradeModal(true)}
+                >
+                  Request Downgrade
+                </Button>
               </div>
             )}
           </CardFooter>
@@ -249,6 +260,14 @@ const BillingDashboard = () => {
           <Button variant="outline">Manage Payment Methods</Button>
         </CardContent>
       </Card>
+
+      {/* Downgrade Modal */}
+      <DowngradeModal
+        open={showDowngradeModal}
+        onOpenChange={setShowDowngradeModal}
+        currentPlan={currentPlan.tier}
+        agencyId="mock-agency-id"
+      />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Info, TrendingUp, Users, Phone, DollarSign, Bot, Clock, Zap } from "lucide-react";
+import { Info, TrendingUp, Users, Phone, DollarSign, Bot, Clock, Zap, CheckCircle, ArrowUpCircle } from "lucide-react";
 import { toast } from "sonner";
 
 const BillingDashboard = () => {
@@ -15,11 +16,16 @@ const BillingDashboard = () => {
   // Mock data - changed to starter to show upgrade flow
   const currentPlan = {
     name: "Agency Starter",
-    tier: "agency_starter", // Changed from agency_pro to show upgrade flow
-    price: 497, // Updated price
+    tier: "agency_starter",
+    price: 497,
     billingCycle: "monthly",
     nextBillingDate: "2024-06-15",
-    status: "active"
+    status: "active",
+    licenses: {
+      total: 5,
+      assigned: 3,
+      available: 2
+    }
   };
 
   // Mock usage data
@@ -62,6 +68,15 @@ const BillingDashboard = () => {
     toast.success("Copied to clipboard!");
   };
 
+  const upgradeFeatures = [
+    "Unlimited agent licenses",
+    "White-label branding options",
+    "Custom domain setup",
+    "Advanced analytics & reporting",
+    "Priority support",
+    "Referral program access"
+  ];
+
   return (
     <div className="space-y-6">
       {/* Plan Overview */}
@@ -75,7 +90,7 @@ const BillingDashboard = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-between items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <h3 className="text-2xl font-bold">{currentPlan.name}</h3>
               <p className="text-muted-foreground">
@@ -84,12 +99,60 @@ const BillingDashboard = () => {
               <p className="text-sm text-muted-foreground mt-2">
                 Next billing: {currentPlan.nextBillingDate}
               </p>
+              
+              {/* License Information */}
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">Agent Licenses</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Number of agents who can access the platform</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="flex-1">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Used</span>
+                      <span>{currentPlan.licenses.assigned} of {currentPlan.licenses.total}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full" 
+                        style={{ width: `${(currentPlan.licenses.assigned / currentPlan.licenses.total) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {currentPlan.licenses.available} licenses available
+                </p>
+              </div>
             </div>
-            <div className="text-right">
-              {isStarter ? (
+            
+            {/* Upgrade Benefits */}
+            {isStarter && (
+              <div className="border-l pl-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <ArrowUpCircle className="h-5 w-5 text-primary" />
+                  <h4 className="font-semibold text-primary">Why Upgrade to Pro?</h4>
+                </div>
+                <ul className="space-y-2 mb-4">
+                  {upgradeFeatures.map((feature, index) => (
+                    <li key={index} className="flex items-center space-x-2 text-sm">
+                      <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button>Upgrade to Pro</Button>
+                    <Button className="w-full">Upgrade to Pro - $997/month</Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl">
                     <DialogHeader>
@@ -102,7 +165,7 @@ const BillingDashboard = () => {
                       <div className="space-y-4">
                         <h4 className="font-semibold">Current: Agency Starter</h4>
                         <ul className="space-y-2 text-sm">
-                          <li>• Up to 5 agents</li>
+                          <li>• Up to 5 agent licenses</li>
                           <li>• Basic analytics</li>
                           <li>• Standard support</li>
                           <li>• CallX branding</li>
@@ -112,7 +175,7 @@ const BillingDashboard = () => {
                       <div className="space-y-4 border-l pl-6">
                         <h4 className="font-semibold text-primary">Upgrade: Agency Pro</h4>
                         <ul className="space-y-2 text-sm">
-                          <li>• Unlimited agents</li>
+                          <li>• Unlimited agent licenses</li>
                           <li>• Advanced analytics & reporting</li>
                           <li>• Priority support</li>
                           <li>• White-label options</li>
@@ -132,12 +195,16 @@ const BillingDashboard = () => {
                     </div>
                   </DialogContent>
                 </Dialog>
-              ) : (
+              </div>
+            )}
+            
+            {!isStarter && (
+              <div className="flex justify-end">
                 <Button variant="outline" onClick={handleDowngrade}>
                   Request Downgrade
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

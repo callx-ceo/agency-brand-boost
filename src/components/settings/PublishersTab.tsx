@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Plus, Eye, Pause, Play, Trash2, Search } from "lucide-react";
+import { Plus, Eye, Pause, Play, Trash2, Search, ArrowRight, CheckCircle } from "lucide-react";
 
 interface Publisher {
   id: string;
@@ -22,9 +22,14 @@ interface Publisher {
 }
 
 const PublishersTab = () => {
-  // Mock current plan - this would come from your auth/billing context
-  const currentPlan = "enterprise"; // Change to "enterprise" to test the feature
+  // Mock current plan - starting with starter to show gating walkthrough
+  const [currentPlan, setCurrentPlan] = useState("agency_starter");
   const isEnterprise = currentPlan === "enterprise";
+  const [showUpgradeWalkthrough, setShowUpgradeWalkthrough] = useState(false);
+
+  // Mock current plan - this would come from your auth/billing context
+  // const currentPlan = "enterprise"; // Change to "enterprise" to test the feature
+  // const isEnterprise = currentPlan === "enterprise";
 
   const [publishers, setPublishers] = useState<Publisher[]>([
     {
@@ -79,6 +84,17 @@ const PublishersTab = () => {
     assignedCampaigns: [] as string[],
     notes: ""
   });
+
+  // Simulate upgrade process
+  const handleUpgradeToEnterprise = () => {
+    setCurrentPlan("enterprise");
+    setShowUpgradeWalkthrough(false);
+    toast.success("Successfully upgraded to Enterprise! Publishers feature unlocked.");
+  };
+
+  const handleStartUpgradeWalkthrough = () => {
+    setShowUpgradeWalkthrough(true);
+  };
 
   const filteredPublishers = publishers.filter(publisher =>
     publisher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -136,30 +152,143 @@ const PublishersTab = () => {
       <div>
         <h2 className="text-2xl font-bold mb-6">Publishers</h2>
         <Alert className="border-blue-200 bg-blue-50">
-          <AlertTitle>Enterprise Feature</AlertTitle>
-          <AlertDescription className="mt-2">
-            Publisher management is an exclusive Enterprise feature that allows you to manage traffic partners, track performance, and scale your agency operations.
-            <div className="mt-6 p-4 bg-white rounded-lg border">
-              <h4 className="font-semibold mb-3">What you'll get with Enterprise:</h4>
-              <ul className="space-y-2 text-sm mb-4">
-                <li>• Unlimited publisher management</li>
-                <li>• Advanced traffic attribution tracking</li>
-                <li>• Custom campaign assignments per publisher</li>
-                <li>• Detailed performance analytics & reporting</li>
-                <li>• Automated fallback routing</li>
-                <li>• White-label publisher portals</li>
-                <li>• Priority enterprise support</li>
-              </ul>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-2xl font-bold text-blue-600">$1,997/month</p>
-                  <p className="text-sm text-gray-600">Enterprise Plan</p>
+          <AlertTitle className="flex items-center gap-2">
+            Enterprise Feature Required
+            <Badge variant="outline" className="bg-orange-100 text-orange-600 border-orange-200">
+              Current: {currentPlan === "agency_starter" ? "Agency Starter" : "Agency Pro"}
+            </Badge>
+          </AlertTitle>
+          <AlertDescription className="mt-4">
+            <div className="space-y-4">
+              <p>
+                Publisher management is an exclusive Enterprise feature that allows you to manage traffic partners, 
+                track performance, and scale your agency operations with advanced routing capabilities.
+              </p>
+              
+              {/* Upgrade Walkthrough */}
+              <div className="bg-white rounded-lg border p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-lg">Unlock Publishers with Enterprise</h4>
+                  <Button 
+                    onClick={handleStartUpgradeWalkthrough}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
+                    Start Upgrade Walkthrough
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
-                <Button size="lg">Upgrade to Enterprise</Button>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h5 className="font-medium mb-3 text-gray-600">What you'll get:</h5>
+                    <ul className="space-y-2 text-sm">
+                      {[
+                        "Unlimited publisher management",
+                        "Advanced traffic attribution tracking", 
+                        "Custom campaign assignments per publisher",
+                        "Detailed performance analytics & reporting",
+                        "Automated fallback routing",
+                        "White-label publisher portals",
+                        "Priority enterprise support"
+                      ].map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l pl-6">
+                    <div className="text-center space-y-3">
+                      <div>
+                        <p className="text-3xl font-bold text-blue-600">$1,997</p>
+                        <p className="text-sm text-gray-600">per month</p>
+                      </div>
+                      <Badge className="bg-green-100 text-green-600 border-green-200">
+                        Full Publisher Management
+                      </Badge>
+                      <p className="text-xs text-gray-500">
+                        Billed annually • Cancel anytime
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </AlertDescription>
         </Alert>
+
+        {/* Upgrade Walkthrough Modal */}
+        <Dialog open={showUpgradeWalkthrough} onOpenChange={setShowUpgradeWalkthrough}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Upgrade to Enterprise</DialogTitle>
+              <DialogDescription>
+                Unlock publisher management and advanced agency features
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Plan Comparison */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 border rounded-lg">
+                  <h4 className="font-semibold mb-2">Current: Agency Starter</h4>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• Up to 5 agent licenses</li>
+                    <li>• Basic campaign management</li>
+                    <li>• Standard analytics</li>
+                    <li>• Email support</li>
+                  </ul>
+                  <p className="font-bold mt-3">$497/month</p>
+                </div>
+                
+                <div className="p-4 border-2 border-blue-500 rounded-lg bg-blue-50">
+                  <h4 className="font-semibold mb-2 text-blue-700">Upgrade: Enterprise</h4>
+                  <ul className="text-sm space-y-1 text-blue-600">
+                    <li>• Unlimited agent licenses</li>
+                    <li>• Publisher management</li>
+                    <li>• Advanced analytics & reporting</li>
+                    <li>• Priority support</li>
+                    <li>• White-label options</li>
+                  </ul>
+                  <p className="font-bold mt-3 text-blue-700">$1,997/month</p>
+                </div>
+              </div>
+              
+              {/* Demo Preview */}
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h5 className="font-medium mb-3">Publishers Dashboard Preview:</h5>
+                <div className="text-sm text-gray-600 space-y-2">
+                  <div className="flex justify-between">
+                    <span>TrafficBoost Media</span>
+                    <Badge className="bg-green-100 text-green-600 text-xs">Active</Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>LeadGen Pro</span>
+                    <Badge className="bg-green-100 text-green-600 text-xs">Active</Badge>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    + Full publisher performance analytics, campaign assignments, and routing controls
+                  </div>
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowUpgradeWalkthrough(false)}>
+                  Maybe Later
+                </Button>
+                <Button 
+                  onClick={handleUpgradeToEnterprise}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                >
+                  Upgrade to Enterprise - $1,997/month
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -167,7 +296,12 @@ const PublishersTab = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Publishers</h2>
+        <div>
+          <h2 className="text-2xl font-bold">Publishers</h2>
+          <Badge className="bg-green-100 text-green-600 border-green-200 mt-2">
+            Enterprise Feature Unlocked
+          </Badge>
+        </div>
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
           <DialogTrigger asChild>
             <Button>

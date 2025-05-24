@@ -8,7 +8,8 @@ import {
   Link,
   FileText,
   PhoneCall,
-  UsersRound
+  UsersRound,
+  Lock
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -17,8 +18,8 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
-  // Mock current plan - this would come from your auth/billing context in a real app
-  const currentPlan = "enterprise"; // Could be "agency_starter", "agency_pro", "enterprise"
+  // Mock current plan - starting with starter to show gating
+  const currentPlan = "agency_starter"; // Could be "agency_starter", "agency_pro", "enterprise"
   const isEnterprise = currentPlan === "enterprise";
 
   const menuItems = [
@@ -26,7 +27,13 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
     { id: "team", label: "Team Members", icon: <Users className="w-5 h-5" /> },
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
     { id: "scripts", label: "Scripts & AI", icon: <FileText className="w-5 h-5" /> },
-    ...(isEnterprise ? [{ id: "publishers", label: "Publishers", icon: <UsersRound className="w-5 h-5" /> }] : []),
+    { 
+      id: "publishers", 
+      label: "Publishers", 
+      icon: isEnterprise ? <UsersRound className="w-5 h-5" /> : <Lock className="w-5 h-5" />,
+      isGated: !isEnterprise,
+      requiredPlan: "Enterprise"
+    },
     { id: "referrals", label: "Referral Program", icon: <Link className="w-5 h-5" /> },
     { id: "notifications", label: "Notifications", icon: <Mail className="w-5 h-5" /> },
   ];
@@ -47,11 +54,19 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
                   "w-full flex items-center gap-3 px-4 py-3 rounded-md text-left transition-colors",
                   activeSection === item.id
                     ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
+                    : item.isGated 
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-gray-700 hover:bg-gray-100"
                 )}
+                disabled={item.isGated}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span className="flex-1">{item.label}</span>
+                {item.isGated && (
+                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+                    {item.requiredPlan}
+                  </span>
+                )}
               </button>
             </li>
           ))}

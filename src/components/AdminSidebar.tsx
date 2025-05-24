@@ -17,9 +17,11 @@ interface AdminSidebarProps {
   setActiveSection: (section: string) => void;
 }
 
+type PlanTier = "agency_starter" | "agency_pro" | "enterprise";
+
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
   // Mock current plan - starting with starter to show gating
-  const currentPlan = "agency_starter" as const;
+  const currentPlan: PlanTier = "agency_starter";
   const isEnterprise = currentPlan === "enterprise";
 
   const menuItems = [
@@ -36,6 +38,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
     },
     { id: "referrals", label: "Referral Program", icon: <Link className="w-5 h-5" /> },
     { id: "notifications", label: "Notifications", icon: <Mail className="w-5 h-5" /> },
+    { id: "upgrade", label: "Upgrade Plan", icon: <Settings className="w-5 h-5" /> },
   ];
 
   return (

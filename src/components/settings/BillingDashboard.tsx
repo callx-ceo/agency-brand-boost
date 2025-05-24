@@ -1,20 +1,48 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { CheckCircle, Users, Crown, Zap } from "lucide-react";
 
-// Mock data for billing overview
+// Mock data for billing overview with new Agency pricing tiers
 const mockBillingOverview = {
   currentBalance: 125.50,
   nextInvoiceDate: "2023-11-01",
   billingCycle: "1st - 30th of month",
-  currentPlan: { name: "Premium Plan", price: 29, currency: "USD", userLimit: 20, currentUserCount: 14 },
+  currentPlan: { 
+    tier: "agency_pro", // agency_starter or agency_pro
+    name: "Agency Pro (White Label)", 
+    price: 1000, 
+    currency: "USD", 
+    includedSeats: 10,
+    usedSeats: 13,
+    extraSeatPrice: 97,
+    whiteLabelEnabled: true,
+    description: "Includes 10 agent seats. White label, custom domains, full branding."
+  },
   primaryPaymentMethod: { type: "card", last4: "1234", brand: "Visa", expiryMonth: "08", expiryYear: "2024", isAutoPayEnabled: true },
   usageSummary: { qualifiedCalls: 350, billableMinutes: 7800, aiUsageCost: 15.00 },
   wallet: { balance: 50.00, currency: "USD" }
 };
 
 const BillingDashboard = () => {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const { currentPlan } = mockBillingOverview;
+  
+  const extraSeats = Math.max(0, currentPlan.usedSeats - currentPlan.includedSeats);
+  const totalMonthlyCharges = currentPlan.price + (extraSeats * currentPlan.extraSeatPrice);
+
+  const isStarter = currentPlan.tier === "agency_starter";
+  const isPro = currentPlan.tier === "agency_pro";
+
+  const handleUpgrade = () => {
+    // This would typically call Stripe checkout or billing portal
+    console.log("Initiating upgrade to Pro plan");
+    setShowUpgradeModal(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -40,25 +68,122 @@ const BillingDashboard = () => {
           </CardFooter>
         </Card>
 
-        {/* Current Plan Card */}
+        {/* Current Plan Card - Updated with Agency Tiers */}
         <Card>
-          <CardHeader>
-            <CardTitle>Current Plan</CardTitle>
-            <CardDescription>Your subscription details</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-semibold">
-              {mockBillingOverview.currentPlan.name}
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                {isPro ? <Crown className="h-5 w-5 text-yellow-500" /> : <Users className="h-5 w-5 text-blue-500" />}
+                {currentPlan.name}
+              </CardTitle>
+              <CardDescription className="mt-1">
+                {currentPlan.description}
+              </CardDescription>
             </div>
-            <p className="text-gray-500 mt-1">
-              ${mockBillingOverview.currentPlan.price}/{mockBillingOverview.currentPlan.currency} monthly
-            </p>
-            <p className="text-sm mt-4">
-              <span className="font-medium">{mockBillingOverview.currentPlan.currentUserCount}</span> of <span className="font-medium">{mockBillingOverview.currentPlan.userLimit}</span> users
-            </p>
+            {isPro && (
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                White Label
+              </Badge>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="text-2xl font-bold">
+                ${currentPlan.price.toLocaleString()}/month
+              </div>
+              <p className="text-sm text-gray-600">
+                {currentPlan.includedSeats} agent seats included
+              </p>
+              <p className="text-xs text-gray-500">
+                Additional seats: ${currentPlan.extraSeatPrice}/month each
+              </p>
+            </div>
+            
+            <div className="p-3 bg-gray-50 rounded-md">
+              <div className="text-sm">
+                <span className="font-medium">Currently using:</span>{" "}
+                <span className="text-lg font-semibold">{currentPlan.usedSeats}</span> of{" "}
+                <span className="font-medium">{currentPlan.includedSeats}</span> included seats
+              </div>
+              {extraSeats > 0 && (
+                <div className="text-sm mt-1 text-orange-600">
+                  {extraSeats} additional seat{extraSeats > 1 ? 's' : ''} billed at ${currentPlan.extraSeatPrice}/month
+                </div>
+              )}
+              <div className="text-sm mt-2 pt-2 border-t border-gray-200">
+                <span className="font-medium">Total monthly charges: ${totalMonthlyCharges.toLocaleString()}</span>
+              </div>
+            </div>
           </CardContent>
           <CardFooter>
-            <Button variant="outline">Change Plan</Button>
+            {isStarter ? (
+              <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+                <DialogTrigger asChild>
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    <Zap className="h-4 w-4 mr-2" />
+                    Upgrade to Pro
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Upgrade to Agency Pro</DialogTitle>
+                    <DialogDescription>
+                      Unlock white label features and get more agent seats included.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="border rounded-lg p-4">
+                      <h4 className="font-semibold text-lg">Agency Pro Benefits:</h4>
+                      <ul className="mt-2 space-y-2 text-sm">
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          10 agent seats included (vs 3 in Starter)
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          Full white label platform access
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          Custom domain configuration
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          Complete branding customization
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          Priority support
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="text-lg font-semibold">$1,000/month</div>
+                      <div className="text-sm text-gray-600">Save $191/month vs paying per seat</div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowUpgradeModal(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleUpgrade}>
+                      Upgrade Now
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <div className="w-full text-center">
+                <Badge variant="outline" className="text-green-700 border-green-200 bg-green-50">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  On White Label Plan
+                </Badge>
+                <p className="text-xs text-gray-500 mt-2">
+                  Contact support to upgrade to Enterprise
+                </p>
+              </div>
+            )}
           </CardFooter>
         </Card>
       </div>

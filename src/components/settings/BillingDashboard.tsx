@@ -16,9 +16,9 @@ const BillingDashboard = () => {
     nextBillingDate: "2024-06-15",
     status: "active",
     licenses: {
-      total: 5,
+      total: 3,
       assigned: 3,
-      available: 2
+      available: 0
     }
   };
 

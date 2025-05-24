@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,11 +26,30 @@ const mockServiceSettings = {
   }
 };
 
-const ServiceBillingSettings = () => {
+interface ServiceBillingSettingsProps {
+  onWhiteLabelChange?: (enabled: boolean) => void;
+}
+
+const ServiceBillingSettings = ({ onWhiteLabelChange }: ServiceBillingSettingsProps) => {
   const [settings, setSettings] = useState(mockServiceSettings);
 
   const handleSaveSettings = () => {
     toast.success("Service billing settings updated successfully");
+  };
+
+  const handleWhiteLabelToggle = (enabled: boolean) => {
+    setSettings({
+      ...settings,
+      whiteLabelPlatform: {
+        ...settings.whiteLabelPlatform,
+        enabled
+      }
+    });
+    
+    // Notify parent component about the change
+    if (onWhiteLabelChange) {
+      onWhiteLabelChange(enabled);
+    }
   };
 
   const handleDefaultPolicyChange = (service: string, policy: string) => {
@@ -107,7 +125,10 @@ const ServiceBillingSettings = () => {
               <span className="px-3 py-1 rounded text-sm font-medium bg-blue-100 text-blue-800">
                 Agency Only
               </span>
-              <Switch checked={settings.whiteLabelPlatform.enabled} disabled />
+              <Switch 
+                checked={settings.whiteLabelPlatform.enabled} 
+                onCheckedChange={handleWhiteLabelToggle}
+              />
             </div>
           </div>
         </CardContent>

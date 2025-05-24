@@ -12,7 +12,11 @@ import CostBreakdownDashboard from "./CostBreakdownDashboard";
 import RateConfiguration from "./RateConfiguration";
 import ReportingTab from "./ReportingTab";
 
-const BillingTab = () => {
+interface BillingTabProps {
+  onWhiteLabelChange?: (enabled: boolean) => void;
+}
+
+const BillingTab = ({ onWhiteLabelChange }: BillingTabProps) => {
   return (
     <Tabs defaultValue="dashboard" className="w-full">
       <TabsList className="mb-6">
@@ -65,7 +69,7 @@ const BillingTab = () => {
       </TabsContent>
       
       <TabsContent value="settings">
-        <ServiceBillingSettings />
+        <ServiceBillingSettings onWhiteLabelChange={onWhiteLabelChange} />
       </TabsContent>
     </Tabs>
   );

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,16 @@ import DomainSettings from "./DomainSettings";
 import BillingTab from "./BillingTab";
 
 const Admin = () => {
+  // Track white label platform status
+  const [whiteLabelEnabled, setWhiteLabelEnabled] = useState(true); // Default enabled for demo
+
   const handleSave = () => {
     toast.success("General settings saved successfully");
+  };
+
+  // Handle white label status change from billing settings
+  const handleWhiteLabelChange = (enabled: boolean) => {
+    setWhiteLabelEnabled(enabled);
   };
 
   return (
@@ -21,8 +29,12 @@ const Admin = () => {
       <Tabs defaultValue="general">
         <TabsList className="mb-6">
           <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="branding">Branding & Appearance</TabsTrigger>
-          <TabsTrigger value="domain">Custom Domain</TabsTrigger>
+          {whiteLabelEnabled && (
+            <>
+              <TabsTrigger value="branding">Branding & Appearance</TabsTrigger>
+              <TabsTrigger value="domain">Custom Domain</TabsTrigger>
+            </>
+          )}
           <TabsTrigger value="billing">Billing & Payment</TabsTrigger>
         </TabsList>
         
@@ -54,16 +66,20 @@ const Admin = () => {
           </div>
         </TabsContent>
         
-        <TabsContent value="branding">
-          <BrandingSettings />
-        </TabsContent>
-        
-        <TabsContent value="domain">
-          <DomainSettings />
-        </TabsContent>
+        {whiteLabelEnabled && (
+          <>
+            <TabsContent value="branding">
+              <BrandingSettings />
+            </TabsContent>
+            
+            <TabsContent value="domain">
+              <DomainSettings />
+            </TabsContent>
+          </>
+        )}
 
         <TabsContent value="billing">
-          <BillingTab />
+          <BillingTab onWhiteLabelChange={handleWhiteLabelChange} />
         </TabsContent>
       </Tabs>
     </div>

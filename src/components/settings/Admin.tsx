@@ -12,6 +12,14 @@ import BillingTab from "./BillingTab";
 const Admin = () => {
   // Track white label platform status
   const [whiteLabelEnabled, setWhiteLabelEnabled] = useState(true); // Default enabled for demo
+  
+  // Mock current plan - this would come from your auth/billing context in a real app
+  const currentPlan = {
+    tier: "agency_starter" // This should match the billing dashboard
+  };
+  
+  // Show branding and domain tabs only for Pro users
+  const isProPlan = currentPlan.tier === "agency_pro";
 
   const handleSave = () => {
     toast.success("General settings saved successfully");
@@ -29,7 +37,7 @@ const Admin = () => {
       <Tabs defaultValue="general">
         <TabsList className="mb-6">
           <TabsTrigger value="general">General</TabsTrigger>
-          {whiteLabelEnabled && (
+          {isProPlan && (
             <>
               <TabsTrigger value="branding">Branding & Appearance</TabsTrigger>
               <TabsTrigger value="domain">Custom Domain</TabsTrigger>
@@ -66,7 +74,7 @@ const Admin = () => {
           </div>
         </TabsContent>
         
-        {whiteLabelEnabled && (
+        {isProPlan && (
           <>
             <TabsContent value="branding">
               <BrandingSettings />

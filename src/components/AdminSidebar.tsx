@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 import { 
   Settings, 
   Users,
-  Mail
+  Mail,
+  Link
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -16,6 +17,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
   const menuItems = [
     { id: "general", label: "Admin", icon: <Settings className="w-5 h-5" /> },
     { id: "team", label: "Team Members", icon: <Users className="w-5 h-5" /> },
+    { id: "referrals", label: "Referral Program", icon: <Link className="w-5 h-5" /> },
     { id: "notifications", label: "Notifications", icon: <Mail className="w-5 h-5" /> },
   ];
 

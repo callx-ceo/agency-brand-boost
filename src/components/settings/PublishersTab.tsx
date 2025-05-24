@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +23,8 @@ interface Publisher {
 
 const PublishersTab = () => {
   // Mock current plan - this would come from your auth/billing context
-  const currentPlan = "agency_starter"; // Change to "agency_pro" to test the feature
-  const isProOrEnterprise = currentPlan === "agency_pro" || currentPlan === "enterprise";
+  const currentPlan = "agency_starter"; // Change to "enterprise" to test the feature
+  const isEnterprise = currentPlan === "enterprise";
 
   const [publishers, setPublishers] = useState<Publisher[]>([
     {
@@ -132,16 +131,32 @@ const PublishersTab = () => {
     setIsDetailModalOpen(true);
   };
 
-  if (!isProOrEnterprise) {
+  if (!isEnterprise) {
     return (
       <div>
         <h2 className="text-2xl font-bold mb-6">Publishers</h2>
-        <Alert className="border-yellow-200 bg-yellow-50">
-          <AlertTitle>Upgrade Required</AlertTitle>
+        <Alert className="border-blue-200 bg-blue-50">
+          <AlertTitle>Enterprise Feature</AlertTitle>
           <AlertDescription className="mt-2">
-            Publisher management is only available on the Agency Pro and Enterprise plans.
-            <div className="mt-4">
-              <Button variant="default">Upgrade to Pro</Button>
+            Publisher management is an exclusive Enterprise feature that allows you to manage traffic partners, track performance, and scale your agency operations.
+            <div className="mt-6 p-4 bg-white rounded-lg border">
+              <h4 className="font-semibold mb-3">What you'll get with Enterprise:</h4>
+              <ul className="space-y-2 text-sm mb-4">
+                <li>• Unlimited publisher management</li>
+                <li>• Advanced traffic attribution tracking</li>
+                <li>• Custom campaign assignments per publisher</li>
+                <li>• Detailed performance analytics & reporting</li>
+                <li>• Automated fallback routing</li>
+                <li>• White-label publisher portals</li>
+                <li>• Priority enterprise support</li>
+              </ul>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-2xl font-bold text-blue-600">$1,997/month</p>
+                  <p className="text-sm text-gray-600">Enterprise Plan</p>
+                </div>
+                <Button size="lg">Upgrade to Enterprise</Button>
+              </div>
             </div>
           </AlertDescription>
         </Alert>

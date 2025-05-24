@@ -3,7 +3,7 @@ import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useImpersonation } from '@/contexts/ImpersonationContext';
-import { UserSwitch, X } from 'lucide-react';
+import { User, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const ImpersonationBanner = () => {
@@ -20,7 +20,7 @@ const ImpersonationBanner = () => {
 
   return (
     <Alert className="border-blue-200 bg-blue-50 mb-6 rounded-lg">
-      <UserSwitch className="h-4 w-4 text-blue-600" />
+      <User className="h-4 w-4 text-blue-600" />
       <AlertTitle className="text-blue-800 font-semibold">
         Impersonation Mode Active
       </AlertTitle>

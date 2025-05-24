@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, UserSwitch } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 
 interface TeamMember {
@@ -607,7 +607,7 @@ const TeamMembersTab = () => {
                               onClick={() => handleImpersonate(member)}
                               className="text-blue-600 hover:text-blue-700"
                             >
-                              <UserSwitch className="w-4 h-4" />
+                              <User className="w-4 h-4" />
                             </Button>
                           )}
                           <Button variant="outline" size="sm">

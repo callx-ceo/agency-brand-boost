@@ -6,6 +6,7 @@ import ReferralProgramTab from "./settings/ReferralProgramTab";
 import TeamMembersTab from "./settings/TeamMembersTab";
 import ScriptsAITab from "./settings/ScriptsAITab";
 import CampaignsTab from "./settings/CampaignsTab";
+import PublishersTab from "./settings/PublishersTab";
 
 interface AdminPanelProps {
   activeSection: string;
@@ -18,6 +19,7 @@ const AdminPanel = ({ activeSection }: AdminPanelProps) => {
       {activeSection === "team" && <TeamMembersTab />}
       {activeSection === "campaigns" && <CampaignsTab />}
       {activeSection === "scripts" && <ScriptsAITab />}
+      {activeSection === "publishers" && <PublishersTab />}
       {activeSection === "referrals" && <ReferralProgramTab />}
       {activeSection === "notifications" && <PlaceholderSection title="Notifications" />}
     </div>

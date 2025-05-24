@@ -7,7 +7,8 @@ import {
   Mail,
   Link,
   FileText,
-  PhoneCall
+  PhoneCall,
+  UsersRound
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -16,11 +17,16 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
+  // Mock current plan - this would come from your auth/billing context in a real app
+  const currentPlan = "agency_pro"; // Could be "agency_starter", "agency_pro", "enterprise"
+  const isProOrEnterprise = currentPlan === "agency_pro" || currentPlan === "enterprise";
+
   const menuItems = [
     { id: "general", label: "Admin", icon: <Settings className="w-5 h-5" /> },
     { id: "team", label: "Team Members", icon: <Users className="w-5 h-5" /> },
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
     { id: "scripts", label: "Scripts & AI", icon: <FileText className="w-5 h-5" /> },
+    ...(isProOrEnterprise ? [{ id: "publishers", label: "Publishers", icon: <UsersRound className="w-5 h-5" /> }] : []),
     { id: "referrals", label: "Referral Program", icon: <Link className="w-5 h-5" /> },
     { id: "notifications", label: "Notifications", icon: <Mail className="w-5 h-5" /> },
   ];

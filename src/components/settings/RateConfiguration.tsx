@@ -14,7 +14,7 @@ const mockBaseRates = {
   transcription: 0.01, // per minute
   aiCoaching: 0.01, // per minute
   aiScoring: 0.005, // per minute
-  callBalance: 25.00 // monthly seat license
+  callBalance: 97.00 // monthly seat license
 };
 
 // Agency markup percentages
@@ -23,7 +23,7 @@ const mockAgencyMarkups = {
   transcription: 15, // 15% markup
   aiCoaching: 20, // 20% markup
   aiScoring: 15, // 15% markup
-  callBalance: 0 // no markup on seat license
+  callBalance: 5 // 5% markup on seat license
 };
 
 const RateConfiguration = () => {
@@ -83,7 +83,7 @@ const RateConfiguration = () => {
       description: 'Monthly seat license fee',
       icon: <DollarSign className="h-5 w-5" />,
       unit: 'per month',
-      allowMarkup: false
+      allowMarkup: true
     }
   ];
 
@@ -122,40 +122,36 @@ const RateConfiguration = () => {
                 <div className="p-3 bg-gray-50 rounded">
                   <Label className="text-xs text-gray-500">Base Rate</Label>
                   <div className="text-lg font-semibold">
-                    ${baseRate.toFixed(3)} {service.unit}
+                    ${baseRate.toFixed(service.key === 'callBalance' ? 2 : 3)} {service.unit}
                   </div>
                 </div>
                 
                 {/* Markup */}
                 <div className="p-3 bg-blue-50 rounded">
                   <Label className="text-xs text-gray-500">Agency Markup</Label>
-                  {service.allowMarkup ? (
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="100"
-                        value={markup}
-                        onChange={(e) => handleMarkupChange(service.key, e.target.value)}
-                        className="w-20 h-8"
-                      />
-                      <Percent className="h-4 w-4 text-gray-500" />
-                    </div>
-                  ) : (
-                    <div className="text-sm text-gray-500">Not applicable</div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      value={markup}
+                      onChange={(e) => handleMarkupChange(service.key, e.target.value)}
+                      className="w-20 h-8"
+                    />
+                    <Percent className="h-4 w-4 text-gray-500" />
+                  </div>
                 </div>
                 
                 {/* Charged Rate */}
                 <div className="p-3 bg-green-50 rounded">
                   <Label className="text-xs text-gray-500">Agent Charged Rate</Label>
                   <div className="text-lg font-semibold">
-                    ${chargedRate.toFixed(3)} {service.unit}
+                    ${chargedRate.toFixed(service.key === 'callBalance' ? 2 : 3)} {service.unit}
                   </div>
-                  {service.allowMarkup && markup > 0 && (
+                  {markup > 0 && (
                     <div className="text-xs text-green-600">
-                      +${(chargedRate - baseRate).toFixed(3)} profit
+                      +${(chargedRate - baseRate).toFixed(service.key === 'callBalance' ? 2 : 3)} profit
                     </div>
                   )}
                 </div>

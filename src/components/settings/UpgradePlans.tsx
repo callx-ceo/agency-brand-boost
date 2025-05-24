@@ -14,7 +14,7 @@ const UpgradePlans = () => {
 
   const plans = [
     {
-      id: "agency_starter" as PlanTier,
+      id: "agency_starter" as const,
       name: "Agency Starter",
       price: 497,
       icon: <Star className="w-6 h-6" />,
@@ -30,7 +30,7 @@ const UpgradePlans = () => {
       popular: false
     },
     {
-      id: "agency_pro" as PlanTier,
+      id: "agency_pro" as const,
       name: "Agency Pro",
       price: 997,
       icon: <Crown className="w-6 h-6" />,
@@ -48,7 +48,7 @@ const UpgradePlans = () => {
       popular: true
     },
     {
-      id: "enterprise" as PlanTier,
+      id: "enterprise" as const,
       name: "Enterprise",
       price: "Custom",
       icon: <Crown className="w-6 h-6" />,

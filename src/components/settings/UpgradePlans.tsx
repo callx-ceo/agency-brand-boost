@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +9,7 @@ type PlanTier = "agency_starter" | "agency_pro" | "enterprise";
 
 const UpgradePlans = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const currentPlan: PlanTier = "agency_starter";
+  const currentPlan = "agency_starter" as PlanTier;
 
   const plans = [
     {

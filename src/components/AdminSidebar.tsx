@@ -21,7 +21,7 @@ type PlanTier = "agency_starter" | "agency_pro" | "enterprise";
 
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
   // Mock current plan - starting with starter to show gating
-  const currentPlan: PlanTier = "agency_starter";
+  const currentPlan = "agency_starter" as PlanTier;
   const isEnterprise = currentPlan === "enterprise";
 
   const menuItems = [

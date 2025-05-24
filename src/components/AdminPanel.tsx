@@ -8,6 +8,8 @@ import ScriptsAITab from "./settings/ScriptsAITab";
 import CampaignsTab from "./settings/CampaignsTab";
 import PublishersTab from "./settings/PublishersTab";
 import UpgradePlans from "./settings/UpgradePlans";
+import ImpersonationBanner from "./ImpersonationBanner";
+import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
 
 interface AdminPanelProps {
   activeSection: string;
@@ -15,16 +17,19 @@ interface AdminPanelProps {
 
 const AdminPanel = ({ activeSection }: AdminPanelProps) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      {activeSection === "general" && <Admin />}
-      {activeSection === "team" && <TeamMembersTab />}
-      {activeSection === "campaigns" && <CampaignsTab />}
-      {activeSection === "scripts" && <ScriptsAITab />}
-      {activeSection === "publishers" && <PublishersTab />}
-      {activeSection === "referrals" && <ReferralProgramTab />}
-      {activeSection === "notifications" && <PlaceholderSection title="Notifications" />}
-      {activeSection === "upgrade" && <UpgradePlans />}
-    </div>
+    <ImpersonationProvider>
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <ImpersonationBanner />
+        {activeSection === "general" && <Admin />}
+        {activeSection === "team" && <TeamMembersTab />}
+        {activeSection === "campaigns" && <CampaignsTab />}
+        {activeSection === "scripts" && <ScriptsAITab />}
+        {activeSection === "publishers" && <PublishersTab />}
+        {activeSection === "referrals" && <ReferralProgramTab />}
+        {activeSection === "notifications" && <PlaceholderSection title="Notifications" />}
+        {activeSection === "upgrade" && <UpgradePlans />}
+      </div>
+    </ImpersonationProvider>
   );
 };
 

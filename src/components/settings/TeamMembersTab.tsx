@@ -10,7 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, ChevronUp, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, UserSwitch } from "lucide-react";
+import { useImpersonation } from "@/contexts/ImpersonationContext";
 
 interface TeamMember {
   id: string;
@@ -23,6 +24,8 @@ interface TeamMember {
 }
 
 const TeamMembersTab = () => {
+  const { startImpersonation } = useImpersonation();
+
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
       id: "1",
@@ -148,6 +151,26 @@ const TeamMembersTab = () => {
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
+  const handleImpersonate = (member: TeamMember) => {
+    if (member.role === "admin") {
+      toast.error("Cannot impersonate admin users");
+      return;
+    }
+    
+    if (member.status !== "active") {
+      toast.error("Can only impersonate active agents");
+      return;
+    }
+
+    startImpersonation({
+      id: member.id,
+      name: member.name,
+      email: member.email
+    });
+    
+    toast.success(`Now impersonating ${member.name}`);
+  };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -577,6 +600,16 @@ const TeamMembersTab = () => {
                               <Mail className="w-4 h-4" />
                             </Button>
                           )}
+                          {(member.role === "agent" || member.role === "manager") && member.status === "active" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleImpersonate(member)}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              <UserSwitch className="w-4 h-4" />
+                            </Button>
+                          )}
                           <Button variant="outline" size="sm">
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -641,6 +674,7 @@ const TeamMembersTab = () => {
                 <li>• Manage team members</li>
                 <li>• Billing and settings</li>
                 <li>• View all reports</li>
+                <li>• Cannot be impersonated</li>
               </ul>
             </div>
             <div className="space-y-2">
@@ -653,6 +687,7 @@ const TeamMembersTab = () => {
                 <li>• View team reports</li>
                 <li>• Agent performance</li>
                 <li>• Receive calls</li>
+                <li>• Can be impersonated</li>
               </ul>
             </div>
             <div className="space-y-2">
@@ -665,6 +700,7 @@ const TeamMembersTab = () => {
                 <li>• View own reports</li>
                 <li>• Update profile</li>
                 <li>• Basic access</li>
+                <li>• Can be impersonated</li>
               </ul>
             </div>
           </div>

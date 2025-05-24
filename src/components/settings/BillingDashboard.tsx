@@ -16,7 +16,7 @@ const BillingDashboard = () => {
   const currentPlan = {
     name: "Agency Starter",
     tier: "agency_starter", // Changed from agency_pro to show upgrade flow
-    price: 49,
+    price: 497, // Updated price
     billingCycle: "monthly",
     nextBillingDate: "2024-06-15",
     status: "active"
@@ -107,7 +107,7 @@ const BillingDashboard = () => {
                           <li>• Standard support</li>
                           <li>• CallX branding</li>
                         </ul>
-                        <p className="text-2xl font-bold">$49/month</p>
+                        <p className="text-2xl font-bold">$497/month</p>
                       </div>
                       <div className="space-y-4 border-l pl-6">
                         <h4 className="font-semibold text-primary">Upgrade: Agency Pro</h4>
@@ -119,7 +119,7 @@ const BillingDashboard = () => {
                           <li>• Custom domain</li>
                           <li>• Referral program</li>
                         </ul>
-                        <p className="text-2xl font-bold text-primary">$149/month</p>
+                        <p className="text-2xl font-bold text-primary">$997/month</p>
                       </div>
                     </div>
                     <div className="flex justify-end gap-3 mt-6">
@@ -127,7 +127,7 @@ const BillingDashboard = () => {
                         <Button variant="outline">Cancel</Button>
                       </DialogTrigger>
                       <Button onClick={handleUpgrade}>
-                        Upgrade Now - $149/month
+                        Upgrade Now - $997/month
                       </Button>
                     </div>
                   </DialogContent>

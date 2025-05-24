@@ -181,8 +181,8 @@ const TeamMembersTab = () => {
                 <Label htmlFor="role">Role</Label>
                 <Select
                   value={newMember.role}
-                  onValueChange={(value: "admin" | "manager" | "agent") => 
-                    setNewMember({ ...newMember, role: value })
+                  onValueChange={(value) => 
+                    setNewMember({ ...newMember, role: value as "admin" | "manager" | "agent" })
                   }
                 >
                   <SelectTrigger>
@@ -349,7 +349,7 @@ const TeamMembersTab = () => {
                 <li>• Manage agents</li>
                 <li>• View team reports</li>
                 <li>• Agent performance</li>
-                <li>• Limited settings</li>
+                <li>• Receive calls</li>
               </ul>
             </div>
             <div className="space-y-2">
@@ -358,7 +358,7 @@ const TeamMembersTab = () => {
                 <h4 className="font-semibold">Agent</h4>
               </div>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Make calls</li>
+                <li>• Receive calls</li>
                 <li>• View own reports</li>
                 <li>• Update profile</li>
                 <li>• Basic access</li>

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, ChevronUp } from "lucide-react";
 
 interface TeamMember {
   id: string;
@@ -58,15 +58,73 @@ const TeamMembersTab = () => {
       status: "pending",
       joinDate: "2024-05-20",
       lastActive: "-"
+    },
+    {
+      id: "5",
+      name: "Alex Thompson",
+      email: "alex@sampleagency.com",
+      role: "agent",
+      status: "active",
+      joinDate: "2024-04-05",
+      lastActive: "2024-05-24"
+    },
+    {
+      id: "6",
+      name: "Jessica Brown",
+      email: "jessica@sampleagency.com",
+      role: "manager",
+      status: "active",
+      joinDate: "2024-03-25",
+      lastActive: "2024-05-23"
+    },
+    {
+      id: "7",
+      name: "David Wilson",
+      email: "david@sampleagency.com",
+      role: "agent",
+      status: "paused",
+      joinDate: "2024-02-14",
+      lastActive: "2024-05-20"
+    },
+    {
+      id: "8",
+      name: "Lisa Garcia",
+      email: "lisa@sampleagency.com",
+      role: "agent",
+      status: "active",
+      joinDate: "2024-04-18",
+      lastActive: "2024-05-24"
+    },
+    {
+      id: "9",
+      name: "Robert Martinez",
+      email: "robert@sampleagency.com",
+      role: "agent",
+      status: "inactive",
+      joinDate: "2024-01-30",
+      lastActive: "2024-05-15"
+    },
+    {
+      id: "10",
+      name: "Amanda Lee",
+      email: "amanda@sampleagency.com",
+      role: "agent",
+      status: "pending",
+      joinDate: "2024-05-22",
+      lastActive: "-"
     }
   ]);
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [showAllMembers, setShowAllMembers] = useState(false);
   const [newMember, setNewMember] = useState({
     name: "",
     email: "",
     role: "agent" as "admin" | "manager" | "agent"
   });
+
+  const displayedMembers = showAllMembers ? teamMembers : teamMembers.slice(0, 5);
+  const hasMoreMembers = teamMembers.length > 5;
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -268,7 +326,29 @@ const TeamMembersTab = () => {
       {/* Team Members Table */}
       <Card>
         <CardHeader>
-          <CardTitle>All Team Members</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>All Team Members</CardTitle>
+            {hasMoreMembers && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAllMembers(!showAllMembers)}
+                className="flex items-center gap-2"
+              >
+                {showAllMembers ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    Show Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    Show All ({teamMembers.length})
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -284,7 +364,7 @@ const TeamMembersTab = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {teamMembers.map((member) => (
+              {displayedMembers.map((member) => (
                 <TableRow key={member.id}>
                   <TableCell className="font-medium">{member.name}</TableCell>
                   <TableCell>{member.email}</TableCell>

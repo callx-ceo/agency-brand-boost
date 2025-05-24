@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,15 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Mail, User, Shield, Users } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown } from "lucide-react";
 
 interface TeamMember {
   id: string;
   name: string;
   email: string;
   role: "admin" | "manager" | "agent";
-  status: "active" | "pending" | "inactive";
+  status: "active" | "pending" | "inactive" | "paused";
   joinDate: string;
   lastActive: string;
 }
@@ -100,11 +100,22 @@ const TeamMembersTab = () => {
         return "bg-green-100 text-green-700";
       case "pending":
         return "bg-yellow-100 text-yellow-700";
+      case "paused":
+        return "bg-orange-100 text-orange-700";
       case "inactive":
         return "bg-gray-100 text-gray-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
+  };
+
+  const handleStatusChange = (memberId: string, newStatus: "active" | "pending" | "inactive" | "paused") => {
+    setTeamMembers(teamMembers.map(member => 
+      member.id === memberId 
+        ? { ...member, status: newStatus }
+        : member
+    ));
+    toast.success(`Status updated to ${newStatus}`);
   };
 
   const handleAddMember = () => {
@@ -284,9 +295,44 @@ const TeamMembersTab = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={`${getStatusBadgeColor(member.status)} w-fit`}>
-                      {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className={`${getStatusBadgeColor(member.status)} w-fit`}>
+                        {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                      </Badge>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                            <ChevronDown className="w-3 h-3" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="bg-white">
+                          <DropdownMenuItem 
+                            onClick={() => handleStatusChange(member.id, "active")}
+                            className="cursor-pointer"
+                          >
+                            Active
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleStatusChange(member.id, "pending")}
+                            className="cursor-pointer"
+                          >
+                            Pending
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleStatusChange(member.id, "paused")}
+                            className="cursor-pointer"
+                          >
+                            Paused
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleStatusChange(member.id, "inactive")}
+                            className="cursor-pointer"
+                          >
+                            Inactive
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </TableCell>
                   <TableCell>{member.joinDate}</TableCell>
                   <TableCell>{member.lastActive}</TableCell>

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ const mockBaseRates = {
   telephony: 0.05, // per minute
   transcription: 0.01, // per minute
   aiCoaching: 0.01, // per minute
-  aiScoring: 0.005, // per minute
+  aiScoring: 0.15, // per call (changed from 0.005 per minute)
   callBalance: 97.00, // monthly seat license
   inboundCalls: 50.00 // minimum bid per inbound call
 };
@@ -22,7 +23,7 @@ const mockAgencyMarkups = {
   telephony: 10, // 10% markup
   transcription: 15, // 15% markup
   aiCoaching: 20, // 20% markup
-  aiScoring: 15, // 15% markup
+  aiScoring: 15, // 15% markup (changed billing model)
   callBalance: 5, // 5% markup on seat license
   inboundCalls: 15 // 15% markup on inbound calls
 };
@@ -73,9 +74,9 @@ const RateConfiguration = () => {
     {
       key: 'aiScoring',
       label: 'AI Call Scoring',
-      description: 'Cost per minute for AI call analysis and scoring',
+      description: 'Cost per call for AI call analysis and scoring',
       icon: <BarChart3 className="h-5 w-5" />,
-      unit: 'per minute',
+      unit: 'per call',
       allowMarkup: true
     },
     {
@@ -139,7 +140,7 @@ const RateConfiguration = () => {
                     {service.isBidRate ? 'Minimum Bid Rate' : 'Base Rate'}
                   </Label>
                   <div className="text-lg font-semibold">
-                    ${baseRate.toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' ? 2 : 3)} {service.unit}
+                    ${baseRate.toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' || service.key === 'aiScoring' ? 2 : 3)} {service.unit}
                   </div>
                 </div>
                 
@@ -166,11 +167,11 @@ const RateConfiguration = () => {
                     {service.isBidRate ? 'Agent Minimum Bid' : 'Agent Charged Rate'}
                   </Label>
                   <div className="text-lg font-semibold">
-                    ${chargedRate.toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' ? 2 : 3)} {service.unit}
+                    ${chargedRate.toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' || service.key === 'aiScoring' ? 2 : 3)} {service.unit}
                   </div>
                   {markup > 0 && (
                     <div className="text-xs text-green-600">
-                      +${(chargedRate - baseRate).toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' ? 2 : 3)} profit
+                      +${(chargedRate - baseRate).toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' || service.key === 'aiScoring' ? 2 : 3)} profit
                     </div>
                   )}
                   {service.isBidRate && (

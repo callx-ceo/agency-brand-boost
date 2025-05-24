@@ -4,6 +4,7 @@ import Admin from "./settings/Admin";
 import PlaceholderSection from "./settings/PlaceholderSection";
 import ReferralProgramTab from "./settings/ReferralProgramTab";
 import TeamMembersTab from "./settings/TeamMembersTab";
+import ScriptsAITab from "./settings/ScriptsAITab";
 
 interface AdminPanelProps {
   activeSection: string;
@@ -14,6 +15,7 @@ const AdminPanel = ({ activeSection }: AdminPanelProps) => {
     <div className="bg-white rounded-lg shadow-sm p-6">
       {activeSection === "general" && <Admin />}
       {activeSection === "team" && <TeamMembersTab />}
+      {activeSection === "scripts" && <ScriptsAITab />}
       {activeSection === "referrals" && <ReferralProgramTab />}
       {activeSection === "notifications" && <PlaceholderSection title="Notifications" />}
     </div>

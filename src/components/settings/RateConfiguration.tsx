@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { DollarSign, Phone, Brain, BarChart3, FileText, Lock, Percent } from "lucide-react";
+import { DollarSign, Phone, Brain, BarChart3, FileText, Lock, Percent, PhoneIncoming } from "lucide-react";
 
 // Mock base rates set by super admin (read-only for agencies)
 const mockBaseRates = {
@@ -14,7 +14,8 @@ const mockBaseRates = {
   transcription: 0.01, // per minute
   aiCoaching: 0.01, // per minute
   aiScoring: 0.005, // per minute
-  callBalance: 97.00 // monthly seat license
+  callBalance: 97.00, // monthly seat license
+  inboundCalls: 2.50 // minimum bid per inbound call
 };
 
 // Agency markup percentages
@@ -23,7 +24,8 @@ const mockAgencyMarkups = {
   transcription: 15, // 15% markup
   aiCoaching: 20, // 20% markup
   aiScoring: 15, // 15% markup
-  callBalance: 5 // 5% markup on seat license
+  callBalance: 5, // 5% markup on seat license
+  inboundCalls: 15 // 15% markup on inbound calls
 };
 
 const RateConfiguration = () => {
@@ -84,6 +86,15 @@ const RateConfiguration = () => {
       icon: <DollarSign className="h-5 w-5" />,
       unit: 'per month',
       allowMarkup: true
+    },
+    {
+      key: 'inboundCalls',
+      label: 'Inbound Calls (Minimum Bid)',
+      description: 'Minimum bid rate per inbound call - agents can bid higher',
+      icon: <PhoneIncoming className="h-5 w-5" />,
+      unit: 'per call',
+      allowMarkup: true,
+      isBidRate: true
     }
   ];
 
@@ -109,6 +120,11 @@ const RateConfiguration = () => {
                   <div>
                     <div className="font-medium">{service.label}</div>
                     <div className="text-sm text-gray-600">{service.description}</div>
+                    {service.isBidRate && (
+                      <div className="text-xs text-blue-600 mt-1">
+                        Agents can set their bid above this minimum rate
+                      </div>
+                    )}
                   </div>
                 </div>
                 <Badge variant="secondary">
@@ -120,9 +136,11 @@ const RateConfiguration = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Base Rate */}
                 <div className="p-3 bg-gray-50 rounded">
-                  <Label className="text-xs text-gray-500">Base Rate</Label>
+                  <Label className="text-xs text-gray-500">
+                    {service.isBidRate ? 'Minimum Bid Rate' : 'Base Rate'}
+                  </Label>
                   <div className="text-lg font-semibold">
-                    ${baseRate.toFixed(service.key === 'callBalance' ? 2 : 3)} {service.unit}
+                    ${baseRate.toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' ? 2 : 3)} {service.unit}
                   </div>
                 </div>
                 
@@ -145,13 +163,20 @@ const RateConfiguration = () => {
                 
                 {/* Charged Rate */}
                 <div className="p-3 bg-green-50 rounded">
-                  <Label className="text-xs text-gray-500">Agent Charged Rate</Label>
+                  <Label className="text-xs text-gray-500">
+                    {service.isBidRate ? 'Agent Minimum Bid' : 'Agent Charged Rate'}
+                  </Label>
                   <div className="text-lg font-semibold">
-                    ${chargedRate.toFixed(service.key === 'callBalance' ? 2 : 3)} {service.unit}
+                    ${chargedRate.toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' ? 2 : 3)} {service.unit}
                   </div>
                   {markup > 0 && (
                     <div className="text-xs text-green-600">
-                      +${(chargedRate - baseRate).toFixed(service.key === 'callBalance' ? 2 : 3)} profit
+                      +${(chargedRate - baseRate).toFixed(service.key === 'callBalance' ? 2 : service.key === 'inboundCalls' ? 2 : 3)} profit
+                    </div>
+                  )}
+                  {service.isBidRate && (
+                    <div className="text-xs text-blue-600 mt-1">
+                      Agents bid above this rate
                     </div>
                   )}
                 </div>

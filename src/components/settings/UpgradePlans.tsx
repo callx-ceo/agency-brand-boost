@@ -6,13 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Star, Crown } from "lucide-react";
 import { toast } from "sonner";
 
+type PlanTier = "agency_starter" | "agency_pro" | "enterprise";
+
 const UpgradePlans = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const currentPlan = "agency_starter";
+  const currentPlan: PlanTier = "agency_starter";
 
   const plans = [
     {
-      id: "agency_starter",
+      id: "agency_starter" as PlanTier,
       name: "Agency Starter",
       price: 497,
       icon: <Star className="w-6 h-6" />,
@@ -28,7 +30,7 @@ const UpgradePlans = () => {
       popular: false
     },
     {
-      id: "agency_pro",
+      id: "agency_pro" as PlanTier,
       name: "Agency Pro",
       price: 997,
       icon: <Crown className="w-6 h-6" />,
@@ -46,7 +48,7 @@ const UpgradePlans = () => {
       popular: true
     },
     {
-      id: "enterprise",
+      id: "enterprise" as PlanTier,
       name: "Enterprise",
       price: "Custom",
       icon: <Crown className="w-6 h-6" />,

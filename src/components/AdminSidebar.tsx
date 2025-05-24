@@ -17,9 +17,11 @@ interface AdminSidebarProps {
   setActiveSection: (section: string) => void;
 }
 
+type PlanType = "agency_starter" | "agency_pro" | "enterprise";
+
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
   // Mock current plan - starting with starter to show gating
-  const currentPlan = "agency_starter"; // Could be "agency_starter", "agency_pro", "enterprise"
+  const currentPlan: PlanType = "agency_starter"; // Could be "agency_starter", "agency_pro", "enterprise"
   const isEnterprise = currentPlan === "enterprise";
 
   const menuItems = [

@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Plus, Gift, DollarSign } from "lucide-react";
+import { Plus, Gift, DollarSign, Users, Calendar } from "lucide-react";
+import BulkBonusDialog from "./BulkBonusDialog";
 
 // Mock data for call balance in USD
 const mockAgentBalances = [
@@ -16,7 +17,7 @@ const mockAgentBalances = [
     agentEmail: "john.doe@example.com",
     baseBalance: 100.00,
     bonusBalance: 25.00,
-    usedAmount: 67.50,
+    usedAmount: 67.50, // Used since last billing cycle (monthly)
     remainingBalance: 57.50
   },
   {
@@ -42,6 +43,9 @@ const mockAgentBalances = [
 const CallCreditsManagement = () => {
   const [selectedAgent, setSelectedAgent] = useState<string>("");
   const [bonusAmount, setBonusAmount] = useState<string>("");
+  const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+
+  const currentBillingPeriod = "December 2024"; // This would come from your billing system
 
   const handleAllocateBonus = () => {
     if (!selectedAgent || !bonusAmount) {
@@ -54,9 +58,7 @@ const CallCreditsManagement = () => {
     setSelectedAgent("");
   };
 
-  const handleBulkCredit = () => {
-    toast.success("Bulk balance allocated to all agency-billed agents");
-  };
+  const agencyBilledAgents = mockAgentBalances.filter(agent => agent.remainingBalance > 0);
 
   return (
     <div className="space-y-6">
@@ -114,8 +116,13 @@ const CallCreditsManagement = () => {
           </div>
           
           <div className="pt-4 border-t">
-            <Button variant="outline" onClick={handleBulkCredit}>
-              Bulk Allocate Balance to All Agency-Billed Agents
+            <Button 
+              variant="outline" 
+              onClick={() => setBulkDialogOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <Users className="h-4 w-4" />
+              Bulk Allocate Bonus ({agencyBilledAgents.length} Agency-Billed Agents)
             </Button>
           </div>
         </CardContent>
@@ -125,18 +132,26 @@ const CallCreditsManagement = () => {
       <Card>
         <CardHeader>
           <CardTitle>Agent Call Balance Overview</CardTitle>
-          <CardDescription>
-            Track call balance allocation and usage across all agents
+          <CardDescription className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Usage tracked for billing period: {currentBillingPeriod}
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Used Amount:</strong> Shows dollars spent on calls during the current billing period ({currentBillingPeriod}). 
+              This resets at the start of each billing cycle.
+            </p>
+          </div>
+          
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Agent Name</TableHead>
                 <TableHead>Base Balance</TableHead>
                 <TableHead>Bonus Balance</TableHead>
-                <TableHead>Used Amount</TableHead>
+                <TableHead>Used This Period</TableHead>
                 <TableHead>Remaining</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -161,7 +176,12 @@ const CallCreditsManagement = () => {
                       <span className="text-gray-400">$0.00</span>
                     )}
                   </TableCell>
-                  <TableCell>${agent.usedAmount.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <span>${agent.usedAmount.toFixed(2)}</span>
+                      <span className="text-xs text-gray-500">({currentBillingPeriod})</span>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <span className={`font-medium ${
                       agent.remainingBalance < 20 ? 'text-red-600' : 
@@ -185,6 +205,12 @@ const CallCreditsManagement = () => {
           </Table>
         </CardContent>
       </Card>
+
+      <BulkBonusDialog 
+        open={bulkDialogOpen}
+        onOpenChange={setBulkDialogOpen}
+        agents={mockAgentBalances}
+      />
     </div>
   );
 };

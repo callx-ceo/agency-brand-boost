@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Settings, CreditCard, Phone, Brain, BarChart3 } from "lucide-react";
+import { Settings, CreditCard, Phone, Brain, BarChart3, DollarSign } from "lucide-react";
 
 // Enhanced mock data with granular billing control
 const mockEnhancedAgents = [
@@ -21,11 +21,11 @@ const mockEnhancedAgents = [
       aiCallScoring: "AGENCY_BILLED"
     },
     balance: 250.75,
-    creditAllocation: {
-      base: 100,
-      bonus: 25,
-      used: 67,
-      remaining: 58
+    balanceAllocation: {
+      base: 100.00,
+      bonus: 25.00,
+      used: 67.50,
+      remaining: 57.50
     }
   },
   {
@@ -39,7 +39,7 @@ const mockEnhancedAgents = [
       aiCallScoring: "AGENT_BILLED"
     },
     balance: 0,
-    creditAllocation: null
+    balanceAllocation: null
   },
   {
     agentId: "agent_user_789",
@@ -52,11 +52,11 @@ const mockEnhancedAgents = [
       aiCallScoring: "AGENT_BILLED"
     },
     balance: 125.50,
-    creditAllocation: {
-      base: 200,
-      bonus: 50,
-      used: 145,
-      remaining: 105
+    balanceAllocation: {
+      base: 200.00,
+      bonus: 50.00,
+      used: 145.25,
+      remaining: 104.75
     }
   }
 ];
@@ -92,7 +92,7 @@ const EnhancedAgentBilling = () => {
 
   const getServiceLabel = (service: string) => {
     switch(service) {
-      case 'callCredits': return 'Call Credits';
+      case 'callCredits': return 'Call Balance';
       case 'telephonyFees': return 'Telephony Fees';
       case 'aiCoaching': return 'AI Real-time Coaching';
       case 'aiCallScoring': return 'AI Call Scoring';
@@ -114,11 +114,11 @@ const EnhancedAgentBilling = () => {
         <TableHeader>
           <TableRow>
             <TableHead>Agent Name</TableHead>
-            <TableHead>Call Credits</TableHead>
+            <TableHead>Call Balance</TableHead>
             <TableHead>Telephony</TableHead>
             <TableHead>AI Coaching</TableHead>
             <TableHead>AI Scoring</TableHead>
-            <TableHead>Balance/Credits</TableHead>
+            <TableHead>Balance/Amount</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -137,11 +137,14 @@ const EnhancedAgentBilling = () => {
                 <TableCell>{getBillingBadge(agent.billingSettings.aiCoaching)}</TableCell>
                 <TableCell>{getBillingBadge(agent.billingSettings.aiCallScoring)}</TableCell>
                 <TableCell>
-                  {agent.creditAllocation ? (
+                  {agent.balanceAllocation ? (
                     <div className="text-sm">
-                      <div className="font-medium">{agent.creditAllocation.remaining} credits left</div>
+                      <div className="font-medium flex items-center">
+                        <DollarSign className="h-3 w-3 mr-1" />
+                        {agent.balanceAllocation.remaining.toFixed(2)} left
+                      </div>
                       <div className="text-gray-500">
-                        ${agent.balance.toFixed(2)} balance
+                        ${agent.balance.toFixed(2)} total balance
                       </div>
                     </div>
                   ) : (
@@ -198,25 +201,28 @@ const EnhancedAgentBilling = () => {
                           ))}
                         </div>
                         
-                        {agent.creditAllocation && (
+                        {agent.balanceAllocation && (
                           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                            <h4 className="font-medium mb-2">Call Credits Summary</h4>
+                            <h4 className="font-medium mb-2 flex items-center">
+                              <DollarSign className="h-4 w-4 mr-2" />
+                              Call Balance Summary
+                            </h4>
                             <div className="grid grid-cols-4 gap-4 text-sm">
                               <div>
                                 <span className="text-gray-600">Base: </span>
-                                <span className="font-medium">{agent.creditAllocation.base}</span>
+                                <span className="font-medium">${agent.balanceAllocation.base.toFixed(2)}</span>
                               </div>
                               <div>
                                 <span className="text-gray-600">Bonus: </span>
-                                <span className="font-medium text-green-600">{agent.creditAllocation.bonus}</span>
+                                <span className="font-medium text-green-600">${agent.balanceAllocation.bonus.toFixed(2)}</span>
                               </div>
                               <div>
                                 <span className="text-gray-600">Used: </span>
-                                <span className="font-medium">{agent.creditAllocation.used}</span>
+                                <span className="font-medium">${agent.balanceAllocation.used.toFixed(2)}</span>
                               </div>
                               <div>
                                 <span className="text-gray-600">Remaining: </span>
-                                <span className="font-medium text-blue-600">{agent.creditAllocation.remaining}</span>
+                                <span className="font-medium text-blue-600">${agent.balanceAllocation.remaining.toFixed(2)}</span>
                               </div>
                             </div>
                           </div>

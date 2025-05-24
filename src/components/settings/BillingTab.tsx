@@ -18,7 +18,7 @@ const BillingTab = () => {
         <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
         <TabsTrigger value="transactions">Transactions</TabsTrigger>
         <TabsTrigger value="agent-billing">Agent Billing</TabsTrigger>
-        <TabsTrigger value="call-credits">Call Credits</TabsTrigger>
+        <TabsTrigger value="call-credits">Call Balance</TabsTrigger>
         <TabsTrigger value="settings">Service Settings</TabsTrigger>
       </TabsList>
       

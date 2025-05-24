@@ -16,8 +16,8 @@ const mockServiceSettings = {
   defaultBillingPolicies: {
     callCredits: "AGENCY_BILLED",
     telephonyFees: "AGENCY_BILLED", 
-    aiCoaching: "AGENT_CHOICE",
-    aiCallScoring: "AGENT_CHOICE"
+    aiCoaching: "AGENT_BILLED",
+    aiCallScoring: "AGENT_BILLED"
   },
   allowAgentChoice: {
     callCredits: true,
@@ -118,7 +118,7 @@ const ServiceBillingSettings = () => {
         <CardHeader>
           <CardTitle>Service Billing Policies</CardTitle>
           <CardDescription>
-            Configure default billing responsibility and whether agents can choose their billing model
+            Configure default billing responsibility for each service
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -137,7 +137,7 @@ const ServiceBillingSettings = () => {
               <div className="space-y-4">
                 {/* Default Policy */}
                 <div>
-                  <Label className="text-sm font-medium">Default billing for new agents:</Label>
+                  <Label className="text-sm font-medium">Billing responsibility:</Label>
                   <div className="mt-2 flex gap-4">
                     <label className="flex items-center gap-2">
                       <input
@@ -160,17 +160,6 @@ const ServiceBillingSettings = () => {
                         className="w-4 h-4"
                       />
                       <span className="text-sm">Agent pays</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`${service}-default`}
-                        value="AGENT_CHOICE"
-                        checked={defaultPolicy === "AGENT_CHOICE"}
-                        onChange={(e) => handleDefaultPolicyChange(service, e.target.value)}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-sm">Let agent choose</span>
                     </label>
                   </div>
                 </div>

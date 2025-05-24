@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Upload, FileText, Edit, Trash2, Plus } from "lucide-react";
+import ScriptEditor from "./ScriptEditor";
 
 interface Script {
   id: string;
@@ -41,9 +41,34 @@ const ScriptUpload = ({ onScriptSelect }: ScriptUploadProps) => {
       description: "Updated final expense script with new objection handling",
       type: "final_expense",
       sections: [
-        { id: "1", name: "Opening", label: "intro", content: "Good morning, this is [Name] calling from...", order: 1 },
-        { id: "2", name: "Discovery", label: "discovery", content: "I'm calling to help families...", order: 2 },
-        { id: "3", name: "Close", label: "close", content: "Would you like to move forward?", order: 3 }
+        { 
+          id: "1", 
+          name: "Opening", 
+          label: "intro", 
+          content: "Good morning, this is [Name] calling from [Company]. I hope you're having a great day today. I'm calling because you recently expressed interest in final expense coverage. Do you have a few minutes to discuss how we can help protect your family from unexpected costs?", 
+          order: 1 
+        },
+        { 
+          id: "2", 
+          name: "Discovery", 
+          label: "discovery", 
+          content: "I'm calling to help families like yours avoid the financial burden that funeral costs can place on loved ones. Can you tell me, do you currently have any life insurance or burial coverage in place? Have you thought about what your family would need to handle final expenses?", 
+          order: 2 
+        },
+        { 
+          id: "3", 
+          name: "Objection Handling", 
+          label: "objection_handling", 
+          content: "I understand you might have concerns about cost. Let me ask you this - what would be more expensive: a small monthly premium now, or leaving your family with a $10,000-15,000 bill when they're already grieving? Our policies start as low as $1 a day.", 
+          order: 3 
+        },
+        { 
+          id: "4", 
+          name: "Close", 
+          label: "close", 
+          content: "Based on what you've told me, I believe our [Policy Type] would be perfect for your situation. The monthly investment is just $[Amount], and it guarantees your family won't be burdened with these costs. Would you like to move forward and get this protection in place today?", 
+          order: 4 
+        }
       ],
       createdAt: "2024-05-20",
       lastModified: "2024-05-24"
@@ -51,6 +76,7 @@ const ScriptUpload = ({ onScriptSelect }: ScriptUploadProps) => {
   ]);
 
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [editingScript, setEditingScript] = useState<Script | null>(null);
   const [newScript, setNewScript] = useState({
     name: "",
     description: "",
@@ -69,7 +95,6 @@ const ScriptUpload = ({ onScriptSelect }: ScriptUploadProps) => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // In a real implementation, this would parse the file content
       toast.success(`File "${file.name}" uploaded successfully`);
       setNewScript({ ...newScript, content: `[Content from ${file.name}]` });
     }
@@ -104,6 +129,18 @@ const ScriptUpload = ({ onScriptSelect }: ScriptUploadProps) => {
     toast.success("Script deleted");
   };
 
+  const handleEditScript = (script: Script) => {
+    setEditingScript(script);
+    onScriptSelect(script.id);
+  };
+
+  const handleSaveEditedScript = (updatedScript: Script) => {
+    setScripts(scripts.map(script => 
+      script.id === updatedScript.id ? updatedScript : script
+    ));
+    setEditingScript(null);
+  };
+
   const getTypeColor = (type: Script["type"]) => {
     const colors = {
       final_expense: "bg-blue-100 text-blue-700",
@@ -114,6 +151,17 @@ const ScriptUpload = ({ onScriptSelect }: ScriptUploadProps) => {
     };
     return colors[type];
   };
+
+  // Show script editor if editing
+  if (editingScript) {
+    return (
+      <ScriptEditor
+        script={editingScript}
+        onSave={handleSaveEditedScript}
+        onClose={() => setEditingScript(null)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -240,7 +288,7 @@ const ScriptUpload = ({ onScriptSelect }: ScriptUploadProps) => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onScriptSelect(script.id)}
+                    onClick={() => handleEditScript(script)}
                   >
                     <Edit className="w-4 h-4" />
                   </Button>

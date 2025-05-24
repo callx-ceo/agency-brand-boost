@@ -65,7 +65,7 @@ const TeamMembersTab = () => {
   const [newMember, setNewMember] = useState({
     name: "",
     email: "",
-    role: "agent" as const
+    role: "agent" as "admin" | "manager" | "agent"
   });
 
   const getRoleIcon = (role: string) => {

@@ -8,22 +8,30 @@ import TransactionHistory from "./TransactionHistory";
 import EnhancedAgentBilling from "./EnhancedAgentBilling";
 import ServiceBillingSettings from "./ServiceBillingSettings";
 import CallCreditsManagement from "./CallCreditsManagement";
+import CostBreakdownDashboard from "./CostBreakdownDashboard";
+import RateConfiguration from "./RateConfiguration";
 
 const BillingTab = () => {
   return (
     <Tabs defaultValue="dashboard" className="w-full">
       <TabsList className="mb-6">
         <TabsTrigger value="dashboard">Overview</TabsTrigger>
+        <TabsTrigger value="cost-breakdown">Cost Breakdown</TabsTrigger>
         <TabsTrigger value="invoices">Invoices</TabsTrigger>
         <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
         <TabsTrigger value="transactions">Transactions</TabsTrigger>
         <TabsTrigger value="agent-billing">Agent Billing</TabsTrigger>
         <TabsTrigger value="call-credits">Call Balance</TabsTrigger>
+        <TabsTrigger value="rate-config">Rate Config</TabsTrigger>
         <TabsTrigger value="settings">Service Settings</TabsTrigger>
       </TabsList>
       
       <TabsContent value="dashboard">
         <BillingDashboard />
+      </TabsContent>
+      
+      <TabsContent value="cost-breakdown">
+        <CostBreakdownDashboard />
       </TabsContent>
       
       <TabsContent value="invoices">
@@ -44,6 +52,10 @@ const BillingTab = () => {
       
       <TabsContent value="call-credits">
         <CallCreditsManagement />
+      </TabsContent>
+      
+      <TabsContent value="rate-config">
+        <RateConfiguration />
       </TabsContent>
       
       <TabsContent value="settings">

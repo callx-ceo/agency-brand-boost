@@ -19,6 +19,7 @@ import GoalsManagement from "../goals/GoalsManagement";
 import OfferDetails from "../entities/OfferDetails";
 import ContactsManagement from "../entities/ContactsManagement";
 import ContactsReports from "../../dashboard/ContactsReports";
+import AgentListReport from "../reporting/AgentListReport";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -150,6 +151,9 @@ const SuperAdminViewRenderer = ({
     case 'reports-agents':
     case 'reports-agencies':
       return <ReportRenderer activeView={activeView} onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'reports-agent-list':
+      return <AgentListReport onBackToDashboard={handleBackToDashboard} />;
     
     default:
       return (

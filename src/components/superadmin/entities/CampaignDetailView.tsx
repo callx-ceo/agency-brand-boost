@@ -6,9 +6,9 @@ import CampaignDetailHeader from "./campaign/CampaignDetailHeader";
 import DateRangeSelector from "./campaign/DateRangeSelector";
 import CampaignStatisticsTab from "./campaign/CampaignStatisticsTab";
 import CampaignDetailsTab from "./campaign/CampaignDetailsTab";
-import CampaignPlaceholderTab from "./campaign/CampaignPlaceholderTab";
 import PromoNumbersTab from "./campaign/PromoNumbersTab";
 import ManagePublishersTab from "./campaign/ManagePublishersTab";
+import ManageAdvertisersTab from "./campaign/ManageAdvertisersTab";
 
 interface CampaignDetailViewProps {
   campaign: Campaign;
@@ -81,10 +81,7 @@ const CampaignDetailView = ({ campaign, onBack }: CampaignDetailViewProps) => {
         </TabsContent>
 
         <TabsContent value="manage-advertisers">
-          <CampaignPlaceholderTab 
-            title="Manage Advertisers" 
-            message="Advertiser management coming soon..." 
-          />
+          <ManageAdvertisersTab />
         </TabsContent>
       </Tabs>
     </div>

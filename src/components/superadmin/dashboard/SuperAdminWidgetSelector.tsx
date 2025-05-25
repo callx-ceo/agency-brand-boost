@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Settings, BarChart3, DollarSign, Building2, Activity, Shield, AlertTriangle, Users, Globe, TrendingUp } from "lucide-react";
+import { Settings, BarChart3, DollarSign, Building2, Activity, Shield, AlertTriangle, Users, Globe, TrendingUp, Award } from "lucide-react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 
 export interface SuperAdminWidget {
@@ -50,6 +50,16 @@ const availableWidgets: Omit<SuperAdminWidget, 'enabled' | 'order'>[] = [
     permissions: ['read:agencies'],
     refreshInterval: 900,
     dataScope: 'filtered'
+  },
+  {
+    id: 'agent-performance-leaderboard',
+    title: 'Agent Performance Leaderboard',
+    description: 'Top performing agents across all agencies',
+    icon: <Award className="w-5 h-5 text-yellow-600" />,
+    size: 'large',
+    permissions: ['read:agents'],
+    refreshInterval: 900,
+    dataScope: 'global'
   },
   {
     id: 'advertiser-spend',

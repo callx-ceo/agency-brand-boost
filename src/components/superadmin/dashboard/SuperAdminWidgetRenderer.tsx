@@ -4,6 +4,7 @@ import { SuperAdminWidget } from "./SuperAdminWidgetSelector";
 import GlobalCallVolumeChart from "../widgets/GlobalCallVolumeChart";
 import PlatformRevenueWidget from "../widgets/PlatformRevenueWidget";
 import AgencyPerformanceLeaderboard from "../widgets/AgencyPerformanceLeaderboard";
+import AgentPerformanceLeaderboardWidget from "../widgets/AgentPerformanceLeaderboardWidget";
 import SystemCapacityWidget from "../widgets/SystemCapacityWidget";
 import ComplianceMonitorWidget from "../widgets/ComplianceMonitorWidget";
 import FraudDetectionWidget from "../widgets/FraudDetectionWidget";
@@ -56,6 +57,13 @@ const SuperAdminWidgetRenderer = ({ widgets, platformRevenue, systemMetrics }: S
         return (
           <div key={widget.id} className="h-full">
             <AgencyPerformanceLeaderboard />
+          </div>
+        );
+      
+      case 'agent-performance-leaderboard':
+        return (
+          <div key={widget.id} className="h-full">
+            <AgentPerformanceLeaderboardWidget />
           </div>
         );
       

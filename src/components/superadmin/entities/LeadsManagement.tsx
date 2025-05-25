@@ -19,6 +19,14 @@ import {
   Users,
   Globe
 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface LeadsManagementProps {
   onBackToDashboard: () => void;
@@ -74,6 +82,64 @@ const LeadsManagement = ({ onBackToDashboard }: LeadsManagementProps) => {
       createdAt: "6 hours ago"
     }
   ];
+
+  // Campaigns by Publisher data from the image
+  const campaignsByPublisher = [
+    {
+      campaign: "Final Expense - Social - No IVR",
+      publisher: "Taboola",
+      leads: 6,
+      smsConv: 0,
+      smsConvRate: "0%",
+      ivrConv: 2,
+      ivrConvRate: "33.34%",
+      scheduledCalls: 0,
+      scheduledCallsRate: "0%",
+      transferred: 2,
+      transferRate: "33.34%",
+      paid: 0,
+      convRate: "0%",
+      revenue: "$0.00",
+      cost: "$0.00",
+      profit: "$0.00",
+      avgRPL: "$0.00",
+      avgCPL: "$0.00",
+      optOut: 0,
+      optOutRate: "0%"
+    },
+    {
+      campaign: "Auto Insurance Bundle",
+      publisher: "Bing",
+      leads: 17,
+      smsConv: 0,
+      smsConvRate: "0%",
+      ivrConv: 17,
+      ivrConvRate: "100%",
+      scheduledCalls: 0,
+      scheduledCallsRate: "0%",
+      transferred: 10,
+      transferRate: "58.83%",
+      paid: 6,
+      convRate: "35.30%",
+      revenue: "$120.00",
+      cost: "$108.00",
+      profit: "$12.00",
+      avgRPL: "$7.06",
+      avgCPL: "$6.35",
+      optOut: 0,
+      optOutRate: "0%"
+    }
+  ];
+
+  // Calculate totals
+  const totals = {
+    leads: campaignsByPublisher.reduce((sum, row) => sum + row.leads, 0),
+    transferred: campaignsByPublisher.reduce((sum, row) => sum + row.transferred, 0),
+    paid: campaignsByPublisher.reduce((sum, row) => sum + row.paid, 0),
+    revenue: "$120.00",
+    cost: "$108.00",
+    profit: "$12.00"
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -286,11 +352,102 @@ const LeadsManagement = ({ onBackToDashboard }: LeadsManagementProps) => {
         </TabsContent>
 
         <TabsContent value="campaigns" className="mt-6">
-          <PlaceholderContent 
-            title="Lead Campaigns"
-            description="View and manage all marketing campaigns generating leads"
-            icon={<Megaphone className="w-12 h-12 mx-auto text-purple-400 mb-4" />}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Megaphone className="w-5 h-5" />
+                Campaigns by Publisher
+              </CardTitle>
+              <div className="text-sm text-gray-600">
+                Apr 1, 2025 - Apr 30, 2025
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Campaign</TableHead>
+                      <TableHead>Publisher</TableHead>
+                      <TableHead>Leads</TableHead>
+                      <TableHead>Sms Conv</TableHead>
+                      <TableHead>Sms Conv. Rate</TableHead>
+                      <TableHead>Ivr Conv</TableHead>
+                      <TableHead>Ivr Conv. Rate</TableHead>
+                      <TableHead>Scheduled Calls</TableHead>
+                      <TableHead>Scheduled Call Rate</TableHead>
+                      <TableHead>Transferred</TableHead>
+                      <TableHead>Transfer Rate</TableHead>
+                      <TableHead>Paid</TableHead>
+                      <TableHead>Conv. Rate</TableHead>
+                      <TableHead>Revenue</TableHead>
+                      <TableHead>Cost</TableHead>
+                      <TableHead>Profit</TableHead>
+                      <TableHead>Avg. RPL</TableHead>
+                      <TableHead>Avg. CPL</TableHead>
+                      <TableHead>Opt Out</TableHead>
+                      <TableHead>Opt Out Rate</TableHead>
+                      <TableHead>Show Details</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {campaignsByPublisher.map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{row.campaign}</TableCell>
+                        <TableCell>{row.publisher}</TableCell>
+                        <TableCell>{row.leads}</TableCell>
+                        <TableCell>{row.smsConv}</TableCell>
+                        <TableCell>{row.smsConvRate}</TableCell>
+                        <TableCell>{row.ivrConv}</TableCell>
+                        <TableCell>{row.ivrConvRate}</TableCell>
+                        <TableCell>{row.scheduledCalls}</TableCell>
+                        <TableCell>{row.scheduledCallsRate}</TableCell>
+                        <TableCell>{row.transferred}</TableCell>
+                        <TableCell>{row.transferRate}</TableCell>
+                        <TableCell>{row.paid}</TableCell>
+                        <TableCell>{row.convRate}</TableCell>
+                        <TableCell>{row.revenue}</TableCell>
+                        <TableCell>{row.cost}</TableCell>
+                        <TableCell>{row.profit}</TableCell>
+                        <TableCell>{row.avgRPL}</TableCell>
+                        <TableCell>{row.avgCPL}</TableCell>
+                        <TableCell>{row.optOut}</TableCell>
+                        <TableCell>{row.optOutRate}</TableCell>
+                        <TableCell>
+                          <Button variant="outline" size="sm">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow className="font-bold bg-gray-50">
+                      <TableCell>TOTAL</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell>{totals.leads}</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell>{totals.transferred}</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell>{totals.paid}</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell>{totals.revenue}</TableCell>
+                      <TableCell>{totals.cost}</TableCell>
+                      <TableCell>{totals.profit}</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="publishers" className="mt-6">

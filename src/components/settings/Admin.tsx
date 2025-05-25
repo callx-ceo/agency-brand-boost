@@ -15,7 +15,7 @@ const Admin = () => {
   
   // Mock current plan - this would come from your auth/billing context in a real app
   const currentPlan = {
-    tier: "agency_starter" // This should match the billing dashboard
+    tier: "agency_pro" // Changed to pro to show white label features
   };
   
   // Show branding and domain tabs only for Pro users

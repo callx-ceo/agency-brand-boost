@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, TrendingUp, TrendingDown, Phone, DollarSign, Target, Users } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
@@ -34,12 +34,28 @@ const OfferStatistics = ({ offerId, onBackToDashboard, onBackToOffers }: OfferSt
     { date: "Jan 7", calls: 63, revenue: 3200, conversions: 54 }
   ];
 
-  const publisherPerformance = [
-    { name: "Publisher A", calls: 245, revenue: 12500, convRate: 85.2 },
-    { name: "Publisher B", calls: 198, revenue: 10100, convRate: 78.4 },
-    { name: "Publisher C", calls: 156, revenue: 7800, convRate: 72.1 },
-    { name: "Publisher D", calls: 134, revenue: 6700, convRate: 69.8 },
-    { name: "Publisher E", calls: 87, revenue: 4350, convRate: 65.5 }
+  // Mock publisher data based on the reference image
+  const publisherData = [
+    { name: "HealthQuotes, LLC", id: "01845", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "78.00%", status: "Approved" },
+    { name: "Paid Media Group", id: "01944", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "72.86%", status: "Approved" },
+    { name: "ZacSmedia", id: "01838", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "76.00%", status: "Approved" },
+    { name: "Performancebuy LLC", id: "01428", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "76.00%", status: "Approved" },
+    { name: "Scale Up Media Agency Inc", id: "01650", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "64.82%", status: "Approved" },
+    { name: "Gold Mine Leads", id: "01850", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "64.82%", status: "Approved" },
+    { name: "Leads Capital LLC", id: "01840", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "70.00%", status: "Approved" },
+    { name: "Adsent Media", id: "01471", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "61.54%", status: "Approved" },
+    { name: "Leadsmax", id: "01473", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "61.54%", status: "Approved" },
+    { name: "Excel Impact", id: "01459", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "72.30%", status: "Approved" },
+    { name: "Bellwise Digital", id: "01454", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "70.00%", status: "Approved" },
+    { name: "Infinity LLC", id: "01433", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "60.00%", status: "Approved" },
+    { name: "Anomaly Squared", id: "01228", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "70.00%", status: "Approved" },
+    { name: "Everquote", id: "01252", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "70.00%", status: "Approved" },
+    { name: "Ringplus Ltd", id: "01980", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "50.00%", status: "Approved" },
+    { name: "Zhan Peng", id: "01067", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "61.54%", status: "Approved" },
+    { name: "Chartwell Media Group", id: "00330", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "76.93%", status: "Approved" },
+    { name: "Facebook", id: "00257", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "70.00%", status: "Approved" },
+    { name: "Ringmaxfin LLC", id: "00476", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "70.00%", status: "Approved" },
+    { name: "Click Or Call LLC", id: "00478", promoNumbers: 0, calls: 0, paidCalls: 0, earnings: "$0.00", cost: "$0.00", profit: "$0.00", convRate: "0%", payout: "77.00%", status: "Approved" }
   ];
 
   return (
@@ -49,7 +65,7 @@ const OfferStatistics = ({ offerId, onBackToDashboard, onBackToOffers }: OfferSt
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={onBackToOffers}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Offers
+            Back to List
           </Button>
           <div>
             <h1 className="text-3xl font-bold">{offerData.name}</h1>
@@ -57,175 +73,138 @@ const OfferStatistics = ({ offerId, onBackToDashboard, onBackToOffers }: OfferSt
               <Badge className="bg-green-100 text-green-800">
                 {offerData.status.charAt(0).toUpperCase() + offerData.status.slice(1)}
               </Badge>
+              <Badge variant="outline">{offerData.type}</Badge>
               <span className="text-gray-600">{offerData.category}</span>
             </div>
           </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">Offer Details</Button>
-          <Button variant="outline" onClick={onBackToDashboard}>
-            Back to Dashboard
-          </Button>
+        </div>
+      </div>
+
+      {/* Date Range Selector */}
+      <div className="flex items-center gap-4">
+        <span className="text-sm text-gray-600">May 25, 2025 - May 25, 2025</span>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">Yesterday</Button>
+          <Button variant="outline" size="sm">Last 7 days</Button>
+          <Button variant="outline" size="sm">Last 30 days</Button>
+          <Button variant="outline" size="sm">Last Month</Button>
+          <Button variant="outline" size="sm">This Month</Button>
+          <Button variant="outline" size="sm">This Year</Button>
         </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-green-100">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Calls MTD</p>
-                <p className="text-2xl font-bold">1,964</p>
-                <div className="flex items-center text-green-600 text-sm">
-                  <TrendingUp className="w-4 h-4 mr-1" />
-                  +12.5% vs last month
-                </div>
+                <p className="text-sm text-gray-600">$0</p>
+                <p className="text-xs text-gray-500">Rev</p>
               </div>
-              <Phone className="w-8 h-8 text-blue-500" />
+              <DollarSign className="w-8 h-8 text-green-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-blue-100">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Revenue MTD</p>
-                <p className="text-2xl font-bold">$100,500</p>
-                <div className="flex items-center text-green-600 text-sm">
-                  <TrendingUp className="w-4 h-4 mr-1" />
-                  +8.3% vs last month
-                </div>
+                <p className="text-sm text-gray-600">0</p>
+                <p className="text-xs text-gray-500">Calls</p>
               </div>
-              <DollarSign className="w-8 h-8 text-green-500" />
+              <Phone className="w-8 h-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-orange-100">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Conversion Rate</p>
-                <p className="text-2xl font-bold">85.28%</p>
-                <div className="flex items-center text-red-600 text-sm">
-                  <TrendingDown className="w-4 h-4 mr-1" />
-                  -2.1% vs last month
-                </div>
+                <p className="text-sm text-gray-600">0</p>
+                <p className="text-xs text-gray-500">Paid Calls</p>
               </div>
-              <Target className="w-8 h-8 text-purple-500" />
+              <Target className="w-8 h-8 text-orange-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-purple-100">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Avg Revenue/Call</p>
-                <p className="text-2xl font-bold">$51.17</p>
-                <div className="flex items-center text-green-600 text-sm">
-                  <TrendingUp className="w-4 h-4 mr-1" />
-                  +3.7% vs last month
-                </div>
+                <p className="text-sm text-gray-600">0</p>
+                <p className="text-xs text-gray-500">Conv Rate</p>
               </div>
-              <Users className="w-8 h-8 text-orange-500" />
+              <Users className="w-8 h-8 text-purple-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="statistics" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="statistics">Statistics</TabsTrigger>
-          <TabsTrigger value="publishers">Publishers</TabsTrigger>
-          <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="statistics" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Daily Performance Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Daily Performance (Last 7 Days)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={dailyStats}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="calls" stroke="#3b82f6" strokeWidth={2} />
-                    <Line type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Revenue Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Daily Revenue (Last 7 Days)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={dailyStats}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
-                    <Bar dataKey="revenue" fill="#10b981" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+      {/* Overview Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
+            <span className="text-gray-500">Chart will be displayed here</span>
           </div>
-        </TabsContent>
+        </CardContent>
+      </Card>
 
-        <TabsContent value="publishers" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Publisher Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {publisherPerformance.map((publisher, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <h3 className="font-medium">{publisher.name}</h3>
-                      <p className="text-sm text-gray-600">{publisher.calls} calls this month</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">${publisher.revenue.toLocaleString()}</p>
-                      <p className="text-sm text-gray-600">{publisher.convRate}% conv. rate</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="campaigns">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-gray-600">Campaign details will be displayed here</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="settings">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-gray-600">Offer settings will be displayed here</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Publishers Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Publishers</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Publisher Name</TableHead>
+                <TableHead>Publisher ID</TableHead>
+                <TableHead>Promo Number(s)</TableHead>
+                <TableHead>Calls</TableHead>
+                <TableHead>Paid Calls</TableHead>
+                <TableHead>Earnings</TableHead>
+                <TableHead>Cost</TableHead>
+                <TableHead>Profit</TableHead>
+                <TableHead>Conv Rate</TableHead>
+                <TableHead>Payout</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {publisherData.map((publisher, index) => (
+                <TableRow key={index}>
+                  <TableCell>{publisher.name}</TableCell>
+                  <TableCell>{publisher.id}</TableCell>
+                  <TableCell className="text-center">{publisher.promoNumbers}</TableCell>
+                  <TableCell className="text-center">{publisher.calls}</TableCell>
+                  <TableCell className="text-center">{publisher.paidCalls}</TableCell>
+                  <TableCell className="text-center">{publisher.earnings}</TableCell>
+                  <TableCell className="text-center">{publisher.cost}</TableCell>
+                  <TableCell className="text-center">{publisher.profit}</TableCell>
+                  <TableCell className="text-center">{publisher.convRate}</TableCell>
+                  <TableCell className="text-center">{publisher.payout}</TableCell>
+                  <TableCell>
+                    <Badge className="bg-green-100 text-green-800">
+                      {publisher.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 };

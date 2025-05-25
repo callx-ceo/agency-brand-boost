@@ -48,6 +48,7 @@ const SuperAdminViewRenderer = ({
       return (
         <AgencyManagement 
           onBackToDashboard={handleBackToDashboard}
+          onViewAgents={onViewAgencyAgents || (() => {})}
         />
       );
     
@@ -102,14 +103,13 @@ const SuperAdminViewRenderer = ({
       return (
         <AgencyAgentsView 
           agencyId={selectedAgencyId || ''} 
+          onBackToAgencies={() => onViewChange('agencies')}
         />
       );
     
     case 'contacts':
       return (
-        <CampaignDetailView 
-          onBackToDashboard={handleBackToDashboard}
-        />
+        <CampaignDetailView />
       );
     
     // Report cases

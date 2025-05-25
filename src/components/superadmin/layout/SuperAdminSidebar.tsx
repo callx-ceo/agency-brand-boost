@@ -16,7 +16,10 @@ import {
   AlertTriangle,
   Server,
   Database,
-  Lock
+  Lock,
+  TrendingUp,
+  PhoneCall,
+  DollarSign
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -40,23 +43,41 @@ interface SuperAdminSidebarProps {
 }
 
 const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps) => {
-  // Mock system alerts count
-  const systemAlerts = 3;
-  const complianceAlerts = 1;
+  // Mock data for alert badges
+  const mockAlerts = {
+    pendingAgencies: 3,
+    suspendedAgents: 8,
+    fraudAlerts: 2,
+    complianceIssues: 1,
+    systemAlerts: 5
+  };
 
-  // Dashboard & Overview sections
+  // Dashboard & Analytics sections
   const dashboardSections = [
     { id: "dashboard", label: "Executive Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
-    { id: "analytics", label: "Advanced Analytics", icon: <BarChart3 className="w-5 h-5" /> },
-    { id: "global-reporting", label: "Global Reporting", icon: <FileText className="w-5 h-5" /> },
+    { id: "global-reporting", label: "Global Reporting", icon: <BarChart3 className="w-5 h-5" /> },
+    { id: "analytics", label: "Advanced Analytics", icon: <TrendingUp className="w-5 h-5" /> },
+    { id: "compliance", label: "Compliance Reporting", icon: <Shield className="w-5 h-5" /> },
   ];
 
   // Entity Management sections
   const entitySections = [
-    { id: "agencies", label: "Agencies", icon: <Building2 className="w-5 h-5" /> },
-    { id: "agents", label: "Agents", icon: <Users className="w-5 h-5" /> },
+    { 
+      id: "agencies", 
+      label: "Agencies", 
+      icon: <Building2 className="w-5 h-5" />,
+      badge: mockAlerts.pendingAgencies > 0 ? mockAlerts.pendingAgencies : undefined
+    },
+    { 
+      id: "agents", 
+      label: "Agents", 
+      icon: <Users className="w-5 h-5" />,
+      badge: mockAlerts.suspendedAgents > 0 ? mockAlerts.suspendedAgents : undefined
+    },
     { id: "advertisers", label: "Advertisers", icon: <Megaphone className="w-5 h-5" /> },
     { id: "publishers", label: "Publishers", icon: <Globe className="w-5 h-5" /> },
+    { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
+    { id: "offers", label: "Offers", icon: <DollarSign className="w-5 h-5" /> },
   ];
 
   // System & Administration sections
@@ -64,18 +85,11 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { 
       id: "system-health", 
       label: "System Health", 
-      icon: <Server className="w-5 h-5" />,
-      badge: systemAlerts > 0 ? systemAlerts : undefined,
-      badgeVariant: "destructive" as const
+      icon: <Activity className="w-5 h-5" />,
+      badge: mockAlerts.systemAlerts > 0 ? mockAlerts.systemAlerts : undefined
     },
-    { 
-      id: "compliance", 
-      label: "Compliance", 
-      icon: <Shield className="w-5 h-5" />,
-      badge: complianceAlerts > 0 ? complianceAlerts : undefined,
-      badgeVariant: "secondary" as const
-    },
-    { id: "user-management", label: "User Management", icon: <UserCheck className="w-5 h-5" /> },
+    { id: "user-management", label: "User & Role Management", icon: <UserCheck className="w-5 h-5" /> },
+    { id: "settings", label: "Platform Settings", icon: <Settings className="w-5 h-5" /> },
   ];
 
   const renderMenuItem = (item: any) => (

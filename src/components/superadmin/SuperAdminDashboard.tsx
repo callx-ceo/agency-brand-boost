@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { BarChart3, Building2, Users, Megaphone, Globe, TrendingUp, Shield, Activity, UserCheck, Settings, DollarSign, AlertTriangle, Server, CheckCircle } from "lucide-react";
 import SuperAdminSidebar from "./layout/SuperAdminSidebar";
@@ -18,6 +17,8 @@ import ExecutiveKPISelector, { ExecutiveKPIConfig } from "./dashboard/ExecutiveK
 import SuperAdminWidgetSelector, { SuperAdminWidget } from "./dashboard/SuperAdminWidgetSelector";
 import GlobalReporting from "./reporting/GlobalReporting";
 import AgencyAgentsView from "./entities/AgencyAgentsView";
+import CampaignManagement from "./entities/CampaignManagement";
+import OfferManagement from "./entities/OfferManagement";
 import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
 import ImpersonationBanner from "@/components/ImpersonationBanner";
 
@@ -58,7 +59,9 @@ type SuperAdminViewType =
   | 'system-health'
   | 'user-management'
   | 'global-reporting'
-  | 'agency-agents';
+  | 'agency-agents'
+  | 'campaigns'
+  | 'offers';
 
 const SuperAdminDashboard = () => {
   const [showKPISelector, setShowKPISelector] = useState(false);
@@ -273,6 +276,10 @@ const SuperAdminDashboard = () => {
                       return <AdvertiserManagement onBackToDashboard={() => setActiveView('dashboard')} />;
                     case 'publishers':
                       return <PublisherManagement onBackToDashboard={() => setActiveView('dashboard')} />;
+                    case 'campaigns':
+                      return <CampaignManagement onBackToDashboard={() => setActiveView('dashboard')} />;
+                    case 'offers':
+                      return <OfferManagement onBackToDashboard={() => setActiveView('dashboard')} />;
                     case 'analytics':
                       return <AdvancedAnalytics onBackToDashboard={() => setActiveView('dashboard')} />;
                     case 'compliance':

@@ -6,8 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Search, Eye, Clock, Building2, Mail, Phone, Calendar, Filter, RefreshCw } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FileText, Search, Eye, Clock, Building2, Mail, Phone, Calendar, Filter, RefreshCw, AlertCircle, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import ApplicationMetricsDashboard from "./ApplicationMetricsDashboard";
+import ApplicationDetailsDialog from "./ApplicationDetailsDialog";
+import BulkActionsBar from "./BulkActionsBar";
 
 interface AgencyApplicationsManagementProps {
   onBackToDashboard: () => void;
@@ -91,6 +95,9 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
   const [activeTab, setActiveTab] = useState("all");
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [selectedAgency, setSelectedAgency] = useState<string>("all");
+  const [selectedApplications, setSelectedApplications] = useState<number[]>([]);
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleRefreshStatus = (applicationId: number) => {
     toast.success("Status refreshed from carrier");
@@ -153,134 +160,206 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
 
   const tabCounts = getTabCounts();
 
+  const getUrgencyIndicator = (dateSubmitted: string) => {
+    const daysSinceSubmission = Math.floor((new Date().getTime() - new Date(dateSubmitted).getTime()) / (1000 * 60 * 60 * 24));
+    if (daysSinceSubmission > 7) {
+      return <AlertCircle className="w-4 h-4 text-red-500" title="Overdue - requires attention" />;
+    } else if (daysSinceSubmission > 5) {
+      return <Clock className="w-4 h-4 text-orange-500" title="Urgent - review soon" />;
+    }
+    return null;
+  };
+
+  const handleBulkRefresh = () => {
+    toast.success(`Refreshed status for ${selectedApplications.length} applications`);
+    console.log("Bulk refresh for applications:", selectedApplications);
+    setSelectedApplications([]);
+  };
+
+  const handleBulkExport = () => {
+    toast.success(`Exported ${selectedApplications.length} applications`);
+    console.log("Bulk export for applications:", selectedApplications);
+  };
+
+  const handleSelectApplication = (applicationId: number, checked: boolean) => {
+    if (checked) {
+      setSelectedApplications(prev => [...prev, applicationId]);
+    } else {
+      setSelectedApplications(prev => prev.filter(id => id !== applicationId));
+    }
+  };
+
+  const handleSelectAll = (applications: any[], checked: boolean) => {
+    if (checked) {
+      setSelectedApplications(applications.map(app => app.id));
+    } else {
+      setSelectedApplications([]);
+    }
+  };
+
+  const handleViewDetails = (application: any) => {
+    setSelectedApplication(application);
+    setIsDialogOpen(true);
+  };
+
   const renderApplicationsTable = (applications: any[]) => (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="w-5 h-5" />
-            Agency Applications ({applications.length})
-          </CardTitle>
-          <div className="flex gap-2">
-            <div className="relative">
-              <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Select value={selectedAgency} onValueChange={setSelectedAgency}>
-                <SelectTrigger className="pl-8 w-48">
-                  <SelectValue placeholder="Filter by agency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Agencies</SelectItem>
-                  {getUniqueAgencies().map((agency) => (
-                    <SelectItem key={agency} value={agency}>
-                      {agency}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search applications..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 w-64"
-              />
+    <div className="space-y-4">
+      <BulkActionsBar
+        selectedCount={selectedApplications.length}
+        onRefreshSelected={handleBulkRefresh}
+        onExportSelected={handleBulkExport}
+        onClearSelection={() => setSelectedApplications([])}
+      />
+      
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Agency Applications ({applications.length})
+            </CardTitle>
+            <div className="flex gap-2">
+              <div className="relative">
+                <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                  <SelectTrigger className="pl-8 w-40">
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Priority</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="overdue">Overdue</SelectItem>
+                    <SelectItem value="normal">Normal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="relative">
+                <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Select value={selectedAgency} onValueChange={setSelectedAgency}>
+                  <SelectTrigger className="pl-8 w-48">
+                    <SelectValue placeholder="Filter by agency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Agencies</SelectItem>
+                    {getUniqueAgencies().map((agency) => (
+                      <SelectItem key={agency} value={agency}>
+                        {agency}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search applications..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8 w-64"
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Contact</TableHead>
-              <TableHead>Agency Name</TableHead>
-              <TableHead>Agent Name</TableHead>
-              <TableHead>Business Type</TableHead>
-              <TableHead>Date Submitted</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {applications.map((application) => (
-              <TableRow key={application.id}>
-                <TableCell>
-                  <div>
-                    <div className="font-medium">{application.contactName}</div>
-                    <div className="text-sm text-gray-500 flex items-center gap-1">
-                      <Mail className="w-3 h-3" />
-                      {application.email}
-                    </div>
-                    <div className="text-sm text-gray-500 flex items-center gap-1">
-                      <Phone className="w-3 h-3" />
-                      {application.phone}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-blue-500" />
-                    {application.agencyName}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium">{application.agentName}</div>
-                </TableCell>
-                <TableCell>{application.businessType}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4 text-gray-400" />
-                    {application.dateSubmitted}
-                  </div>
-                </TableCell>
-                <TableCell>{getStatusBadge(application.status)}</TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      title="View Details"
-                      onClick={() => setSelectedApplication(application)}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    {(application.status === "pending" || application.status === "under-review") && (
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        title="Refresh Status from Carrier"
-                        onClick={() => handleRefreshStatus(application.id)}
-                        className="text-blue-600 hover:text-blue-700"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                      </Button>
-                    )}
-                    {application.status === "under-review" && (
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        title="Under Review by Carrier"
-                        disabled
-                      >
-                        <Clock className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        
-        {applications.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-500">No applications found.</p>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={applications.length > 0 && applications.every(app => selectedApplications.includes(app.id))}
+                      onCheckedChange={(checked) => handleSelectAll(applications, checked as boolean)}
+                    />
+                  </TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Agency Name</TableHead>
+                  <TableHead>Agent Name</TableHead>
+                  <TableHead>Business Type</TableHead>
+                  <TableHead>Date Submitted</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {applications.map((application) => (
+                  <TableRow key={application.id} className={selectedApplications.includes(application.id) ? "bg-blue-50" : ""}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedApplications.includes(application.id)}
+                        onCheckedChange={(checked) => handleSelectApplication(application.id, checked as boolean)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{application.contactName}</div>
+                        <div className="text-sm text-gray-500 flex items-center gap-1">
+                          <Mail className="w-3 h-3" />
+                          {application.email}
+                        </div>
+                        <div className="text-sm text-gray-500 flex items-center gap-1">
+                          <Phone className="w-3 h-3" />
+                          {application.phone}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-blue-500" />
+                        {application.agencyName}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">{application.agentName}</div>
+                    </TableCell>
+                    <TableCell>{application.businessType}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          {application.dateSubmitted}
+                        </div>
+                        {getUrgencyIndicator(application.dateSubmitted)}
+                      </div>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(application.status)}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          title="View Details"
+                          onClick={() => handleViewDetails(application)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        {(application.status === "pending" || application.status === "under-review") && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            title="Refresh Status from Carrier"
+                            onClick={() => handleRefreshStatus(application.id)}
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            <RefreshCw className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            
+            {applications.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No applications found.</p>
+              </div>
+            )}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 
   return (
@@ -294,6 +373,8 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
           Back to Dashboard
         </Button>
       </div>
+
+      <ApplicationMetricsDashboard />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-5">
@@ -325,60 +406,11 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
         </TabsContent>
       </Tabs>
 
-      {/* Application Details Modal */}
-      {selectedApplication && (
-        <Card className="fixed inset-0 z-50 bg-white shadow-lg overflow-auto">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Application Details - {selectedApplication.agencyName}</CardTitle>
-              <Button variant="outline" onClick={() => setSelectedApplication(null)}>
-                Close
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold mb-2">Agency Information</h3>
-                <div className="space-y-2 text-sm">
-                  <div><span className="font-medium">Name:</span> {selectedApplication.agencyName}</div>
-                  <div><span className="font-medium">Business Type:</span> {selectedApplication.businessType}</div>
-                  <div><span className="font-medium">Expected Revenue:</span> {selectedApplication.revenue}</div>
-                  <div><span className="font-medium">Agent Name:</span> {selectedApplication.agentName}</div>
-                </div>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Contact Information</h3>
-                <div className="space-y-2 text-sm">
-                  <div><span className="font-medium">Contact Name:</span> {selectedApplication.contactName}</div>
-                  <div><span className="font-medium">Email:</span> {selectedApplication.email}</div>
-                  <div><span className="font-medium">Phone:</span> {selectedApplication.phone}</div>
-                  <div><span className="font-medium">Date Submitted:</span> {selectedApplication.dateSubmitted}</div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-6">
-              <h3 className="font-semibold mb-2">Application Status</h3>
-              <div className="flex items-center gap-4">
-                <div>Current Status: {getStatusBadge(selectedApplication.status)}</div>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => handleRefreshStatus(selectedApplication.id)}
-                  className="flex items-center gap-1"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Refresh from Carrier
-                </Button>
-              </div>
-            </div>
-            <div className="mt-6">
-              <h3 className="font-semibold mb-2">Notes</h3>
-              <p className="text-sm bg-gray-50 p-3 rounded">{selectedApplication.notes}</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <ApplicationDetailsDialog
+        application={selectedApplication}
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
     </div>
   );
 };

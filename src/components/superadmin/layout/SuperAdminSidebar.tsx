@@ -33,7 +33,7 @@ interface SuperAdminSidebarProps {
 }
 
 const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps) => {
-  const [reportsExpanded, setReportsExpanded] = useState(false);
+  const [reportsExpanded, setReportsExpanded] = useState(true);
   
   // Mock data for alert badges
   const mockAlerts = {
@@ -168,23 +168,27 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
           </h3>
           <ul>
             <li className="mb-1">
-              <button
-                onClick={() => setReportsExpanded(!reportsExpanded)}
+              <div
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-md text-left transition-colors",
-                  reportsExpanded || activeView.startsWith('reports-')
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
+                  "w-full flex items-center gap-3 px-4 py-3 text-left",
+                  activeView.startsWith('reports-')
+                    ? "text-blue-600"
+                    : "text-gray-700"
                 )}
               >
                 <FileText className="w-5 h-5" />
                 <span className="flex-1">All Reports</span>
-                {reportsExpanded ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
-                )}
-              </button>
+                <button
+                  onClick={() => setReportsExpanded(!reportsExpanded)}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  {reportsExpanded ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
             </li>
             {(reportsExpanded || activeView.startsWith('reports-')) && (
               <div className="ml-2">

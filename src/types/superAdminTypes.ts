@@ -18,6 +18,7 @@ export type SuperAdminViewType =
   | 'leads'
   | 'contacts'
   | 'leads-list'
+  | 'reports-realtime'
   | 'reports-campaigns'
   | 'reports-campaigns-by-publisher'
   | 'reports-publisher-by-manager'

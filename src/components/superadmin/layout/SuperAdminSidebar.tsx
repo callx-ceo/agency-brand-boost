@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
@@ -21,7 +20,6 @@ import {
   ChevronRight,
   Hash,
   ContactRound,
-  List,
   UserCog,
   Target,
   UserPlus
@@ -55,8 +53,9 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "compliance", label: "Compliance Reporting", icon: <Shield className="w-5 h-5" /> },
   ];
 
-  // Reports sections
+  // Reports sections - added "Realtime" as the first report
   const reportSections = [
+    { id: "reports-realtime", label: "Realtime", icon: <Activity className="w-4 h-4" /> },
     { id: "reports-campaigns", label: "Campaigns", icon: <PhoneCall className="w-4 h-4" /> },
     { id: "reports-campaigns-by-publisher", label: "Campaigns by Publisher", icon: <Users className="w-4 h-4" /> },
     { id: "reports-publisher-by-manager", label: "Publisher by Manager", icon: <UserCheck className="w-4 h-4" /> },

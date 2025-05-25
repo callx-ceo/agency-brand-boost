@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 import AgencyManagement from "../entities/AgencyManagement";
@@ -21,6 +20,7 @@ import ContactsManagement from "../entities/ContactsManagement";
 import LeadsManagement from "../entities/LeadsManagement";
 import ContactsReports from "../../dashboard/ContactsReports";
 import AgentListReport from "../reporting/AgentListReport";
+import RealtimeReport from "../../dashboard/RealtimeReport";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -142,7 +142,8 @@ const SuperAdminViewRenderer = ({
         </div>
       );
     
-    // Report cases
+    // Report cases - added reports-realtime
+    case 'reports-realtime':
     case 'reports-campaigns':
     case 'reports-campaigns-by-publisher':
     case 'reports-publisher-by-manager':

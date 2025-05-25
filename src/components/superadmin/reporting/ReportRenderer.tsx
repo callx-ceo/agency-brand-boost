@@ -4,6 +4,7 @@ import { SuperAdminViewType } from "@/types/superAdminTypes";
 import CampaignsReport from "./CampaignsReport";
 import AgentReports from "@/components/dashboard/AgentReports";
 import AgencyReports from "./AgencyReports";
+import RealtimeReport from "@/components/dashboard/RealtimeReport";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText } from "lucide-react";
@@ -57,6 +58,22 @@ const PlaceholderReport = ({
 
 const ReportRenderer = ({ activeView, onBackToDashboard }: ReportRendererProps) => {
   switch (activeView) {
+    case 'reports-realtime':
+      return (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold">Realtime Report</h1>
+              <p className="text-gray-600">Real-time call monitoring and system activity</p>
+            </div>
+            <Button variant="outline" onClick={onBackToDashboard}>
+              Back to Dashboard
+            </Button>
+          </div>
+          <RealtimeReport />
+        </div>
+      );
+    
     case 'reports-campaigns':
       return <CampaignsReport onBackToDashboard={onBackToDashboard} />;
     

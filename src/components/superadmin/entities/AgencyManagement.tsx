@@ -1,14 +1,16 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Building2, Search, Plus, Edit, Eye, Pause } from "lucide-react";
+import { Building2, Search, Plus, Edit, Eye, Pause, Users, UserCheck } from "lucide-react";
+import { useImpersonation } from "@/contexts/ImpersonationContext";
+import { toast } from "sonner";
 
 interface AgencyManagementProps {
   onBackToDashboard: () => void;
+  onViewAgents: (agencyId: string) => void;
 }
 
 const mockAgencies = [
@@ -19,8 +21,20 @@ const mockAgencies = [
   { id: 5, name: "Dynasty Coverage Group", status: "active", agents: 20, revenue: 154321, lastActivity: "30 min ago" },
 ];
 
-const AgencyManagement = ({ onBackToDashboard }: AgencyManagementProps) => {
+const AgencyManagement = ({ onBackToDashboard, onViewAgents }: AgencyManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { startImpersonation } = useImpersonation();
+
+  const handleImpersonateAgency = (agency: any) => {
+    // For agency impersonation, we'll impersonate the first agent from that agency
+    const mockAgent = {
+      id: `agent-${agency.id}-1`,
+      name: `Agency Admin (${agency.name})`,
+      email: `admin@${agency.name.toLowerCase().replace(/\s+/g, '')}.com`
+    };
+    startImpersonation(mockAgent);
+    toast.success(`Now impersonating ${agency.name} admin`);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -89,18 +103,34 @@ const AgencyManagement = ({ onBackToDashboard }: AgencyManagementProps) => {
                 <TableRow key={agency.id}>
                   <TableCell className="font-medium">{agency.name}</TableCell>
                   <TableCell>{getStatusBadge(agency.status)}</TableCell>
-                  <TableCell>{agency.agents}</TableCell>
+                  <TableCell>
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto font-semibold text-blue-600 hover:text-blue-800"
+                      onClick={() => onViewAgents(agency.id.toString())}
+                    >
+                      {agency.agents}
+                    </Button>
+                  </TableCell>
                   <TableCell>${agency.revenue.toLocaleString()}</TableCell>
                   <TableCell>{agency.lastActivity}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" title="View Details">
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" title="Edit Agency">
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        title="Impersonate Agency"
+                        onClick={() => handleImpersonateAgency(agency)}
+                      >
+                        <UserCheck className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" title="Suspend Agency">
                         <Pause className="w-4 h-4" />
                       </Button>
                     </div>

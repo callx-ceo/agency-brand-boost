@@ -1,4 +1,3 @@
-
 import React from "react";
 import { cn } from "@/lib/utils";
 import { 
@@ -31,7 +30,9 @@ type SuperAdminViewType =
   | 'analytics' 
   | 'compliance' 
   | 'system-health'
-  | 'user-management';
+  | 'user-management'
+  | 'global-reporting'
+  | 'agency-agents';
 
 interface SuperAdminSidebarProps {
   activeView: SuperAdminViewType;
@@ -47,6 +48,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
   const dashboardSections = [
     { id: "dashboard", label: "Executive Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: "analytics", label: "Advanced Analytics", icon: <BarChart3 className="w-5 h-5" /> },
+    { id: "global-reporting", label: "Global Reporting", icon: <FileText className="w-5 h-5" /> },
   ];
 
   // Entity Management sections

@@ -1,34 +1,58 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Search, UserCheck, Edit, Eye } from "lucide-react";
+import { Users, Search, UserCheck, Edit, Eye, ArrowLeft } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { toast } from "sonner";
 
-interface AgentManagementProps {
-  onBackToDashboard: () => void;
+interface AgencyAgentsViewProps {
+  agencyId: string;
+  onBackToAgencies: () => void;
 }
 
-const mockAgents = [
-  { id: 1, name: "Sarah Johnson", agency: "Elite Insurance Group", status: "active", performance: 94, lastLogin: "1 hour ago" },
-  { id: 2, name: "Mike Rodriguez", agency: "Premier Coverage Solutions", status: "active", performance: 87, lastLogin: "30 min ago" },
-  { id: 3, name: "Emily Chen", agency: "Guardian Life Services", status: "training", performance: 76, lastLogin: "2 hours ago" },
-  { id: 4, name: "David Thompson", agency: "ProTech Insurance", status: "suspended", performance: 45, lastLogin: "3 days ago" },
-  { id: 5, name: "Lisa Anderson", agency: "Dynasty Coverage Group", status: "active", performance: 91, lastLogin: "15 min ago" },
-];
+const mockAgencyAgents = {
+  "1": [
+    { id: 1, name: "Sarah Johnson", status: "active", performance: 94, lastLogin: "1 hour ago", role: "Senior Agent" },
+    { id: 2, name: "Michael Chen", status: "active", performance: 88, lastLogin: "2 hours ago", role: "Agent" },
+    { id: 3, name: "Lisa Rodriguez", status: "training", performance: 76, lastLogin: "30 min ago", role: "Junior Agent" },
+    { id: 4, name: "David Kim", status: "active", performance: 91, lastLogin: "15 min ago", role: "Team Lead" },
+  ],
+  "2": [
+    { id: 5, name: "Emily Watson", status: "active", performance: 89, lastLogin: "45 min ago", role: "Senior Agent" },
+    { id: 6, name: "James Wilson", status: "active", performance: 85, lastLogin: "1 hour ago", role: "Agent" },
+    { id: 7, name: "Maria Garcia", status: "inactive", performance: 67, lastLogin: "2 days ago", role: "Agent" },
+  ],
+  "3": [
+    { id: 8, name: "Robert Taylor", status: "suspended", performance: 45, lastLogin: "1 week ago", role: "Agent" },
+    { id: 9, name: "Jennifer Brown", status: "active", performance: 92, lastLogin: "20 min ago", role: "Senior Agent" },
+    { id: 10, name: "Christopher Davis", status: "training", performance: 78, lastLogin: "3 hours ago", role: "Junior Agent" },
+  ],
+};
 
-const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
+const agencyNames = {
+  "1": "Elite Insurance Group",
+  "2": "Premier Coverage Solutions", 
+  "3": "Guardian Life Services",
+  "4": "ProTech Insurance Solutions",
+  "5": "Dynasty Coverage Group",
+};
+
+const AgencyAgentsView = ({ agencyId, onBackToAgencies }: AgencyAgentsViewProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const { startImpersonation } = useImpersonation();
+
+  const agencyName = agencyNames[agencyId as keyof typeof agencyNames] || `Agency ${agencyId}`;
+  const agents = mockAgencyAgents[agencyId as keyof typeof mockAgencyAgents] || [];
 
   const handleImpersonateAgent = (agent: any) => {
     const impersonationData = {
       id: agent.id.toString(),
       name: agent.name,
-      email: `${agent.name.toLowerCase().replace(/\s+/g, '.')}@${agent.agency.toLowerCase().replace(/\s+/g, '')}.com`
+      email: `${agent.name.toLowerCase().replace(/\s+/g, '.')}@${agencyName.toLowerCase().replace(/\s+/g, '')}.com`
     };
     startImpersonation(impersonationData);
     toast.success(`Now impersonating ${agent.name}`);
@@ -50,20 +74,25 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
     return <Badge variant="destructive">{score}</Badge>;
   };
 
-  const filteredAgents = mockAgents.filter(agent =>
+  const filteredAgents = agents.filter(agent =>
     agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.agency.toLowerCase().includes(searchTerm.toLowerCase())
+    agent.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Agent Management</h1>
-          <p className="text-gray-600">Cross-agency agent oversight and performance management</p>
+          <div className="flex items-center gap-2 mb-2">
+            <Button variant="ghost" size="sm" onClick={onBackToAgencies} className="p-1">
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <h1 className="text-3xl font-bold">{agencyName} - Agents</h1>
+          </div>
+          <p className="text-gray-600">Manage agents for {agencyName}</p>
         </div>
-        <Button variant="outline" onClick={onBackToDashboard}>
-          Back to Dashboard
+        <Button variant="outline" onClick={onBackToAgencies}>
+          Back to Agencies
         </Button>
       </div>
 
@@ -72,7 +101,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
           <div className="flex justify-between items-center">
             <CardTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" />
-              Agents ({filteredAgents.length})
+              {agencyName} Agents ({filteredAgents.length})
             </CardTitle>
             <div className="flex gap-2">
               <div className="relative">
@@ -86,7 +115,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
               </div>
               <Button size="sm" className="flex items-center gap-2">
                 <UserCheck className="w-4 h-4" />
-                Assign Agent
+                Add Agent
               </Button>
             </div>
           </div>
@@ -96,7 +125,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead>Agent Name</TableHead>
-                <TableHead>Agency</TableHead>
+                <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Performance Score</TableHead>
                 <TableHead>Last Login</TableHead>
@@ -107,7 +136,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
               {filteredAgents.map((agent) => (
                 <TableRow key={agent.id}>
                   <TableCell className="font-medium">{agent.name}</TableCell>
-                  <TableCell>{agent.agency}</TableCell>
+                  <TableCell>{agent.role}</TableCell>
                   <TableCell>{getStatusBadge(agent.status)}</TableCell>
                   <TableCell>{getPerformanceBadge(agent.performance)}</TableCell>
                   <TableCell>{agent.lastLogin}</TableCell>
@@ -139,4 +168,4 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
   );
 };
 
-export default AgentManagement;
+export default AgencyAgentsView;

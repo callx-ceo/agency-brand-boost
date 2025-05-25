@@ -10,7 +10,8 @@ import {
   PhoneCall,
   UsersRound,
   Lock,
-  Bell
+  Bell,
+  BarChart3
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -30,6 +31,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
   const unreadNotifications = 3;
 
   const menuItems = [
+    { id: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-5 h-5" /> },
     { id: "general", label: "Admin", icon: <Settings className="w-5 h-5" /> },
     { id: "team", label: "Team Members", icon: <Users className="w-5 h-5" /> },
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },

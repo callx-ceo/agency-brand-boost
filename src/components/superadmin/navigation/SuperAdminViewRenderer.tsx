@@ -16,22 +16,29 @@ import AgencyAgentsView from "../entities/AgencyAgentsView";
 import CampaignDetailView from "../entities/CampaignDetailView";
 import ReportRenderer from "../reporting/ReportRenderer";
 import GoalsManagement from "../goals/GoalsManagement";
+import OfferStatistics from "../entities/OfferStatistics";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
   selectedAgencyId?: string | null;
+  selectedOfferId?: string | null;
   onViewChange: (view: SuperAdminViewType) => void;
   onViewAgencyAgents?: (agencyId: string) => void;
 }
 
 const SuperAdminViewRenderer = ({ 
   activeView, 
-  selectedAgencyId, 
+  selectedAgencyId,
+  selectedOfferId, 
   onViewChange, 
   onViewAgencyAgents 
 }: SuperAdminViewRendererProps) => {
   const handleBackToDashboard = () => {
     onViewChange('dashboard');
+  };
+
+  const handleViewOfferStatistics = (offerId: string) => {
+    onViewChange('offer-statistics');
   };
 
   console.log('SuperAdminViewRenderer - Active view:', activeView);
@@ -41,7 +48,6 @@ const SuperAdminViewRenderer = ({
       return (
         <AgencyManagement 
           onBackToDashboard={handleBackToDashboard}
-          onViewAgencyAgents={onViewAgencyAgents}
         />
       );
     
@@ -58,7 +64,21 @@ const SuperAdminViewRenderer = ({
       return <CampaignManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'offers':
-      return <OfferManagement onBackToDashboard={handleBackToDashboard} />;
+      return (
+        <OfferManagement 
+          onBackToDashboard={handleBackToDashboard}
+          onViewOfferStatistics={handleViewOfferStatistics}
+        />
+      );
+
+    case 'offer-statistics':
+      return (
+        <OfferStatistics 
+          offerId={selectedOfferId || ''}
+          onBackToDashboard={handleBackToDashboard}
+          onBackToOffers={() => onViewChange('offers')}
+        />
+      );
     
     case 'analytics':
       return <AdvancedAnalytics onBackToDashboard={handleBackToDashboard} />;
@@ -82,14 +102,12 @@ const SuperAdminViewRenderer = ({
       return (
         <AgencyAgentsView 
           agencyId={selectedAgencyId || ''} 
-          onBackToDashboard={handleBackToDashboard}
         />
       );
     
     case 'contacts':
       return (
         <CampaignDetailView 
-          campaignId="placeholder" 
           onBackToDashboard={handleBackToDashboard}
         />
       );

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ interface Offer {
 
 interface OfferManagementProps {
   onBackToDashboard: () => void;
+  onViewOfferStatistics: (offerId: string) => void;
 }
 
 const mockOffers: Offer[] = [
@@ -132,7 +132,7 @@ const mockOffers: Offer[] = [
   }
 ];
 
-const OfferManagement = ({ onBackToDashboard }: OfferManagementProps) => {
+const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferManagementProps) => {
   const [offers, setOffers] = useState<Offer[]>(mockOffers);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -272,7 +272,12 @@ const OfferManagement = ({ onBackToDashboard }: OfferManagementProps) => {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="font-medium">{offer.name}</span>
+                      <button
+                        onClick={() => onViewOfferStatistics(offer.id)}
+                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                      >
+                        {offer.name}
+                      </button>
                     </div>
                   </TableCell>
                   <TableCell>{offer.type}</TableCell>

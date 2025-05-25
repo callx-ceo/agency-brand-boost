@@ -15,6 +15,7 @@ const SuperAdminDashboard = () => {
   const [showWidgetSelector, setShowWidgetSelector] = useState(false);
   const [activeView, setActiveView] = useState<SuperAdminViewType>('dashboard');
   const [selectedAgencyId, setSelectedAgencyId] = useState<string | null>(null);
+  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
   
   const {
     selectedKPIs,
@@ -29,6 +30,17 @@ const SuperAdminDashboard = () => {
   const handleViewAgencyAgents = (agencyId: string) => {
     setSelectedAgencyId(agencyId);
     setActiveView('agency-agents');
+  };
+
+  const handleViewChange = (view: SuperAdminViewType) => {
+    setActiveView(view);
+    // Reset selected IDs when changing views
+    if (view !== 'agency-agents') {
+      setSelectedAgencyId(null);
+    }
+    if (view !== 'offer-statistics') {
+      setSelectedOfferId(null);
+    }
   };
 
   if (showKPISelector) {
@@ -81,7 +93,7 @@ const SuperAdminDashboard = () => {
         <div className="flex">
           <SuperAdminSidebar 
             activeView={activeView} 
-            onViewChange={setActiveView} 
+            onViewChange={handleViewChange} 
           />
           <div className="flex-1 p-8">
             <ImpersonationBanner />
@@ -89,7 +101,8 @@ const SuperAdminDashboard = () => {
               <SuperAdminViewRenderer
                 activeView={activeView}
                 selectedAgencyId={selectedAgencyId}
-                onViewChange={setActiveView}
+                selectedOfferId={selectedOfferId}
+                onViewChange={handleViewChange}
                 onViewAgencyAgents={handleViewAgencyAgents}
               />
             ) : (
@@ -97,7 +110,7 @@ const SuperAdminDashboard = () => {
                 activeView={activeView}
                 selectedKPIs={selectedKPIs}
                 selectedWidgets={selectedWidgets}
-                onViewChange={setActiveView}
+                onViewChange={handleViewChange}
                 onCustomizeKPIs={() => setShowKPISelector(true)}
                 onCustomizeWidgets={() => setShowWidgetSelector(true)}
               />

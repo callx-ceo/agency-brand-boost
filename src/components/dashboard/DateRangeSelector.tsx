@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { CalendarRange, Calendar as CalendarIcon } from "lucide-react";
+import { CalendarRange } from "lucide-react";
 import { format, subDays, subMonths, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
 import { cn } from "@/lib/utils";
+import type { DateRange as ReactDayPickerDateRange } from "react-day-picker";
 
 interface DateRange {
   from: Date | undefined;
@@ -83,6 +83,14 @@ const DateRangeSelector = ({ value, onChange, className }: DateRangeSelectorProp
     }
   };
 
+  const handleCalendarSelect = (range: ReactDayPickerDateRange | undefined) => {
+    const newRange: DateRange = {
+      from: range?.from,
+      to: range?.to
+    };
+    setTempRange(newRange);
+  };
+
   const formatDateRange = () => {
     if (!value.from) return "Select date range";
     if (!value.to) return format(value.from, "MMM dd, yyyy");
@@ -134,7 +142,7 @@ const DateRangeSelector = ({ value, onChange, className }: DateRangeSelectorProp
               <Calendar
                 mode="range"
                 selected={tempRange}
-                onSelect={(range) => setTempRange(range || { from: undefined, to: undefined })}
+                onSelect={handleCalendarSelect}
                 numberOfMonths={2}
                 className="pointer-events-auto"
               />

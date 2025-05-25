@@ -195,8 +195,8 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Agency Name</TableHead>
               <TableHead>Contact</TableHead>
+              <TableHead>Agency Name</TableHead>
               <TableHead>Agent Name</TableHead>
               <TableHead>Business Type</TableHead>
               <TableHead>Date Submitted</TableHead>
@@ -207,12 +207,6 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
           <TableBody>
             {applications.map((application) => (
               <TableRow key={application.id}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-blue-500" />
-                    {application.agencyName}
-                  </div>
-                </TableCell>
                 <TableCell>
                   <div>
                     <div className="font-medium">{application.contactName}</div>
@@ -224,6 +218,12 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                       <Phone className="w-3 h-3" />
                       {application.phone}
                     </div>
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-blue-500" />
+                    {application.agencyName}
                   </div>
                 </TableCell>
                 <TableCell>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, Search, Filter, Edit, FileText } from "lucide-react";
+import DateRangeSelector from "./DateRangeSelector";
 
 // Mock data based on the screenshot
 const mockContactsData = [
@@ -36,6 +36,10 @@ const ContactsReports = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStage, setSelectedStage] = useState("all");
   const [selectedDisposition, setSelectedDisposition] = useState("all");
+  const [dateRange, setDateRange] = useState({
+    from: new Date(),
+    to: new Date()
+  });
 
   const filteredData = mockContactsData.filter(contact => {
     const matchesSearch = contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -76,7 +80,10 @@ const ContactsReports = () => {
               className="pl-10"
             />
           </div>
-          <Input type="date" placeholder="Created Date..." className="w-auto" />
+          <DateRangeSelector
+            value={dateRange}
+            onChange={setDateRange}
+          />
           <Select value={selectedStage} onValueChange={setSelectedStage}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Select Stage..." />

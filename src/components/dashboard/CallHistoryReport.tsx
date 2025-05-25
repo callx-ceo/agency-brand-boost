@@ -1,12 +1,11 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Phone, Download, ChevronDown, ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import DateRangeSelector from "./DateRangeSelector";
 
 // Mock data based on the Call History image
 const mockCallHistoryData = [
@@ -86,8 +85,11 @@ const mockCallHistoryData = [
 
 const CallHistoryReport = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPeriod, setSelectedPeriod] = useState("today");
   const [expandedCall, setExpandedCall] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState({
+    from: new Date(),
+    to: new Date()
+  });
 
   const filteredCalls = mockCallHistoryData.filter(call => 
     call.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,29 +152,25 @@ const CallHistoryReport = () => {
           <div className="flex justify-between items-center">
             <CardTitle>History</CardTitle>
             <div className="flex gap-2">
-              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="week">This Week</SelectItem>
-                  <SelectItem value="month">This Month</SelectItem>
-                </SelectContent>
-              </Select>
               <Button variant="outline" size="sm">
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
             </div>
           </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="User name or phone..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 max-w-md"
+          <div className="flex gap-4 items-center flex-wrap">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="User name or phone..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <DateRangeSelector
+              value={dateRange}
+              onChange={setDateRange}
             />
           </div>
         </CardHeader>

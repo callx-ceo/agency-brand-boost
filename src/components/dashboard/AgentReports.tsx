@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Download, Search, Filter } from "lucide-react";
+import DateRangeSelector from "./DateRangeSelector";
 
 // Mock data based on the screenshot
 const mockAgentData = [
@@ -21,7 +21,10 @@ const mockAgentData = [
 
 const AgentReports = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [dateRange, setDateRange] = useState("Apr 25, 2025 - May 24, 2025");
+  const [dateRange, setDateRange] = useState({
+    from: new Date(2025, 3, 25), // Apr 25, 2025
+    to: new Date(2025, 4, 24)    // May 24, 2025
+  });
 
   const filteredData = mockAgentData.filter(agent =>
     agent.agent.toLowerCase().includes(searchTerm.toLowerCase())
@@ -33,7 +36,6 @@ const AgentReports = () => {
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
             Agent Reports
-            <Badge variant="secondary">{dateRange}</Badge>
           </CardTitle>
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
@@ -46,7 +48,7 @@ const AgentReports = () => {
             </Button>
           </div>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center flex-wrap">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
@@ -56,15 +58,10 @@ const AgentReports = () => {
               className="pl-10"
             />
           </div>
-          <div className="flex gap-2">
-            <Badge>Today</Badge>
-            <Badge variant="outline">Yesterday</Badge>
-            <Badge variant="outline">Last 7 days</Badge>
-            <Badge variant="outline">Last 30 days</Badge>
-            <Badge variant="outline">Last Month</Badge>
-            <Badge variant="outline">This Month</Badge>
-            <Badge variant="outline">This Year</Badge>
-          </div>
+          <DateRangeSelector
+            value={dateRange}
+            onChange={setDateRange}
+          />
         </div>
       </CardHeader>
       <CardContent>

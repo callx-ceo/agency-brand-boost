@@ -16,6 +16,7 @@ import CampaignDetailView from "../entities/CampaignDetailView";
 import ReportRenderer from "../reporting/ReportRenderer";
 import GoalsManagement from "../goals/GoalsManagement";
 import OfferStatistics from "../entities/OfferStatistics";
+import OfferDetails from "../entities/OfferDetails";
 import ContactsManagement from "../entities/ContactsManagement";
 
 interface SuperAdminViewRendererProps {
@@ -38,6 +39,14 @@ const SuperAdminViewRenderer = ({
   };
 
   const handleViewOfferStatistics = (offerId: string) => {
+    onViewChange('offer-statistics');
+  };
+
+  const handleSwitchToOfferDetails = () => {
+    onViewChange('offer-details');
+  };
+
+  const handleSwitchToOfferStatistics = () => {
     onViewChange('offer-statistics');
   };
 
@@ -78,6 +87,17 @@ const SuperAdminViewRenderer = ({
           offerId={selectedOfferId || ''}
           onBackToDashboard={handleBackToDashboard}
           onBackToOffers={() => onViewChange('offers')}
+          onSwitchToDetails={handleSwitchToOfferDetails}
+        />
+      );
+    
+    case 'offer-details':
+      return (
+        <OfferDetails 
+          offerId={selectedOfferId || ''}
+          onBackToDashboard={handleBackToDashboard}
+          onBackToOffers={() => onViewChange('offers')}
+          onSwitchToStatistics={handleSwitchToOfferStatistics}
         />
       );
     

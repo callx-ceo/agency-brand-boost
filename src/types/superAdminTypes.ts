@@ -14,6 +14,7 @@ export type SuperAdminViewType =
   | 'campaigns'
   | 'offers'
   | 'offer-statistics'
+  | 'offer-details'
   | 'contacts'
   | 'reports-campaigns'
   | 'reports-campaigns-by-publisher'

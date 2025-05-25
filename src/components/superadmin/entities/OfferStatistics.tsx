@@ -11,9 +11,10 @@ interface OfferStatisticsProps {
   offerId: string;
   onBackToDashboard: () => void;
   onBackToOffers: () => void;
+  onSwitchToDetails: () => void;
 }
 
-const OfferStatistics = ({ offerId, onBackToDashboard, onBackToOffers }: OfferStatisticsProps) => {
+const OfferStatistics = ({ offerId, onBackToDashboard, onBackToOffers, onSwitchToDetails }: OfferStatisticsProps) => {
   // Mock data for the selected offer
   const offerData = {
     id: offerId,
@@ -78,8 +79,20 @@ const OfferStatistics = ({ offerId, onBackToDashboard, onBackToOffers }: OfferSt
             </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">Offer Details</Button>
+      </div>
+
+      {/* Tabs */}
+      <div className="border-b">
+        <div className="flex gap-8">
+          <button className="pb-2 text-blue-600 border-b-2 border-blue-600 font-medium">
+            OFFER STATISTICS
+          </button>
+          <button 
+            onClick={onSwitchToDetails}
+            className="pb-2 text-gray-600 hover:text-blue-600"
+          >
+            OFFER DETAILS
+          </button>
         </div>
       </div>
 

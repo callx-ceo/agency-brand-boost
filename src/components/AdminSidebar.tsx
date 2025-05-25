@@ -13,7 +13,8 @@ import {
   Bell,
   BarChart3,
   Clock,
-  UserCheck
+  UserCheck,
+  History
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -46,6 +47,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       requiredPlan: "Enterprise"
     },
     { id: "reports", label: "Reports", icon: <BarChart3 className="w-5 h-5" /> },
+    { id: "call-history", label: "Call History", icon: <History className="w-5 h-5" /> },
     { id: "contacts", label: "Contacts", icon: <UserCheck className="w-5 h-5" /> },
     { id: "referrals", label: "Referral Program", icon: <Link className="w-5 h-5" /> },
     { 

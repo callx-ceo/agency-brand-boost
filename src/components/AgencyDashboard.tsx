@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +11,7 @@ import KPICardSelector, { KPIConfig } from "./dashboard/KPICardSelector";
 import AgentReports from "./dashboard/AgentReports";
 import ContactsReports from "./dashboard/ContactsReports";
 import RealtimeReport from "./dashboard/RealtimeReport";
+import CallHistoryReport from "./dashboard/CallHistoryReport";
 
 // Mock data for the dashboard - expanded with new KPIs
 const mockDashboardData = {
@@ -36,7 +36,7 @@ const mockDashboardData = {
   underwritingAP: 45123.67
 };
 
-type ViewType = 'dashboard' | 'agent-reports' | 'contacts' | 'realtime-report';
+type ViewType = 'dashboard' | 'agent-reports' | 'contacts' | 'realtime-report' | 'call-history';
 
 const AgencyDashboard = () => {
   const [showKPISelector, setShowKPISelector] = useState(false);
@@ -135,6 +135,23 @@ const AgencyDashboard = () => {
     );
   }
 
+  if (activeView === 'call-history') {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Call History</h1>
+            <p className="text-gray-600">View call records and detailed AI-generated summaries</p>
+          </div>
+          <Button variant="outline" onClick={() => setActiveView('dashboard')}>
+            Back to Dashboard
+          </Button>
+        </div>
+        <CallHistoryReport />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -184,6 +201,13 @@ const AgencyDashboard = () => {
           onClick={() => setActiveView('realtime-report')}
         >
           Realtime
+        </Button>
+        <Button 
+          variant={activeView === 'call-history' ? 'default' : 'outline'} 
+          size="sm"
+          onClick={() => setActiveView('call-history')}
+        >
+          Call History
         </Button>
       </div>
 

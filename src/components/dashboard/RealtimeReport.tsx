@@ -1,15 +1,16 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Download, Search, Filter, ChevronDown, ChevronRight, Headphones, Eye, Phone, Radio } from "lucide-react";
+import { Download, Search, Filter, ChevronDown, ChevronRight, Headphones, Eye, Phone, Radio, Building2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import DateRangeSelector from "./DateRangeSelector";
 import LiveCallModal from "./LiveCallModal";
 
-// Enhanced mock real-time call data with detailed information
+// Enhanced mock real-time call data with agency information
 const mockRealtimeData = [
   {
     id: "rt-001",
@@ -27,6 +28,8 @@ const mockRealtimeData = [
     aiScore: 85,
     duration: "2:15",
     agent: "Sarah Johnson",
+    agency: "Elite Insurance Group",
+    agencyId: "agency-001",
     status: "Active",
     contact: {
       name: "Robert Martinez",
@@ -65,6 +68,8 @@ const mockRealtimeData = [
     aiScore: 62,
     duration: "1:45",
     agent: "Mike Wilson",
+    agency: "Premier Call Solutions",
+    agencyId: "agency-002",
     status: "On Hold",
     contact: {
       name: "Linda Thompson",
@@ -102,6 +107,8 @@ const mockRealtimeData = [
     aiScore: 74,
     duration: "3:20",
     agent: "Jennifer Davis",
+    agency: "Elite Insurance Group",
+    agencyId: "agency-001",
     status: "Completed",
     contact: {
       name: "William Garcia",
@@ -140,7 +147,8 @@ const RealtimeReport = () => {
     call.callerId.includes(searchTerm) ||
     call.publisherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     call.campaignName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    call.contact.name.toLowerCase().includes(searchTerm.toLowerCase())
+    call.contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    call.agency.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getScoreColor = (score: number) => {
@@ -233,6 +241,7 @@ const RealtimeReport = () => {
             <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
               <div className="col-span-2">Contact</div>
               <div>Caller ID</div>
+              <div>Agency</div>
               <div>Campaign</div>
               <div>Duration</div>
               <div>Agent</div>
@@ -266,6 +275,10 @@ const RealtimeReport = () => {
                     </div>
                   </div>
                   <div>{call.callerId}</div>
+                  <div className="flex items-center gap-1">
+                    <Building2 className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-blue-600 font-medium">{call.agency}</span>
+                  </div>
                   <div className="text-sm truncate" title={call.campaignName}>{call.campaignName}</div>
                   <div>{call.duration}</div>
                   <div className="text-sm">{call.agent}</div>
@@ -340,6 +353,11 @@ const RealtimeReport = () => {
                           <div><span className="font-medium">Call Record ID:</span> {call.callRecordId}</div>
                           <div><span className="font-medium">Promo Number:</span> {call.promoNumber}</div>
                           <div><span className="font-medium">Call Type:</span> {call.callType}</div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">Agency:</span> 
+                            <Building2 className="w-4 h-4 text-gray-500" />
+                            <span className="text-blue-600 font-medium">{call.agency}</span>
+                          </div>
                           <div><span className="font-medium">Publisher:</span> {call.publisherName}</div>
                           <div><span className="font-medium">Campaign:</span> {call.campaignName}</div>
                           <div><span className="font-medium">Type:</span> {call.type}</div>

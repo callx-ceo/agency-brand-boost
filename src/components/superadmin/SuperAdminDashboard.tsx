@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { BarChart3, Building2, Users, Megaphone, Globe, TrendingUp, Shield, Activity, UserCheck, Settings, DollarSign, AlertTriangle, Server, CheckCircle } from "lucide-react";
 import SuperAdminSidebar from "./layout/SuperAdminSidebar";
@@ -56,7 +57,8 @@ type SuperAdminViewType =
   | 'compliance' 
   | 'system-health'
   | 'user-management'
-  | 'global-reporting';
+  | 'global-reporting'
+  | 'agency-agents';
 
 const SuperAdminDashboard = () => {
   const [showKPISelector, setShowKPISelector] = useState(false);

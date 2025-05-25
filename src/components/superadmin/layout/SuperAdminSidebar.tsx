@@ -43,7 +43,8 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     complianceIssues: 1,
     systemAlerts: 5,
     newLeads: 47,
-    pendingContacts: 12
+    pendingContacts: 12,
+    pendingApplications: 15
   };
 
   // Dashboard & Analytics sections
@@ -92,7 +93,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "offers", label: "Offers", icon: <DollarSign className="w-5 h-5" /> },
   ];
 
-  // Lead & Contact Management sections
+  // Lead & Contact Management sections - added Agency Applications
   const leadContactSections = [
     { 
       id: "leads", 
@@ -106,6 +107,12 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       label: "Contacts Management", 
       icon: <ContactRound className="w-5 h-5" />,
       badge: mockAlerts.pendingContacts > 0 ? mockAlerts.pendingContacts : undefined
+    },
+    { 
+      id: "agency-applications", 
+      label: "Agency Applications", 
+      icon: <FileText className="w-5 h-5" />,
+      badge: mockAlerts.pendingApplications > 0 ? mockAlerts.pendingApplications : undefined
     },
   ];
 

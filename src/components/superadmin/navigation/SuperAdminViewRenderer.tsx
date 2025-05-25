@@ -18,6 +18,7 @@ import GoalsManagement from "../goals/GoalsManagement";
 import OfferDetails from "../entities/OfferDetails";
 import ContactsManagement from "../entities/ContactsManagement";
 import LeadsManagement from "../entities/LeadsManagement";
+import AgencyApplicationsManagement from "../entities/AgencyApplicationsManagement";
 import ContactsReports from "../../dashboard/ContactsReports";
 import AgentListReport from "../reporting/AgentListReport";
 import RealtimeReport from "../../dashboard/RealtimeReport";
@@ -123,26 +124,11 @@ const SuperAdminViewRenderer = ({
         <ContactsManagement onBackToDashboard={handleBackToDashboard} />
       );
     
-    case 'leads-list':
+    case 'agency-applications':
       return (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold">All Leads List</h1>
-              <p className="text-gray-600">Comprehensive leads list from all marketing campaigns across agencies</p>
-            </div>
-            <button 
-              onClick={handleBackToDashboard}
-              className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-            >
-              Back to Dashboard
-            </button>
-          </div>
-          <ContactsReports />
-        </div>
+        <AgencyApplicationsManagement onBackToDashboard={handleBackToDashboard} />
       );
     
-    // Report cases - added reports-realtime
     case 'reports-realtime':
     case 'reports-campaigns':
     case 'reports-campaigns-by-publisher':
@@ -161,6 +147,25 @@ const SuperAdminViewRenderer = ({
     
     case 'reports-agent-list':
       return <AgentListReport onBackToDashboard={handleBackToDashboard} />;
+
+    case 'leads-list':
+      return (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold">All Leads List</h1>
+              <p className="text-gray-600">Comprehensive leads list from all marketing campaigns across agencies</p>
+            </div>
+            <button 
+              onClick={handleBackToDashboard}
+              className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+            >
+              Back to Dashboard
+            </button>
+          </div>
+          <ContactsReports />
+        </div>
+      );
     
     default:
       return (

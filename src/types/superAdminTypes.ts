@@ -16,6 +16,7 @@ export type SuperAdminViewType =
   | 'offer-statistics'
   | 'offer-details'
   | 'contacts'
+  | 'leads-list'
   | 'reports-campaigns'
   | 'reports-campaigns-by-publisher'
   | 'reports-publisher-by-manager'

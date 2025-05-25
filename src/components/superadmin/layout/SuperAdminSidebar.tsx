@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
@@ -20,7 +19,8 @@ import {
   ChevronDown,
   ChevronRight,
   Hash,
-  ContactRound
+  ContactRound,
+  List
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -85,6 +85,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
     { id: "offers", label: "Offers", icon: <DollarSign className="w-5 h-5" /> },
     { id: "contacts", label: "Contacts", icon: <ContactRound className="w-5 h-5" /> },
+    { id: "leads-list", label: "Leads List", icon: <List className="w-5 h-5" /> },
   ];
 
   // System & Administration sections

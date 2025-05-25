@@ -18,6 +18,7 @@ import ReportRenderer from "../reporting/ReportRenderer";
 import GoalsManagement from "../goals/GoalsManagement";
 import OfferDetails from "../entities/OfferDetails";
 import ContactsManagement from "../entities/ContactsManagement";
+import ContactsReports from "../../dashboard/ContactsReports";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -113,6 +114,25 @@ const SuperAdminViewRenderer = ({
     case 'contacts':
       return (
         <ContactsManagement onBackToDashboard={handleBackToDashboard} />
+      );
+    
+    case 'leads-list':
+      return (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold">Global Leads List</h1>
+              <p className="text-gray-600">Comprehensive lead management and tracking across all agencies</p>
+            </div>
+            <button 
+              onClick={handleBackToDashboard}
+              className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+            >
+              Back to Dashboard
+            </button>
+          </div>
+          <ContactsReports />
+        </div>
       );
     
     // Report cases

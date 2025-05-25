@@ -34,14 +34,14 @@ const mockContactsData = [
 
 const ContactsReports = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStage, setSelectedStage] = useState("");
-  const [selectedDisposition, setSelectedDisposition] = useState("");
+  const [selectedStage, setSelectedStage] = useState("all");
+  const [selectedDisposition, setSelectedDisposition] = useState("all");
 
   const filteredData = mockContactsData.filter(contact => {
     const matchesSearch = contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          contact.phone.includes(searchTerm);
-    const matchesStage = !selectedStage || contact.stage === selectedStage;
-    const matchesDisposition = !selectedDisposition || contact.disposition === selectedDisposition;
+    const matchesStage = selectedStage === "all" || contact.stage === selectedStage;
+    const matchesDisposition = selectedDisposition === "all" || contact.disposition === selectedDisposition;
     
     return matchesSearch && matchesStage && matchesDisposition;
   });
@@ -82,7 +82,7 @@ const ContactsReports = () => {
               <SelectValue placeholder="Select Stage..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Stages</SelectItem>
+              <SelectItem value="all">All Stages</SelectItem>
               <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="Refund">Refund</SelectItem>
               <SelectItem value="Application Submitted">Application Submitted</SelectItem>
@@ -95,7 +95,7 @@ const ContactsReports = () => {
               <SelectValue placeholder="Select Disposition..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Dispositions</SelectItem>
+              <SelectItem value="all">All Dispositions</SelectItem>
               <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="Benefits">Benefits</SelectItem>
               <SelectItem value="No one on phone">No one on phone</SelectItem>

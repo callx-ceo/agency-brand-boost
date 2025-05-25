@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,9 +34,11 @@ const mockDashboardData = {
   underwritingAP: 45123.67
 };
 
+type ViewType = 'dashboard' | 'agent-reports' | 'contacts';
+
 const AgencyDashboard = () => {
   const [showKPISelector, setShowKPISelector] = useState(false);
-  const [activeView, setActiveView] = useState<'dashboard' | 'agent-reports' | 'contacts'>('dashboard');
+  const [activeView, setActiveView] = useState<ViewType>('dashboard');
   
   // Default KPI configuration - agencies can customize this
   const [selectedKPIs, setSelectedKPIs] = useState<KPIConfig[]>([

@@ -31,6 +31,7 @@ const initialContactsData = [
     agencyId: "agency-001",
     agent: "Sarah Johnson",
     leadSource: "Google Ads",
+    leadType: "Call",
     value: "$2,500",
     lastContact: "05/23/25, 05:00 PM",
     notes: "Interested in final expense insurance for spouse"
@@ -46,6 +47,7 @@ const initialContactsData = [
     agencyId: "agency-002",
     agent: "Mike Wilson",
     leadSource: "Facebook",
+    leadType: "Data",
     value: "$1,800",
     lastContact: "05/23/25, 04:56 PM",
     notes: "Customer requested refund due to benefits confusion"
@@ -61,6 +63,7 @@ const initialContactsData = [
     agencyId: "agency-001",
     agent: "Jennifer Davis",
     leadSource: "Direct Mail",
+    leadType: "Call",
     value: "$0",
     lastContact: "05/23/25, 04:49 PM",
     notes: "Multiple call attempts, no response"
@@ -76,6 +79,7 @@ const initialContactsData = [
     agencyId: "agency-001",
     agent: "Sarah Johnson",
     leadSource: "Referral",
+    leadType: "Call",
     value: "$3,200",
     lastContact: "05/23/25, 04:41 PM",
     notes: "Application submitted for $50k term life policy"
@@ -91,6 +95,7 @@ const initialContactsData = [
     agencyId: "agency-002",
     agent: "Mike Wilson",
     leadSource: "Google Ads",
+    leadType: "Data",
     value: "$0",
     lastContact: "05/23/25, 04:18 PM",
     notes: "Customer already has adequate coverage"
@@ -106,6 +111,7 @@ const initialContactsData = [
     agencyId: "agency-001",
     agent: "Jennifer Davis",
     leadSource: "Website",
+    leadType: "Call",
     value: "$2,100",
     lastContact: "05/23/25, 04:08 PM",
     notes: "Follow-up scheduled for next week"
@@ -121,6 +127,7 @@ const initialContactsData = [
     agencyId: "agency-002",
     agent: "Tom Anderson",
     leadSource: "Social Media",
+    leadType: "Data",
     value: "$0",
     lastContact: "05/23/25, 04:07 PM",
     notes: "Unable to reach after 3 attempts"
@@ -136,6 +143,7 @@ const initialContactsData = [
     agencyId: "agency-001",
     agent: "Sarah Johnson",
     leadSource: "Phone Call",
+    leadType: "Call",
     value: "$1,500",
     lastContact: "05/23/25, 04:07 PM",
     notes: "Refund processed due to benefit misunderstanding"
@@ -151,6 +159,7 @@ const initialContactsData = [
     agencyId: "agency-002",
     agent: "Mike Wilson",
     leadSource: "Email Campaign",
+    leadType: "Data",
     value: "$2,800",
     lastContact: "05/23/25, 04:02 PM",
     notes: "Interested in whole life policy"
@@ -166,6 +175,7 @@ const initialContactsData = [
     agencyId: "agency-001",
     agent: "Jennifer Davis",
     leadSource: "Partner Referral",
+    leadType: "Call",
     value: "$4,500",
     lastContact: "05/23/25, 04:01 PM",
     notes: "High-value prospect, needs family coverage"
@@ -482,6 +492,7 @@ const ContactsReports = () => {
             <div>Disposition</div>
             <div>Value</div>
             <div>Lead Source</div>
+            <div>Lead Type</div>
             <div>Last Contact</div>
             <div>Actions</div>
           </div>
@@ -522,6 +533,11 @@ const ContactsReports = () => {
                 <div className="text-sm">{contact.disposition}</div>
                 <div className="font-medium text-green-600">{contact.value}</div>
                 <div className="text-sm">{contact.leadSource}</div>
+                <div className="text-sm">
+                  <Badge variant={contact.leadType === "Call" ? "default" : "outline"}>
+                    {contact.leadType}
+                  </Badge>
+                </div>
                 <div className="text-xs text-gray-500">{contact.lastContact}</div>
                 <div className="action-buttons flex gap-1">
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -560,6 +576,11 @@ const ContactsReports = () => {
                         </div>
                         <div><span className="font-medium">Agent:</span> {contact.agent}</div>
                         <div><span className="font-medium">Lead Source:</span> {contact.leadSource}</div>
+                        <div><span className="font-medium">Lead Type:</span> 
+                          <Badge variant={contact.leadType === "Call" ? "default" : "outline"} className="ml-2">
+                            {contact.leadType}
+                          </Badge>
+                        </div>
                         <div><span className="font-medium">Potential Value:</span> <span className="text-green-600 font-medium">{contact.value}</span></div>
                       </div>
                     </div>

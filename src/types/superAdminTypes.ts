@@ -1,5 +1,4 @@
 
-
 export type SuperAdminViewType = 
   | 'dashboard' 
   | 'agencies' 
@@ -19,6 +18,8 @@ export type SuperAdminViewType =
   | 'leads'
   | 'contacts'
   | 'agency-applications'
+  | 'products'
+  | 'carriers'
   | 'reports-realtime'
   | 'reports-campaigns'
   | 'reports-campaigns-by-publisher'
@@ -35,4 +36,3 @@ export type SuperAdminViewType =
   | 'reports-agent-list'
   | 'reports-agencies'
   | 'goals-management';
-

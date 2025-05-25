@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 import AgencyManagement from "../entities/AgencyManagement";
@@ -7,6 +6,8 @@ import AdvertiserManagement from "../entities/AdvertiserManagement";
 import PublisherManagement from "../entities/PublisherManagement";
 import CampaignManagement from "../entities/CampaignManagement";
 import OfferManagement from "../entities/OfferManagement";
+import ProductsManagement from "../entities/ProductsManagement";
+import CarriersManagement from "../entities/CarriersManagement";
 import AdvancedAnalytics from "../analytics/AdvancedAnalytics";
 import ComplianceReporting from "../analytics/ComplianceReporting";
 import SystemHealthMonitor from "../dashboard/SystemHealthMonitor";
@@ -77,6 +78,12 @@ const SuperAdminViewRenderer = ({
           onViewOfferStatistics={handleViewOfferDetails}
         />
       );
+
+    case 'products':
+      return <ProductsManagement onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'carriers':
+      return <CarriersManagement onBackToDashboard={handleBackToDashboard} />;
 
     case 'offer-statistics':
     case 'offer-details':

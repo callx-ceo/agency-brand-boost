@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
@@ -22,7 +23,9 @@ import {
   ContactRound,
   UserCog,
   Target,
-  UserPlus
+  UserPlus,
+  Package,
+  ClipboardList
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -54,7 +57,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "compliance", label: "Compliance Reporting", icon: <Shield className="w-5 h-5" /> },
   ];
 
-  // Reports sections - added "Realtime" as the first report
+  // Reports sections
   const reportSections = [
     { id: "reports-realtime", label: "Realtime", icon: <Activity className="w-4 h-4" /> },
     { id: "reports-campaigns", label: "Campaigns", icon: <PhoneCall className="w-4 h-4" /> },
@@ -93,7 +96,19 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "offers", label: "Offers", icon: <DollarSign className="w-5 h-5" /> },
   ];
 
-  // Lead & Contact Management sections - added Agency Applications
+  // Agency Management sections - NEW SECTION
+  const agencyManagementSections = [
+    { 
+      id: "agency-applications", 
+      label: "Agency Applications", 
+      icon: <ClipboardList className="w-5 h-5" />,
+      badge: mockAlerts.pendingApplications > 0 ? mockAlerts.pendingApplications : undefined
+    },
+    { id: "products", label: "Products", icon: <Package className="w-5 h-5" /> },
+    { id: "carriers", label: "Carriers", icon: <Building2 className="w-5 h-5" /> },
+  ];
+
+  // Lead & Contact Management sections
   const leadContactSections = [
     { 
       id: "leads", 
@@ -107,12 +122,6 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       label: "Contacts Management", 
       icon: <ContactRound className="w-5 h-5" />,
       badge: mockAlerts.pendingContacts > 0 ? mockAlerts.pendingContacts : undefined
-    },
-    { 
-      id: "agency-applications", 
-      label: "Agency Applications", 
-      icon: <FileText className="w-5 h-5" />,
-      badge: mockAlerts.pendingApplications > 0 ? mockAlerts.pendingApplications : undefined
     },
   ];
 
@@ -232,6 +241,18 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
           </h3>
           <ul>
             {entitySections.map(renderMenuItem)}
+          </ul>
+        </div>
+
+        <Separator className="my-4" />
+
+        {/* Agency Management - NEW SECTION */}
+        <div className="mb-4">
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
+            Agency Management
+          </h3>
+          <ul>
+            {agencyManagementSections.map(renderMenuItem)}
           </ul>
         </div>
 

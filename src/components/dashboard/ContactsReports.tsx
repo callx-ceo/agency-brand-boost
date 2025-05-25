@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,6 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis
+} from "@/components/ui/pagination";
 import { Download, Search, Filter, Edit, FileText, Building2, ChevronDown, ChevronRight } from "lucide-react";
 import DateRangeSelector from "./DateRangeSelector";
 import AddContactModal from "./AddContactModal";
@@ -171,13 +179,17 @@ const ContactsReports = () => {
   const [selectedDisposition, setSelectedDisposition] = useState("all");
   const [selectedAgency, setSelectedAgency] = useState("all");
   const [expandedContact, setExpandedContact] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [dateRange, setDateRange] = useState({
     from: new Date(),
     to: new Date()
   });
 
+  const contactsPerPage = 100;
+
   const handleContactAdded = (newContact: any) => {
     setContactsData(prev => [newContact, ...prev]);
+    setCurrentPage(1); // Reset to first page when adding new contact
   };
 
   const filteredData = contactsData.filter(contact => {
@@ -190,6 +202,17 @@ const ContactsReports = () => {
     
     return matchesSearch && matchesStage && matchesDisposition && matchesAgency;
   });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredData.length / contactsPerPage);
+  const startIndex = (currentPage - 1) * contactsPerPage;
+  const endIndex = startIndex + contactsPerPage;
+  const currentContacts = filteredData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setExpandedContact(null); // Close any expanded contact when changing pages
+  };
 
   const getStageColor = (stage: string) => {
     switch (stage) {
@@ -211,16 +234,165 @@ const ContactsReports = () => {
     setSelectedStage("all");
     setSelectedDisposition("all");
     setSelectedAgency("all");
+    setCurrentPage(1);
   };
 
   // Get unique agencies for filter
   const uniqueAgencies = [...new Set(contactsData.map(contact => contact.agency))];
 
+  // Generate pagination items
+  const generatePaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(i);
+              }}
+              isActive={currentPage === i}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      // Show pagination with ellipsis
+      if (currentPage <= 3) {
+        // Show first few pages
+        for (let i = 1; i <= 4; i++) {
+          items.push(
+            <PaginationItem key={i}>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(i);
+                }}
+                isActive={currentPage === i}
+              >
+                {i}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        }
+        items.push(<PaginationEllipsis key="ellipsis" />);
+        items.push(
+          <PaginationItem key={totalPages}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(totalPages);
+              }}
+            >
+              {totalPages}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      } else if (currentPage >= totalPages - 2) {
+        // Show last few pages
+        items.push(
+          <PaginationItem key={1}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(1);
+              }}
+            >
+              1
+            </PaginationLink>
+          </PaginationItem>
+        );
+        items.push(<PaginationEllipsis key="ellipsis" />);
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          items.push(
+            <PaginationItem key={i}>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(i);
+                }}
+                isActive={currentPage === i}
+              >
+                {i}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        }
+      } else {
+        // Show middle pages
+        items.push(
+          <PaginationItem key={1}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(1);
+              }}
+            >
+              1
+            </PaginationLink>
+          </PaginationItem>
+        );
+        items.push(<PaginationEllipsis key="ellipsis1" />);
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          items.push(
+            <PaginationItem key={i}>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(i);
+                }}
+                isActive={currentPage === i}
+              >
+                {i}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        }
+        items.push(<PaginationEllipsis key="ellipsis2" />);
+        items.push(
+          <PaginationItem key={totalPages}>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(totalPages);
+              }}
+            >
+              {totalPages}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    }
+    
+    return items;
+  };
+
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle>Global Contacts ({filteredData.length} of {contactsData.length})</CardTitle>
+          <CardTitle>
+            Global Contacts ({filteredData.length} of {contactsData.length})
+            {filteredData.length > contactsPerPage && (
+              <span className="text-sm font-normal text-gray-500 ml-2">
+                (Showing {startIndex + 1}-{Math.min(endIndex, filteredData.length)} of {filteredData.length})
+              </span>
+            )}
+          </CardTitle>
           <div className="flex gap-2">
             <AddContactModal onContactAdded={handleContactAdded} />
             <Button size="sm" variant="outline">
@@ -235,7 +407,10 @@ const ContactsReports = () => {
             <Input
               placeholder="Search name, phone, or email..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // Reset to first page when searching
+              }}
               className="pl-10"
             />
           </div>
@@ -243,7 +418,10 @@ const ContactsReports = () => {
             value={dateRange}
             onChange={setDateRange}
           />
-          <Select value={selectedAgency} onValueChange={setSelectedAgency}>
+          <Select value={selectedAgency} onValueChange={(value) => {
+            setSelectedAgency(value);
+            setCurrentPage(1);
+          }}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select Agency..." />
             </SelectTrigger>
@@ -254,7 +432,10 @@ const ContactsReports = () => {
               ))}
             </SelectContent>
           </Select>
-          <Select value={selectedStage} onValueChange={setSelectedStage}>
+          <Select value={selectedStage} onValueChange={(value) => {
+            setSelectedStage(value);
+            setCurrentPage(1);
+          }}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Select Stage..." />
             </SelectTrigger>
@@ -267,7 +448,10 @@ const ContactsReports = () => {
               <SelectItem value="Qualified">Qualified</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={selectedDisposition} onValueChange={setSelectedDisposition}>
+          <Select value={selectedDisposition} onValueChange={(value) => {
+            setSelectedDisposition(value);
+            setCurrentPage(1);
+          }}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Select Disposition..." />
             </SelectTrigger>
@@ -287,7 +471,7 @@ const ContactsReports = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="space-y-4">
           {/* Table Headers */}
           <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
             <div className="col-span-2">Contact</div>
@@ -303,18 +487,18 @@ const ContactsReports = () => {
           </div>
 
           {/* Table Rows */}
-          {filteredData.map((contact, index) => (
-            <div key={`${contact.phone}-${index}`} className="space-y-2">
+          {currentContacts.map((contact, index) => (
+            <div key={`${contact.phone}-${startIndex + index}`} className="space-y-2">
               <div 
                 className="grid grid-cols-12 gap-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
                 onClick={(e) => {
                   if (!(e.target as HTMLElement).closest('.action-buttons')) {
-                    toggleExpanded(`${contact.phone}-${index}`);
+                    toggleExpanded(`${contact.phone}-${startIndex + index}`);
                   }
                 }}
               >
                 <div className="col-span-2 flex items-center gap-2">
-                  {expandedContact === `${contact.phone}-${index}` ? (
+                  {expandedContact === `${contact.phone}-${startIndex + index}` ? (
                     <ChevronDown className="w-4 h-4" />
                   ) : (
                     <ChevronRight className="w-4 h-4" />
@@ -350,7 +534,7 @@ const ContactsReports = () => {
               </div>
 
               {/* Expanded Details */}
-              {expandedContact === `${contact.phone}-${index}` && (
+              {expandedContact === `${contact.phone}-${startIndex + index}` && (
                 <div className="ml-6 p-4 bg-gray-50 rounded-lg space-y-4">
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Contact Details */}
@@ -404,6 +588,39 @@ const ContactsReports = () => {
               )}
             </div>
           ))}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-6">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage > 1) handlePageChange(currentPage - 1);
+                      }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {generatePaginationItems()}
+                  
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                      }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -1,9 +1,10 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, Phone, Download, ChevronDown, ChevronRight } from "lucide-react";
+import { Search, Phone, Download, ChevronDown, ChevronRight, Headphones, Eye } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import DateRangeSelector from "./DateRangeSelector";
 
@@ -116,6 +117,21 @@ const CallHistoryReport = () => {
     setExpandedCall(expandedCall === callId ? null : callId);
   };
 
+  const handleListenRecording = (callId: string) => {
+    console.log("Listen to recording for call:", callId);
+    // TODO: Implement recording playback
+  };
+
+  const handleDownloadRecording = (callId: string) => {
+    console.log("Download recording for call:", callId);
+    // TODO: Implement recording download
+  };
+
+  const handleViewContact = (callId: string) => {
+    console.log("View contact for call:", callId);
+    // TODO: Implement contact view
+  };
+
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -177,7 +193,7 @@ const CallHistoryReport = () => {
         <CardContent>
           <div className="space-y-2">
             {/* Table Headers */}
-            <div className="grid grid-cols-9 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
+            <div className="grid grid-cols-10 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
               <div>Contact</div>
               <div>From</div>
               <div>Source</div>
@@ -187,14 +203,20 @@ const CallHistoryReport = () => {
               <div>Agent</div>
               <div>Account Status</div>
               <div>AI Score</div>
+              <div>Actions</div>
             </div>
 
             {/* Table Rows */}
             {filteredCalls.map((call) => (
               <div key={call.id} className="space-y-2">
                 <div 
-                  className="grid grid-cols-9 gap-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
-                  onClick={() => toggleExpanded(call.id)}
+                  className="grid grid-cols-10 gap-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
+                  onClick={(e) => {
+                    // Only toggle expansion if not clicking on action buttons
+                    if (!(e.target as HTMLElement).closest('.action-buttons')) {
+                      toggleExpanded(call.id);
+                    }
+                  }}
                 >
                   <div className="flex items-center gap-2">
                     {expandedCall === call.id ? (
@@ -216,6 +238,44 @@ const CallHistoryReport = () => {
                   </div>
                   <div className={`font-semibold ${getScoreColor(call.aiScore)}`}>
                     {call.aiScore}%
+                  </div>
+                  <div className="action-buttons flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleListenRecording(call.id);
+                      }}
+                      className="h-8 w-8 p-0"
+                      title="Listen to recording"
+                    >
+                      <Headphones className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadRecording(call.id);
+                      }}
+                      className="h-8 w-8 p-0"
+                      title="Download recording"
+                    >
+                      <Download className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewContact(call.id);
+                      }}
+                      className="h-8 w-8 p-0"
+                      title="View contact"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
 

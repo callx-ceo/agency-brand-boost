@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type ViewType = 'dashboard' | 'agent-reports' | 'contacts' | 'realtime-report' | 'call-history';
 
@@ -11,43 +11,15 @@ interface NavigationTabsProps {
 
 const NavigationTabs = ({ activeView, onViewChange }: NavigationTabsProps) => {
   return (
-    <div className="flex gap-2">
-      <Button 
-        variant={activeView === 'dashboard' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onViewChange('dashboard')}
-      >
-        Dashboard
-      </Button>
-      <Button 
-        variant={activeView === 'agent-reports' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onViewChange('agent-reports')}
-      >
-        Agent Reports
-      </Button>
-      <Button 
-        variant={activeView === 'contacts' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onViewChange('contacts')}
-      >
-        Contacts
-      </Button>
-      <Button 
-        variant={activeView === 'realtime-report' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onViewChange('realtime-report')}
-      >
-        Realtime
-      </Button>
-      <Button 
-        variant={activeView === 'call-history' ? 'default' : 'outline'} 
-        size="sm"
-        onClick={() => onViewChange('call-history')}
-      >
-        Call History
-      </Button>
-    </div>
+    <Tabs value={activeView} onValueChange={onViewChange}>
+      <TabsList>
+        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+        <TabsTrigger value="agent-reports">Agent Reports</TabsTrigger>
+        <TabsTrigger value="contacts">Contacts</TabsTrigger>
+        <TabsTrigger value="realtime-report">Realtime</TabsTrigger>
+        <TabsTrigger value="call-history">Call History</TabsTrigger>
+      </TabsList>
+    </Tabs>
   );
 };
 

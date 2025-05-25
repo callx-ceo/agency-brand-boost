@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 
 interface GlobalNavigationTabsProps {
@@ -26,19 +26,19 @@ const GlobalNavigationTabs = ({ activeView, onViewChange }: GlobalNavigationTabs
   ];
 
   return (
-    <div className="flex gap-2 flex-wrap">
-      {tabs.map((tab) => (
-        <Button 
-          key={tab.id}
-          variant={activeView === tab.id ? 'default' : 'outline'} 
-          size="sm"
-          onClick={() => onViewChange(tab.id as SuperAdminViewType)}
-          className="whitespace-nowrap"
-        >
-          {tab.label}
-        </Button>
-      ))}
-    </div>
+    <Tabs value={activeView} onValueChange={onViewChange}>
+      <TabsList className="flex-wrap gap-0">
+        {tabs.map((tab) => (
+          <TabsTrigger 
+            key={tab.id}
+            value={tab.id as SuperAdminViewType}
+            className="whitespace-nowrap"
+          >
+            {tab.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   );
 };
 

@@ -19,7 +19,7 @@ interface BillingTabProps {
 const BillingTab = ({ onWhiteLabelChange }: BillingTabProps) => {
   return (
     <Tabs defaultValue="dashboard" className="w-full">
-      <TabsList className="mb-6">
+      <TabsList className="mb-6 flex-wrap">
         <TabsTrigger value="dashboard">Overview</TabsTrigger>
         <TabsTrigger value="cost-breakdown">Cost Breakdown</TabsTrigger>
         <TabsTrigger value="reporting">Reporting</TabsTrigger>

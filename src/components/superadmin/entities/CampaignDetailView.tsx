@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Campaign } from "@/types/campaignTypes";
@@ -29,40 +28,23 @@ const CampaignDetailView = ({ campaign, onBack }: CampaignDetailViewProps) => {
 
       {/* Tabs Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="border-b">
-          <TabsList className="h-auto p-0 bg-transparent">
-            <TabsTrigger 
-              value="campaign-statistics" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none px-4 py-2"
-            >
-              CAMPAIGN STATISTICS
-            </TabsTrigger>
-            <TabsTrigger 
-              value="campaign-details"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none px-4 py-2"
-            >
-              CAMPAIGN DETAILS
-            </TabsTrigger>
-            <TabsTrigger 
-              value="promo-numbers"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none px-4 py-2"
-            >
-              PROMO NUMBERS
-            </TabsTrigger>
-            <TabsTrigger 
-              value="manage-publishers"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none px-4 py-2"
-            >
-              MANAGE PUBLISHERS
-            </TabsTrigger>
-            <TabsTrigger 
-              value="manage-advertisers"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none px-4 py-2"
-            >
-              MANAGE ADVERTISERS
-            </TabsTrigger>
-          </TabsList>
-        </div>
+        <TabsList>
+          <TabsTrigger value="campaign-statistics">
+            Campaign Statistics
+          </TabsTrigger>
+          <TabsTrigger value="campaign-details">
+            Campaign Details
+          </TabsTrigger>
+          <TabsTrigger value="promo-numbers">
+            Promo Numbers
+          </TabsTrigger>
+          <TabsTrigger value="manage-publishers">
+            Manage Publishers
+          </TabsTrigger>
+          <TabsTrigger value="manage-advertisers">
+            Manage Advertisers
+          </TabsTrigger>
+        </TabsList>
 
         <TabsContent value="campaign-statistics" className="space-y-6">
           <CampaignStatisticsTab campaign={campaign} />

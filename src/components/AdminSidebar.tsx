@@ -11,7 +11,9 @@ import {
   UsersRound,
   Lock,
   Bell,
-  BarChart3
+  BarChart3,
+  Clock,
+  UserCheck
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -43,6 +45,8 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       isGated: !isEnterprise,
       requiredPlan: "Enterprise"
     },
+    { id: "reports", label: "Reports", icon: <BarChart3 className="w-5 h-5" /> },
+    { id: "contacts", label: "Contacts", icon: <UserCheck className="w-5 h-5" /> },
     { id: "referrals", label: "Referral Program", icon: <Link className="w-5 h-5" /> },
     { 
       id: "notifications", 

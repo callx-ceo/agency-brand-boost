@@ -10,6 +10,7 @@ import WalletPanel from "./dashboard/WalletPanel";
 import KPICardSelector, { KPIConfig } from "./dashboard/KPICardSelector";
 import AgentReports from "./dashboard/AgentReports";
 import ContactsReports from "./dashboard/ContactsReports";
+import RealtimeReport from "./dashboard/RealtimeReport";
 
 // Mock data for the dashboard - expanded with new KPIs
 const mockDashboardData = {
@@ -34,7 +35,7 @@ const mockDashboardData = {
   underwritingAP: 45123.67
 };
 
-type ViewType = 'dashboard' | 'agent-reports' | 'contacts';
+type ViewType = 'dashboard' | 'agent-reports' | 'contacts' | 'realtime-report';
 
 const AgencyDashboard = () => {
   const [showKPISelector, setShowKPISelector] = useState(false);
@@ -116,6 +117,23 @@ const AgencyDashboard = () => {
     );
   }
 
+  if (activeView === 'realtime-report') {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Realtime</h1>
+            <p className="text-gray-600">Real-time call monitoring and tracking</p>
+          </div>
+          <Button variant="outline" onClick={() => setActiveView('dashboard')}>
+            Back to Dashboard
+          </Button>
+        </div>
+        <RealtimeReport />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -158,6 +176,13 @@ const AgencyDashboard = () => {
           onClick={() => setActiveView('contacts')}
         >
           Contacts
+        </Button>
+        <Button 
+          variant={activeView === 'realtime-report' ? 'default' : 'outline'} 
+          size="sm"
+          onClick={() => setActiveView('realtime-report')}
+        >
+          Realtime
         </Button>
       </div>
 

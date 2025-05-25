@@ -3,10 +3,46 @@ import { useState } from "react";
 import AdminPanel from "../components/AdminPanel";
 import AdminSidebar from "../components/AdminSidebar";
 import AgencyDashboard from "../components/AgencyDashboard";
+import RealtimeReport from "../components/dashboard/RealtimeReport";
+import ContactsReports from "../components/dashboard/ContactsReports";
 import { Toaster } from "sonner";
 
 const Agency = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "dashboard":
+        return <AgencyDashboard />;
+      case "reports":
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Reports</h1>
+              <p className="text-gray-600">Real-time call monitoring and analytics</p>
+            </div>
+            <RealtimeReport />
+          </div>
+        );
+      case "contacts":
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Contacts</h1>
+              <p className="text-gray-600">Contact management and lead tracking</p>
+            </div>
+            <ContactsReports />
+          </div>
+        );
+      default:
+        return (
+          <>
+            <h1 className="text-3xl font-bold mb-6">Agency Admin Panel</h1>
+            <AdminPanel activeSection={activeSection} />
+          </>
+        );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -14,14 +50,7 @@ const Agency = () => {
       <div className="flex">
         <AdminSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
         <div className="flex-1 p-8">
-          {activeSection === "dashboard" ? (
-            <AgencyDashboard />
-          ) : (
-            <>
-              <h1 className="text-3xl font-bold mb-6">Agency Admin Panel</h1>
-              <AdminPanel activeSection={activeSection} />
-            </>
-          )}
+          {renderContent()}
         </div>
       </div>
     </div>

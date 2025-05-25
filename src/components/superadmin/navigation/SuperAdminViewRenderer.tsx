@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 import AgencyManagement from "../entities/AgencyManagement";
@@ -17,6 +16,7 @@ import CampaignDetailView from "../entities/CampaignDetailView";
 import ReportRenderer from "../reporting/ReportRenderer";
 import GoalsManagement from "../goals/GoalsManagement";
 import OfferStatistics from "../entities/OfferStatistics";
+import ContactsManagement from "../entities/ContactsManagement";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -109,7 +109,7 @@ const SuperAdminViewRenderer = ({
     
     case 'contacts':
       return (
-        <CampaignDetailView />
+        <ContactsManagement onBackToDashboard={handleBackToDashboard} />
       );
     
     // Report cases

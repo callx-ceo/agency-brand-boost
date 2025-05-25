@@ -1,8 +1,10 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Users, Search, UserCheck, Edit, Eye } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
@@ -15,13 +17,16 @@ interface AgentManagementProps {
 const mockAgents = [
   { id: 1, name: "Sarah Johnson", agency: "Elite Insurance Group", status: "active", performance: 94, lastLogin: "1 hour ago" },
   { id: 2, name: "Mike Rodriguez", agency: "Premier Coverage Solutions", status: "active", performance: 87, lastLogin: "30 min ago" },
-  { id: 3, name: "Emily Chen", agency: "Guardian Life Services", status: "training", performance: 76, lastLogin: "2 hours ago" },
+  { id: 3, name: "Emily Chen", agency: "Guardian Life Services", status: "pending", performance: 76, lastLogin: "2 hours ago" },
   { id: 4, name: "David Thompson", agency: "ProTech Insurance", status: "suspended", performance: 45, lastLogin: "3 days ago" },
   { id: 5, name: "Lisa Anderson", agency: "Dynasty Coverage Group", status: "active", performance: 91, lastLogin: "15 min ago" },
+  { id: 6, name: "Robert Wilson", agency: "SecureLife Partners", status: "suspended", performance: 38, lastLogin: "1 week ago" },
+  { id: 7, name: "Jennifer Davis", agency: "TrustGuard Insurance", status: "pending", performance: 82, lastLogin: "4 hours ago" },
 ];
 
 const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
   const { startImpersonation } = useImpersonation();
 
   const handleImpersonateAgent = (agent: any) => {
@@ -38,7 +43,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
     switch (status) {
       case "active": return <Badge variant="default" className="bg-green-100 text-green-800">Active</Badge>;
       case "inactive": return <Badge variant="secondary">Inactive</Badge>;
-      case "training": return <Badge variant="outline" className="bg-blue-100 text-blue-800">Training</Badge>;
+      case "pending": return <Badge variant="outline" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
       case "suspended": return <Badge variant="destructive">Suspended</Badge>;
       default: return <Badge variant="outline">{status}</Badge>;
     }
@@ -50,9 +55,109 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
     return <Badge variant="destructive">{score}</Badge>;
   };
 
-  const filteredAgents = mockAgents.filter(agent =>
-    agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.agency.toLowerCase().includes(searchTerm.toLowerCase())
+  const filterAgentsByStatus = (status: string) => {
+    let filtered = mockAgents;
+    
+    if (status !== "all") {
+      filtered = mockAgents.filter(agent => agent.status === status);
+    }
+    
+    if (searchTerm) {
+      filtered = filtered.filter(agent =>
+        agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        agent.agency.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    return filtered;
+  };
+
+  const getTabCounts = () => {
+    return {
+      all: mockAgents.length,
+      active: mockAgents.filter(a => a.status === "active").length,
+      pending: mockAgents.filter(a => a.status === "pending").length,
+      suspended: mockAgents.filter(a => a.status === "suspended").length,
+    };
+  };
+
+  const tabCounts = getTabCounts();
+
+  const renderAgentsTable = (agents: any[]) => (
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle className="flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            Agents ({agents.length})
+          </CardTitle>
+          <div className="flex gap-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search agents..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8 w-64"
+              />
+            </div>
+            <Button size="sm" className="flex items-center gap-2">
+              <UserCheck className="w-4 h-4" />
+              Assign Agent
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Agent Name</TableHead>
+              <TableHead>Agency</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Performance Score</TableHead>
+              <TableHead>Last Login</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {agents.map((agent) => (
+              <TableRow key={agent.id}>
+                <TableCell className="font-medium">{agent.name}</TableCell>
+                <TableCell>{agent.agency}</TableCell>
+                <TableCell>{getStatusBadge(agent.status)}</TableCell>
+                <TableCell>{getPerformanceBadge(agent.performance)}</TableCell>
+                <TableCell>{agent.lastLogin}</TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="outline" title="View Details">
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="outline" title="Edit Agent">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      title="Impersonate Agent"
+                      onClick={() => handleImpersonateAgent(agent)}
+                    >
+                      <UserCheck className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        
+        {agents.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No agents found.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 
   return (
@@ -67,74 +172,30 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              Agents ({filteredAgents.length})
-            </CardTitle>
-            <div className="flex gap-2">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search agents..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 w-64"
-                />
-              </div>
-              <Button size="sm" className="flex items-center gap-2">
-                <UserCheck className="w-4 h-4" />
-                Assign Agent
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Agent Name</TableHead>
-                <TableHead>Agency</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Performance Score</TableHead>
-                <TableHead>Last Login</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredAgents.map((agent) => (
-                <TableRow key={agent.id}>
-                  <TableCell className="font-medium">{agent.name}</TableCell>
-                  <TableCell>{agent.agency}</TableCell>
-                  <TableCell>{getStatusBadge(agent.status)}</TableCell>
-                  <TableCell>{getPerformanceBadge(agent.performance)}</TableCell>
-                  <TableCell>{agent.lastLogin}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button size="sm" variant="outline" title="View Details">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" title="Edit Agent">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        title="Impersonate Agent"
-                        onClick={() => handleImpersonateAgent(agent)}
-                      >
-                        <UserCheck className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="all">All ({tabCounts.all})</TabsTrigger>
+          <TabsTrigger value="active">Active ({tabCounts.active})</TabsTrigger>
+          <TabsTrigger value="pending">Pending ({tabCounts.pending})</TabsTrigger>
+          <TabsTrigger value="suspended">Suspended ({tabCounts.suspended})</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="all">
+          {renderAgentsTable(filterAgentsByStatus("all"))}
+        </TabsContent>
+        
+        <TabsContent value="active">
+          {renderAgentsTable(filterAgentsByStatus("active"))}
+        </TabsContent>
+        
+        <TabsContent value="pending">
+          {renderAgentsTable(filterAgentsByStatus("pending"))}
+        </TabsContent>
+        
+        <TabsContent value="suspended">
+          {renderAgentsTable(filterAgentsByStatus("suspended"))}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

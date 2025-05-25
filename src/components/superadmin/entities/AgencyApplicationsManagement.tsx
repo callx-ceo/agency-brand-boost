@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Search, CheckCircle, XCircle, Eye, Clock, Building2, Mail, Phone, Calendar, Filter } from "lucide-react";
+import { FileText, Search, Eye, Clock, Building2, Mail, Phone, Calendar, Filter, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 interface AgencyApplicationsManagementProps {
@@ -93,14 +92,14 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [selectedAgency, setSelectedAgency] = useState<string>("all");
 
-  const handleApproveApplication = (applicationId: number) => {
-    toast.success("Application approved successfully");
-    console.log("Approved application:", applicationId);
+  const handleRefreshStatus = (applicationId: number) => {
+    toast.success("Status refreshed from carrier");
+    console.log("Refreshed status for application:", applicationId);
   };
 
-  const handleRejectApplication = (applicationId: number) => {
-    toast.error("Application rejected");
-    console.log("Rejected application:", applicationId);
+  const handleUpdateStatus = (applicationId: number, newStatus: string) => {
+    toast.success(`Application status updated to ${newStatus}`);
+    console.log("Updated application status:", applicationId, newStatus);
   };
 
   const getStatusBadge = (status: string) => {
@@ -247,33 +246,22 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
-                    {application.status === "pending" && (
-                      <>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          title="Approve Application"
-                          onClick={() => handleApproveApplication(application.id)}
-                          className="text-green-600 hover:text-green-700"
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          title="Reject Application"
-                          onClick={() => handleRejectApplication(application.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </Button>
-                      </>
+                    {(application.status === "pending" || application.status === "under-review") && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        title="Refresh Status from Carrier"
+                        onClick={() => handleRefreshStatus(application.id)}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </Button>
                     )}
                     {application.status === "under-review" && (
                       <Button 
                         size="sm" 
                         variant="outline" 
-                        title="Under Review"
+                        title="Under Review by Carrier"
                         disabled
                       >
                         <Clock className="w-4 h-4" />
@@ -300,7 +288,7 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Agency Applications</h1>
-          <p className="text-gray-600">Review and manage agency registration applications</p>
+          <p className="text-gray-600">Track and monitor life insurance applications submitted by agents</p>
         </div>
         <Button variant="outline" onClick={onBackToDashboard}>
           Back to Dashboard
@@ -337,7 +325,7 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
         </TabsContent>
       </Tabs>
 
-      {/* Application Details Modal would go here */}
+      {/* Application Details Modal */}
       {selectedApplication && (
         <Card className="fixed inset-0 z-50 bg-white shadow-lg overflow-auto">
           <CardHeader>
@@ -367,6 +355,21 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                   <div><span className="font-medium">Phone:</span> {selectedApplication.phone}</div>
                   <div><span className="font-medium">Date Submitted:</span> {selectedApplication.dateSubmitted}</div>
                 </div>
+              </div>
+            </div>
+            <div className="mt-6">
+              <h3 className="font-semibold mb-2">Application Status</h3>
+              <div className="flex items-center gap-4">
+                <div>Current Status: {getStatusBadge(selectedApplication.status)}</div>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => handleRefreshStatus(selectedApplication.id)}
+                  className="flex items-center gap-1"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Refresh from Carrier
+                </Button>
               </div>
             </div>
             <div className="mt-6">

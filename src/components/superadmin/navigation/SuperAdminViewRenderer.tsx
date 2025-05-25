@@ -28,36 +28,40 @@ const SuperAdminViewRenderer = ({
   onViewChange, 
   onViewAgencyAgents 
 }: SuperAdminViewRendererProps) => {
+  const handleBackToDashboard = () => {
+    onViewChange('dashboard');
+  };
+
   switch (activeView) {
     case 'agencies':
-      return <AgencyManagement onViewAgencyAgents={onViewAgencyAgents} />;
+      return <AgencyManagement onViewAgents={onViewAgencyAgents} onBackToDashboard={handleBackToDashboard} />;
     
     case 'agents':
-      return <AgentManagement />;
+      return <AgentManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'advertisers':
-      return <AdvertiserManagement />;
+      return <AdvertiserManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'publishers':
-      return <PublisherManagement />;
+      return <PublisherManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'campaigns':
-      return <CampaignManagement />;
+      return <CampaignManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'offers':
-      return <OfferManagement />;
+      return <OfferManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'analytics':
-      return <AdvancedAnalytics />;
+      return <AdvancedAnalytics onBackToDashboard={handleBackToDashboard} />;
     
     case 'compliance':
-      return <ComplianceReporting />;
+      return <ComplianceReporting onBackToDashboard={handleBackToDashboard} />;
     
     case 'system-health':
-      return <SystemHealthMonitor />;
+      return <SystemHealthMonitor onBackToDashboard={handleBackToDashboard} />;
     
     case 'user-management':
-      return <UserRoleManagement />;
+      return <UserRoleManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'global-reporting':
       return <GlobalReporting onBackToDashboard={() => onViewChange('dashboard')} />;
@@ -66,7 +70,7 @@ const SuperAdminViewRenderer = ({
       return selectedAgencyId ? (
         <AgencyAgentsView 
           agencyId={selectedAgencyId} 
-          onBack={() => onViewChange('agencies')} 
+          onBackToAgencies={() => onViewChange('agencies')} 
         />
       ) : (
         <div>No agency selected</div>

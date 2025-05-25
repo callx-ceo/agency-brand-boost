@@ -2,6 +2,8 @@
 import React from "react";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 import CampaignsReport from "./CampaignsReport";
+import AgentReports from "@/components/dashboard/AgentReports";
+import AgencyReports from "./AgencyReports";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText } from "lucide-react";
@@ -57,6 +59,38 @@ const ReportRenderer = ({ activeView, onBackToDashboard }: ReportRendererProps) 
   switch (activeView) {
     case 'reports-campaigns':
       return <CampaignsReport onBackToDashboard={onBackToDashboard} />;
+    
+    case 'reports-agents':
+      return (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold">Agent Reports</h1>
+              <p className="text-gray-600">Agent performance across all agencies</p>
+            </div>
+            <Button variant="outline" onClick={onBackToDashboard}>
+              Back to Dashboard
+            </Button>
+          </div>
+          <AgentReports />
+        </div>
+      );
+    
+    case 'reports-agencies':
+      return (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold">Agency Reports</h1>
+              <p className="text-gray-600">Agency performance metrics and analytics</p>
+            </div>
+            <Button variant="outline" onClick={onBackToDashboard}>
+              Back to Dashboard
+            </Button>
+          </div>
+          <AgencyReports />
+        </div>
+      );
     
     case 'reports-campaigns-by-publisher':
       return (

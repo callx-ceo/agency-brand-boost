@@ -24,4 +24,6 @@ export type SuperAdminViewType =
   | 'reports-advertisers'
   | 'reports-publishers'
   | 'reports-ivr-fees'
-  | 'reports-key-press';
+  | 'reports-key-press'
+  | 'reports-agents'
+  | 'reports-agencies';

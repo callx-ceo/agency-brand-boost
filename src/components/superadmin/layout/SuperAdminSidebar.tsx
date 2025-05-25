@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
@@ -59,6 +58,8 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "reports-offers-by-promo", label: "Offers by Promo #", icon: <Hash className="w-4 h-4" /> },
     { id: "reports-advertisers", label: "Advertisers", icon: <Megaphone className="w-4 h-4" /> },
     { id: "reports-publishers", label: "Publishers", icon: <Globe className="w-4 h-4" /> },
+    { id: "reports-agents", label: "Agents", icon: <Users className="w-4 h-4" /> },
+    { id: "reports-agencies", label: "Agencies", icon: <Building2 className="w-4 h-4" /> },
     { id: "reports-ivr-fees", label: "IVR Fees", icon: <PhoneCall className="w-4 h-4" /> },
     { id: "reports-key-press", label: "Key Press", icon: <Hash className="w-4 h-4" /> },
   ];

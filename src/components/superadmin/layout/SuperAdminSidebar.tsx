@@ -1,5 +1,7 @@
+
 import React from "react";
 import { cn } from "@/lib/utils";
+import { SuperAdminViewType } from "@/types/superAdminTypes";
 import { 
   LayoutDashboard,
   Building2,
@@ -10,32 +12,13 @@ import {
   Shield,
   Activity,
   UserCheck,
-  FileText,
   Settings,
-  Bell,
-  AlertTriangle,
-  Server,
-  Database,
-  Lock,
   TrendingUp,
   PhoneCall,
   DollarSign
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-
-type SuperAdminViewType = 
-  | 'dashboard' 
-  | 'agencies' 
-  | 'agents' 
-  | 'advertisers' 
-  | 'publishers' 
-  | 'analytics' 
-  | 'compliance' 
-  | 'system-health'
-  | 'user-management'
-  | 'global-reporting'
-  | 'agency-agents';
 
 interface SuperAdminSidebarProps {
   activeView: SuperAdminViewType;

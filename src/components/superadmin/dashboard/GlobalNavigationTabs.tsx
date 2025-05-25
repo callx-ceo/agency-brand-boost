@@ -1,17 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-
-type SuperAdminViewType = 
-  | 'dashboard' 
-  | 'agencies' 
-  | 'agents' 
-  | 'advertisers' 
-  | 'publishers' 
-  | 'analytics' 
-  | 'compliance' 
-  | 'system-health'
-  | 'user-management';
+import { SuperAdminViewType } from "@/types/superAdminTypes";
 
 interface GlobalNavigationTabsProps {
   activeView: SuperAdminViewType;
@@ -25,6 +15,8 @@ const GlobalNavigationTabs = ({ activeView, onViewChange }: GlobalNavigationTabs
     { id: 'agents', label: 'Agents' },
     { id: 'advertisers', label: 'Advertisers' },
     { id: 'publishers', label: 'Publishers' },
+    { id: 'campaigns', label: 'Campaigns' },
+    { id: 'offers', label: 'Offers' },
     { id: 'analytics', label: 'Analytics' },
     { id: 'compliance', label: 'Compliance' },
     { id: 'system-health', label: 'System Health' },

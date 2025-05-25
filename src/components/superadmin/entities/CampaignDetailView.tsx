@@ -7,6 +7,7 @@ import DateRangeSelector from "./campaign/DateRangeSelector";
 import CampaignStatisticsTab from "./campaign/CampaignStatisticsTab";
 import CampaignDetailsTab from "./campaign/CampaignDetailsTab";
 import CampaignPlaceholderTab from "./campaign/CampaignPlaceholderTab";
+import PromoNumbersTab from "./campaign/PromoNumbersTab";
 
 interface CampaignDetailViewProps {
   campaign: Campaign;
@@ -71,10 +72,7 @@ const CampaignDetailView = ({ campaign, onBack }: CampaignDetailViewProps) => {
         </TabsContent>
 
         <TabsContent value="promo-numbers">
-          <CampaignPlaceholderTab 
-            title="Promo Numbers" 
-            message="Promo numbers management coming soon..." 
-          />
+          <PromoNumbersTab />
         </TabsContent>
 
         <TabsContent value="manage-publishers">

@@ -6,6 +6,7 @@ import AgencyDashboard from "../components/AgencyDashboard";
 import RealtimeReport from "../components/dashboard/RealtimeReport";
 import ContactsReports from "../components/dashboard/ContactsReports";
 import CallHistoryReport from "../components/dashboard/CallHistoryReport";
+import ApplicationsReport from "../components/dashboard/ApplicationsReport";
 import { Toaster } from "sonner";
 
 const Agency = () => {
@@ -19,10 +20,20 @@ const Agency = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-bold">Reports</h1>
+              <h1 className="text-3xl font-bold">Realtime Report</h1>
               <p className="text-gray-600">Real-time call monitoring and analytics</p>
             </div>
             <RealtimeReport />
+          </div>
+        );
+      case "applications":
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Applications</h1>
+              <p className="text-gray-600">Track and manage insurance applications</p>
+            </div>
+            <ApplicationsReport />
           </div>
         );
       case "call-history":

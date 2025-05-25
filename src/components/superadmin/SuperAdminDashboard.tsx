@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { BarChart3, Building2, Users, Megaphone, Globe, TrendingUp, Shield, Activity, UserCheck, Settings, DollarSign, AlertTriangle, Server, CheckCircle } from "lucide-react";
+import SuperAdminSidebar from "./layout/SuperAdminSidebar";
 import SuperAdminDashboardHeader from "./dashboard/SuperAdminDashboardHeader";
 import GlobalNavigationTabs from "./dashboard/GlobalNavigationTabs";
 import ExecutiveKPIGrid from "./dashboard/ExecutiveKPIGrid";
@@ -178,83 +179,127 @@ const SuperAdminDashboard = () => {
 
   if (showKPISelector) {
     return (
-      <div className="flex justify-center items-start pt-8">
-        <ExecutiveKPISelector
-          selectedKPIs={selectedKPIs}
-          onKPIConfigChange={handleKPIConfigChange}
-          onClose={() => setShowKPISelector(false)}
-        />
+      <div className="min-h-screen bg-gray-100">
+        <div className="flex">
+          <SuperAdminSidebar 
+            activeView={activeView} 
+            onViewChange={setActiveView} 
+          />
+          <div className="flex-1 p-8">
+            <div className="flex justify-center items-start pt-8">
+              <ExecutiveKPISelector
+                selectedKPIs={selectedKPIs}
+                onKPIConfigChange={handleKPIConfigChange}
+                onClose={() => setShowKPISelector(false)}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (showWidgetSelector) {
     return (
-      <div className="flex justify-center items-start pt-8">
-        <SuperAdminWidgetSelector
-          selectedWidgets={selectedWidgets}
-          onWidgetConfigChange={handleWidgetConfigChange}
-          onClose={() => setShowWidgetSelector(false)}
-        />
+      <div className="min-h-screen bg-gray-100">
+        <div className="flex">
+          <SuperAdminSidebar 
+            activeView={activeView} 
+            onViewChange={setActiveView} 
+          />
+          <div className="flex-1 p-8">
+            <div className="flex justify-center items-start pt-8">
+              <SuperAdminWidgetSelector
+                selectedWidgets={selectedWidgets}
+                onWidgetConfigChange={handleWidgetConfigChange}
+                onClose={() => setShowWidgetSelector(false)}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   // Render specific views
   if (activeView !== 'dashboard') {
-    switch (activeView) {
-      case 'agencies':
-        return <AgencyManagement onBackToDashboard={() => setActiveView('dashboard')} />;
-      case 'agents':
-        return <AgentManagement onBackToDashboard={() => setActiveView('dashboard')} />;
-      case 'advertisers':
-        return <AdvertiserManagement onBackToDashboard={() => setActiveView('dashboard')} />;
-      case 'publishers':
-        return <PublisherManagement onBackToDashboard={() => setActiveView('dashboard')} />;
-      case 'analytics':
-        return <AdvancedAnalytics onBackToDashboard={() => setActiveView('dashboard')} />;
-      case 'compliance':
-        return <ComplianceReporting onBackToDashboard={() => setActiveView('dashboard')} />;
-      case 'system-health':
-        return <SystemHealthMonitor onBackToDashboard={() => setActiveView('dashboard')} />;
-      case 'user-management':
-        return <UserRoleManagement onBackToDashboard={() => setActiveView('dashboard')} />;
-      default:
-        return null;
-    }
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <div className="flex">
+          <SuperAdminSidebar 
+            activeView={activeView} 
+            onViewChange={setActiveView} 
+          />
+          <div className="flex-1 p-8">
+            {(() => {
+              switch (activeView) {
+                case 'agencies':
+                  return <AgencyManagement onBackToDashboard={() => setActiveView('dashboard')} />;
+                case 'agents':
+                  return <AgentManagement onBackToDashboard={() => setActiveView('dashboard')} />;
+                case 'advertisers':
+                  return <AdvertiserManagement onBackToDashboard={() => setActiveView('dashboard')} />;
+                case 'publishers':
+                  return <PublisherManagement onBackToDashboard={() => setActiveView('dashboard')} />;
+                case 'analytics':
+                  return <AdvancedAnalytics onBackToDashboard={() => setActiveView('dashboard')} />;
+                case 'compliance':
+                  return <ComplianceReporting onBackToDashboard={() => setActiveView('dashboard')} />;
+                case 'system-health':
+                  return <SystemHealthMonitor onBackToDashboard={() => setActiveView('dashboard')} />;
+                case 'user-management':
+                  return <UserRoleManagement onBackToDashboard={() => setActiveView('dashboard')} />;
+                default:
+                  return null;
+              }
+            })()}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <SuperAdminDashboardHeader
-        totalCallsToday={mockExecutiveDashboardData.totalCallVolume}
-        activeAgencies={mockExecutiveDashboardData.activeAgencies}
-        systemUptime={mockExecutiveDashboardData.systemUptime}
-        activeAlerts={mockExecutiveDashboardData.activeSecurityAlerts}
-        onCustomizeKPIs={() => setShowKPISelector(true)}
-        onCustomizeWidgets={() => setShowWidgetSelector(true)}
-      />
+    <div className="min-h-screen bg-gray-100">
+      <div className="flex">
+        <SuperAdminSidebar 
+          activeView={activeView} 
+          onViewChange={setActiveView} 
+        />
+        <div className="flex-1 p-8">
+          <div className="space-y-6">
+            <SuperAdminDashboardHeader
+              totalCallsToday={mockExecutiveDashboardData.totalCallVolume}
+              activeAgencies={mockExecutiveDashboardData.activeAgencies}
+              systemUptime={mockExecutiveDashboardData.systemUptime}
+              activeAlerts={mockExecutiveDashboardData.activeSecurityAlerts}
+              onCustomizeKPIs={() => setShowKPISelector(true)}
+              onCustomizeWidgets={() => setShowWidgetSelector(true)}
+            />
 
-      <GlobalNavigationTabs
-        activeView={activeView}
-        onViewChange={setActiveView}
-      />
+            <GlobalNavigationTabs
+              activeView={activeView}
+              onViewChange={setActiveView}
+            />
 
-      <ExecutiveKPIGrid
-        selectedKPIs={selectedKPIs}
-        getKPIValue={getKPIValue}
-      />
+            <ExecutiveKPIGrid
+              selectedKPIs={selectedKPIs}
+              getKPIValue={getKPIValue}
+            />
 
-      <SuperAdminWidgetRenderer
-        widgets={selectedWidgets}
-        platformRevenue={mockExecutiveDashboardData.totalPlatformRevenue}
-        systemMetrics={{
-          uptime: mockExecutiveDashboardData.systemUptime,
-          capacity: mockExecutiveDashboardData.systemCapacityUtilization,
-          compliance: mockExecutiveDashboardData.complianceScore,
-          alerts: mockExecutiveDashboardData.activeSecurityAlerts
-        }}
-      />
+            <SuperAdminWidgetRenderer
+              widgets={selectedWidgets}
+              platformRevenue={mockExecutiveDashboardData.totalPlatformRevenue}
+              systemMetrics={{
+                uptime: mockExecutiveDashboardData.systemUptime,
+                capacity: mockExecutiveDashboardData.systemCapacityUtilization,
+                compliance: mockExecutiveDashboardData.complianceScore,
+                alerts: mockExecutiveDashboardData.activeSecurityAlerts
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

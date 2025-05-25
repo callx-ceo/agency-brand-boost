@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,13 +20,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/agency" element={<Agency />} />
-          <Route path="/super-admin" element={
-            <div className="min-h-screen bg-gray-50">
-              <div className="container mx-auto px-4 py-8">
-                <SuperAdminDashboard />
-              </div>
-            </div>
-          } />
+          <Route path="/super-admin" element={<SuperAdminDashboard />} />
           <Route path="/publisher" element={<div className="p-8 text-center"><h1 className="text-2xl">Publisher Dashboard - Coming Soon</h1></div>} />
           <Route path="/advertiser" element={<div className="p-8 text-center"><h1 className="text-2xl">Advertiser Dashboard - Coming Soon</h1></div>} />
           <Route path="/agent" element={<div className="p-8 text-center"><h1 className="text-2xl">Agent Dashboard - Coming Soon</h1></div>} />

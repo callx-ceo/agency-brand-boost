@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,22 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, DollarSign, Phone, PhoneCall, RotateCcw, Plus } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-
-interface Campaign {
-  id: string;
-  name: string;
-  type: string;
-  category: string;
-  accepts: string;
-  approvedPublishers: number;
-  pendingPublishers: number;
-  callsToday: number;
-  callsMTD: number;
-  revenueToday: number;
-  revenueMTD: number;
-  conversionRateMTD: number;
-  status: "active" | "paused" | "pending";
-}
+import { Campaign } from "@/types/campaignTypes";
 
 interface CampaignDetailViewProps {
   campaign: Campaign;

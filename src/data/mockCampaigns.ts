@@ -1,0 +1,80 @@
+
+import { Campaign } from "@/types/campaignTypes";
+
+export const mockCampaigns: Campaign[] = [
+  {
+    id: "1",
+    name: "Final Expense Bundle",
+    type: "Bundle",
+    category: "Final Expense Bundle",
+    accepts: "Calls, Leads",
+    approvedPublishers: 25,
+    pendingPublishers: 0,
+    callsToday: 3,
+    callsMTD: 8101,
+    revenueToday: 0,
+    revenueMTD: 139480,
+    conversionRateMTD: 27.56,
+    status: "active"
+  },
+  {
+    id: "2",
+    name: "Final Expense - Social - No IVR",
+    type: "Bundle",
+    category: "Final Expense - Social - Now IVR",
+    accepts: "Calls, Leads",
+    approvedPublishers: 16,
+    pendingPublishers: 0,
+    callsToday: 0,
+    callsMTD: 2367,
+    revenueToday: 0,
+    revenueMTD: 85470,
+    conversionRateMTD: 49.38,
+    status: "active"
+  },
+  {
+    id: "3",
+    name: "Medicare Bundled Campaign",
+    type: "Bundle",
+    category: "Medicare Bundle",
+    accepts: "Calls",
+    approvedPublishers: 9,
+    pendingPublishers: 1,
+    callsToday: 0,
+    callsMTD: 2774,
+    revenueToday: 0,
+    revenueMTD: 82280,
+    conversionRateMTD: 53.92,
+    status: "active"
+  },
+  {
+    id: "4",
+    name: "Auto Bundle - Private",
+    type: "Bundle",
+    category: "Auto Bundle - Private",
+    accepts: "Calls, Leads",
+    approvedPublishers: 19,
+    pendingPublishers: 0,
+    callsToday: 0,
+    callsMTD: 9695,
+    revenueToday: 0,
+    revenueMTD: 70866,
+    conversionRateMTD: 30.89,
+    status: "active"
+  },
+  {
+    id: "5",
+    name: "Home Insurance Bundle",
+    type: "Bundle",
+    category: "Home Insurance OS",
+    accepts: "Calls",
+    approvedPublishers: 1,
+    pendingPublishers: 0,
+    callsToday: 0,
+    callsMTD: 1203,
+    revenueToday: 0,
+    revenueMTD: 16830,
+    conversionRateMTD: 25.43,
+    status: "active"
+  }
+];

@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Users, PhoneCall, Building2, Download } from "lucide-react";
 import RealtimeReport from "@/components/dashboard/RealtimeReport";
 import AgentReports from "@/components/dashboard/AgentReports";
+import AgencyReports from "./AgencyReports";
 
 interface GlobalReportingProps {
   onBackToDashboard: () => void;
@@ -70,31 +71,10 @@ const GlobalReporting = ({ onBackToDashboard }: GlobalReportingProps) => {
 
             <TabsContent value="agencies" className="mt-6">
               <div className="mb-4">
-                <h3 className="text-lg font-semibold">Agency Performance Reports</h3>
+                <h3 className="text-lg font-semibold">Cross-Agency Performance Reports</h3>
                 <p className="text-gray-600">Performance metrics and analytics across all agencies</p>
               </div>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">47</div>
-                      <div className="text-sm text-gray-600">Active Agencies</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-600">$1.8M</div>
-                      <div className="text-sm text-gray-600">Total Agency Revenue</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-600">8,934</div>
-                      <div className="text-sm text-gray-600">Total Calls Today</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-600">92.1%</div>
-                      <div className="text-sm text-gray-600">Avg Conversion Rate</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <AgencyReports />
             </TabsContent>
 
             <TabsContent value="agents" className="mt-6">

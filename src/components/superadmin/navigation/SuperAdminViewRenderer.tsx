@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 import AgencyManagement from "../entities/AgencyManagement";
@@ -15,7 +16,6 @@ import AgencyAgentsView from "../entities/AgencyAgentsView";
 import CampaignDetailView from "../entities/CampaignDetailView";
 import ReportRenderer from "../reporting/ReportRenderer";
 import GoalsManagement from "../goals/GoalsManagement";
-import OfferStatistics from "../entities/OfferStatistics";
 import OfferDetails from "../entities/OfferDetails";
 import ContactsManagement from "../entities/ContactsManagement";
 
@@ -38,16 +38,8 @@ const SuperAdminViewRenderer = ({
     onViewChange('dashboard');
   };
 
-  const handleViewOfferStatistics = (offerId: string) => {
-    onViewChange('offer-statistics');
-  };
-
-  const handleSwitchToOfferDetails = () => {
+  const handleViewOfferDetails = (offerId: string) => {
     onViewChange('offer-details');
-  };
-
-  const handleSwitchToOfferStatistics = () => {
-    onViewChange('offer-statistics');
   };
 
   console.log('SuperAdminViewRenderer - Active view:', activeView);
@@ -77,27 +69,18 @@ const SuperAdminViewRenderer = ({
       return (
         <OfferManagement 
           onBackToDashboard={handleBackToDashboard}
-          onViewOfferStatistics={handleViewOfferStatistics}
+          onViewOfferStatistics={handleViewOfferDetails}
         />
       );
 
     case 'offer-statistics':
-      return (
-        <OfferStatistics 
-          offerId={selectedOfferId || ''}
-          onBackToDashboard={handleBackToDashboard}
-          onBackToOffers={() => onViewChange('offers')}
-          onSwitchToDetails={handleSwitchToOfferDetails}
-        />
-      );
-    
     case 'offer-details':
       return (
         <OfferDetails 
           offerId={selectedOfferId || ''}
           onBackToDashboard={handleBackToDashboard}
           onBackToOffers={() => onViewChange('offers')}
-          onSwitchToStatistics={handleSwitchToOfferStatistics}
+          onSwitchToStatistics={() => {}}
         />
       );
     

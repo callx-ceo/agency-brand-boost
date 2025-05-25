@@ -54,7 +54,7 @@ const RoleSelector = () => {
       title: "Super Admin",
       description: "Platform-wide administration, system management, and global oversight",
       icon: <Shield className="w-8 h-8 text-blue-600" />,
-      status: "coming-soon" as const,
+      status: "active" as const,
       path: "/super-admin"
     },
     {

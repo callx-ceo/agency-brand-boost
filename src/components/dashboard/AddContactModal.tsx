@@ -23,6 +23,7 @@ const AddContactModal = ({ onContactAdded }: AddContactModalProps) => {
     stage: "Pending",
     disposition: "Pending",
     leadSource: "Website",
+    leadType: "Call",
     notes: ""
   });
   const { toast } = useToast();
@@ -63,6 +64,7 @@ const AddContactModal = ({ onContactAdded }: AddContactModalProps) => {
       stage: formData.stage,
       disposition: formData.disposition,
       leadSource: formData.leadSource,
+      leadType: formData.leadType,
       notes: formData.notes
     };
 
@@ -84,6 +86,7 @@ const AddContactModal = ({ onContactAdded }: AddContactModalProps) => {
       stage: "Pending",
       disposition: "Pending",
       leadSource: "Website",
+      leadType: "Call",
       notes: ""
     });
     setIsOpen(false);
@@ -147,25 +150,40 @@ const AddContactModal = ({ onContactAdded }: AddContactModalProps) => {
             />
           </div>
           
-          <div>
-            <Label htmlFor="leadSource">Lead Source</Label>
-            <Select value={formData.leadSource} onValueChange={(value) => handleInputChange("leadSource", value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Website">Website</SelectItem>
-                <SelectItem value="Google Ads">Google Ads</SelectItem>
-                <SelectItem value="Facebook">Facebook</SelectItem>
-                <SelectItem value="Direct Mail">Direct Mail</SelectItem>
-                <SelectItem value="Referral">Referral</SelectItem>
-                <SelectItem value="Phone Call">Phone Call</SelectItem>
-                <SelectItem value="Social Media">Social Media</SelectItem>
-                <SelectItem value="Email Campaign">Email Campaign</SelectItem>
-                <SelectItem value="Partner Referral">Partner Referral</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="leadSource">Lead Source</Label>
+              <Select value={formData.leadSource} onValueChange={(value) => handleInputChange("leadSource", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Website">Website</SelectItem>
+                  <SelectItem value="Google Ads">Google Ads</SelectItem>
+                  <SelectItem value="Facebook">Facebook</SelectItem>
+                  <SelectItem value="Direct Mail">Direct Mail</SelectItem>
+                  <SelectItem value="Referral">Referral</SelectItem>
+                  <SelectItem value="Phone Call">Phone Call</SelectItem>
+                  <SelectItem value="Social Media">Social Media</SelectItem>
+                  <SelectItem value="Email Campaign">Email Campaign</SelectItem>
+                  <SelectItem value="Partner Referral">Partner Referral</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="leadType">Lead Type</Label>
+              <Select value={formData.leadType} onValueChange={(value) => handleInputChange("leadType", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Call">Call</SelectItem>
+                  <SelectItem value="Data">Data</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           
           <div className="grid grid-cols-2 gap-4">

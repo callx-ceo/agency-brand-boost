@@ -18,6 +18,7 @@ import ReportRenderer from "../reporting/ReportRenderer";
 import GoalsManagement from "../goals/GoalsManagement";
 import OfferDetails from "../entities/OfferDetails";
 import ContactsManagement from "../entities/ContactsManagement";
+import LeadsManagement from "../entities/LeadsManagement";
 import ContactsReports from "../../dashboard/ContactsReports";
 import AgentListReport from "../reporting/AgentListReport";
 
@@ -112,6 +113,11 @@ const SuperAdminViewRenderer = ({
         />
       );
     
+    case 'leads':
+      return (
+        <LeadsManagement onBackToDashboard={handleBackToDashboard} />
+      );
+    
     case 'contacts':
       return (
         <ContactsManagement onBackToDashboard={handleBackToDashboard} />
@@ -122,8 +128,8 @@ const SuperAdminViewRenderer = ({
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold">Global Leads List</h1>
-              <p className="text-gray-600">Comprehensive lead management and tracking across all agencies</p>
+              <h1 className="text-3xl font-bold">All Leads List</h1>
+              <p className="text-gray-600">Comprehensive leads list from all marketing campaigns across agencies</p>
             </div>
             <button 
               onClick={handleBackToDashboard}

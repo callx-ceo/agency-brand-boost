@@ -22,7 +22,9 @@ import {
   Hash,
   ContactRound,
   List,
-  UserCog
+  UserCog,
+  Target,
+  UserPlus
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -41,7 +43,9 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     suspendedAgents: 8,
     fraudAlerts: 2,
     complianceIssues: 1,
-    systemAlerts: 5
+    systemAlerts: 5,
+    newLeads: 47,
+    pendingContacts: 12
   };
 
   // Dashboard & Analytics sections
@@ -87,8 +91,24 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "publishers", label: "Publishers", icon: <Globe className="w-5 h-5" /> },
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
     { id: "offers", label: "Offers", icon: <DollarSign className="w-5 h-5" /> },
-    { id: "contacts", label: "Contacts", icon: <ContactRound className="w-5 h-5" /> },
-    { id: "leads-list", label: "Leads List", icon: <List className="w-5 h-5" /> },
+  ];
+
+  // Lead & Contact Management sections
+  const leadContactSections = [
+    { 
+      id: "leads", 
+      label: "Leads Management", 
+      icon: <Target className="w-5 h-5" />,
+      badge: mockAlerts.newLeads > 0 ? mockAlerts.newLeads : undefined,
+      badgeVariant: "secondary" as const
+    },
+    { 
+      id: "contacts", 
+      label: "Contacts Management", 
+      icon: <ContactRound className="w-5 h-5" />,
+      badge: mockAlerts.pendingContacts > 0 ? mockAlerts.pendingContacts : undefined
+    },
+    { id: "leads-list", label: "All Leads List", icon: <List className="w-5 h-5" /> },
   ];
 
   // System & Administration sections
@@ -207,6 +227,18 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
           </h3>
           <ul>
             {entitySections.map(renderMenuItem)}
+          </ul>
+        </div>
+
+        <Separator className="my-4" />
+
+        {/* Lead & Contact Management */}
+        <div className="mb-4">
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
+            Lead & Contact Management
+          </h3>
+          <ul>
+            {leadContactSections.map(renderMenuItem)}
           </ul>
         </div>
 

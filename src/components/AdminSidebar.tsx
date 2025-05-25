@@ -1,3 +1,4 @@
+
 import React from "react";
 import { cn } from "@/lib/utils";
 import { 
@@ -21,7 +22,9 @@ import {
   Megaphone,
   Bot,
   CreditCard,
-  List
+  List,
+  Target,
+  ContactRound
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -40,6 +43,8 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
 
   // Mock unread notifications count
   const unreadNotifications = 3;
+  const newLeads = 23;
+  const pendingContacts = 8;
 
   // Main Dashboard & Reports sections
   const mainSections = [
@@ -47,8 +52,24 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
     { id: "reports", label: "Realtime Report", icon: <Activity className="w-5 h-5" /> },
     { id: "applications", label: "Applications", icon: <ClipboardList className="w-5 h-5" /> },
     { id: "call-history", label: "Call History", icon: <History className="w-5 h-5" /> },
-    { id: "contacts", label: "Contacts", icon: <UserCheck className="w-5 h-5" /> },
-    { id: "leads-list", label: "Leads List", icon: <List className="w-5 h-5" /> },
+  ];
+
+  // Lead & Contact sections
+  const leadContactSections = [
+    { 
+      id: "leads", 
+      label: "Leads", 
+      icon: <Target className="w-5 h-5" />,
+      badge: newLeads > 0 ? newLeads : undefined,
+      badgeVariant: "secondary" as const
+    },
+    { 
+      id: "contacts", 
+      label: "Contacts", 
+      icon: <ContactRound className="w-5 h-5" />,
+      badge: pendingContacts > 0 ? pendingContacts : undefined
+    },
+    { id: "leads-list", label: "All Leads", icon: <List className="w-5 h-5" /> },
   ];
 
   // Agency Management sections
@@ -100,7 +121,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
           </span>
         )}
         {item.badge && (
-          <Badge variant="destructive" className="text-xs">
+          <Badge variant={item.badgeVariant || "destructive"} className="text-xs">
             {item.badge}
           </Badge>
         )}
@@ -123,6 +144,18 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
           </h3>
           <ul>
             {mainSections.map(renderMenuItem)}
+          </ul>
+        </div>
+
+        <Separator className="my-4" />
+
+        {/* Lead & Contact Management */}
+        <div className="mb-4">
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
+            Lead & Contact Management
+          </h3>
+          <ul>
+            {leadContactSections.map(renderMenuItem)}
           </ul>
         </div>
 

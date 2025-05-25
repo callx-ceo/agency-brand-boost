@@ -1,4 +1,3 @@
-
 import React from "react";
 import { cn } from "@/lib/utils";
 import { 
@@ -21,7 +20,8 @@ import {
   UserPlus,
   Megaphone,
   Bot,
-  CreditCard
+  CreditCard,
+  List
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -48,6 +48,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
     { id: "applications", label: "Applications", icon: <ClipboardList className="w-5 h-5" /> },
     { id: "call-history", label: "Call History", icon: <History className="w-5 h-5" /> },
     { id: "contacts", label: "Contacts", icon: <UserCheck className="w-5 h-5" /> },
+    { id: "leads-list", label: "Leads List", icon: <List className="w-5 h-5" /> },
   ];
 
   // Agency Management sections

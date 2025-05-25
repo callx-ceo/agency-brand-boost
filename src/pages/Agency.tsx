@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import AdminPanel from "../components/AdminPanel";
 import AdminSidebar from "../components/AdminSidebar";
@@ -52,6 +51,16 @@ const Agency = () => {
             <div>
               <h1 className="text-3xl font-bold">Contacts</h1>
               <p className="text-gray-600">Contact management and lead tracking</p>
+            </div>
+            <ContactsReports />
+          </div>
+        );
+      case "leads-list":
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Leads List</h1>
+              <p className="text-gray-600">Comprehensive lead management and tracking system</p>
             </div>
             <ContactsReports />
           </div>

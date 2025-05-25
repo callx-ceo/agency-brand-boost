@@ -4,10 +4,10 @@ import { Phone, Users, DollarSign, TrendingUp, Clock, FileText } from "lucide-re
 import DashboardHeader from "./dashboard/DashboardHeader";
 import NavigationTabs from "./dashboard/NavigationTabs";
 import KPICardsGrid from "./dashboard/KPICardsGrid";
-import DashboardChartsSection from "./dashboard/DashboardChartsSection";
-import DashboardBottomSection from "./dashboard/DashboardBottomSection";
+import DashboardWidgetRenderer from "./dashboard/DashboardWidgetRenderer";
 import ViewRenderer from "./dashboard/ViewRenderer";
 import KPICardSelector, { KPIConfig } from "./dashboard/KPICardSelector";
+import DashboardWidgetSelector, { DashboardWidget } from "./dashboard/DashboardWidgetSelector";
 
 // Mock data for the dashboard - expanded with new KPIs
 const mockDashboardData = {
@@ -36,6 +36,7 @@ type ViewType = 'dashboard' | 'agent-reports' | 'contacts' | 'realtime-report' |
 
 const AgencyDashboard = () => {
   const [showKPISelector, setShowKPISelector] = useState(false);
+  const [showWidgetSelector, setShowWidgetSelector] = useState(false);
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
   
   // Default KPI configuration - agencies can customize this
@@ -46,6 +47,14 @@ const AgencyDashboard = () => {
     { id: 'active-agents', title: 'Active Agents Today', icon: <Users className="w-5 h-5 text-indigo-600" />, enabled: true, order: 3 },
     { id: 'conversion-rate', title: 'Conversion Rate', icon: <TrendingUp className="w-5 h-5 text-emerald-600" />, enabled: true, order: 4 },
     { id: 'applications-submitted', title: 'Applications Submitted', icon: <FileText className="w-5 h-5 text-blue-500" />, enabled: true, order: 5 },
+  ]);
+
+  // Default widget configuration
+  const [selectedWidgets, setSelectedWidgets] = useState<DashboardWidget[]>([
+    { id: 'call-volume', title: '7-Day Call Volume', description: 'Chart showing call trends over the past week', icon: <></>, enabled: true, order: 0, size: 'medium' },
+    { id: 'wallet-spending', title: 'Wallet & Spending', description: 'Current balance and spending analytics', icon: <></>, enabled: true, order: 1, size: 'medium' },
+    { id: 'applications-carrier', title: 'Applications by Carrier', description: 'Breakdown of applications by insurance carrier', icon: <></>, enabled: true, order: 2, size: 'large' },
+    { id: 'agent-status', title: 'Agent Status', description: 'Real-time agent availability and workload', icon: <></>, enabled: true, order: 3, size: 'medium' },
   ]);
 
   const getKPIValue = (kpiId: string) => {
@@ -80,6 +89,18 @@ const AgencyDashboard = () => {
     );
   }
 
+  if (showWidgetSelector) {
+    return (
+      <div className="flex justify-center items-start pt-8">
+        <DashboardWidgetSelector
+          selectedWidgets={selectedWidgets}
+          onWidgetConfigChange={setSelectedWidgets}
+          onClose={() => setShowWidgetSelector(false)}
+        />
+      </div>
+    );
+  }
+
   // Render specific views
   if (activeView !== 'dashboard') {
     return (
@@ -96,6 +117,7 @@ const AgencyDashboard = () => {
         totalCallsToday={mockDashboardData.totalCallsToday}
         fallbackCallsToday={mockDashboardData.fallbackCallsToday}
         onCustomizeKPIs={() => setShowKPISelector(true)}
+        onCustomizeWidgets={() => setShowWidgetSelector(true)}
       />
 
       <NavigationTabs
@@ -108,12 +130,11 @@ const AgencyDashboard = () => {
         getKPIValue={getKPIValue}
       />
 
-      <DashboardChartsSection
+      <DashboardWidgetRenderer
+        widgets={selectedWidgets}
         walletBalance={mockDashboardData.walletBalance}
         estimatedSpend={mockDashboardData.estimatedCallSpend}
       />
-
-      <DashboardBottomSection />
     </div>
   );
 };

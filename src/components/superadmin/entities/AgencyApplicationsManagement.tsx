@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileText, Search, CheckCircle, XCircle, Eye, Clock, Building2, Mail, Phone, Calendar } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileText, Search, CheckCircle, XCircle, Eye, Clock, Building2, Mail, Phone, Calendar, Filter } from "lucide-react";
 import { toast } from "sonner";
 
 interface AgencyApplicationsManagementProps {
@@ -18,6 +19,7 @@ const mockApplications = [
     id: 1,
     agencyName: "Premier Insurance Solutions",
     contactName: "Sarah Johnson",
+    agentName: "Michael Davis",
     email: "sarah@premierinsurance.com",
     phone: "(555) 123-4567",
     dateSubmitted: "2025-05-23",
@@ -31,6 +33,7 @@ const mockApplications = [
     id: 2,
     agencyName: "Elite Coverage Group",
     contactName: "Michael Chen",
+    agentName: "Jennifer Lopez",
     email: "m.chen@elitecoverage.com",
     phone: "(555) 234-5678",
     dateSubmitted: "2025-05-22",
@@ -44,6 +47,7 @@ const mockApplications = [
     id: 3,
     agencyName: "Guardian Life Partners",
     contactName: "Lisa Rodriguez",
+    agentName: "Robert Smith",
     email: "lisa@guardianlife.com",
     phone: "(555) 345-6789",
     dateSubmitted: "2025-05-21",
@@ -57,6 +61,7 @@ const mockApplications = [
     id: 4,
     agencyName: "TrustGuard Insurance",
     contactName: "David Williams",
+    agentName: "Amanda Wilson",
     email: "david@trustguard.com",
     phone: "(555) 456-7890",
     dateSubmitted: "2025-05-20",
@@ -70,6 +75,7 @@ const mockApplications = [
     id: 5,
     agencyName: "SecureLife Solutions",
     contactName: "Amanda Thompson",
+    agentName: "Carlos Martinez",
     email: "amanda@securelife.com",
     phone: "(555) 567-8901",
     dateSubmitted: "2025-05-19",
@@ -85,6 +91,7 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [selectedAgency, setSelectedAgency] = useState<string>("all");
 
   const handleApproveApplication = (applicationId: number) => {
     toast.success("Application approved successfully");
@@ -106,6 +113,11 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
     }
   };
 
+  const getUniqueAgencies = () => {
+    const agencies = [...new Set(mockApplications.map(app => app.agencyName))];
+    return agencies.sort();
+  };
+
   const filterApplicationsByStatus = (status: string) => {
     let filtered = mockApplications;
     
@@ -113,10 +125,15 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
       filtered = mockApplications.filter(app => app.status === status);
     }
     
+    if (selectedAgency !== "all") {
+      filtered = filtered.filter(app => app.agencyName === selectedAgency);
+    }
+    
     if (searchTerm) {
       filtered = filtered.filter(app =>
         app.agencyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         app.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.agentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         app.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -125,12 +142,13 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
   };
 
   const getTabCounts = () => {
+    const allFiltered = selectedAgency === "all" ? mockApplications : mockApplications.filter(a => a.agencyName === selectedAgency);
     return {
-      all: mockApplications.length,
-      pending: mockApplications.filter(a => a.status === "pending").length,
-      approved: mockApplications.filter(a => a.status === "approved").length,
-      rejected: mockApplications.filter(a => a.status === "rejected").length,
-      "under-review": mockApplications.filter(a => a.status === "under-review").length,
+      all: allFiltered.length,
+      pending: allFiltered.filter(a => a.status === "pending").length,
+      approved: allFiltered.filter(a => a.status === "approved").length,
+      rejected: allFiltered.filter(a => a.status === "rejected").length,
+      "under-review": allFiltered.filter(a => a.status === "under-review").length,
     };
   };
 
@@ -145,6 +163,22 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
             Agency Applications ({applications.length})
           </CardTitle>
           <div className="flex gap-2">
+            <div className="relative">
+              <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Select value={selectedAgency} onValueChange={setSelectedAgency}>
+                <SelectTrigger className="pl-8 w-48">
+                  <SelectValue placeholder="Filter by agency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Agencies</SelectItem>
+                  {getUniqueAgencies().map((agency) => (
+                    <SelectItem key={agency} value={agency}>
+                      {agency}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -163,8 +197,8 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
             <TableRow>
               <TableHead>Agency Name</TableHead>
               <TableHead>Contact</TableHead>
+              <TableHead>Agent Name</TableHead>
               <TableHead>Business Type</TableHead>
-              <TableHead>Expected Agents</TableHead>
               <TableHead>Date Submitted</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
@@ -192,8 +226,10 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                     </div>
                   </div>
                 </TableCell>
+                <TableCell>
+                  <div className="font-medium">{application.agentName}</div>
+                </TableCell>
                 <TableCell>{application.businessType}</TableCell>
-                <TableCell>{application.expectedAgents}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4 text-gray-400" />
@@ -320,7 +356,7 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                   <div><span className="font-medium">Name:</span> {selectedApplication.agencyName}</div>
                   <div><span className="font-medium">Business Type:</span> {selectedApplication.businessType}</div>
                   <div><span className="font-medium">Expected Revenue:</span> {selectedApplication.revenue}</div>
-                  <div><span className="font-medium">Expected Agents:</span> {selectedApplication.expectedAgents}</div>
+                  <div><span className="font-medium">Agent Name:</span> {selectedApplication.agentName}</div>
                 </div>
               </div>
               <div>
@@ -345,4 +381,3 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
 };
 
 export default AgencyApplicationsManagement;
-

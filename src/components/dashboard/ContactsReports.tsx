@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, Search, Filter, Edit, FileText } from "lucide-react";
 import DateRangeSelector from "./DateRangeSelector";
+import AddContactModal from "./AddContactModal";
 
 // Mock data based on the screenshot
-const mockContactsData = [
+const initialContactsData = [
   { name: "Carl Stewart", phone: "(707) 416-7929", dateCreated: "05/23/25, 05:00 PM", stage: "Pending", disposition: "Pending" },
   { name: "Unknown Contact", phone: "(860) 776-6398", dateCreated: "05/23/25, 04:56 PM", stage: "Refund", disposition: "Benefits" },
   { name: "Unknown Contact", phone: "(580) 471-9294", dateCreated: "05/23/25, 04:49 PM", stage: "Refund", disposition: "No one on phone" },
@@ -33,6 +35,7 @@ const mockContactsData = [
 ];
 
 const ContactsReports = () => {
+  const [contactsData, setContactsData] = useState(initialContactsData);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStage, setSelectedStage] = useState("all");
   const [selectedDisposition, setSelectedDisposition] = useState("all");
@@ -41,7 +44,11 @@ const ContactsReports = () => {
     to: new Date()
   });
 
-  const filteredData = mockContactsData.filter(contact => {
+  const handleContactAdded = (newContact: any) => {
+    setContactsData(prev => [newContact, ...prev]);
+  };
+
+  const filteredData = contactsData.filter(contact => {
     const matchesSearch = contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          contact.phone.includes(searchTerm);
     const matchesStage = selectedStage === "all" || contact.stage === selectedStage;
@@ -65,10 +72,13 @@ const ContactsReports = () => {
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle>Contacts</CardTitle>
-          <Button size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
+          <div className="flex gap-2">
+            <AddContactModal onContactAdded={handleContactAdded} />
+            <Button size="sm" variant="outline">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+          </div>
         </div>
         <div className="flex gap-4 items-center flex-wrap">
           <div className="relative flex-1 min-w-[200px]">

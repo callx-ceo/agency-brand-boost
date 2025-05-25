@@ -15,7 +15,13 @@ import {
   Clock,
   UserCheck,
   History,
-  ClipboardList
+  ClipboardList,
+  LayoutDashboard,
+  Activity,
+  UserPlus,
+  Megaphone,
+  Bot,
+  CreditCard
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -37,8 +43,8 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
 
   // Main Dashboard & Reports sections
   const mainSections = [
-    { id: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-5 h-5" /> },
-    { id: "reports", label: "Realtime Report", icon: <BarChart3 className="w-5 h-5" /> },
+    { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
+    { id: "reports", label: "Realtime Report", icon: <Activity className="w-5 h-5" /> },
     { id: "applications", label: "Applications", icon: <ClipboardList className="w-5 h-5" /> },
     { id: "call-history", label: "Call History", icon: <History className="w-5 h-5" /> },
     { id: "contacts", label: "Contacts", icon: <UserCheck className="w-5 h-5" /> },
@@ -47,8 +53,8 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
   // Agency Management sections
   const managementSections = [
     { id: "team", label: "Team Members", icon: <Users className="w-5 h-5" /> },
-    { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
-    { id: "scripts", label: "Scripts & AI", icon: <FileText className="w-5 h-5" /> },
+    { id: "campaigns", label: "Campaigns", icon: <Megaphone className="w-5 h-5" /> },
+    { id: "scripts", label: "Scripts & AI", icon: <Bot className="w-5 h-5" /> },
     { 
       id: "publishers", 
       label: "Publishers", 
@@ -67,8 +73,8 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       icon: <Bell className="w-5 h-5" />,
       badge: unreadNotifications > 0 ? unreadNotifications : undefined
     },
-    { id: "referrals", label: "Referral Program", icon: <Link className="w-5 h-5" /> },
-    { id: "upgrade", label: "Upgrade Plan", icon: <Settings className="w-5 h-5" /> },
+    { id: "referrals", label: "Referral Program", icon: <UserPlus className="w-5 h-5" /> },
+    { id: "upgrade", label: "Upgrade Plan", icon: <CreditCard className="w-5 h-5" /> },
   ];
 
   const renderMenuItem = (item: any) => (

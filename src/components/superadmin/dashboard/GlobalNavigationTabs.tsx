@@ -17,9 +17,11 @@ const GlobalNavigationTabs = ({ activeView, onViewChange }: GlobalNavigationTabs
     { id: 'publishers', label: 'Publishers' },
     { id: 'campaigns', label: 'Campaigns' },
     { id: 'offers', label: 'Offers' },
+    { id: 'contacts', label: 'Contacts' },
     { id: 'analytics', label: 'Analytics' },
     { id: 'compliance', label: 'Compliance' },
     { id: 'system-health', label: 'System Health' },
+    { id: 'global-reporting', label: 'Global Reporting' },
     { id: 'user-management', label: 'User Management' },
   ];
 

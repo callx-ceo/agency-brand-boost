@@ -12,4 +12,5 @@ export type SuperAdminViewType =
   | 'global-reporting'
   | 'agency-agents'
   | 'campaigns'
-  | 'offers';
+  | 'offers'
+  | 'contacts';

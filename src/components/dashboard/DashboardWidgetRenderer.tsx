@@ -121,7 +121,7 @@ const DashboardWidgetRenderer = ({ widgets, walletBalance, estimatedSpend }: Das
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {enabledWidgets.map((widget) => (
         <div key={`${widget.id}-${widget.order}`} className={getGridClass(widget)}>
           {renderWidget(widget)}

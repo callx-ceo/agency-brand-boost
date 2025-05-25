@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Phone, Users, DollarSign, TrendingUp, Clock, FileText } from "lucide-react";
 import DashboardHeader from "./dashboard/DashboardHeader";
@@ -49,7 +48,7 @@ const AgencyDashboard = () => {
     { id: 'applications-submitted', title: 'Applications Submitted', icon: <FileText className="w-5 h-5 text-blue-500" />, enabled: true, order: 5 },
   ]);
 
-  // Default widget configuration - ensuring proper initialization
+  // Updated default widget configuration with 6 widgets enabled
   const [selectedWidgets, setSelectedWidgets] = useState<DashboardWidget[]>([
     { 
       id: 'call-volume', 
@@ -76,7 +75,16 @@ const AgencyDashboard = () => {
       icon: <></>, 
       enabled: true, 
       order: 2, 
-      size: 'large' 
+      size: 'medium' 
+    },
+    { 
+      id: 'agent-leaderboard', 
+      title: 'Agent Leaderboard', 
+      description: 'Top performing agents ranking', 
+      icon: <></>, 
+      enabled: true, 
+      order: 3, 
+      size: 'medium' 
     },
     { 
       id: 'agent-status', 
@@ -84,7 +92,16 @@ const AgencyDashboard = () => {
       description: 'Real-time agent availability and workload', 
       icon: <></>, 
       enabled: true, 
-      order: 3, 
+      order: 4, 
+      size: 'medium' 
+    },
+    { 
+      id: 'active-campaigns', 
+      title: 'Active Campaigns', 
+      description: 'Current running campaigns and performance', 
+      icon: <></>, 
+      enabled: true, 
+      order: 5, 
       size: 'medium' 
     },
   ]);

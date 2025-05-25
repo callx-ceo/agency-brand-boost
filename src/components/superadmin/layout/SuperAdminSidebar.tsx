@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 import { 
@@ -15,7 +15,11 @@ import {
   Settings,
   TrendingUp,
   PhoneCall,
-  DollarSign
+  DollarSign,
+  FileText,
+  ChevronDown,
+  ChevronRight,
+  Hash
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -26,6 +30,8 @@ interface SuperAdminSidebarProps {
 }
 
 const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps) => {
+  const [reportsExpanded, setReportsExpanded] = useState(false);
+  
   // Mock data for alert badges
   const mockAlerts = {
     pendingAgencies: 3,
@@ -38,9 +44,23 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
   // Dashboard & Analytics sections
   const dashboardSections = [
     { id: "dashboard", label: "Executive Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
-    { id: "global-reporting", label: "Global Reporting", icon: <BarChart3 className="w-5 h-5" /> },
     { id: "analytics", label: "Advanced Analytics", icon: <TrendingUp className="w-5 h-5" /> },
     { id: "compliance", label: "Compliance Reporting", icon: <Shield className="w-5 h-5" /> },
+  ];
+
+  // Reports sections
+  const reportSections = [
+    { id: "reports-campaigns", label: "Campaigns", icon: <PhoneCall className="w-4 h-4" /> },
+    { id: "reports-campaigns-by-publisher", label: "Campaigns by Publisher", icon: <Users className="w-4 h-4" /> },
+    { id: "reports-publisher-by-manager", label: "Publisher by Manager", icon: <UserCheck className="w-4 h-4" /> },
+    { id: "reports-offers", label: "Offers", icon: <DollarSign className="w-4 h-4" /> },
+    { id: "reports-offers-by-publisher", label: "Offers by Publisher", icon: <Globe className="w-4 h-4" /> },
+    { id: "reports-promo-numbers", label: "Promo Numbers", icon: <Hash className="w-4 h-4" /> },
+    { id: "reports-offers-by-promo", label: "Offers by Promo #", icon: <Hash className="w-4 h-4" /> },
+    { id: "reports-advertisers", label: "Advertisers", icon: <Megaphone className="w-4 h-4" /> },
+    { id: "reports-publishers", label: "Publishers", icon: <Globe className="w-4 h-4" /> },
+    { id: "reports-ivr-fees", label: "IVR Fees", icon: <PhoneCall className="w-4 h-4" /> },
+    { id: "reports-key-press", label: "Key Press", icon: <Hash className="w-4 h-4" /> },
   ];
 
   // Entity Management sections
@@ -97,6 +117,23 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     </li>
   );
 
+  const renderReportsMenuItem = (item: any) => (
+    <li key={item.id} className="mb-1">
+      <button
+        onClick={() => onViewChange(item.id as SuperAdminViewType)}
+        className={cn(
+          "w-full flex items-center gap-3 px-6 py-2 rounded-md text-left transition-colors text-sm",
+          activeView === item.id
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-600 hover:bg-gray-100"
+        )}
+      >
+        {item.icon}
+        <span className="flex-1">{item.label}</span>
+      </button>
+    </li>
+  );
+
   return (
     <div className="w-64 bg-white shadow-md min-h-screen p-4">
       <div className="mb-6 px-4 pt-2">
@@ -112,6 +149,39 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
           </h3>
           <ul>
             {dashboardSections.map(renderMenuItem)}
+          </ul>
+        </div>
+
+        {/* Reports Section */}
+        <div className="mb-4">
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
+            Reports
+          </h3>
+          <ul>
+            <li className="mb-1">
+              <button
+                onClick={() => setReportsExpanded(!reportsExpanded)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-4 py-3 rounded-md text-left transition-colors",
+                  reportsExpanded || activeView.startsWith('reports-')
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
+              >
+                <FileText className="w-5 h-5" />
+                <span className="flex-1">All Reports</span>
+                {reportsExpanded ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+            </li>
+            {(reportsExpanded || activeView.startsWith('reports-')) && (
+              <div className="ml-2">
+                {reportSections.map(renderReportsMenuItem)}
+              </div>
+            )}
           </ul>
         </div>
 

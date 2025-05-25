@@ -13,4 +13,15 @@ export type SuperAdminViewType =
   | 'agency-agents'
   | 'campaigns'
   | 'offers'
-  | 'contacts';
+  | 'contacts'
+  | 'reports-campaigns'
+  | 'reports-campaigns-by-publisher'
+  | 'reports-publisher-by-manager'
+  | 'reports-offers'
+  | 'reports-offers-by-publisher'
+  | 'reports-promo-numbers'
+  | 'reports-offers-by-promo'
+  | 'reports-advertisers'
+  | 'reports-publishers'
+  | 'reports-ivr-fees'
+  | 'reports-key-press';

@@ -14,6 +14,7 @@ import UserRoleManagement from "../entities/UserRoleManagement";
 import GlobalReporting from "../reporting/GlobalReporting";
 import AgencyAgentsView from "../entities/AgencyAgentsView";
 import ContactsReports from "@/components/dashboard/ContactsReports";
+import ReportRenderer from "../reporting/ReportRenderer";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -31,6 +32,11 @@ const SuperAdminViewRenderer = ({
   const handleBackToDashboard = () => {
     onViewChange('dashboard');
   };
+
+  // Handle all report views
+  if (activeView.startsWith('reports-')) {
+    return <ReportRenderer activeView={activeView} onBackToDashboard={handleBackToDashboard} />;
+  }
 
   switch (activeView) {
     case 'agencies':

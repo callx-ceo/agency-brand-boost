@@ -13,14 +13,15 @@ import SystemHealthMonitor from "../dashboard/SystemHealthMonitor";
 import UserRoleManagement from "../entities/UserRoleManagement";
 import GlobalReporting from "../reporting/GlobalReporting";
 import AgencyAgentsView from "../entities/AgencyAgentsView";
-import ContactsReports from "@/components/dashboard/ContactsReports";
+import CampaignDetailView from "../entities/CampaignDetailView";
 import ReportRenderer from "../reporting/ReportRenderer";
+import GoalsManagement from "../goals/GoalsManagement";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
   selectedAgencyId?: string | null;
   onViewChange: (view: SuperAdminViewType) => void;
-  onViewAgencyAgents: (agencyId: string) => void;
+  onViewAgencyAgents?: (agencyId: string) => void;
 }
 
 const SuperAdminViewRenderer = ({ 
@@ -33,14 +34,16 @@ const SuperAdminViewRenderer = ({
     onViewChange('dashboard');
   };
 
-  // Handle all report views
-  if (activeView.startsWith('reports-')) {
-    return <ReportRenderer activeView={activeView} onBackToDashboard={handleBackToDashboard} />;
-  }
+  console.log('SuperAdminViewRenderer - Active view:', activeView);
 
   switch (activeView) {
     case 'agencies':
-      return <AgencyManagement onViewAgents={onViewAgencyAgents} onBackToDashboard={handleBackToDashboard} />;
+      return (
+        <AgencyManagement 
+          onBackToDashboard={handleBackToDashboard}
+          onViewAgencyAgents={onViewAgencyAgents}
+        />
+      );
     
     case 'agents':
       return <AgentManagement onBackToDashboard={handleBackToDashboard} />;
@@ -69,34 +72,57 @@ const SuperAdminViewRenderer = ({
     case 'user-management':
       return <UserRoleManagement onBackToDashboard={handleBackToDashboard} />;
     
+    case 'goals-management':
+      return <GoalsManagement onBackToDashboard={handleBackToDashboard} />;
+    
     case 'global-reporting':
-      return <GlobalReporting onBackToDashboard={() => onViewChange('dashboard')} />;
+      return <GlobalReporting onBackToDashboard={handleBackToDashboard} />;
     
     case 'agency-agents':
-      return selectedAgencyId ? (
-        <AgencyAgentsView 
-          agencyId={selectedAgencyId} 
-          onBackToAgencies={() => onViewChange('agencies')} 
-        />
-      ) : (
-        <div>No agency selected</div>
-      );
-
-    case 'contacts':
       return (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold">Global Contacts</h1>
-              <p className="text-gray-600">Contact management across all agencies</p>
-            </div>
-          </div>
-          <ContactsReports />
-        </div>
+        <AgencyAgentsView 
+          agencyId={selectedAgencyId || ''} 
+          onBackToDashboard={handleBackToDashboard}
+        />
       );
     
+    case 'contacts':
+      return (
+        <CampaignDetailView 
+          campaignId="placeholder" 
+          onBackToDashboard={handleBackToDashboard}
+        />
+      );
+    
+    // Report cases
+    case 'reports-campaigns':
+    case 'reports-campaigns-by-publisher':
+    case 'reports-publisher-by-manager':
+    case 'reports-offers':
+    case 'reports-offers-by-publisher':
+    case 'reports-promo-numbers':
+    case 'reports-offers-by-promo':
+    case 'reports-advertisers':
+    case 'reports-publishers':
+    case 'reports-ivr-fees':
+    case 'reports-key-press':
+    case 'reports-agents':
+    case 'reports-agencies':
+      return <ReportRenderer activeView={activeView} onBackToDashboard={handleBackToDashboard} />;
+    
     default:
-      return <div>View not found</div>;
+      return (
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold mb-4">View Not Found</h2>
+          <p className="text-gray-600 mb-6">The requested view "{activeView}" could not be found.</p>
+          <button 
+            onClick={handleBackToDashboard}
+            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      );
   }
 };
 

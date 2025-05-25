@@ -93,6 +93,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       badge: mockAlerts.systemAlerts > 0 ? mockAlerts.systemAlerts : undefined
     },
     { id: "user-management", label: "User & Role Management", icon: <UserCheck className="w-5 h-5" /> },
+    { id: "goals-management", label: "Goals Management", icon: <TrendingUp className="w-5 h-5" /> },
     { id: "settings", label: "Platform Settings", icon: <Settings className="w-5 h-5" /> },
   ];
 

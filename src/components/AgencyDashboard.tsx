@@ -1,17 +1,13 @@
+
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Phone, Users, DollarSign, TrendingUp, AlertTriangle, Clock, FileText, CheckCircle, XCircle, Hourglass, Settings } from "lucide-react";
-import CallVolumeChart from "./dashboard/CallVolumeChart";
-import ActiveCampaignsTable from "./dashboard/ActiveCampaignsTable";
-import AgentStatusPanel from "./dashboard/AgentStatusPanel";
-import WalletPanel from "./dashboard/WalletPanel";
+import { Phone, Users, DollarSign, TrendingUp, Clock, FileText } from "lucide-react";
+import DashboardHeader from "./dashboard/DashboardHeader";
+import NavigationTabs from "./dashboard/NavigationTabs";
+import KPICardsGrid from "./dashboard/KPICardsGrid";
+import DashboardChartsSection from "./dashboard/DashboardChartsSection";
+import DashboardBottomSection from "./dashboard/DashboardBottomSection";
+import ViewRenderer from "./dashboard/ViewRenderer";
 import KPICardSelector, { KPIConfig } from "./dashboard/KPICardSelector";
-import AgentReports from "./dashboard/AgentReports";
-import ContactsReports from "./dashboard/ContactsReports";
-import RealtimeReport from "./dashboard/RealtimeReport";
-import CallHistoryReport from "./dashboard/CallHistoryReport";
 
 // Mock data for the dashboard - expanded with new KPIs
 const mockDashboardData = {
@@ -84,183 +80,40 @@ const AgencyDashboard = () => {
     );
   }
 
-  if (activeView === 'agent-reports') {
+  // Render specific views
+  if (activeView !== 'dashboard') {
     return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Agent Reports</h1>
-            <p className="text-gray-600">Performance metrics and analytics for all agents</p>
-          </div>
-          <Button variant="outline" onClick={() => setActiveView('dashboard')}>
-            Back to Dashboard
-          </Button>
-        </div>
-        <AgentReports />
-      </div>
-    );
-  }
-
-  if (activeView === 'contacts') {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Contacts Reports</h1>
-            <p className="text-gray-600">Lead management and contact tracking</p>
-          </div>
-          <Button variant="outline" onClick={() => setActiveView('dashboard')}>
-            Back to Dashboard
-          </Button>
-        </div>
-        <ContactsReports />
-      </div>
-    );
-  }
-
-  if (activeView === 'realtime-report') {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Realtime</h1>
-            <p className="text-gray-600">Real-time call monitoring and tracking</p>
-          </div>
-          <Button variant="outline" onClick={() => setActiveView('dashboard')}>
-            Back to Dashboard
-          </Button>
-        </div>
-        <RealtimeReport />
-      </div>
-    );
-  }
-
-  if (activeView === 'call-history') {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Call History</h1>
-            <p className="text-gray-600">View call records and detailed AI-generated summaries</p>
-          </div>
-          <Button variant="outline" onClick={() => setActiveView('dashboard')}>
-            Back to Dashboard
-          </Button>
-        </div>
-        <CallHistoryReport />
-      </div>
+      <ViewRenderer 
+        activeView={activeView} 
+        onBackToDashboard={() => setActiveView('dashboard')} 
+      />
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Agency Dashboard</h1>
-          <p className="text-gray-600">Real-time KPIs and operational insights</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setShowKPISelector(true)}>
-            <Settings className="w-4 h-4 mr-2" />
-            Customize KPIs
-          </Button>
-          <Badge variant="secondary">{mockDashboardData.totalCallsToday} calls today</Badge>
-          {mockDashboardData.fallbackCallsToday > 0 && (
-            <Badge variant="destructive">{mockDashboardData.fallbackCallsToday} fallbacks</Badge>
-          )}
-        </div>
-      </div>
+      <DashboardHeader
+        totalCallsToday={mockDashboardData.totalCallsToday}
+        fallbackCallsToday={mockDashboardData.fallbackCallsToday}
+        onCustomizeKPIs={() => setShowKPISelector(true)}
+      />
 
-      {/* Quick Navigation */}
-      <div className="flex gap-2">
-        <Button 
-          variant={activeView === 'dashboard' ? 'default' : 'outline'} 
-          size="sm"
-          onClick={() => setActiveView('dashboard')}
-        >
-          Dashboard
-        </Button>
-        <Button 
-          variant={activeView === 'agent-reports' ? 'default' : 'outline'} 
-          size="sm"
-          onClick={() => setActiveView('agent-reports')}
-        >
-          Agent Reports
-        </Button>
-        <Button 
-          variant={activeView === 'contacts' ? 'default' : 'outline'} 
-          size="sm"
-          onClick={() => setActiveView('contacts')}
-        >
-          Contacts
-        </Button>
-        <Button 
-          variant={activeView === 'realtime-report' ? 'default' : 'outline'} 
-          size="sm"
-          onClick={() => setActiveView('realtime-report')}
-        >
-          Realtime
-        </Button>
-        <Button 
-          variant={activeView === 'call-history' ? 'default' : 'outline'} 
-          size="sm"
-          onClick={() => setActiveView('call-history')}
-        >
-          Call History
-        </Button>
-      </div>
+      <NavigationTabs
+        activeView={activeView}
+        onViewChange={setActiveView}
+      />
 
-      {/* Customizable KPI Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {selectedKPIs.sort((a, b) => a.order - b.order).map((kpi) => {
-          const kpiData = getKPIValue(kpi.id);
-          return (
-            <Card key={kpi.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {kpi.title}
-                </CardTitle>
-                {kpi.icon}
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{kpiData.value}</div>
-                <p className={`text-xs ${kpiData.trendColor} flex items-center gap-1`}>
-                  {kpiData.trend}
-                </p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <KPICardsGrid
+        selectedKPIs={selectedKPIs}
+        getKPIValue={getKPIValue}
+      />
 
-      {/* Charts and Tables Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Call Volume Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>7-Day Call Volume</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CallVolumeChart />
-          </CardContent>
-        </Card>
+      <DashboardChartsSection
+        walletBalance={mockDashboardData.walletBalance}
+        estimatedSpend={mockDashboardData.estimatedCallSpend}
+      />
 
-        {/* Wallet Panel */}
-        <WalletPanel 
-          balance={mockDashboardData.walletBalance}
-          estimatedSpend={mockDashboardData.estimatedCallSpend}
-        />
-      </div>
-
-      {/* Bottom Row: Campaigns and Agents */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Active Campaigns */}
-        <ActiveCampaignsTable />
-        
-        {/* Agent Status */}
-        <AgentStatusPanel />
-      </div>
+      <DashboardBottomSection />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, Filter, Eye, Edit, Pause, Play } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import CampaignDetailView from "./CampaignDetailView";
 
 interface Campaign {
   id: string;
@@ -108,6 +109,17 @@ const mockCampaigns: Campaign[] = [
 const CampaignManagement = ({ onBackToDashboard }: CampaignManagementProps) => {
   const [campaigns, setCampaigns] = useState<Campaign[]>(mockCampaigns);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+
+  // If a campaign is selected, show the detail view
+  if (selectedCampaign) {
+    return (
+      <CampaignDetailView
+        campaign={selectedCampaign}
+        onBack={() => setSelectedCampaign(null)}
+      />
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -134,6 +146,10 @@ const CampaignManagement = ({ onBackToDashboard }: CampaignManagementProps) => {
     campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     campaign.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleCampaignClick = (campaign: Campaign) => {
+    setSelectedCampaign(campaign);
+  };
 
   return (
     <div className="space-y-6">
@@ -239,7 +255,14 @@ const CampaignManagement = ({ onBackToDashboard }: CampaignManagementProps) => {
             <TableBody>
               {filteredCampaigns.map((campaign) => (
                 <TableRow key={campaign.id}>
-                  <TableCell className="font-medium">{campaign.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <button
+                      onClick={() => handleCampaignClick(campaign)}
+                      className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    >
+                      {campaign.name}
+                    </button>
+                  </TableCell>
                   <TableCell>{campaign.type}</TableCell>
                   <TableCell>{campaign.category}</TableCell>
                   <TableCell>{campaign.accepts}</TableCell>
@@ -263,7 +286,11 @@ const CampaignManagement = ({ onBackToDashboard }: CampaignManagementProps) => {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleCampaignClick(campaign)}
+                      >
                         <Eye className="w-4 h-4" />
                       </Button>
                       <Button variant="outline" size="sm">

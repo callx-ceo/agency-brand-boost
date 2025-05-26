@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import ContactDetailsModal from "./ContactDetailsModal";
 
 interface Contact {
   id: string;
@@ -16,11 +17,38 @@ interface Contact {
   accountStatus: string;
 }
 
+interface ContactDetails {
+  id: string;
+  name: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  zipCode: string;
+  dob: string;
+  weight: string;
+  height: string;
+  faceValue: string;
+  tobaccoUser: string;
+  anyDiseases: string;
+  bankAccount: string;
+  calls: Array<{
+    id: string;
+    date: string;
+    duration: string;
+    type: "incoming" | "outgoing";
+    status: "answered" | "missed" | "voicemail";
+    notes?: string;
+  }>;
+}
+
 const CustomerContacts = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStage, setSelectedStage] = useState("all");
   const [selectedDisposition, setSelectedDisposition] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedContact, setSelectedContact] = useState<ContactDetails | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Mock data matching the design
   const contacts: Contact[] = [
@@ -106,6 +134,75 @@ const CustomerContacts = () => {
     }
   ];
 
+  // Mock detailed contact data
+  const getContactDetails = (contactId: string): ContactDetails => {
+    const contact = contacts.find(c => c.id === contactId);
+    if (!contact) return null as any;
+
+    const [firstName, lastName] = contact.name.split(' ');
+    
+    return {
+      id: contact.id,
+      name: contact.name,
+      phone: contact.phone,
+      firstName: firstName || "Benjamin",
+      lastName: lastName || "Jayan",
+      gender: "Male",
+      zipCode: "9581",
+      dob: "20/10/1996",
+      weight: "78 Kg",
+      height: `5'7"`,
+      faceValue: "$5000",
+      tobaccoUser: "Yes",
+      anyDiseases: "No",
+      bankAccount: "Yes",
+      calls: [
+        {
+          id: "call-1",
+          date: "29/10/2024, 11:37 AM",
+          duration: "00:05 Min",
+          type: "incoming",
+          status: "answered",
+          notes: "Customer interested in life insurance policy"
+        },
+        {
+          id: "call-2", 
+          date: "28/10/2024, 02:15 PM",
+          duration: "26:50 Min",
+          type: "outgoing",
+          status: "answered",
+          notes: "Completed application form discussion"
+        },
+        {
+          id: "call-3",
+          date: "27/10/2024, 09:30 AM", 
+          duration: "00:00 Min",
+          type: "incoming",
+          status: "missed"
+        },
+        {
+          id: "call-4",
+          date: "26/10/2024, 04:22 PM",
+          duration: "15:12 Min", 
+          type: "outgoing",
+          status: "answered",
+          notes: "Follow-up call regarding premium options"
+        }
+      ]
+    };
+  };
+
+  const handleContactClick = (contactId: string) => {
+    const contactDetails = getContactDetails(contactId);
+    setSelectedContact(contactDetails);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedContact(null);
+  };
+
   const itemsPerPage = 10;
   const totalPages = Math.ceil(contacts.length / itemsPerPage);
 
@@ -132,7 +229,6 @@ const CustomerContacts = () => {
           </div>
         </div>
 
-        {/* Search and Filters */}
         <div className="flex gap-4 items-center">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -197,7 +293,10 @@ const CustomerContacts = () => {
           {/* Table Rows */}
           {contacts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((contact) => (
             <div key={contact.id} className="grid grid-cols-5 gap-4 py-3 hover:bg-gray-50 border-b border-gray-100">
-              <div className="text-blue-600 font-medium">
+              <div 
+                className="text-blue-600 font-medium cursor-pointer hover:underline"
+                onClick={() => handleContactClick(contact.id)}
+              >
                 {contact.name}
               </div>
               <div className="flex items-center gap-2">
@@ -249,6 +348,13 @@ const CustomerContacts = () => {
           </div>
         </div>
       </div>
+
+      {/* Contact Details Modal */}
+      <ContactDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        contact={selectedContact}
+      />
     </div>
   );
 };

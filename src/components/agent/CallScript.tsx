@@ -93,7 +93,7 @@ const CallScript = ({ currentStep, onStepChange }: CallScriptProps) => {
           </Button>
           <Button 
             className="flex-1 bg-blue-600 hover:bg-blue-700"
-            onClick={() => setCurrentStep(Math.min(currentStep + 1, 4))}
+            onClick={() => onStepChange(Math.min(currentStep + 1, 4))}
           >
             Next
           </Button>

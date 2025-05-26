@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import AdminPanel from "../components/AdminPanel";
 import AdminSidebar from "../components/AdminSidebar";
@@ -6,6 +7,7 @@ import RealtimeReport from "../components/dashboard/RealtimeReport";
 import ContactsReports from "../components/dashboard/ContactsReports";
 import CallHistoryReport from "../components/dashboard/CallHistoryReport";
 import ApplicationsReport from "../components/dashboard/ApplicationsReport";
+import AgencyOffersManagement from "../components/agency/AgencyOffersManagement";
 import { Toaster } from "sonner";
 
 const Agency = () => {
@@ -15,6 +17,12 @@ const Agency = () => {
     switch (activeSection) {
       case "dashboard":
         return <AgencyDashboard />;
+      case "offers":
+        return (
+          <div className="space-y-6">
+            <AgencyOffersManagement />
+          </div>
+        );
       case "reports":
         return (
           <div className="space-y-6">

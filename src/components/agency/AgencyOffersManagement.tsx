@@ -6,137 +6,54 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, Filter, Eye, Edit, Pause, Play } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import CreateOfferWizard from "./CreateOfferWizard";
-import { OfferFormData } from "./types/offerTypes";
+import CreateOfferWizard from "../superadmin/entities/CreateOfferWizard";
+import { OfferFormData } from "../superadmin/entities/types/offerTypes";
 
 interface Offer {
   id: string;
   name: string;
-  type: string;
-  category: string;
+  type: "internal" | "external";
+  vertical: string;
   callsToday: number;
   callsMTD: number;
   revenueToday: number;
   revenueMTD: number;
-  conversionRateMTD: number;
-  avgRevenuePerCall: number;
+  conversionRate: number;
+  bidPrice: number;
   status: "active" | "paused" | "pending";
 }
 
-interface OfferManagementProps {
-  onBackToDashboard: () => void;
-  onViewOfferStatistics: (offerId: string) => void;
-}
-
-const mockOffers: Offer[] = [
+const mockAgencyOffers: Offer[] = [
   {
     id: "1",
-    name: "Insurex - Search",
-    type: "Bundle",
-    category: "Final Expense Bundle",
-    callsToday: 0,
-    callsMTD: 1964,
-    revenueToday: 0,
-    revenueMTD: 100500,
-    conversionRateMTD: 85.28,
-    avgRevenuePerCall: 51.17,
+    name: "Final Expense Inbound",
+    type: "internal",
+    vertical: "Final Expense",
+    callsToday: 12,
+    callsMTD: 347,
+    revenueToday: 540,
+    revenueMTD: 15615,
+    conversionRate: 78.5,
+    bidPrice: 45.00,
     status: "active"
   },
   {
-    id: "2",
-    name: "HPI - Medicare - 2",
-    type: "Bundle",
-    category: "Medicare Bundle",
-    callsToday: 0,
-    callsMTD: 2668,
-    revenueToday: 0,
-    revenueMTD: 82280,
-    conversionRateMTD: 56.07,
-    avgRevenuePerCall: 30.84,
-    status: "active"
-  },
-  {
-    id: "3",
-    name: "Auto Insurance-Ever-Ringmax",
-    type: "Bundle",
-    category: "Auto Bundle - Private",
-    callsToday: 0,
-    callsMTD: 2642,
-    revenueToday: 0,
-    revenueMTD: 59712,
-    conversionRateMTD: 94.17,
-    avgRevenuePerCall: 22.60,
-    status: "active"
-  },
-  {
-    id: "4",
-    name: "Insurex - Social",
-    type: "Bundle",
-    category: "Final Expense - Social - Now IVR",
-    callsToday: 0,
-    callsMTD: 1168,
-    revenueToday: 0,
-    revenueMTD: 54225,
-    conversionRateMTD: 61.90,
-    avgRevenuePerCall: 46.43,
-    status: "active"
-  },
-  {
-    id: "5",
-    name: "Family First (Sam)",
-    type: "Bundle",
-    category: "Final Expense Bundle",
-    callsToday: 0,
-    callsMTD: 1143,
-    revenueToday: 0,
-    revenueMTD: 38430,
-    conversionRateMTD: 48.03,
-    avgRevenuePerCall: 33.62,
-    status: "active"
-  },
-  {
-    id: "6",
-    name: "Family First (Sam) - No IVR",
-    type: "Bundle",
-    category: "Final Expense - Social - Now IVR",
-    callsToday: 0,
-    callsMTD: 805,
-    revenueToday: 0,
-    revenueMTD: 30870,
-    conversionRateMTD: 54.78,
-    avgRevenuePerCall: 38.35,
-    status: "active"
-  },
-  {
-    id: "7",
-    name: "DL-Home Insurance-OS",
-    type: "Bundle",
-    category: "Home Insurance OS",
-    callsToday: 0,
-    callsMTD: 390,
-    revenueToday: 0,
-    revenueMTD: 11880,
-    conversionRateMTD: 55.38,
-    avgRevenuePerCall: 30.46,
-    status: "active"
-  },
-  {
-    id: "8",
-    name: "DL-OS-Revshare",
-    type: "Bundle",
-    category: "Auto Bundle - Private",
-    callsToday: 0,
-    callsMTD: 1164,
-    revenueToday: 0,
-    revenueMTD: 11154,
-    conversionRateMTD: 43.55,
-    avgRevenuePerCall: 9.58,
+    id: "2", 
+    name: "Medicare External Campaign",
+    type: "external",
+    vertical: "Medicare",
+    callsToday: 8,
+    callsMTD: 198,
+    revenueToday: 360,
+    revenueMTD: 8910,
+    conversionRate: 65.2,
+    bidPrice: 45.00,
     status: "active"
   }
 ];
 
-const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferManagementProps) => {
-  const [offers, setOffers] = useState<Offer[]>(mockOffers);
+const AgencyOffersManagement = () => {
+  const [offers, setOffers] = useState<Offer[]>(mockAgencyOffers);
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateWizard, setShowCreateWizard] = useState(false);
 
@@ -165,14 +82,14 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
     const offer: Offer = {
       id: newOffer.id || `offer_${Date.now()}`,
       name: newOffer.name,
-      type: newOffer.type === "internal" ? "Internal" : "External",
-      category: newOffer.vertical,
+      type: newOffer.type,
+      vertical: newOffer.vertical,
       callsToday: 0,
       callsMTD: 0,
       revenueToday: 0,
       revenueMTD: 0,
-      conversionRateMTD: 0,
-      avgRevenuePerCall: newOffer.bidPrice,
+      conversionRate: 0,
+      bidPrice: newOffer.bidPrice,
       status: newOffer.activeImmediately ? "active" : "pending"
     };
     setOffers([...offers, offer]);
@@ -180,7 +97,7 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
 
   const filteredOffers = offers.filter(offer =>
     offer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    offer.category.toLowerCase().includes(searchTerm.toLowerCase())
+    offer.vertical.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (showCreateWizard) {
@@ -188,8 +105,8 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
       <CreateOfferWizard
         onClose={() => setShowCreateWizard(false)}
         onOfferCreated={handleOfferCreated}
-        userRole="super_admin"
-        currentUserId="current_superadmin_user"
+        userRole="agency_admin"
+        currentUserId="current_agency_user"
       />
     );
   }
@@ -198,21 +115,16 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Offer Management</h1>
-          <p className="text-gray-600">Manage offers across all campaigns and publishers</p>
+          <h1 className="text-3xl font-bold">My Offers</h1>
+          <p className="text-gray-600">Manage your agency's offers and campaigns</p>
         </div>
-        <div className="flex gap-2">
-          <Button 
-            className="flex items-center gap-2"
-            onClick={() => setShowCreateWizard(true)}
-          >
-            <Plus className="w-4 h-4" />
-            New Offer
-          </Button>
-          <Button variant="outline" onClick={onBackToDashboard}>
-            Back to Dashboard
-          </Button>
-        </div>
+        <Button 
+          className="flex items-center gap-2"
+          onClick={() => setShowCreateWizard(true)}
+        >
+          <Plus className="w-4 h-4" />
+          Create New Offer
+        </Button>
       </div>
 
       {/* Summary Cards */}
@@ -239,7 +151,7 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
           <CardContent className="p-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">
-                {offers.reduce((sum, o) => sum + o.callsMTD, 0).toLocaleString()}
+                {offers.reduce((sum, o) => sum + o.callsMTD, 0)}
               </div>
               <div className="text-sm text-gray-600">Total Calls MTD</div>
             </div>
@@ -257,7 +169,7 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
         </Card>
       </div>
 
-      {/* Search and Filters */}
+      {/* Offers Table */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -283,20 +195,15 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    Offer Name
-                  </div>
-                </TableHead>
+                <TableHead>Offer Name</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>Vertical</TableHead>
                 <TableHead>Calls Today</TableHead>
                 <TableHead>Calls MTD</TableHead>
                 <TableHead>Revenue Today</TableHead>
                 <TableHead>Revenue MTD</TableHead>
-                <TableHead>Conv. Rate MTD</TableHead>
-                <TableHead>Avg. Revenue/Call</TableHead>
+                <TableHead>Conv. Rate</TableHead>
+                <TableHead>Bid Price</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -304,25 +211,19 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
             <TableBody>
               {filteredOffers.map((offer) => (
                 <TableRow key={offer.id}>
+                  <TableCell className="font-medium">{offer.name}</TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <button
-                        onClick={() => onViewOfferStatistics(offer.id)}
-                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                      >
-                        {offer.name}
-                      </button>
-                    </div>
+                    <Badge variant={offer.type === "internal" ? "default" : "secondary"}>
+                      {offer.type === "internal" ? "Internal" : "External"}
+                    </Badge>
                   </TableCell>
-                  <TableCell>{offer.type}</TableCell>
-                  <TableCell>{offer.category}</TableCell>
+                  <TableCell>{offer.vertical}</TableCell>
                   <TableCell className="text-center">{offer.callsToday}</TableCell>
-                  <TableCell className="text-center">{offer.callsMTD.toLocaleString()}</TableCell>
+                  <TableCell className="text-center">{offer.callsMTD}</TableCell>
                   <TableCell className="text-center">${offer.revenueToday.toFixed(2)}</TableCell>
                   <TableCell className="text-center">${offer.revenueMTD.toLocaleString()}</TableCell>
-                  <TableCell className="text-center">{offer.conversionRateMTD}%</TableCell>
-                  <TableCell className="text-center">${offer.avgRevenuePerCall}</TableCell>
+                  <TableCell className="text-center">{offer.conversionRate}%</TableCell>
+                  <TableCell className="text-center">${offer.bidPrice}</TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(offer.status)}>
                       {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
@@ -359,4 +260,4 @@ const OfferManagement = ({ onBackToDashboard, onViewOfferStatistics }: OfferMana
   );
 };
 
-export default OfferManagement;
+export default AgencyOffersManagement;

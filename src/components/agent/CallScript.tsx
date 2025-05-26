@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import CallDispositionModal from "./CallDispositionModal";
+import ApplicationDetailsModal from "./ApplicationDetailsModal";
 
 interface CallScriptProps {
   currentStep: number;
@@ -14,6 +14,7 @@ interface CallScriptProps {
 
 const CallScript = ({ currentStep, onStepChange }: CallScriptProps) => {
   const [showDispositionModal, setShowDispositionModal] = useState(false);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
 
   const scriptSteps = [
     {
@@ -77,6 +78,17 @@ const CallScript = ({ currentStep, onStepChange }: CallScriptProps) => {
     // Handle disposition submission logic here
   };
 
+  const handleApplicationSubmitted = () => {
+    setShowDispositionModal(false);
+    setShowApplicationModal(true);
+  };
+
+  const handleApplicationDetailsSubmit = (applicationData: any) => {
+    console.log("Application Data:", applicationData);
+    setShowApplicationModal(false);
+    // Handle application submission logic here
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -111,6 +123,13 @@ const CallScript = ({ currentStep, onStepChange }: CallScriptProps) => {
         isOpen={showDispositionModal}
         onClose={() => setShowDispositionModal(false)}
         onSubmit={handleDispositionSubmit}
+        onApplicationSubmitted={handleApplicationSubmitted}
+      />
+
+      <ApplicationDetailsModal
+        isOpen={showApplicationModal}
+        onClose={() => setShowApplicationModal(false)}
+        onSubmit={handleApplicationDetailsSubmit}
       />
     </div>
   );

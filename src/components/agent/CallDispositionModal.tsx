@@ -10,21 +10,27 @@ interface CallDispositionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (disposition: string, notes: string) => void;
+  onApplicationSubmitted: () => void;
 }
 
-const CallDispositionModal = ({ isOpen, onClose, onSubmit }: CallDispositionModalProps) => {
+const CallDispositionModal = ({ isOpen, onClose, onSubmit, onApplicationSubmitted }: CallDispositionModalProps) => {
   const [selectedDisposition, setSelectedDisposition] = useState("");
   const [notes, setNotes] = useState("");
 
   const dispositionOptions = [
     { value: "rate-too-high", label: "Rate Too High", icon: "🔥" },
     { value: "change-mind", label: "Change Mind", icon: "🤔" },
-    { value: "doesnt-qualify", label: "Doesn't Qualify", icon: "❌" }
+    { value: "doesnt-qualify", label: "Doesn't Qualify", icon: "❌" },
+    { value: "application-submitted", label: "Application Submitted", icon: "✅" }
   ];
 
   const handleSubmit = () => {
     if (selectedDisposition) {
-      onSubmit(selectedDisposition, notes);
+      if (selectedDisposition === "application-submitted") {
+        onApplicationSubmitted();
+      } else {
+        onSubmit(selectedDisposition, notes);
+      }
       setSelectedDisposition("");
       setNotes("");
     }
@@ -41,10 +47,10 @@ const CallDispositionModal = ({ isOpen, onClose, onSubmit }: CallDispositionModa
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-lg font-semibold">
-            Go Live
+            Call Disposition
           </DialogTitle>
           <p className="text-center text-sm text-gray-600">
-            You are ready to start Calling
+            Please select the call disposition
           </p>
         </DialogHeader>
 

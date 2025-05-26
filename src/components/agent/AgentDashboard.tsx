@@ -10,6 +10,7 @@ import CallSummary from "./CallSummary";
 import AgentCallStats from "./AgentCallStats";
 import CustomerContacts from "./CustomerContacts";
 import HangUpConfirmDialog from "./HangUpConfirmDialog";
+import ClientInfoModal from "./ClientInfoModal";
 
 const AgentDashboard = () => {
   const [isOnCall, setIsOnCall] = useState(true);
@@ -19,6 +20,7 @@ const AgentDashboard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [activeView, setActiveView] = useState("script");
   const [showHangUpDialog, setShowHangUpDialog] = useState(false);
+  const [showClientInfoModal, setShowClientInfoModal] = useState(false);
 
   // Mock call data
   const currentCall = {
@@ -236,7 +238,7 @@ const AgentDashboard = () => {
 
               {/* Right Panel - Summary */}
               <div className="w-80 border-l bg-white">
-                <CallSummary />
+                <CallSummary onClientInfoClick={() => setShowClientInfoModal(true)} />
               </div>
             </div>
           </>
@@ -258,6 +260,12 @@ const AgentDashboard = () => {
         isOpen={showHangUpDialog}
         onClose={handleCancelHangUp}
         onConfirm={handleConfirmHangUp}
+      />
+
+      {/* Client Info Modal */}
+      <ClientInfoModal
+        isOpen={showClientInfoModal}
+        onClose={() => setShowClientInfoModal(false)}
       />
     </div>
   );

@@ -1,8 +1,12 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { User, X } from "lucide-react";
 
 interface ClientInfoModalProps {
@@ -12,7 +16,7 @@ interface ClientInfoModalProps {
 
 const ClientInfoModal = ({ isOpen, onClose }: ClientInfoModalProps) => {
   // Mock client data - in real app this would come from props or API
-  const clientData = {
+  const initialClientData = {
     firstName: "Benjamin",
     lastName: "Panic",
     gender: "Male",
@@ -26,6 +30,30 @@ const ClientInfoModal = ({ isOpen, onClose }: ClientInfoModalProps) => {
     bankAccount: "Yes"
   };
 
+  const [clientData, setClientData] = useState(initialClientData);
+  const [notes, setNotes] = useState("Tlex");
+
+  const handleInputChange = (field: string, value: string) => {
+    setClientData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = () => {
+    console.log("Saving client data:", clientData);
+    console.log("Notes:", notes);
+    // Here you would typically save to API
+    onClose();
+  };
+
+  const handleCancel = () => {
+    // Reset to initial data
+    setClientData(initialClientData);
+    setNotes("Tlex");
+    onClose();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
@@ -35,7 +63,7 @@ const ClientInfoModal = ({ isOpen, onClose }: ClientInfoModalProps) => {
               <User className="w-5 h-5 text-blue-500" />
               <span>Summary</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="ghost" size="sm" onClick={handleCancel}>
               <X className="w-4 h-4" />
             </Button>
           </DialogTitle>
@@ -52,70 +80,154 @@ const ClientInfoModal = ({ isOpen, onClose }: ClientInfoModalProps) => {
             </Badge>
           </div>
 
-          {/* Client Information */}
+          {/* Client Information Form */}
           <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">First Name:</span>
-              <span className="font-medium">{clientData.firstName}</span>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="firstName" className="text-xs text-gray-600">First Name:</Label>
+                <Input
+                  id="firstName"
+                  value={clientData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName" className="text-xs text-gray-600">Last Name:</Label>
+                <Input
+                  id="lastName"
+                  value={clientData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Last Name:</span>
-              <span className="font-medium">{clientData.lastName}</span>
+            <div>
+              <Label htmlFor="gender" className="text-xs text-gray-600">Gender:</Label>
+              <Select value={clientData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
+                <SelectTrigger className="h-8 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Female">Female</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Gender:</span>
-              <span className="font-medium">{clientData.gender}</span>
+            <div>
+              <Label htmlFor="zipCode" className="text-xs text-gray-600">Zip Code:</Label>
+              <Input
+                id="zipCode"
+                value={clientData.zipCode}
+                onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                className="h-8 text-sm"
+              />
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Zip Code:</span>
-              <span className="font-medium">{clientData.zipCode}</span>
+            <div>
+              <Label htmlFor="dob" className="text-xs text-gray-600">DOB:</Label>
+              <Input
+                id="dob"
+                value={clientData.dob}
+                onChange={(e) => handleInputChange('dob', e.target.value)}
+                className="h-8 text-sm"
+                placeholder="DD/MM/YYYY"
+              />
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">DOB:</span>
-              <span className="font-medium">{clientData.dob}</span>
+            <div>
+              <Label htmlFor="weight" className="text-xs text-gray-600">Weight:</Label>
+              <Input
+                id="weight"
+                value={clientData.weight}
+                onChange={(e) => handleInputChange('weight', e.target.value)}
+                className="h-8 text-sm"
+              />
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Weight:</span>
-              <span className="font-medium">{clientData.weight}</span>
+            <div>
+              <Label htmlFor="height" className="text-xs text-gray-600">Height:</Label>
+              <Input
+                id="height"
+                value={clientData.height}
+                onChange={(e) => handleInputChange('height', e.target.value)}
+                className="h-8 text-sm"
+              />
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Height:</span>
-              <span className="font-medium">{clientData.height}</span>
+            <div>
+              <Label htmlFor="faceValue" className="text-xs text-gray-600">Face Value:</Label>
+              <Input
+                id="faceValue"
+                value={clientData.faceValue}
+                onChange={(e) => handleInputChange('faceValue', e.target.value)}
+                className="h-8 text-sm"
+              />
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Face Value:</span>
-              <span className="font-medium">{clientData.faceValue}</span>
+            <div>
+              <Label htmlFor="tobaccoUser" className="text-xs text-gray-600">Tobacco User:</Label>
+              <Select value={clientData.tobaccoUser} onValueChange={(value) => handleInputChange('tobaccoUser', value)}>
+                <SelectTrigger className="h-8 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Yes">Yes</SelectItem>
+                  <SelectItem value="No">No</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Tobacco User:</span>
-              <span className="font-medium">{clientData.tobaccoUser}</span>
+            <div>
+              <Label htmlFor="diseases" className="text-xs text-gray-600">Any Diseases:</Label>
+              <Select value={clientData.diseases} onValueChange={(value) => handleInputChange('diseases', value)}>
+                <SelectTrigger className="h-8 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Yes">Yes</SelectItem>
+                  <SelectItem value="No">No</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Any Diseases:</span>
-              <span className="font-medium">{clientData.diseases}</span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Bank Account:</span>
-              <span className="font-medium">{clientData.bankAccount}</span>
+            <div>
+              <Label htmlFor="bankAccount" className="text-xs text-gray-600">Bank Account:</Label>
+              <Select value={clientData.bankAccount} onValueChange={(value) => handleInputChange('bankAccount', value)}>
+                <SelectTrigger className="h-8 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Yes">Yes</SelectItem>
+                  <SelectItem value="No">No</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           {/* Notes Section */}
           <div className="mt-6">
-            <h4 className="font-semibold mb-2">Notes</h4>
-            <div className="bg-gray-50 rounded-lg p-3 min-h-[80px] text-sm text-gray-600">
-              Tlex
-            </div>
+            <Label htmlFor="notes" className="text-sm font-semibold mb-2 block">Notes</Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="min-h-[80px] text-sm resize-none"
+              placeholder="Add notes..."
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <Button variant="outline" className="flex-1" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button className="flex-1 bg-blue-600 hover:bg-blue-700" onClick={handleSave}>
+              Save
+            </Button>
           </div>
         </div>
       </DialogContent>

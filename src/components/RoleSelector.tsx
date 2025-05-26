@@ -8,7 +8,8 @@ import {
   Building2, 
   Users, 
   Megaphone, 
-  Headphones 
+  Headphones,
+  UserCheck
 } from "lucide-react";
 
 interface RoleCardProps {
@@ -79,6 +80,13 @@ const RoleSelector = () => {
       path: "/advertiser"
     },
     {
+      title: "Guide",
+      description: "Pre-qualify and screen incoming calls, customer service support",
+      icon: <UserCheck className="w-8 h-8 text-blue-600" />,
+      status: "coming-soon" as const,
+      path: "/guide"
+    },
+    {
       title: "Agent",
       description: "Handle calls, manage leads, and track performance metrics",
       icon: <Headphones className="w-8 h-8 text-blue-600" />,
@@ -103,7 +111,7 @@ const RoleSelector = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
           {roles.map((role) => (
             <RoleCard
               key={role.title}

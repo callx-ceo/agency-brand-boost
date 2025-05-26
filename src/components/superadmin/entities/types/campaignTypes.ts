@@ -6,6 +6,11 @@ export interface CampaignFormData {
   targetStates: string[];
   callDurationRequirement: number;
   
+  // Bid Floor Settings
+  bidFloorEnabled?: boolean;
+  minimumBidFloor?: number;
+  bidFloorCurrency?: "USD" | "EUR" | "GBP";
+  
   // Routing Details
   assignedAgents?: string[];
   concurrencyCapPerAgent?: number;

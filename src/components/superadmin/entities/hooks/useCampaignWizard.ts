@@ -16,6 +16,9 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
     vertical: "",
     targetStates: [],
     callDurationRequirement: 60,
+    bidFloorEnabled: false,
+    minimumBidFloor: 0,
+    bidFloorCurrency: "USD",
     schedule: {
       start: "08:00",
       end: "18:00",
@@ -48,6 +51,17 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         break;
         
       case 2:
+        if (data.bidFloorEnabled && (data.minimumBidFloor === undefined || data.minimumBidFloor < 0)) {
+          toast.error("Please set a valid minimum bid floor");
+          return false;
+        }
+        if (data.bidFloorEnabled && data.minimumBidFloor !== undefined && data.minimumBidFloor > 1000) {
+          toast.error("Bid floor seems unusually high. Please verify the amount.");
+          return false;
+        }
+        break;
+        
+      case 3:
         if (!data.assignedAgents || data.assignedAgents.length === 0) {
           toast.error("Please assign at least one agent");
           return false;
@@ -61,7 +75,7 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         }
         break;
         
-      case 3:
+      case 4:
         // Summary step - no additional validation needed
         break;
     }

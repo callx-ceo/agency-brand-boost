@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { CampaignBasicInfoStep } from "./wizard/CampaignBasicInfoStep";
+import { CampaignBidFloorStep } from "./wizard/CampaignBidFloorStep";
 import { CampaignRoutingStep } from "./wizard/CampaignRoutingStep";
 import { CampaignSummaryStep } from "./wizard/CampaignSummaryStep";
 import { useCampaignWizard } from "./hooks/useCampaignWizard";
@@ -19,7 +20,7 @@ interface CreateCampaignWizardProps {
 
 const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUserId }: CreateCampaignWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 3;
+  const totalSteps = 4;
   
   const {
     formData,
@@ -31,8 +32,9 @@ const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUse
 
   const steps = [
     { number: 1, title: "Basic Information", component: CampaignBasicInfoStep },
-    { number: 2, title: "Routing & Settings", component: CampaignRoutingStep },
-    { number: 3, title: "Summary & Launch", component: CampaignSummaryStep }
+    { number: 2, title: "Bid Floor Settings", component: CampaignBidFloorStep },
+    { number: 3, title: "Routing & Settings", component: CampaignRoutingStep },
+    { number: 4, title: "Summary & Launch", component: CampaignSummaryStep }
   ];
 
   const handleNext = async () => {

@@ -1,20 +1,14 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { FileText, Search, Eye, Clock, Building2, Mail, Phone, Calendar, Filter, RefreshCw, AlertCircle, TrendingUp, History } from "lucide-react";
-import { toast } from "sonner";
 import ApplicationMetricsDashboard from "./ApplicationMetricsDashboard";
 import ApplicationDetailsDialog from "./ApplicationDetailsDialog";
-import BulkActionsBar from "./BulkActionsBar";
 import { RealtimeUpdatesProvider } from "./RealtimeUpdatesProvider";
-import NotificationCenter from "./NotificationCenter";
 import AuditTrailDialog from "./AuditTrailDialog";
+import ApplicationsTable from "./components/ApplicationsTable";
+import { useApplicationFilters } from "./hooks/useApplicationFilters";
+import { useApplicationActions } from "./hooks/useApplicationActions";
+import { getTabCounts } from "./utils/applicationUtils";
 
 interface AgencyApplicationsManagementProps {
   onBackToDashboard: () => void;
@@ -96,290 +90,55 @@ const mockApplications = [
 const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [selectedAgency, setSelectedAgency] = useState<string>("all");
-  const [selectedApplications, setSelectedApplications] = useState<number[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [auditTrailApplicationId, setAuditTrailApplicationId] = useState<number | null>(null);
-  const [isAuditTrailOpen, setIsAuditTrailOpen] = useState(false);
 
-  const handleRefreshStatus = (applicationId: number) => {
-    toast.success("Status refreshed from carrier");
-    console.log("Refreshed status for application:", applicationId);
-  };
+  const {
+    selectedApplications,
+    selectedApplication,
+    isDialogOpen,
+    auditTrailApplicationId,
+    isAuditTrailOpen,
+    setIsDialogOpen,
+    setIsAuditTrailOpen,
+    handleRefreshStatus,
+    handleBulkRefresh,
+    handleBulkExport,
+    handleSelectApplication,
+    handleSelectAll,
+    handleViewDetails,
+    handleViewAuditTrail,
+  } = useApplicationActions();
 
-  const handleUpdateStatus = (applicationId: number, newStatus: string) => {
-    toast.success(`Application status updated to ${newStatus}`);
-    console.log("Updated application status:", applicationId, newStatus);
-  };
+  const { filteredApplications } = useApplicationFilters({
+    applications: mockApplications,
+    searchTerm,
+    selectedAgency,
+    activeTab,
+  });
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending": return <Badge variant="outline" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
-      case "approved": return <Badge variant="default" className="bg-green-100 text-green-800">Approved</Badge>;
-      case "rejected": return <Badge variant="destructive">Rejected</Badge>;
-      case "under-review": return <Badge variant="secondary" className="bg-blue-100 text-blue-800">Under Review</Badge>;
-      default: return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
-  const getUniqueAgencies = () => {
-    const agencies = [...new Set(mockApplications.map(app => app.agencyName))];
-    return agencies.sort();
-  };
-
-  const filterApplicationsByStatus = (status: string) => {
-    let filtered = mockApplications;
-    
-    if (status !== "all") {
-      filtered = mockApplications.filter(app => app.status === status);
-    }
-    
-    if (selectedAgency !== "all") {
-      filtered = filtered.filter(app => app.agencyName === selectedAgency);
-    }
-    
-    if (searchTerm) {
-      filtered = filtered.filter(app =>
-        app.agencyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.agentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    return filtered;
-  };
-
-  const getTabCounts = () => {
-    const allFiltered = selectedAgency === "all" ? mockApplications : mockApplications.filter(a => a.agencyName === selectedAgency);
-    return {
-      all: allFiltered.length,
-      pending: allFiltered.filter(a => a.status === "pending").length,
-      approved: allFiltered.filter(a => a.status === "approved").length,
-      rejected: allFiltered.filter(a => a.status === "rejected").length,
-      "under-review": allFiltered.filter(a => a.status === "under-review").length,
-    };
-  };
-
-  const tabCounts = getTabCounts();
-
-  const getUrgencyIndicator = (dateSubmitted: string) => {
-    const daysSinceSubmission = Math.floor((new Date().getTime() - new Date(dateSubmitted).getTime()) / (1000 * 60 * 60 * 24));
-    if (daysSinceSubmission > 7) {
-      return <AlertCircle className="w-4 h-4 text-red-500" />;
-    } else if (daysSinceSubmission > 5) {
-      return <Clock className="w-4 h-4 text-orange-500" />;
-    }
-    return null;
-  };
-
-  const handleBulkRefresh = () => {
-    toast.success(`Refreshed status for ${selectedApplications.length} applications`);
-    console.log("Bulk refresh for applications:", selectedApplications);
-    setSelectedApplications([]);
-  };
-
-  const handleBulkExport = () => {
-    toast.success(`Exported ${selectedApplications.length} applications`);
-    console.log("Bulk export for applications:", selectedApplications);
-  };
-
-  const handleSelectApplication = (applicationId: number, checked: boolean) => {
-    if (checked) {
-      setSelectedApplications(prev => [...prev, applicationId]);
-    } else {
-      setSelectedApplications(prev => prev.filter(id => id !== applicationId));
-    }
-  };
-
-  const handleSelectAll = (applications: any[], checked: boolean) => {
-    if (checked) {
-      setSelectedApplications(applications.map(app => app.id));
-    } else {
-      setSelectedApplications([]);
-    }
-  };
-
-  const handleViewDetails = (application: any) => {
-    setSelectedApplication(application);
-    setIsDialogOpen(true);
-  };
-
-  const handleViewAuditTrail = (applicationId: number) => {
-    setAuditTrailApplicationId(applicationId);
-    setIsAuditTrailOpen(true);
-  };
+  const tabCounts = getTabCounts(mockApplications, selectedAgency);
 
   const renderApplicationsTable = (applications: any[]) => (
-    <div className="space-y-4">
-      <BulkActionsBar
-        selectedCount={selectedApplications.length}
-        onRefreshSelected={handleBulkRefresh}
-        onExportSelected={handleBulkExport}
-        onClearSelection={() => setSelectedApplications([])}
-      />
-      
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center flex-wrap gap-4">
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              Agency Applications ({applications.length})
-            </CardTitle>
-            <div className="flex gap-2 flex-wrap">
-              <NotificationCenter />
-              <div className="relative">
-                <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                  <SelectTrigger className="pl-8 w-40">
-                    <SelectValue placeholder="Priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Priority</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                    <SelectItem value="normal">Normal</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="relative">
-                <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Select value={selectedAgency} onValueChange={setSelectedAgency}>
-                  <SelectTrigger className="pl-8 w-48">
-                    <SelectValue placeholder="Filter by agency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Agencies</SelectItem>
-                    {getUniqueAgencies().map((agency) => (
-                      <SelectItem key={agency} value={agency}>
-                        {agency}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search applications..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 w-64"
-                />
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">
-                    <Checkbox
-                      checked={applications.length > 0 && applications.every(app => selectedApplications.includes(app.id))}
-                      onCheckedChange={(checked) => handleSelectAll(applications, checked as boolean)}
-                    />
-                  </TableHead>
-                  <TableHead className="min-w-[200px]">Contact</TableHead>
-                  <TableHead className="min-w-[180px]">Agency Name</TableHead>
-                  <TableHead className="min-w-[150px]">Agent Name</TableHead>
-                  <TableHead className="min-w-[140px]">Business Type</TableHead>
-                  <TableHead className="min-w-[130px]">Date Submitted</TableHead>
-                  <TableHead className="min-w-[100px]">Status</TableHead>
-                  <TableHead className="min-w-[120px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {applications.map((application) => (
-                  <TableRow key={application.id} className={selectedApplications.includes(application.id) ? "bg-blue-50" : ""}>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedApplications.includes(application.id)}
-                        onCheckedChange={(checked) => handleSelectApplication(application.id, checked as boolean)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{application.contactName}</div>
-                        <div className="text-sm text-gray-500 flex items-center gap-1">
-                          <Mail className="w-3 h-3" />
-                          <span className="truncate max-w-[150px]">{application.email}</span>
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center gap-1 md:hidden">
-                          <Phone className="w-3 h-3" />
-                          {application.phone}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                        <span className="truncate">{application.agencyName}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium truncate">{application.agentName}</div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="truncate">{application.businessType}</span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4 text-gray-400" />
-                          {application.dateSubmitted}
-                        </div>
-                        {getUrgencyIndicator(application.dateSubmitted)}
-                      </div>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(application.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-1 flex-wrap">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleViewDetails(application)}
-                          className="flex-shrink-0"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleViewAuditTrail(application.id)}
-                          className="flex-shrink-0"
-                        >
-                          <History className="w-4 h-4" />
-                        </Button>
-                        {(application.status === "pending" || application.status === "under-review") && (
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => handleRefreshStatus(application.id)}
-                            className="text-blue-600 hover:text-blue-700 flex-shrink-0"
-                          >
-                            <RefreshCw className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            
-            {applications.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">No applications found.</p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <ApplicationsTable
+      applications={applications}
+      selectedApplications={selectedApplications}
+      priorityFilter={priorityFilter}
+      setPriorityFilter={setPriorityFilter}
+      selectedAgency={selectedAgency}
+      setSelectedAgency={setSelectedAgency}
+      searchTerm={searchTerm}
+      setSearchTerm={setSearchTerm}
+      onBulkRefresh={handleBulkRefresh}
+      onBulkExport={handleBulkExport}
+      onClearSelection={() => handleSelectAll([], false)}
+      onSelectApplication={handleSelectApplication}
+      onSelectAll={handleSelectAll}
+      onViewDetails={handleViewDetails}
+      onViewAuditTrail={handleViewAuditTrail}
+      onRefreshStatus={handleRefreshStatus}
+      mockApplications={mockApplications}
+    />
   );
 
   return (
@@ -407,23 +166,23 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
           </TabsList>
           
           <TabsContent value="all">
-            {renderApplicationsTable(filterApplicationsByStatus("all"))}
+            {renderApplicationsTable(filteredApplications)}
           </TabsContent>
           
           <TabsContent value="pending">
-            {renderApplicationsTable(filterApplicationsByStatus("pending"))}
+            {renderApplicationsTable(filteredApplications)}
           </TabsContent>
           
           <TabsContent value="under-review">
-            {renderApplicationsTable(filterApplicationsByStatus("under-review"))}
+            {renderApplicationsTable(filteredApplications)}
           </TabsContent>
           
           <TabsContent value="approved">
-            {renderApplicationsTable(filterApplicationsByStatus("approved"))}
+            {renderApplicationsTable(filteredApplications)}
           </TabsContent>
           
           <TabsContent value="rejected">
-            {renderApplicationsTable(filterApplicationsByStatus("rejected"))}
+            {renderApplicationsTable(filteredApplications)}
           </TabsContent>
         </Tabs>
 

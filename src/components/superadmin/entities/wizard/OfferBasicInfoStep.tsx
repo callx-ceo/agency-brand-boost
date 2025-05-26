@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -7,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Users, Phone } from "lucide-react";
 import { OfferFormData, VERTICALS, US_STATES } from "../types/offerTypes";
 
@@ -19,6 +19,18 @@ interface OfferBasicInfoStepProps {
 
 export const OfferBasicInfoStep = ({ formData, updateFormData, userRole }: OfferBasicInfoStepProps) => {
   const mockAvailableAgents = 14; // This would be calculated based on selected states
+
+  const handleSelectAllStates = () => {
+    if (formData.targetStates.length === US_STATES.length) {
+      // If all states are selected, deselect all
+      updateFormData({ targetStates: [] });
+    } else {
+      // Otherwise, select all states
+      updateFormData({ targetStates: [...US_STATES] });
+    }
+  };
+
+  const isAllStatesSelected = formData.targetStates.length === US_STATES.length;
 
   return (
     <div className="space-y-6">
@@ -78,8 +90,19 @@ export const OfferBasicInfoStep = ({ formData, updateFormData, userRole }: Offer
 
         <div className="space-y-4">
           <div>
-            <Label>Target States</Label>
-            <div className="mt-2 p-3 border rounded-md max-h-40 overflow-y-auto">
+            <div className="flex items-center justify-between mb-2">
+              <Label>Target States</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSelectAllStates}
+                className="text-xs"
+              >
+                {isAllStatesSelected ? "Deselect All" : "Select All"}
+              </Button>
+            </div>
+            <div className="p-3 border rounded-md max-h-40 overflow-y-auto">
               <div className="grid grid-cols-3 gap-2">
                 {US_STATES.map((state) => (
                   <div key={state} className="flex items-center space-x-2">

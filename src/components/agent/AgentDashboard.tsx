@@ -13,6 +13,7 @@ import HangUpConfirmDialog from "./HangUpConfirmDialog";
 
 const AgentDashboard = () => {
   const [isOnCall, setIsOnCall] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [callDuration, setCallDuration] = useState("00:00:29");
   const [currentStep, setCurrentStep] = useState(1);
@@ -56,6 +57,24 @@ const AgentDashboard = () => {
     setShowHangUpDialog(false);
   };
 
+  const handleStepChange = (step: number) => {
+    setCurrentStep(step);
+    // When reaching step 4 (call disposition), set to paused
+    if (step === 4) {
+      setIsPaused(true);
+    } else {
+      setIsPaused(false);
+    }
+  };
+
+  const getCallStatus = () => {
+    if (!isOnCall) return { text: "OFF CALL", bgColor: "bg-gray-500" };
+    if (isPaused) return { text: "PAUSED", bgColor: "bg-yellow-500" };
+    return { text: "ON CALL", bgColor: "bg-green-500" };
+  };
+
+  const callStatus = getCallStatus();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -64,9 +83,9 @@ const AgentDashboard = () => {
           <div className="flex items-center gap-8">
             <div className="text-xl font-bold text-blue-600">CallX</div>
             <div className="flex items-center gap-8 text-sm">
-              <div className="flex items-center gap-2 bg-green-500 text-white px-3 py-1 rounded">
+              <div className={`flex items-center gap-2 ${callStatus.bgColor} text-white px-3 py-1 rounded`}>
                 <span className="font-medium">{callDuration}</span>
-                <span className="text-xs">ON CALL</span>
+                <span className="text-xs">{callStatus.text}</span>
               </div>
               <div className="text-center">
                 <div className="text-xs text-gray-500">Time Online Today</div>
@@ -212,7 +231,7 @@ const AgentDashboard = () => {
             <div className="flex-1 flex">
               {/* Script Section */}
               <div className="flex-1 p-6 bg-white">
-                <CallScript currentStep={currentStep} onStepChange={setCurrentStep} />
+                <CallScript currentStep={currentStep} onStepChange={handleStepChange} />
               </div>
 
               {/* Right Panel - Summary */}

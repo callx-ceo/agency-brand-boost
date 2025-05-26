@@ -163,9 +163,9 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
   const getUrgencyIndicator = (dateSubmitted: string) => {
     const daysSinceSubmission = Math.floor((new Date().getTime() - new Date(dateSubmitted).getTime()) / (1000 * 60 * 60 * 24));
     if (daysSinceSubmission > 7) {
-      return <AlertCircle className="w-4 h-4 text-red-500" title="Overdue - requires attention" />;
+      return <AlertCircle className="w-4 h-4 text-red-500" />;
     } else if (daysSinceSubmission > 5) {
-      return <Clock className="w-4 h-4 text-orange-500" title="Urgent - review soon" />;
+      return <Clock className="w-4 h-4 text-orange-500" />;
     }
     return null;
   };

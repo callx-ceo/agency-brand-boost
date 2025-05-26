@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,14 +5,35 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Slider } from "@/components/ui/slider";
 import { Campaign } from "@/types/campaignTypes";
+import BidFloorSettings from "./BidFloorSettings";
 
 interface CampaignDetailsTabProps {
   campaign: Campaign;
 }
 
 const CampaignDetailsTab = ({ campaign }: CampaignDetailsTabProps) => {
+  const handleBidFloorSave = (settings: any) => {
+    console.log("Saving bid floor settings:", settings);
+    // Here you would typically make an API call to save the settings
+  };
+
+  // Mock bid floor settings - in a real app, this would come from the campaign data
+  const bidFloorSettings = {
+    bidFloorEnabled: true,
+    minimumBidFloor: 45.0,
+    bidFloorCurrency: "USD" as const
+  };
+
   return (
     <div className="space-y-6">
+      {/* Bid Floor Settings */}
+      <BidFloorSettings
+        campaignName={campaign.name}
+        vertical={campaign.category}
+        initialSettings={bidFloorSettings}
+        onSave={handleBidFloorSave}
+      />
+
       {/* Campaign Basic Info */}
       <Card>
         <CardHeader>

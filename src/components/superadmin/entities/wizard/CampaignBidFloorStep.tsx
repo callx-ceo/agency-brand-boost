@@ -58,7 +58,7 @@ export const CampaignBidFloorStep = ({ formData, updateFormData }: CampaignBidFl
             <div className="space-y-1">
               <Label className="text-base font-medium">Enable Bid Floor</Label>
               <p className="text-sm text-gray-600">
-                Set a minimum bid amount that publishers must meet to access this campaign
+                Set a minimum bid amount that advertisers must meet to access this campaign
               </p>
             </div>
             <Switch
@@ -124,7 +124,7 @@ export const CampaignBidFloorStep = ({ formData, updateFormData }: CampaignBidFl
                   <div className="space-y-2">
                     <h4 className="font-medium text-blue-900">How Bid Floors Work</h4>
                     <ul className="text-sm text-blue-800 space-y-1">
-                      <li>• Publishers must bid at or above this amount to access the campaign</li>
+                      <li>• Advertisers must bid at or above this amount to access the campaign</li>
                       <li>• Higher bid floors can improve call quality and revenue</li>
                       <li>• Too high bid floors may reduce call volume</li>
                       <li>• You can adjust bid floors anytime after campaign creation</li>

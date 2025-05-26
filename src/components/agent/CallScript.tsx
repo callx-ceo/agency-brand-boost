@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
+import CallDispositionModal from "./CallDispositionModal";
 
 interface CallScriptProps {
   currentStep: number;
@@ -12,6 +13,8 @@ interface CallScriptProps {
 }
 
 const CallScript = ({ currentStep, onStepChange }: CallScriptProps) => {
+  const [showDispositionModal, setShowDispositionModal] = useState(false);
+
   const scriptSteps = [
     {
       title: "Introduction",
@@ -51,24 +54,28 @@ const CallScript = ({ currentStep, onStepChange }: CallScriptProps) => {
       )
     },
     {
-      title: "Location Details",
-      content: "What is your zip code?",
-      form: (
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="zipCode" className="text-sm font-medium">Zip code</Label>
-            <Input id="zipCode" placeholder="Enter zip code" className="mt-1" />
-          </div>
-          <div>
-            <Label htmlFor="dob" className="text-sm font-medium">What is your DOB?</Label>
-            <Input id="dob" placeholder="Enter Date of birth" className="mt-1" />
-          </div>
-        </div>
-      )
+      title: "Call Disposition",
+      content: "Please select the call disposition:",
+      form: null
     }
   ];
 
   const currentStepData = scriptSteps[currentStep - 1];
+
+  const handleNextClick = () => {
+    if (currentStep === 4) {
+      // Show disposition modal for step 4
+      setShowDispositionModal(true);
+    } else {
+      onStepChange(Math.min(currentStep + 1, 4));
+    }
+  };
+
+  const handleDispositionSubmit = (disposition: string, notes: string) => {
+    console.log("Disposition:", disposition, "Notes:", notes);
+    setShowDispositionModal(false);
+    // Handle disposition submission logic here
+  };
 
   return (
     <div className="space-y-6">
@@ -93,12 +100,18 @@ const CallScript = ({ currentStep, onStepChange }: CallScriptProps) => {
           </Button>
           <Button 
             className="flex-1 bg-blue-600 hover:bg-blue-700"
-            onClick={() => onStepChange(Math.min(currentStep + 1, 4))}
+            onClick={handleNextClick}
           >
-            Next
+            {currentStep === 4 ? "Complete Call" : "Next"}
           </Button>
         </div>
       </div>
+
+      <CallDispositionModal
+        isOpen={showDispositionModal}
+        onClose={() => setShowDispositionModal(false)}
+        onSubmit={handleDispositionSubmit}
+      />
     </div>
   );
 };

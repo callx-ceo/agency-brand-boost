@@ -7,11 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FileText, Search, Eye, Clock, Building2, Mail, Phone, Calendar, Filter, RefreshCw, AlertCircle, TrendingUp } from "lucide-react";
+import { FileText, Search, Eye, Clock, Building2, Mail, Phone, Calendar, Filter, RefreshCw, AlertCircle, TrendingUp, History } from "lucide-react";
 import { toast } from "sonner";
 import ApplicationMetricsDashboard from "./ApplicationMetricsDashboard";
 import ApplicationDetailsDialog from "./ApplicationDetailsDialog";
 import BulkActionsBar from "./BulkActionsBar";
+import { RealtimeUpdatesProvider } from "./RealtimeUpdatesProvider";
+import NotificationCenter from "./NotificationCenter";
+import AuditTrailDialog from "./AuditTrailDialog";
 
 interface AgencyApplicationsManagementProps {
   onBackToDashboard: () => void;
@@ -98,6 +101,8 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
   const [selectedApplications, setSelectedApplications] = useState<number[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [auditTrailApplicationId, setAuditTrailApplicationId] = useState<number | null>(null);
+  const [isAuditTrailOpen, setIsAuditTrailOpen] = useState(false);
 
   const handleRefreshStatus = (applicationId: number) => {
     toast.success("Status refreshed from carrier");
@@ -202,6 +207,11 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
     setIsDialogOpen(true);
   };
 
+  const handleViewAuditTrail = (applicationId: number) => {
+    setAuditTrailApplicationId(applicationId);
+    setIsAuditTrailOpen(true);
+  };
+
   const renderApplicationsTable = (applications: any[]) => (
     <div className="space-y-4">
       <BulkActionsBar
@@ -213,12 +223,13 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
       
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-wrap gap-4">
             <CardTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5" />
               Agency Applications ({applications.length})
             </CardTitle>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <NotificationCenter />
               <div className="relative">
                 <Filter className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Select value={priorityFilter} onValueChange={setPriorityFilter}>
@@ -272,13 +283,13 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                       onCheckedChange={(checked) => handleSelectAll(applications, checked as boolean)}
                     />
                   </TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Agency Name</TableHead>
-                  <TableHead>Agent Name</TableHead>
-                  <TableHead>Business Type</TableHead>
-                  <TableHead>Date Submitted</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="min-w-[200px]">Contact</TableHead>
+                  <TableHead className="min-w-[180px]">Agency Name</TableHead>
+                  <TableHead className="min-w-[150px]">Agent Name</TableHead>
+                  <TableHead className="min-w-[140px]">Business Type</TableHead>
+                  <TableHead className="min-w-[130px]">Date Submitted</TableHead>
+                  <TableHead className="min-w-[100px]">Status</TableHead>
+                  <TableHead className="min-w-[120px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -295,9 +306,9 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                         <div className="font-medium">{application.contactName}</div>
                         <div className="text-sm text-gray-500 flex items-center gap-1">
                           <Mail className="w-3 h-3" />
-                          {application.email}
+                          <span className="truncate max-w-[150px]">{application.email}</span>
                         </div>
-                        <div className="text-sm text-gray-500 flex items-center gap-1">
+                        <div className="text-sm text-gray-500 flex items-center gap-1 md:hidden">
                           <Phone className="w-3 h-3" />
                           {application.phone}
                         </div>
@@ -305,14 +316,16 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                     </TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-blue-500" />
-                        {application.agencyName}
+                        <Building2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span className="truncate">{application.agencyName}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">{application.agentName}</div>
+                      <div className="font-medium truncate">{application.agentName}</div>
                     </TableCell>
-                    <TableCell>{application.businessType}</TableCell>
+                    <TableCell>
+                      <span className="truncate">{application.businessType}</span>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1">
@@ -324,22 +337,29 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
                     </TableCell>
                     <TableCell>{getStatusBadge(application.status)}</TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 flex-wrap">
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          title="View Details"
                           onClick={() => handleViewDetails(application)}
+                          className="flex-shrink-0"
                         >
                           <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleViewAuditTrail(application.id)}
+                          className="flex-shrink-0"
+                        >
+                          <History className="w-4 h-4" />
                         </Button>
                         {(application.status === "pending" || application.status === "under-review") && (
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            title="Refresh Status from Carrier"
                             onClick={() => handleRefreshStatus(application.id)}
-                            className="text-blue-600 hover:text-blue-700"
+                            className="text-blue-600 hover:text-blue-700 flex-shrink-0"
                           >
                             <RefreshCw className="w-4 h-4" />
                           </Button>
@@ -363,55 +383,63 @@ const AgencyApplicationsManagement = ({ onBackToDashboard }: AgencyApplicationsM
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Agency Applications</h1>
-          <p className="text-gray-600">Track and monitor life insurance applications submitted by agents</p>
+    <RealtimeUpdatesProvider>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center flex-wrap gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Agency Applications</h1>
+            <p className="text-gray-600">Track and monitor life insurance applications submitted by agents</p>
+          </div>
+          <Button variant="outline" onClick={onBackToDashboard}>
+            Back to Dashboard
+          </Button>
         </div>
-        <Button variant="outline" onClick={onBackToDashboard}>
-          Back to Dashboard
-        </Button>
+
+        <ApplicationMetricsDashboard />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="all">All ({tabCounts.all})</TabsTrigger>
+            <TabsTrigger value="pending">Pending ({tabCounts.pending})</TabsTrigger>
+            <TabsTrigger value="under-review">Under Review ({tabCounts["under-review"]})</TabsTrigger>
+            <TabsTrigger value="approved">Approved ({tabCounts.approved})</TabsTrigger>
+            <TabsTrigger value="rejected">Rejected ({tabCounts.rejected})</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="all">
+            {renderApplicationsTable(filterApplicationsByStatus("all"))}
+          </TabsContent>
+          
+          <TabsContent value="pending">
+            {renderApplicationsTable(filterApplicationsByStatus("pending"))}
+          </TabsContent>
+          
+          <TabsContent value="under-review">
+            {renderApplicationsTable(filterApplicationsByStatus("under-review"))}
+          </TabsContent>
+          
+          <TabsContent value="approved">
+            {renderApplicationsTable(filterApplicationsByStatus("approved"))}
+          </TabsContent>
+          
+          <TabsContent value="rejected">
+            {renderApplicationsTable(filterApplicationsByStatus("rejected"))}
+          </TabsContent>
+        </Tabs>
+
+        <ApplicationDetailsDialog
+          application={selectedApplication}
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+        />
+
+        <AuditTrailDialog
+          applicationId={auditTrailApplicationId}
+          open={isAuditTrailOpen}
+          onOpenChange={setIsAuditTrailOpen}
+        />
       </div>
-
-      <ApplicationMetricsDashboard />
-
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="all">All ({tabCounts.all})</TabsTrigger>
-          <TabsTrigger value="pending">Pending ({tabCounts.pending})</TabsTrigger>
-          <TabsTrigger value="under-review">Under Review ({tabCounts["under-review"]})</TabsTrigger>
-          <TabsTrigger value="approved">Approved ({tabCounts.approved})</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected ({tabCounts.rejected})</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="all">
-          {renderApplicationsTable(filterApplicationsByStatus("all"))}
-        </TabsContent>
-        
-        <TabsContent value="pending">
-          {renderApplicationsTable(filterApplicationsByStatus("pending"))}
-        </TabsContent>
-        
-        <TabsContent value="under-review">
-          {renderApplicationsTable(filterApplicationsByStatus("under-review"))}
-        </TabsContent>
-        
-        <TabsContent value="approved">
-          {renderApplicationsTable(filterApplicationsByStatus("approved"))}
-        </TabsContent>
-        
-        <TabsContent value="rejected">
-          {renderApplicationsTable(filterApplicationsByStatus("rejected"))}
-        </TabsContent>
-      </Tabs>
-
-      <ApplicationDetailsDialog
-        application={selectedApplication}
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-      />
-    </div>
+    </RealtimeUpdatesProvider>
   );
 };
 

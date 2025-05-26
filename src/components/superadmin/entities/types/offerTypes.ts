@@ -16,6 +16,15 @@ export interface OfferFormData {
     start: string;
     end: string;
     days: string[];
+    timezone?: string;
+    operationType?: "allDays" | "specificDays";
+    daySchedules?: {
+      [key: string]: {
+        start: string;
+        end: string;
+        closed: boolean;
+      };
+    };
   };
   recordingEnabled?: boolean;
   

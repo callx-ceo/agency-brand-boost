@@ -1,14 +1,15 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Phone, PhoneOff, Mic, MicOff, Volume2, VolumeX, User, Clock, MapPin, ChevronDown, Users } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import CallScript from "./CallScript";
 import CallSummary from "./CallSummary";
 import AgentCallStats from "./AgentCallStats";
 import CustomerContacts from "./CustomerContacts";
+import HangUpConfirmDialog from "./HangUpConfirmDialog";
 
 const AgentDashboard = () => {
   const [isOnCall, setIsOnCall] = useState(true);
@@ -16,6 +17,7 @@ const AgentDashboard = () => {
   const [callDuration, setCallDuration] = useState("00:00:29");
   const [currentStep, setCurrentStep] = useState(1);
   const [activeView, setActiveView] = useState("script");
+  const [showHangUpDialog, setShowHangUpDialog] = useState(false);
 
   // Mock call data
   const currentCall = {
@@ -39,6 +41,20 @@ const AgentDashboard = () => {
     { id: "clock", icon: <Clock className="w-4 h-4 text-white" />, active: false },
     { id: "phone", icon: <Phone className="w-4 h-4 text-white" />, active: false }
   ];
+
+  const handleHangUpClick = () => {
+    setShowHangUpDialog(true);
+  };
+
+  const handleConfirmHangUp = () => {
+    setIsOnCall(false);
+    setShowHangUpDialog(false);
+    console.log("Call ended");
+  };
+
+  const handleCancelHangUp = () => {
+    setShowHangUpDialog(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -99,7 +115,7 @@ const AgentDashboard = () => {
         {activeView === "script" ? (
           <>
             {/* Customer Info Panel */}
-            <div className="w-80 bg-white border-r p-6">
+            <div className="w-80 bg-white border-r p-6 relative">
               {/* Customer Details */}
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -157,7 +173,7 @@ const AgentDashboard = () => {
                     size="lg"
                     variant="destructive"
                     className="w-16 h-16 rounded-full"
-                    onClick={() => setIsOnCall(!isOnCall)}
+                    onClick={handleHangUpClick}
                   >
                     <PhoneOff className="w-6 h-6" />
                   </Button>
@@ -176,6 +192,18 @@ const AgentDashboard = () => {
                 <div className="flex items-center gap-2 text-sm text-red-600">
                   <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                   <span>Recording</span>
+                </div>
+              </div>
+
+              {/* Toggle Switch - Lower Left Corner */}
+              <div className="absolute bottom-4 left-4">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={isOnCall}
+                    onCheckedChange={setIsOnCall}
+                    className="data-[state=checked]:bg-green-500"
+                  />
+                  <span className="text-xs text-gray-600">Online</span>
                 </div>
               </div>
             </div>
@@ -205,6 +233,13 @@ const AgentDashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Hang Up Confirmation Dialog */}
+      <HangUpConfirmDialog
+        isOpen={showHangUpDialog}
+        onClose={handleCancelHangUp}
+        onConfirm={handleConfirmHangUp}
+      />
     </div>
   );
 };

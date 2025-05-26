@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Eye, Play, Pause, Users, Phone } from "lucide-react";
-import CampaignSetupModal from "./CampaignSetupModal";
 import CampaignDetailModal from "./CampaignDetailModal";
+import CreateCampaignWizard from "../superadmin/entities/CreateCampaignWizard";
+import { CampaignFormData } from "../superadmin/entities/types/campaignTypes";
 
 interface Campaign {
   id: string;
@@ -56,7 +57,7 @@ const CampaignsTab = () => {
     }
   ]);
 
-  const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -118,6 +119,21 @@ const CampaignsTab = () => {
     ));
   };
 
+  const handleCampaignCreated = (newCampaign: CampaignFormData) => {
+    const campaign: Campaign = {
+      id: newCampaign.id || Date.now().toString(),
+      name: newCampaign.name,
+      vertical: newCampaign.vertical,
+      promoNumber: newCampaign.promoNumber || "",
+      status: newCampaign.status || "active",
+      callsReceived: newCampaign.callsReceived || 0,
+      connectedToAgent: newCampaign.connectedToAgent || 0,
+      fallbacksTriggered: newCampaign.fallbacksTriggered || 0,
+      createdAt: newCampaign.createdAt || new Date().toISOString().split('T')[0]
+    };
+    setCampaigns([...campaigns, campaign]);
+  };
+
   const selectedCampaign = campaigns.find(c => c.id === selectedCampaignId);
 
   return (
@@ -127,7 +143,7 @@ const CampaignsTab = () => {
           <h2 className="text-2xl font-bold">Call Campaigns</h2>
           <p className="text-gray-600">Manage your promo number campaigns and call routing</p>
         </div>
-        <Button onClick={() => setIsSetupModalOpen(true)} className="flex items-center gap-2">
+        <Button onClick={() => setIsWizardOpen(true)} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
           New Campaign
         </Button>
@@ -241,13 +257,13 @@ const CampaignsTab = () => {
         </CardContent>
       </Card>
 
-      <CampaignSetupModal 
-        isOpen={isSetupModalOpen} 
-        onClose={() => setIsSetupModalOpen(false)}
-        onCampaignCreated={(newCampaign) => {
-          setCampaigns([...campaigns, { ...newCampaign, id: Date.now().toString() }]);
-        }}
-      />
+      {isWizardOpen && (
+        <CreateCampaignWizard 
+          onClose={() => setIsWizardOpen(false)}
+          onCampaignCreated={handleCampaignCreated}
+          userRole="agency_admin"
+        />
+      )}
 
       {selectedCampaign && (
         <CampaignDetailModal

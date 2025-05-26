@@ -14,6 +14,7 @@ interface CampaignBasicInfoStepProps {
   formData: CampaignFormData;
   updateFormData: (updates: Partial<CampaignFormData>) => void;
   userRole: "super_admin" | "agency_admin" | "publisher";
+  currentUserId?: string;
 }
 
 export const CampaignBasicInfoStep = ({ formData, updateFormData }: CampaignBasicInfoStepProps) => {

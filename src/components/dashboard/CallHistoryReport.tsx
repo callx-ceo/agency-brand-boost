@@ -8,18 +8,18 @@ import { Search, Phone, Download, ChevronDown, ChevronRight, Headphones, Eye } f
 import { Progress } from "@/components/ui/progress";
 import DateRangeSelector from "./DateRangeSelector";
 
-// Mock data based on the Call History image
+// Updated mock data with Contact Name, From/To numbers, and other requested fields
 const mockCallHistoryData = [
   {
     id: "call-001",
-    contact: "HOMEINS",
+    contactName: "Robert Martinez",
     from: "(772) 240-4457",
-    source: "homeinbound8",
     to: "(855) 963-0365",
-    duration: "1:23",
+    connectDuration: "1:23",
     date: "May 21, 9:45 AM",
-    agent: "Flores, Juanita",
-    status: "Missed",
+    agentName: "Flores, Juanita",
+    callStatus: "Completed",
+    source: "homeinbound8",
     aiScore: 85,
     aiBreakdown: {
       scriptAdherence: 90,
@@ -37,14 +37,14 @@ const mockCallHistoryData = [
   },
   {
     id: "call-002", 
-    contact: "HOMEINS",
+    contactName: "Linda Thompson",
     from: "(682) 323-1382",
-    source: "homeinbound8",
-    to: "(855) 963-0365", 
-    duration: "1:11",
+    to: "(855) 963-0365",
+    connectDuration: "1:11",
     date: "May 21, 10:12 AM",
-    agent: "Flores, Juanita",
-    status: "Missed",
+    agentName: "Flores, Juanita",
+    callStatus: "Disconnected",
+    source: "homeinbound8",
     aiScore: 42,
     aiBreakdown: {
       scriptAdherence: 45,
@@ -59,14 +59,14 @@ const mockCallHistoryData = [
   },
   {
     id: "call-003",
-    contact: "AUTOINS", 
+    contactName: "William Garcia",
     from: "(843) 805-9900",
-    source: "autoinboundrevsharepad42",
     to: "(855) 495-8163",
-    duration: "23:25",
+    connectDuration: "23:25",
     date: "May 21, 10:30 AM",
-    agent: "Flores, Juanita",
-    status: "Accepted",
+    agentName: "Johnson, Mike",
+    callStatus: "Completed",
+    source: "autoinboundrevsharepad42",
     aiScore: 92,
     aiBreakdown: {
       scriptAdherence: 95,
@@ -81,6 +81,50 @@ const mockCallHistoryData = [
       "Apply multi-car discount"
     ],
     summary: "Excellent call handling for auto insurance policy renewal. Customer was very satisfied with service and pricing options."
+  },
+  {
+    id: "call-004",
+    contactName: "Sarah Johnson",
+    from: "(555) 123-4567",
+    to: "(855) 963-0365",
+    connectDuration: "5:42",
+    date: "May 21, 11:15 AM",
+    agentName: "Davis, Jennifer",
+    callStatus: "No Answer",
+    source: "lifeinsurance",
+    aiScore: 0,
+    aiBreakdown: {
+      scriptAdherence: 0,
+      customerHandling: 0,
+      problemSolving: 0,
+      overallScore: 0
+    },
+    keyTopics: [],
+    sentiment: "N/A",
+    actionItems: ["Schedule callback"],
+    summary: "Call attempt - no answer. Left voicemail requesting callback."
+  },
+  {
+    id: "call-005",
+    contactName: "David Chen",
+    from: "(214) 567-8901",
+    to: "(855) 495-8163",
+    connectDuration: "8:33",
+    date: "May 21, 2:20 PM",
+    agentName: "Wilson, Amanda",
+    callStatus: "Transferred",
+    source: "homeinsurance",
+    aiScore: 67,
+    aiBreakdown: {
+      scriptAdherence: 70,
+      customerHandling: 65,
+      problemSolving: 66,
+      overallScore: 67
+    },
+    keyTopics: ["Complex claim", "Policy details"],
+    sentiment: "Neutral",
+    actionItems: ["Transfer to claims specialist"],
+    summary: "Customer inquiry about complex claim required transfer to specialist department."
   }
 ];
 
@@ -93,16 +137,17 @@ const CallHistoryReport = () => {
   });
 
   const filteredCalls = mockCallHistoryData.filter(call => 
-    call.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    call.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     call.from.includes(searchTerm) ||
-    call.agent.toLowerCase().includes(searchTerm.toLowerCase())
+    call.agentName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Accepted": return "bg-green-100 text-green-800";
-      case "Missed": return "bg-red-100 text-red-800";
-      case "Qualified": return "bg-blue-100 text-blue-800";
+      case "Completed": return "bg-green-100 text-green-800";
+      case "Disconnected": return "bg-red-100 text-red-800";
+      case "No Answer": return "bg-yellow-100 text-yellow-800";
+      case "Transferred": return "bg-blue-100 text-blue-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
@@ -178,7 +223,7 @@ const CallHistoryReport = () => {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
-                placeholder="User name or phone..."
+                placeholder="Contact name, phone, or agent..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -193,15 +238,14 @@ const CallHistoryReport = () => {
         <CardContent>
           <div className="space-y-2">
             {/* Table Headers */}
-            <div className="grid grid-cols-10 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
-              <div>Contact</div>
-              <div>From</div>
-              <div>Source</div>
-              <div>To</div>
-              <div>Duration</div>
+            <div className="grid grid-cols-9 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
+              <div>Contact Name</div>
+              <div>From Number</div>
+              <div>To Number</div>
+              <div>Connect Duration</div>
               <div>Date</div>
-              <div>Agent</div>
-              <div>Account Status</div>
+              <div>Agent Name</div>
+              <div>Call Status</div>
               <div>AI Score</div>
               <div>Actions</div>
             </div>
@@ -210,7 +254,7 @@ const CallHistoryReport = () => {
             {filteredCalls.map((call) => (
               <div key={call.id} className="space-y-2">
                 <div 
-                  className="grid grid-cols-10 gap-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
+                  className="grid grid-cols-9 gap-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
                   onClick={(e) => {
                     // Only toggle expansion if not clicking on action buttons
                     if (!(e.target as HTMLElement).closest('.action-buttons')) {
@@ -225,19 +269,18 @@ const CallHistoryReport = () => {
                       <ChevronRight className="w-4 h-4" />
                     )}
                     <Phone className="w-4 h-4 text-blue-600" />
-                    <span className="font-medium text-blue-600">{call.contact}</span>
+                    <span className="font-medium text-blue-600">{call.contactName}</span>
                   </div>
                   <div>{call.from}</div>
-                  <div className="text-sm text-gray-600">{call.source}</div>
                   <div>{call.to}</div>
-                  <div>{call.duration}</div>
+                  <div>{call.connectDuration}</div>
                   <div className="text-sm">{call.date}</div>
-                  <div>{call.agent}</div>
+                  <div>{call.agentName}</div>
                   <div>
-                    <Badge className={getStatusColor(call.status)}>{call.status}</Badge>
+                    <Badge className={getStatusColor(call.callStatus)}>{call.callStatus}</Badge>
                   </div>
                   <div className={`font-semibold ${getScoreColor(call.aiScore)}`}>
-                    {call.aiScore}%
+                    {call.aiScore > 0 ? `${call.aiScore}%` : 'N/A'}
                   </div>
                   <div className="action-buttons flex gap-1">
                     <Button
@@ -288,12 +331,12 @@ const CallHistoryReport = () => {
                         <h4 className="font-semibold">Call Details</h4>
                         <div className="space-y-2 text-sm">
                           <div><span className="font-medium">Call ID:</span> {call.id}</div>
-                          <div><span className="font-medium">Account:</span> {call.contact}</div>
-                          <div><span className="font-medium">Number Dialed:</span> {call.to}</div>
-                          <div><span className="font-medium">Caller Phone:</span> {call.from}</div>
+                          <div><span className="font-medium">Contact:</span> {call.contactName}</div>
+                          <div><span className="font-medium">From Number:</span> {call.from}</div>
+                          <div><span className="font-medium">To Number:</span> {call.to}</div>
                           <div><span className="font-medium">Campaign:</span> {call.source}</div>
-                          <div><span className="font-medium">Duration:</span> {call.duration}</div>
-                          <div><span className="font-medium">Status:</span> {call.status}</div>
+                          <div><span className="font-medium">Connect Duration:</span> {call.connectDuration}</div>
+                          <div><span className="font-medium">Call Status:</span> {call.callStatus}</div>
                         </div>
 
                         <div className="mt-4">
@@ -326,38 +369,44 @@ const CallHistoryReport = () => {
                       {/* AI Score Breakdown */}
                       <div className="space-y-3">
                         <h4 className="font-semibold">AI Score Breakdown</h4>
-                        <div className="space-y-3">
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Script Adherence</span>
-                              <span>{call.aiBreakdown.scriptAdherence}%</span>
+                        {call.aiScore > 0 ? (
+                          <div className="space-y-3">
+                            <div>
+                              <div className="flex justify-between text-sm mb-1">
+                                <span>Script Adherence</span>
+                                <span>{call.aiBreakdown.scriptAdherence}%</span>
+                              </div>
+                              <Progress value={call.aiBreakdown.scriptAdherence} className="h-2" />
                             </div>
-                            <Progress value={call.aiBreakdown.scriptAdherence} className="h-2" />
-                          </div>
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Customer Handling</span>
-                              <span>{call.aiBreakdown.customerHandling}%</span>
+                            <div>
+                              <div className="flex justify-between text-sm mb-1">
+                                <span>Customer Handling</span>
+                                <span>{call.aiBreakdown.customerHandling}%</span>
+                              </div>
+                              <Progress value={call.aiBreakdown.customerHandling} className="h-2" />
                             </div>
-                            <Progress value={call.aiBreakdown.customerHandling} className="h-2" />
-                          </div>
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Problem Solving</span>
-                              <span>{call.aiBreakdown.problemSolving}%</span>
+                            <div>
+                              <div className="flex justify-between text-sm mb-1">
+                                <span>Problem Solving</span>
+                                <span>{call.aiBreakdown.problemSolving}%</span>
+                              </div>
+                              <Progress value={call.aiBreakdown.problemSolving} className="h-2" />
                             </div>
-                            <Progress value={call.aiBreakdown.problemSolving} className="h-2" />
-                          </div>
-                          <div className="border-t pt-2">
-                            <div className="flex justify-between text-sm font-semibold">
-                              <span>Overall Score</span>
-                              <span className={getScoreColor(call.aiBreakdown.overallScore)}>
-                                {call.aiBreakdown.overallScore}%
-                              </span>
+                            <div className="border-t pt-2">
+                              <div className="flex justify-between text-sm font-semibold">
+                                <span>Overall Score</span>
+                                <span className={getScoreColor(call.aiBreakdown.overallScore)}>
+                                  {call.aiBreakdown.overallScore}%
+                                </span>
+                              </div>
+                              <Progress value={call.aiBreakdown.overallScore} className="h-3 mt-1" />
                             </div>
-                            <Progress value={call.aiBreakdown.overallScore} className="h-3 mt-1" />
                           </div>
-                        </div>
+                        ) : (
+                          <div className="text-sm text-gray-500">
+                            No AI scoring available for this call type.
+                          </div>
+                        )}
                       </div>
                     </div>
 

@@ -248,7 +248,41 @@ const CallHistoryReport = () => {
       previouslyConnected: "Yes",
       previouslyConnectedDate: "06/05/2025 06:10:32 AM"
     },
-    tags: ["Insurance", "FEX", "Social", "IVR", "No Answer"],
+    tags: {
+      user: {
+        tel: "8888739523",
+        subid4: "",
+        subid2: "22529536537",
+        creative: "750874797491",
+        subid3: "c",
+        locPhysicallMs: "9018561",
+        locInterestMs: "9018561",
+        network: "",
+        placement: "",
+        sourceid: "{sourceid}",
+        cpid: "1af32b3-ba4b-4f49-aa25-9754a2ebe173",
+        oid: "6a71bf33-4d8b-46c5-83db-9dd1ccd77479",
+        httpsLifeinsurerquotes: "8447744293",
+        gadSource: "2",
+        clickid: "w8adqhnsm5ifjtbajtv1th2e"
+      },
+      integration: {
+        googleClickId: "Cj0KCQjwgIXCBhDBARISAELC9ZhRcyShnkAR2_ytdxvHpDQVz50re41ia3XEvC81Bmkqf722AnkM9...",
+        gbraid: "",
+        wbraid: ""
+      },
+      display: {
+        width: "900",
+        height: "508",
+        availWidth: "900",
+        availHeight: "469",
+        pixelDepth: "24",
+        colorDepth: "24"
+      },
+      request: {
+        referrer: "https://lifeinsurerquotes.com/lp/2/?tel=8888739523&subid4=&subid2=22529536537&creative=75..."
+      }
+    },
     transcription: "Call initiated to Insurex FEX Social IVR line. No answer received after standard ring duration. Call terminated automatically.",
     aiSummary: "Attempted outbound call to insurance lead. Call routed through Insurex FEX Social IVR system but resulted in no answer. No customer contact established. Recommend follow-up attempt or alternative contact method."
   });
@@ -580,13 +614,147 @@ const CallHistoryReport = () => {
 
                         <TabsContent value="tags" className="mt-0">
                           <div className="bg-white rounded border p-4">
-                            <h4 className="font-medium mb-3">Call Tags</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {getExpandedData(call.id).tags.map((tag, index) => (
-                                <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800">
-                                  {tag}
-                                </Badge>
-                              ))}
+                            <h4 className="font-medium mb-4">Call Tags</h4>
+                            <div className="space-y-6">
+                              {/* User Section */}
+                              <div>
+                                <h5 className="font-medium text-gray-800 mb-3 flex items-center">
+                                  <span className="w-4 h-4 mr-2">👤</span>
+                                  User
+                                </h5>
+                                <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Tel:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.tel}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Subid 4:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.subid4 || '-'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Subid 2:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.subid2}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Creative:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.creative}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Subid 3:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.subid3}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Loc Physical Ms:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.locPhysicallMs}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Loc Interest Ms:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.locInterestMs}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Network:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.network || '-'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Placement:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.placement || '-'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Sourceid:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.sourceid}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Cpid:</span>
+                                    <span className="font-medium font-mono text-xs">{getExpandedData(call.id).tags.user.cpid}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Oid:</span>
+                                    <span className="font-medium font-mono text-xs">{getExpandedData(call.id).tags.user.oid}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Https Lifeinsurerquotes:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.httpsLifeinsurerquotes}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Gad Source:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.gadSource}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Clickid:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.user.clickid}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Integration Section */}
+                              <div>
+                                <h5 className="font-medium text-gray-800 mb-3 flex items-center">
+                                  <span className="w-4 h-4 mr-2">🔗</span>
+                                  Integration
+                                </h5>
+                                <div className="space-y-2 text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Google Click Id:</span>
+                                    <span className="font-medium font-mono text-xs max-w-xs truncate">{getExpandedData(call.id).tags.integration.googleClickId}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Gbraid:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.integration.gbraid || '-'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Wbraid:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.integration.wbraid || '-'}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Display Section */}
+                              <div>
+                                <h5 className="font-medium text-gray-800 mb-3 flex items-center">
+                                  <span className="w-4 h-4 mr-2">📱</span>
+                                  Display
+                                </h5>
+                                <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Width:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.display.width}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Height:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.display.height}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Avail Width:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.display.availWidth}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Avail Height:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.display.availHeight}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Pixel Depth:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.display.pixelDepth}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Color Depth:</span>
+                                    <span className="font-medium">{getExpandedData(call.id).tags.display.colorDepth}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Request Section */}
+                              <div>
+                                <h5 className="font-medium text-gray-800 mb-3 flex items-center">
+                                  <span className="w-4 h-4 mr-2">🌐</span>
+                                  Request
+                                </h5>
+                                <div className="text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Referrer:</span>
+                                    <span className="font-medium max-w-xs truncate">{getExpandedData(call.id).tags.request.referrer}</span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </TabsContent>

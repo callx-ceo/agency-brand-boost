@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, Phone, Download, ChevronDown, ChevronRight, Headphones, Eye } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import DateRangeSelector from "./DateRangeSelector";
 
 // Updated mock data with Contact Name, From/To numbers, and other requested fields
@@ -177,6 +177,65 @@ const CallHistoryReport = () => {
     // TODO: Implement contact view
   };
 
+  // Mock data for the expanded view sections
+  const getExpandedData = (callId: string) => ({
+    events: [
+      {
+        type: "Duplicate Call",
+        timestamp: "Jun 05 06:20:49 AM",
+        details: {
+          connectedTargetId: "TA30eb1d826d4596954c4c9cf673a992",
+          lastCallDate: "Jun 05 06:19:33 AM",
+          lastInboundCallId: "RGB1FA9F640509951458A749F7C0BC363BE15EC0D15V30V601"
+        }
+      },
+      {
+        type: "Routing Plan",
+        timestamp: "Jun 05 06:20:49 AM",
+        details: {
+          eligibleTargets: [
+            { priority: 1, weight: 1, name: "Insurex - FEX - Social - IVR" }
+          ]
+        }
+      },
+      {
+        type: "Target Dialed",
+        timestamp: "Jun 05 06:20:49 AM",
+        details: {
+          cost: "$0.00",
+          targetId: "TA30eb1d826d4596954c4c9cf673a992",
+          targetName: "Insurex - FEX - Social - IVR",
+          targetNumber: "+18888739523"
+        }
+      },
+      {
+        type: "No Answer",
+        timestamp: "Jun 05 06:20:54 AM",
+        details: {
+          targetId: "TA30eb1d826d4596954c4c9cf673a992",
+          targetName: "Insurex - FEX - Social - IVR"
+        }
+      },
+      {
+        type: "Completed",
+        timestamp: "Jun 05 06:20:54 AM",
+        details: {
+          callLength: "00:00:04",
+          completionTime: "Jun 05 06:20:54 AM"
+        }
+      }
+    ],
+    record: {
+      callId: callId,
+      duration: "00:00:04",
+      recordingUrl: "#",
+      quality: "HD"
+    },
+    tags: ["Insurance", "FEX", "Social", "IVR", "No Answer"],
+    transcription: "Call initiated to Insurex FEX Social IVR line. No answer received after standard ring duration. Call terminated automatically.",
+    aiSummary: "Attempted outbound call to insurance lead. Call routed through Insurex FEX Social IVR system but resulted in no answer. No customer contact established. Recommend follow-up attempt or alternative contact method."
+  });
+
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -322,101 +381,127 @@ const CallHistoryReport = () => {
                   </div>
                 </div>
 
-                {/* Expanded Details */}
+                {/* Expanded Contact Details */}
                 {expandedCall === call.id && (
-                  <div className="ml-6 p-4 bg-gray-50 rounded-lg space-y-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {/* Call Details */}
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">Call Details</h4>
-                        <div className="space-y-2 text-sm">
-                          <div><span className="font-medium">Call ID:</span> {call.id}</div>
-                          <div><span className="font-medium">Contact:</span> {call.contactName}</div>
-                          <div><span className="font-medium">From Number:</span> {call.from}</div>
-                          <div><span className="font-medium">To Number:</span> {call.to}</div>
-                          <div><span className="font-medium">Campaign:</span> {call.source}</div>
-                          <div><span className="font-medium">Connect Duration:</span> {call.connectDuration}</div>
-                          <div><span className="font-medium">Call Status:</span> {call.callStatus}</div>
-                        </div>
+                  <div className="ml-6 bg-gray-50 rounded-lg border">
+                    <Tabs defaultValue="events" className="w-full">
+                      <TabsList className="w-full justify-start bg-transparent border-b rounded-none">
+                        <TabsTrigger value="events">Events</TabsTrigger>
+                        <TabsTrigger value="record">Record</TabsTrigger>
+                        <TabsTrigger value="tags">Tags</TabsTrigger>
+                        <TabsTrigger value="transcription">Transcription</TabsTrigger>
+                        <TabsTrigger value="ai-summary">AI Summary</TabsTrigger>
+                      </TabsList>
 
-                        <div className="mt-4">
-                          <h5 className="font-medium mb-2">Key Topics</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {call.keyTopics.map((topic, index) => (
-                              <Badge key={index} variant="outline">{topic}</Badge>
+                      <div className="p-4">
+                        <TabsContent value="events" className="mt-0">
+                          <div className="space-y-3">
+                            {getExpandedData(call.id).events.map((event, index) => (
+                              <div key={index} className="flex items-start gap-3 p-3 bg-white rounded border">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                                  event.type === "Duplicate Call" ? "bg-yellow-100 text-yellow-800" :
+                                  event.type === "Routing Plan" ? "bg-blue-100 text-blue-800" :
+                                  event.type === "Target Dialed" ? "bg-green-100 text-green-800" :
+                                  event.type === "No Answer" ? "bg-red-100 text-red-800" :
+                                  "bg-gray-100 text-gray-800"
+                                }`}>
+                                  {event.type === "Duplicate Call" ? "!" :
+                                   event.type === "Routing Plan" ? "i" :
+                                   event.type === "Target Dialed" ? "✓" :
+                                   event.type === "No Answer" ? "!" :
+                                   "✓"}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-start mb-1">
+                                    <span className="font-medium">{event.type}</span>
+                                    <span className="text-xs text-gray-500">{event.timestamp}</span>
+                                  </div>
+                                  <div className="text-sm text-gray-600 space-y-1">
+                                    {Object.entries(event.details).map(([key, value]) => (
+                                      <div key={key}>
+                                        <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>{' '}
+                                        {Array.isArray(value) ? (
+                                          <div className="ml-4 mt-1">
+                                            {value.map((item, idx) => (
+                                              <div key={idx} className="text-xs">
+                                                Priority: {item.priority}, Weight: {item.weight}, Name: {item.name}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <span>{value}</span>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
                             ))}
                           </div>
-                          <div className="mt-2">
-                            <span className="font-medium">Sentiment: </span>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
-                              {call.sentiment}
-                            </Badge>
-                          </div>
-                        </div>
+                        </TabsContent>
 
-                        {call.actionItems.length > 0 && (
-                          <div>
-                            <h5 className="font-medium mb-2">Action Items</h5>
-                            <ul className="list-disc list-inside text-sm space-y-1">
-                              {call.actionItems.map((item, index) => (
-                                <li key={index}>{item}</li>
+                        <TabsContent value="record" className="mt-0">
+                          <div className="bg-white rounded border p-4">
+                            <h4 className="font-medium mb-3">Call Recording Details</h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Call ID:</span>
+                                <span className="font-medium">{getExpandedData(call.id).record.callId}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Duration:</span>
+                                <span className="font-medium">{getExpandedData(call.id).record.duration}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Quality:</span>
+                                <span className="font-medium">{getExpandedData(call.id).record.quality}</span>
+                              </div>
+                              <div className="mt-4 flex gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Headphones className="w-4 h-4 mr-2" />
+                                  Play Recording
+                                </Button>
+                                <Button size="sm" variant="outline">
+                                  <Download className="w-4 h-4 mr-2" />
+                                  Download
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </TabsContent>
+
+                        <TabsContent value="tags" className="mt-0">
+                          <div className="bg-white rounded border p-4">
+                            <h4 className="font-medium mb-3">Call Tags</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {getExpandedData(call.id).tags.map((tag, index) => (
+                                <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800">
+                                  {tag}
+                                </Badge>
                               ))}
-                            </ul>
+                            </div>
                           </div>
-                        )}
-                      </div>
+                        </TabsContent>
 
-                      {/* AI Score Breakdown */}
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">AI Score Breakdown</h4>
-                        {call.aiScore > 0 ? (
-                          <div className="space-y-3">
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>Script Adherence</span>
-                                <span>{call.aiBreakdown.scriptAdherence}%</span>
-                              </div>
-                              <Progress value={call.aiBreakdown.scriptAdherence} className="h-2" />
-                            </div>
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>Customer Handling</span>
-                                <span>{call.aiBreakdown.customerHandling}%</span>
-                              </div>
-                              <Progress value={call.aiBreakdown.customerHandling} className="h-2" />
-                            </div>
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>Problem Solving</span>
-                                <span>{call.aiBreakdown.problemSolving}%</span>
-                              </div>
-                              <Progress value={call.aiBreakdown.problemSolving} className="h-2" />
-                            </div>
-                            <div className="border-t pt-2">
-                              <div className="flex justify-between text-sm font-semibold">
-                                <span>Overall Score</span>
-                                <span className={getScoreColor(call.aiBreakdown.overallScore)}>
-                                  {call.aiBreakdown.overallScore}%
-                                </span>
-                              </div>
-                              <Progress value={call.aiBreakdown.overallScore} className="h-3 mt-1" />
+                        <TabsContent value="transcription" className="mt-0">
+                          <div className="bg-white rounded border p-4">
+                            <h4 className="font-medium mb-3">Call Transcription</h4>
+                            <div className="text-sm leading-relaxed text-gray-700">
+                              {getExpandedData(call.id).transcription}
                             </div>
                           </div>
-                        ) : (
-                          <div className="text-sm text-gray-500">
-                            No AI scoring available for this call type.
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                        </TabsContent>
 
-                    {/* AI Summary */}
-                    <div>
-                      <h4 className="font-semibold mb-2">AI Summary</h4>
-                      <div className="bg-white p-3 rounded border text-sm leading-relaxed">
-                        {call.summary}
+                        <TabsContent value="ai-summary" className="mt-0">
+                          <div className="bg-white rounded border p-4">
+                            <h4 className="font-medium mb-3">AI Summary</h4>
+                            <div className="text-sm leading-relaxed text-gray-700">
+                              {getExpandedData(call.id).aiSummary}
+                            </div>
+                          </div>
+                        </TabsContent>
                       </div>
-                    </div>
+                    </Tabs>
                   </div>
                 )}
               </div>

@@ -1,3 +1,6 @@
+<think>
+
+</think>
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -283,8 +286,88 @@ const CallHistoryReport = () => {
         referrer: "https://lifeinsurerquotes.com/lp/2/?tel=8888739523&subid4=&subid2=22529536537&creative=75..."
       }
     },
-    transcription: "Call initiated to Insurex FEX Social IVR line. No answer received after standard ring duration. Call terminated automatically.",
-    aiSummary: "Attempted outbound call to insurance lead. Call routed through Insurex FEX Social IVR system but resulted in no answer. No customer contact established. Recommend follow-up attempt or alternative contact method."
+    transcription: `Agent: Thank you for calling InsureMax, this is Sarah speaking. How can I help you today?
+
+Customer: Hi Sarah, I'm calling about getting a quote for home insurance. I just bought a new house and need coverage.
+
+Agent: Congratulations on your new home! I'd be happy to help you with a home insurance quote. Can I start by getting your name and the address of the property you'd like to insure?
+
+Customer: Sure, my name is Robert Martinez and the property is at 1247 Oak Street, Miami, Florida 33101.
+
+Agent: Thank you, Mr. Martinez. And can you tell me a bit about the property? What's the approximate square footage and when was it built?
+
+Customer: It's about 2,200 square feet, built in 1995. It's a single-family home with 3 bedrooms and 2 bathrooms.
+
+Agent: Perfect. Do you know the estimated replacement cost or current market value of the home?
+
+Customer: The market value is around $450,000. I'm not sure about replacement cost though.
+
+Agent: That's fine, we can help calculate that. Do you have any special features like a pool, security system, or recent renovations?
+
+Customer: Yes, there's a pool in the backyard and I just had the roof replaced last year. Also installed a new security system.
+
+Agent: Excellent, those features can actually help with your premium. The new roof and security system may qualify you for discounts. What coverage amount are you looking for, and do you have any current insurance that we'd be replacing?
+
+Customer: I'm looking for comprehensive coverage. I don't have current home insurance since I just bought the house, but I do have auto insurance with another company.
+
+Agent: Great! Based on what you've told me, I can offer you a comprehensive home insurance policy starting at $1,850 annually. This includes dwelling coverage up to $450,000, personal property protection, liability coverage, and additional living expenses. With your security system and new roof, you'd qualify for a 15% discount, bringing it down to approximately $1,575 per year.
+
+Customer: That sounds reasonable. What's the next step?
+
+Agent: I can email you a detailed quote with all the coverage specifics. I'll also include information about bundling with auto insurance if you're interested, which could save you an additional 10-20%. What's the best email address to send this to?
+
+Customer: You can send it to robert.martinez@email.com. And yes, I'd like to see the bundling options too.
+
+Agent: Perfect! I'll send that over within the next hour. Is there anything else you'd like to know about the coverage or do you have any other questions?
+
+Customer: No, I think that covers everything. Thank you for your help, Sarah.
+
+Agent: You're very welcome, Mr. Martinez! You should receive the quote shortly, and feel free to call back if you have any questions. Have a great day!
+
+Customer: Thank you, you too. Goodbye.
+
+Agent: Goodbye!`,
+    aiSummary: {
+      overallScore: 85,
+      analysis: `This was an excellent customer service interaction that demonstrates strong sales skills and customer relationship building. The agent (Sarah) effectively guided the customer through the insurance quoting process while maintaining a professional and helpful demeanor throughout the call.
+
+**Key Strengths:**
+• Professional greeting and clear identification
+• Systematic information gathering approach
+• Excellent product knowledge and explanation of coverage options
+• Proactive identification of discount opportunities (security system, new roof)
+• Effective upselling with bundling options
+• Clear next steps and follow-up commitment
+• Maintained customer engagement throughout the call
+
+**Customer Interaction Quality:**
+The customer (Robert Martinez) was cooperative and provided all necessary information promptly. The conversation flowed naturally with no resistance to the agent's questions or recommendations. The customer showed genuine interest in the product and appreciated the agent's explanations.
+
+**Sales Performance:**
+• Successfully positioned comprehensive coverage
+• Identified and applied relevant discounts (15% reduction)
+• Introduced additional product opportunities (auto bundling)
+• Secured customer commitment for quote review
+• Established clear follow-up timeline
+
+**Areas for Improvement:**
+• Could have asked about other insurance needs (life, umbrella)
+• Missed opportunity to gather more contact information for future marketing
+• Could have mentioned referral programs
+
+**Compliance & Script Adherence:**
+The agent followed proper procedures for information gathering and disclosure. All required elements for insurance quoting were covered appropriately.
+
+**Outcome:**
+Successful quote generation with high probability of conversion. Customer expressed satisfaction with the service and pricing. Follow-up email scheduled with additional bundling options.`,
+      scores: {
+        scriptAdherence: 90,
+        customerHandling: 85,
+        problemSolving: 80,
+        productKnowledge: 88,
+        salesEffectiveness: 87
+      }
+    }
   });
 
   return (
@@ -762,7 +845,7 @@ const CallHistoryReport = () => {
                         <TabsContent value="transcription" className="mt-0">
                           <div className="bg-white rounded border p-4">
                             <h4 className="font-medium mb-3">Call Transcription</h4>
-                            <div className="text-sm leading-relaxed text-gray-700">
+                            <div className="text-sm leading-relaxed text-gray-700 whitespace-pre-line max-h-96 overflow-y-auto border border-gray-200 rounded p-3">
                               {getExpandedData(call.id).transcription}
                             </div>
                           </div>
@@ -770,9 +853,45 @@ const CallHistoryReport = () => {
 
                         <TabsContent value="ai-summary" className="mt-0">
                           <div className="bg-white rounded border p-4">
-                            <h4 className="font-medium mb-3">AI Summary</h4>
-                            <div className="text-sm leading-relaxed text-gray-700">
-                              {getExpandedData(call.id).aiSummary}
+                            <div className="flex items-center justify-between mb-4">
+                              <h4 className="font-medium">AI Summary and Analysis</h4>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600">Overall AI Score:</span>
+                                <div className={`text-2xl font-bold px-3 py-1 rounded ${getScoreColor(getExpandedData(call.id).aiSummary.overallScore)}`}>
+                                  {getExpandedData(call.id).aiSummary.overallScore}%
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-4">
+                              {/* Score Breakdown */}
+                              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg">
+                                <div className="text-center">
+                                  <div className="text-lg font-semibold text-blue-600">{getExpandedData(call.id).aiSummary.scores.scriptAdherence}%</div>
+                                  <div className="text-xs text-gray-600">Script Adherence</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-lg font-semibold text-green-600">{getExpandedData(call.id).aiSummary.scores.customerHandling}%</div>
+                                  <div className="text-xs text-gray-600">Customer Handling</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-lg font-semibold text-purple-600">{getExpandedData(call.id).aiSummary.scores.problemSolving}%</div>
+                                  <div className="text-xs text-gray-600">Problem Solving</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-lg font-semibold text-orange-600">{getExpandedData(call.id).aiSummary.scores.productKnowledge}%</div>
+                                  <div className="text-xs text-gray-600">Product Knowledge</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-lg font-semibold text-indigo-600">{getExpandedData(call.id).aiSummary.scores.salesEffectiveness}%</div>
+                                  <div className="text-xs text-gray-600">Sales Effectiveness</div>
+                                </div>
+                              </div>
+                              
+                              {/* Detailed Analysis */}
+                              <div className="text-sm leading-relaxed text-gray-700 whitespace-pre-line">
+                                {getExpandedData(call.id).aiSummary.analysis}
+                              </div>
                             </div>
                           </div>
                         </TabsContent>

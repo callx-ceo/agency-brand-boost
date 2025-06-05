@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -226,10 +227,26 @@ const CallHistoryReport = () => {
       }
     ],
     record: {
-      callId: callId,
+      campaign: "Insurex - FEX - Youtube - NO IVR",
+      publisher: "IX-YT",
+      campaignId: "CA114f30b369194824806a0737ef1ea9d6",
+      publisherId: "AF7477a67e704146ddbc0121af34154595",
+      publisherSubId: "",
+      inboundCallId: "RGBA02CC37FCFD86410A68FA9D3E6CC16081A11DE72V3S_501",
+      callDate: "06/05/2025 06:20:49 AM",
+      callerId: "+13195913134",
+      dialedNumber: "+18339866644",
+      numberId: "266391600000873772",
+      numberPoolUsed: "Yes",
+      numberPoolId: "NU59d91d4260534fd1b56a90bfd3484112",
+      numberPool: "LifeInsurerQuotes- Youtube",
+      timeToCall: "00:02:02",
+      callCompleteTimestamp: "06/05/2025 06:20:54 AM",
       duration: "00:00:04",
-      recordingUrl: "#",
-      quality: "HD"
+      hangup: "Caller",
+      duplicate: "Yes",
+      previouslyConnected: "Yes",
+      previouslyConnectedDate: "06/05/2025 06:10:32 AM"
     },
     tags: ["Insurance", "FEX", "Social", "IVR", "No Answer"],
     transcription: "Call initiated to Insurex FEX Social IVR line. No answer received after standard ring duration. Call terminated automatically.",
@@ -441,22 +458,113 @@ const CallHistoryReport = () => {
                         </TabsContent>
 
                         <TabsContent value="record" className="mt-0">
-                          <div className="bg-white rounded border p-4">
-                            <h4 className="font-medium mb-3">Call Recording Details</h4>
-                            <div className="space-y-2 text-sm">
-                              <div className="flex justify-between">
-                                <span className="text-gray-600">Call ID:</span>
-                                <span className="font-medium">{getExpandedData(call.id).record.callId}</span>
+                          <div className="bg-white rounded border">
+                            <div className="p-4 space-y-4">
+                              <h4 className="font-medium text-lg border-b pb-2">Call Record Details</h4>
+                              
+                              <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Campaign:</span>
+                                  <span className="font-medium text-right max-w-xs truncate">{getExpandedData(call.id).record.campaign}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Publisher:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.publisher}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Campaign ID:</span>
+                                  <span className="font-medium text-right font-mono text-xs">{getExpandedData(call.id).record.campaignId}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Publisher ID:</span>
+                                  <span className="font-medium text-right font-mono text-xs">{getExpandedData(call.id).record.publisherId}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Publisher Sub ID:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.publisherSubId || '-'}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Inbound Call ID:</span>
+                                  <span className="font-medium text-right font-mono text-xs">{getExpandedData(call.id).record.inboundCallId}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Call Date:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.callDate}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Caller ID:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.callerId}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Dialed #:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.dialedNumber}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Number ID:</span>
+                                  <span className="font-medium font-mono text-xs">{getExpandedData(call.id).record.numberId}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Number Pool Used:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.numberPoolUsed}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Number Pool ID:</span>
+                                  <span className="font-medium text-right font-mono text-xs">{getExpandedData(call.id).record.numberPoolId}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Number Pool:</span>
+                                  <span className="font-medium text-right">{getExpandedData(call.id).record.numberPool}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Time To Call:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.timeToCall}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Call Complete Timestamp:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.callCompleteTimestamp}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Duration:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.duration}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Hangup:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.hangup}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Duplicate:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.duplicate}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Previously Connected:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.previouslyConnected}</span>
+                                </div>
+                                
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                  <span className="text-gray-600 font-medium">Previously Connected Date:</span>
+                                  <span className="font-medium">{getExpandedData(call.id).record.previouslyConnectedDate}</span>
+                                </div>
                               </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-600">Duration:</span>
-                                <span className="font-medium">{getExpandedData(call.id).record.duration}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-600">Quality:</span>
-                                <span className="font-medium">{getExpandedData(call.id).record.quality}</span>
-                              </div>
-                              <div className="mt-4 flex gap-2">
+                              
+                              <div className="mt-6 pt-4 border-t flex gap-2">
                                 <Button size="sm" variant="outline">
                                   <Headphones className="w-4 h-4 mr-2" />
                                   Play Recording

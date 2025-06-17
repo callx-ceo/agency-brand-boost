@@ -23,7 +23,7 @@ interface CostApiManagementProps {
   onBackToDashboard: () => void;
 }
 
-// Mock data for transactions
+// Enhanced mock data for transcription transactions
 const mockTranscriptionTransactions = [
   {
     id: "txn_001",
@@ -57,9 +57,87 @@ const mockTranscriptionTransactions = [
     provider: "Deepgram",
     audioLength: "408 seconds",
     wordCount: 682
+  },
+  {
+    id: "txn_004",
+    callId: "call_12348",
+    timestamp: "2024-01-15 14:22:33",
+    duration: "3.5 min",
+    status: "success",
+    cost: 0.070,
+    provider: "Deepgram",
+    audioLength: "210 seconds",
+    wordCount: 315
+  },
+  {
+    id: "txn_005",
+    callId: "call_12349",
+    timestamp: "2024-01-15 14:20:11",
+    duration: "1.8 min",
+    status: "failed",
+    cost: 0.00,
+    provider: "Deepgram",
+    audioLength: "108 seconds",
+    error: "Connection timeout"
+  },
+  {
+    id: "txn_006",
+    callId: "call_12350",
+    timestamp: "2024-01-15 14:18:45",
+    duration: "5.3 min",
+    status: "success",
+    cost: 0.106,
+    provider: "Deepgram",
+    audioLength: "318 seconds",
+    wordCount: 534
+  },
+  {
+    id: "txn_007",
+    callId: "call_12351",
+    timestamp: "2024-01-15 14:15:22",
+    duration: "2.9 min",
+    status: "success",
+    cost: 0.058,
+    provider: "Deepgram",
+    audioLength: "174 seconds",
+    wordCount: 298
+  },
+  {
+    id: "txn_008",
+    callId: "call_12352",
+    timestamp: "2024-01-15 14:12:18",
+    duration: "4.7 min",
+    status: "failed",
+    cost: 0.00,
+    provider: "Deepgram",
+    audioLength: "282 seconds",
+    error: "API rate limit exceeded"
+  },
+  {
+    id: "txn_009",
+    callId: "call_12353",
+    timestamp: "2024-01-15 14:10:05",
+    duration: "3.1 min",
+    status: "success",
+    cost: 0.062,
+    provider: "Deepgram",
+    audioLength: "186 seconds",
+    wordCount: 289
+  },
+  {
+    id: "txn_010",
+    callId: "call_12354",
+    timestamp: "2024-01-15 14:08:33",
+    duration: "7.2 min",
+    status: "success",
+    cost: 0.144,
+    provider: "Deepgram",
+    audioLength: "432 seconds",
+    wordCount: 756
   }
 ];
 
+// Enhanced mock data for AI analysis transactions
 const mockAnalysisTransactions = [
   {
     id: "ai_001",
@@ -86,11 +164,84 @@ const mockAnalysisTransactions = [
   {
     id: "ai_003",
     callId: "call_12348",
-    timestamp: "2024-01-15 14:22:15",
+    timestamp: "2024-01-15 14:23:15",
     status: "failed",
     cost: 0.00,
     provider: "Google Gemini",
     error: "Rate limit exceeded"
+  },
+  {
+    id: "ai_004",
+    callId: "call_12350",
+    timestamp: "2024-01-15 14:19:30",
+    status: "success",
+    cost: 0.053,
+    provider: "Google Gemini",
+    inputTokens: 1534,
+    outputTokens: 421,
+    analysisType: "Full Analysis"
+  },
+  {
+    id: "ai_005",
+    callId: "call_12351",
+    timestamp: "2024-01-15 14:16:45",
+    status: "success",
+    cost: 0.038,
+    provider: "Google Gemini",
+    inputTokens: 1098,
+    outputTokens: 298,
+    analysisType: "Quick Analysis"
+  },
+  {
+    id: "ai_006",
+    callId: "call_12353",
+    timestamp: "2024-01-15 14:11:20",
+    status: "success",
+    cost: 0.041,
+    provider: "Google Gemini",
+    inputTokens: 1189,
+    outputTokens: 325,
+    analysisType: "Full Analysis"
+  },
+  {
+    id: "ai_007",
+    callId: "call_12354",
+    timestamp: "2024-01-15 14:09:45",
+    status: "success",
+    cost: 0.078,
+    provider: "Google Gemini",
+    inputTokens: 2156,
+    outputTokens: 634,
+    analysisType: "Full Analysis"
+  },
+  {
+    id: "ai_008",
+    callId: "call_12355",
+    timestamp: "2024-01-15 14:07:12",
+    status: "failed",
+    cost: 0.00,
+    provider: "Google Gemini",
+    error: "Invalid request format"
+  },
+  {
+    id: "ai_009",
+    callId: "call_12356",
+    timestamp: "2024-01-15 14:05:33",
+    status: "success",
+    cost: 0.049,
+    provider: "Google Gemini",
+    inputTokens: 1423,
+    outputTokens: 387,
+    analysisType: "Full Analysis"
+  },
+  {
+    id: "ai_010",
+    callId: "call_12357",
+    timestamp: "2024-01-15 14:03:18",
+    status: "failed",
+    cost: 0.00,
+    provider: "Google Gemini",
+    error: "Model temporarily unavailable"
   }
 ];
 
@@ -111,12 +262,29 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
   const transcriptionFailures = mockTranscriptionTransactions.filter(t => t.status === "failed").length;
   const analysisFailures = mockAnalysisTransactions.filter(t => t.status === "failed").length;
 
+  const totalTransactions = mockTranscriptionTransactions.length + mockAnalysisTransactions.length;
+  const successfulTransactions = mockTranscriptionTransactions.filter(t => t.status === "success").length + 
+                                mockAnalysisTransactions.filter(t => t.status === "success").length;
+
   const getStatusBadge = (status: string) => {
     if (status === "success") {
       return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Success</Badge>;
     }
     return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Failed</Badge>;
   };
+
+  // Filter transactions based on search and status
+  const filteredTranscriptionTransactions = mockTranscriptionTransactions.filter(txn => {
+    const matchesSearch = searchTerm === "" || txn.callId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const filteredAnalysisTransactions = mockAnalysisTransactions.filter(txn => {
+    const matchesSearch = searchTerm === "" || txn.callId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="space-y-6">
@@ -159,7 +327,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                   </div>
                   <DollarSign className="h-8 w-8 text-blue-600" />
                 </div>
-                <p className="text-xs text-green-600 mt-2">Today</p>
+                <p className="text-xs text-green-600 mt-2">Today • {mockTranscriptionTransactions.filter(t => t.status === "success").length} successful</p>
               </CardContent>
             </Card>
 
@@ -172,7 +340,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                   </div>
                   <DollarSign className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-xs text-green-600 mt-2">Today</p>
+                <p className="text-xs text-green-600 mt-2">Today • {mockAnalysisTransactions.filter(t => t.status === "success").length} successful</p>
               </CardContent>
             </Card>
 
@@ -180,12 +348,12 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Transcription Failures</p>
-                    <p className="text-2xl font-bold">{transcriptionFailures}</p>
+                    <p className="text-sm text-muted-foreground">API Failures</p>
+                    <p className="text-2xl font-bold">{transcriptionFailures + analysisFailures}</p>
                   </div>
                   <AlertTriangle className="h-8 w-8 text-red-600" />
                 </div>
-                <p className="text-xs text-red-600 mt-2">Needs attention</p>
+                <p className="text-xs text-red-600 mt-2">Transcription: {transcriptionFailures} • AI: {analysisFailures}</p>
               </CardContent>
             </Card>
 
@@ -193,30 +361,74 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">AI Analysis Failures</p>
-                    <p className="text-2xl font-bold">{analysisFailures}</p>
+                    <p className="text-sm text-muted-foreground">Success Rate</p>
+                    <p className="text-2xl font-bold">{((successfulTransactions / totalTransactions) * 100).toFixed(1)}%</p>
                   </div>
-                  <AlertTriangle className="h-8 w-8 text-orange-600" />
+                  <TrendingUp className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-xs text-orange-600 mt-2">Rate limits</p>
+                <p className="text-xs text-green-600 mt-2">{successfulTransactions} of {totalTransactions} transactions</p>
               </CardContent>
             </Card>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Cost Trends (Last 7 Days)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <Activity className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600">Cost trend chart will be displayed here</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Daily Cost Breakdown
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Deepgram Transcription</span>
+                    <span className="font-semibold">${totalTranscriptionCost.toFixed(3)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Google Gemini Analysis</span>
+                    <span className="font-semibold">${totalAnalysisCost.toFixed(3)}</span>
+                  </div>
+                  <div className="border-t pt-2">
+                    <div className="flex justify-between items-center font-bold">
+                      <span>Total Daily Cost</span>
+                      <span>${(totalTranscriptionCost + totalAnalysisCost).toFixed(3)}</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Recent Activity
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[...mockTranscriptionTransactions, ...mockAnalysisTransactions]
+                    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                    .slice(0, 5)
+                    .map((txn, index) => (
+                      <div key={index} className="flex justify-between items-center text-sm">
+                        <div>
+                          <span className="font-mono text-xs">{txn.callId}</span>
+                          <span className="text-gray-500 ml-2">
+                            {'provider' in txn ? 'Transcription' : 'AI Analysis'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {getStatusBadge(txn.status)}
+                          <span className="font-semibold">${txn.cost.toFixed(3)}</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="transcription" className="space-y-6">
@@ -251,7 +463,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Transcription Transactions</CardTitle>
+              <CardTitle>Transcription Transactions ({filteredTranscriptionTransactions.length})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -269,7 +481,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockTranscriptionTransactions.map((txn) => (
+                    {filteredTranscriptionTransactions.map((txn) => (
                       <tr key={txn.id} className="border-b hover:bg-gray-50">
                         <td className="p-3 font-mono text-xs">{txn.id}</td>
                         <td className="p-3 font-mono text-xs">{txn.callId}</td>
@@ -310,7 +522,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
 
           <Card>
             <CardHeader>
-              <CardTitle>AI Analysis Transactions</CardTitle>
+              <CardTitle>AI Analysis Transactions ({filteredAnalysisTransactions.length})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -329,7 +541,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockAnalysisTransactions.map((txn) => (
+                    {filteredAnalysisTransactions.map((txn) => (
                       <tr key={txn.id} className="border-b hover:bg-gray-50">
                         <td className="p-3 font-mono text-xs">{txn.id}</td>
                         <td className="p-3 font-mono text-xs">{txn.callId}</td>
@@ -355,7 +567,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-red-600">
                   <XCircle className="w-5 h-5" />
-                  Transcription Failures
+                  Transcription Failures ({transcriptionFailures})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -369,6 +581,9 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                           <span className="text-xs text-gray-500">{txn.timestamp}</span>
                         </div>
                         <p className="text-sm text-red-700">{txn.error}</p>
+                        <div className="text-xs text-gray-600 mt-1">
+                          Duration: {txn.duration} • Audio: {txn.audioLength}
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -379,7 +594,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-orange-600">
                   <AlertTriangle className="w-5 h-5" />
-                  AI Analysis Failures
+                  AI Analysis Failures ({analysisFailures})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -393,12 +608,37 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                           <span className="text-xs text-gray-500">{txn.timestamp}</span>
                         </div>
                         <p className="text-sm text-orange-700">{txn.error}</p>
+                        <div className="text-xs text-gray-600 mt-1">
+                          Provider: {txn.provider}
+                        </div>
                       </div>
                     ))}
                 </div>
               </CardContent>
             </Card>
           </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Failure Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-red-50 rounded">
+                  <p className="text-2xl font-bold text-red-600">{transcriptionFailures + analysisFailures}</p>
+                  <p className="text-sm text-gray-600">Total Failures Today</p>
+                </div>
+                <div className="text-center p-4 bg-blue-50 rounded">
+                  <p className="text-2xl font-bold text-blue-600">{((successfulTransactions / totalTransactions) * 100).toFixed(1)}%</p>
+                  <p className="text-sm text-gray-600">Success Rate</p>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded">
+                  <p className="text-2xl font-bold text-green-600">${(totalTranscriptionCost + totalAnalysisCost).toFixed(3)}</p>
+                  <p className="text-sm text-gray-600">Total Cost Today</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

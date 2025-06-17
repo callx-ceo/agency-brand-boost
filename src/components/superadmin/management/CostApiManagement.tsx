@@ -268,21 +268,43 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
     from: new Date(),
     to: new Date()
   });
+  const [showOverviewFilters, setShowOverviewFilters] = useState(false);
 
-  const totalTranscriptionCost = mockTranscriptionTransactions
+  // Filter transactions based on date range for overview
+  const getFilteredOverviewData = () => {
+    const filterByDate = (transactions: any[]) => {
+      if (!showOverviewFilters) return transactions;
+      
+      return transactions.filter(txn => {
+        const txnDate = new Date(txn.timestamp);
+        const matchesDateRange = (!dateRange.from || txnDate >= dateRange.from) && 
+                                (!dateRange.to || txnDate <= dateRange.to);
+        return matchesDateRange;
+      });
+    };
+
+    const filteredTranscription = filterByDate(mockTranscriptionTransactions);
+    const filteredAnalysis = filterByDate(mockAnalysisTransactions);
+
+    return { filteredTranscription, filteredAnalysis };
+  };
+
+  const { filteredTranscription, filteredAnalysis } = getFilteredOverviewData();
+
+  const totalTranscriptionCost = filteredTranscription
     .filter(t => t.status === "success")
     .reduce((sum, t) => sum + t.cost, 0);
 
-  const totalAnalysisCost = mockAnalysisTransactions
+  const totalAnalysisCost = filteredAnalysis
     .filter(t => t.status === "success")
     .reduce((sum, t) => sum + t.cost, 0);
 
-  const transcriptionFailures = mockTranscriptionTransactions.filter(t => t.status === "failed").length;
-  const analysisFailures = mockAnalysisTransactions.filter(t => t.status === "failed").length;
+  const transcriptionFailures = filteredTranscription.filter(t => t.status === "failed").length;
+  const analysisFailures = filteredAnalysis.filter(t => t.status === "failed").length;
 
-  const totalTransactions = mockTranscriptionTransactions.length + mockAnalysisTransactions.length;
-  const successfulTransactions = mockTranscriptionTransactions.filter(t => t.status === "success").length + 
-                                mockAnalysisTransactions.filter(t => t.status === "success").length;
+  const totalTransactions = filteredTranscription.length + filteredAnalysis.length;
+  const successfulTransactions = filteredTranscription.filter(t => t.status === "success").length + 
+                                filteredAnalysis.filter(t => t.status === "success").length;
 
   // Combine all transactions for the unified view
   const allTransactions = [
@@ -428,6 +450,63 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
     </div>
   );
 
+  const OverviewDateFilter = () => (
+    <div className="mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowOverviewFilters(!showOverviewFilters)}
+            className="text-sm"
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            Date Range Filter
+            {showOverviewFilters ? (
+              <ChevronUp className="h-4 w-4 ml-2" />
+            ) : (
+              <ChevronDown className="h-4 w-4 ml-2" />
+            )}
+          </Button>
+          {showOverviewFilters && (
+            <Badge variant="secondary" className="text-xs">
+              {dateRange.from && dateRange.to 
+                ? `${format(dateRange.from, "MMM dd")} - ${format(dateRange.to, "MMM dd")}`
+                : "Today"
+              }
+            </Badge>
+          )}
+        </div>
+        {showOverviewFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setDateRange({ from: new Date(), to: new Date() });
+              setShowOverviewFilters(false);
+            }}
+          >
+            Reset to Today
+          </Button>
+        )}
+      </div>
+      
+      {showOverviewFilters && (
+        <div className="p-4 bg-gray-50 rounded-lg border">
+          <div className="flex items-center gap-4">
+            <CostApiDateRangeSelector
+              value={dateRange}
+              onChange={setDateRange}
+            />
+            <span className="text-sm text-gray-600">
+              Showing data for selected date range
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -460,6 +539,8 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          <OverviewDateFilter />
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card>
               <CardContent className="p-6">
@@ -470,7 +551,9 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                   </div>
                   <DollarSign className="h-8 w-8 text-blue-600" />
                 </div>
-                <p className="text-xs text-green-600 mt-2">Today • {mockTranscriptionTransactions.filter(t => t.status === "success").length} successful</p>
+                <p className="text-xs text-green-600 mt-2">
+                  {showOverviewFilters ? 'Selected Period' : 'Today'} • {filteredTranscription.filter(t => t.status === "success").length} successful
+                </p>
               </CardContent>
             </Card>
 
@@ -483,7 +566,9 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                   </div>
                   <DollarSign className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-xs text-green-600 mt-2">Today • {mockAnalysisTransactions.filter(t => t.status === "success").length} successful</p>
+                <p className="text-xs text-green-600 mt-2">
+                  {showOverviewFilters ? 'Selected Period' : 'Today'} • {filteredAnalysis.filter(t => t.status === "success").length} successful
+                </p>
               </CardContent>
             </Card>
 
@@ -505,7 +590,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Success Rate</p>
-                    <p className="text-2xl font-bold">{((successfulTransactions / totalTransactions) * 100).toFixed(1)}%</p>
+                    <p className="text-2xl font-bold">{totalTransactions > 0 ? ((successfulTransactions / totalTransactions) * 100).toFixed(1) : '0.0'}%</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-green-600" />
                 </div>
@@ -519,7 +604,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="w-5 h-5" />
-                  Daily Cost Breakdown
+                  {showOverviewFilters ? 'Period' : 'Daily'} Cost Breakdown
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -534,7 +619,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                   </div>
                   <div className="border-t pt-2">
                     <div className="flex justify-between items-center font-bold">
-                      <span>Total Daily Cost</span>
+                      <span>Total {showOverviewFilters ? 'Period' : 'Daily'} Cost</span>
                       <span>${(totalTranscriptionCost + totalAnalysisCost).toFixed(3)}</span>
                     </div>
                   </div>
@@ -551,7 +636,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {[...mockTranscriptionTransactions, ...mockAnalysisTransactions]
+                  {[...filteredTranscription, ...filteredAnalysis]
                     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
                     .slice(0, 5)
                     .map((txn, index) => (

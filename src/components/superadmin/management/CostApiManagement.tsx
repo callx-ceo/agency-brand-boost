@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,12 +33,20 @@ interface DateRange {
   to: Date | undefined;
 }
 
-// Enhanced mock data for transcription transactions
+// Get today's date and create timestamps throughout the day
+const today = new Date();
+const formatToday = (hour: number, minute: number) => {
+  const date = new Date(today);
+  date.setHours(hour, minute, 0, 0);
+  return date.toISOString().slice(0, 19).replace('T', ' ');
+};
+
+// Enhanced mock data for transcription transactions with today's dates
 const mockTranscriptionTransactions = [
   {
     id: "txn_001",
     callId: "call_12345",
-    timestamp: "2024-01-15 14:30:25",
+    timestamp: formatToday(14, 30),
     duration: "4.2 min",
     status: "success",
     cost: 0.084,
@@ -50,7 +57,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_002", 
     callId: "call_12346",
-    timestamp: "2024-01-15 14:28:12",
+    timestamp: formatToday(14, 28),
     duration: "2.1 min",
     status: "failed",
     cost: 0.00,
@@ -62,7 +69,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_003",
     callId: "call_12347", 
-    timestamp: "2024-01-15 14:25:45",
+    timestamp: formatToday(14, 25),
     duration: "6.8 min",
     status: "success",
     cost: 0.136,
@@ -73,7 +80,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_004",
     callId: "call_12348",
-    timestamp: "2024-01-15 14:22:33",
+    timestamp: formatToday(14, 22),
     duration: "3.5 min",
     status: "success",
     cost: 0.070,
@@ -84,7 +91,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_005",
     callId: "call_12349",
-    timestamp: "2024-01-15 14:20:11",
+    timestamp: formatToday(14, 20),
     duration: "1.8 min",
     status: "failed",
     cost: 0.00,
@@ -96,7 +103,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_006",
     callId: "call_12350",
-    timestamp: "2024-01-15 14:18:45",
+    timestamp: formatToday(14, 18),
     duration: "5.3 min",
     status: "success",
     cost: 0.106,
@@ -107,7 +114,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_007",
     callId: "call_12351",
-    timestamp: "2024-01-15 14:15:22",
+    timestamp: formatToday(14, 15),
     duration: "2.9 min",
     status: "success",
     cost: 0.058,
@@ -118,7 +125,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_008",
     callId: "call_12352",
-    timestamp: "2024-01-15 14:12:18",
+    timestamp: formatToday(14, 12),
     duration: "4.7 min",
     status: "failed",
     cost: 0.00,
@@ -130,7 +137,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_009",
     callId: "call_12353",
-    timestamp: "2024-01-15 14:10:05",
+    timestamp: formatToday(14, 10),
     duration: "3.1 min",
     status: "success",
     cost: 0.062,
@@ -141,7 +148,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_010",
     callId: "call_12354",
-    timestamp: "2024-01-15 14:08:33",
+    timestamp: formatToday(14, 8),
     duration: "7.2 min",
     status: "success",
     cost: 0.144,
@@ -152,7 +159,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_011",
     callId: "call_12355",
-    timestamp: "2024-01-15 14:05:12",
+    timestamp: formatToday(14, 5),
     duration: "3.8 min",
     status: "success",
     cost: 0.076,
@@ -163,7 +170,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_012",
     callId: "call_12356",
-    timestamp: "2024-01-15 14:02:45",
+    timestamp: formatToday(14, 2),
     duration: "2.4 min",
     status: "failed",
     cost: 0.00,
@@ -175,7 +182,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_013",
     callId: "call_12357",
-    timestamp: "2024-01-15 13:58:33",
+    timestamp: formatToday(13, 58),
     duration: "5.7 min",
     status: "success",
     cost: 0.114,
@@ -186,7 +193,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_014",
     callId: "call_12358",
-    timestamp: "2024-01-15 13:55:21",
+    timestamp: formatToday(13, 55),
     duration: "4.1 min",
     status: "success",
     cost: 0.082,
@@ -197,7 +204,7 @@ const mockTranscriptionTransactions = [
   {
     id: "txn_015",
     callId: "call_12359",
-    timestamp: "2024-01-15 13:52:18",
+    timestamp: formatToday(13, 52),
     duration: "1.9 min",
     status: "failed",
     cost: 0.00,
@@ -208,12 +215,12 @@ const mockTranscriptionTransactions = [
   }
 ];
 
-// Enhanced mock data for AI analysis transactions
+// Enhanced mock data for AI analysis transactions with today's dates
 const mockAnalysisTransactions = [
   {
     id: "ai_001",
     callId: "call_12345",
-    timestamp: "2024-01-15 14:31:02",
+    timestamp: formatToday(14, 31),
     status: "success",
     cost: 0.045,
     provider: "Google Gemini",
@@ -224,7 +231,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_002",
     callId: "call_12347",
-    timestamp: "2024-01-15 14:26:22",
+    timestamp: formatToday(14, 26),
     status: "success", 
     cost: 0.062,
     provider: "Google Gemini",
@@ -235,7 +242,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_003",
     callId: "call_12348",
-    timestamp: "2024-01-15 14:23:15",
+    timestamp: formatToday(14, 23),
     status: "failed",
     cost: 0.00,
     provider: "Google Gemini",
@@ -245,7 +252,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_004",
     callId: "call_12350",
-    timestamp: "2024-01-15 14:19:30",
+    timestamp: formatToday(14, 19),
     status: "success",
     cost: 0.053,
     provider: "Google Gemini",
@@ -256,7 +263,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_005",
     callId: "call_12351",
-    timestamp: "2024-01-15 14:16:45",
+    timestamp: formatToday(14, 16),
     status: "success",
     cost: 0.038,
     provider: "Google Gemini",
@@ -267,7 +274,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_006",
     callId: "call_12353",
-    timestamp: "2024-01-15 14:11:20",
+    timestamp: formatToday(14, 11),
     status: "success",
     cost: 0.041,
     provider: "Google Gemini",
@@ -278,7 +285,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_007",
     callId: "call_12354",
-    timestamp: "2024-01-15 14:09:45",
+    timestamp: formatToday(14, 9),
     status: "success",
     cost: 0.078,
     provider: "Google Gemini",
@@ -289,7 +296,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_008",
     callId: "call_12355",
-    timestamp: "2024-01-15 14:07:12",
+    timestamp: formatToday(14, 7),
     status: "failed",
     cost: 0.00,
     provider: "Google Gemini",
@@ -299,7 +306,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_009",
     callId: "call_12356",
-    timestamp: "2024-01-15 14:05:33",
+    timestamp: formatToday(14, 5),
     status: "success",
     cost: 0.049,
     provider: "Google Gemini",
@@ -310,7 +317,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_010",
     callId: "call_12357",
-    timestamp: "2024-01-15 14:03:18",
+    timestamp: formatToday(14, 3),
     status: "failed",
     cost: 0.00,
     provider: "Google Gemini",
@@ -320,7 +327,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_011",
     callId: "call_12358",
-    timestamp: "2024-01-15 14:01:45",
+    timestamp: formatToday(14, 1),
     status: "success",
     cost: 0.056,
     provider: "Google Gemini",
@@ -331,7 +338,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_012",
     callId: "call_12359",
-    timestamp: "2024-01-15 13:59:22",
+    timestamp: formatToday(13, 59),
     status: "success",
     cost: 0.034,
     provider: "Google Gemini",
@@ -342,7 +349,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_013",
     callId: "call_12360",
-    timestamp: "2024-01-15 13:57:08",
+    timestamp: formatToday(13, 57),
     status: "failed",
     cost: 0.00,
     provider: "Google Gemini",
@@ -352,7 +359,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_014",
     callId: "call_12361",
-    timestamp: "2024-01-15 13:54:33",
+    timestamp: formatToday(13, 54),
     status: "success",
     cost: 0.067,
     provider: "Google Gemini",
@@ -363,7 +370,7 @@ const mockAnalysisTransactions = [
   {
     id: "ai_015",
     callId: "call_12362",
-    timestamp: "2024-01-15 13:52:11",
+    timestamp: formatToday(13, 52),
     status: "success",
     cost: 0.029,
     provider: "Google Gemini",

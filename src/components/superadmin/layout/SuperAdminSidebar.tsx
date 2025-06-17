@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
@@ -47,7 +46,8 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     systemAlerts: 5,
     newLeads: 47,
     pendingContacts: 12,
-    pendingApplications: 15
+    pendingApplications: 15,
+    apiFailures: 5
   };
 
   // Dashboard & Analytics sections
@@ -135,6 +135,12 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     },
     { id: "user-management", label: "User & Role Management", icon: <UserCheck className="w-5 h-5" /> },
     { id: "goals-management", label: "Goals Management", icon: <TrendingUp className="w-5 h-5" /> },
+    { 
+      id: "cost-api-management", 
+      label: "Cost & API Management", 
+      icon: <DollarSign className="w-5 h-5" />,
+      badge: mockAlerts.apiFailures > 0 ? mockAlerts.apiFailures : undefined
+    },
     { id: "settings", label: "Platform Settings", icon: <Settings className="w-5 h-5" /> },
   ];
 

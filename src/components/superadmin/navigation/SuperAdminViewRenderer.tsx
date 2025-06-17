@@ -24,6 +24,7 @@ import AgencyApplicationsManagement from "../entities/AgencyApplicationsManageme
 import ContactsReports from "../../dashboard/ContactsReports";
 import AgentListReport from "../reporting/AgentListReport";
 import RealtimeReport from "../../dashboard/RealtimeReport";
+import CostApiManagement from "../management/CostApiManagement";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -152,6 +153,9 @@ const SuperAdminViewRenderer = ({
     case 'reports-agents':
     case 'reports-agencies':
       return <ReportRenderer activeView={activeView} onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'cost-api-management':
+      return <CostApiManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'reports-agent-list':
       return <AgentListReport onBackToDashboard={handleBackToDashboard} />;

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,14 +13,21 @@ import {
   Calendar,
   Search,
   Download,
-  RefreshCw
+  RefreshCw,
+  Filter
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import CostApiDateRangeSelector from "./CostApiDateRangeSelector";
 
 interface CostApiManagementProps {
   onBackToDashboard: () => void;
+}
+
+interface DateRange {
+  from: Date | undefined;
+  to: Date | undefined;
 }
 
 // Enhanced mock data for transcription transactions
@@ -250,8 +256,12 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("today");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [providerFilter, setProviderFilter] = useState("all");
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: new Date(),
+    to: new Date()
+  });
 
   const totalTranscriptionCost = mockTranscriptionTransactions
     .filter(t => t.status === "success")
@@ -304,14 +314,6 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
       }))
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  // Filter all transactions
-  const filteredAllTransactions = allTransactions.filter(txn => {
-    const matchesSearch = searchTerm === "" || txn.callId.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
-    const matchesType = typeFilter === "all" || txn.type === typeFilter;
-    return matchesSearch && matchesStatus && matchesType;
-  });
-
   const getStatusBadge = (status: string) => {
     if (status === "success") {
       return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Success</Badge>;
@@ -319,25 +321,106 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
     return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Failed</Badge>;
   };
 
-  // Filter transactions based on search and status
-  const filteredTranscriptionTransactions = mockTranscriptionTransactions.filter(txn => {
-    const matchesSearch = searchTerm === "" || txn.callId.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-  const filteredAnalysisTransactions = mockAnalysisTransactions.filter(txn => {
-    const matchesSearch = searchTerm === "" || txn.callId.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
   const getTypeBadge = (type: string) => {
     if (type === 'transcription') {
       return <Badge variant="outline" className="bg-blue-50 text-blue-700">Transcription</Badge>;
     }
     return <Badge variant="outline" className="bg-purple-50 text-purple-700">AI Analysis</Badge>;
   };
+
+  // Enhanced filtering function
+  const filterTransactions = (transactions: any[], additionalFilters?: any) => {
+    return transactions.filter(txn => {
+      const matchesSearch = searchTerm === "" || 
+        txn.callId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        txn.id.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
+      const matchesType = typeFilter === "all" || (additionalFilters?.type ? txn.type === typeFilter : true);
+      const matchesProvider = providerFilter === "all" || txn.provider === providerFilter;
+      
+      // Date range filtering
+      const txnDate = new Date(txn.timestamp);
+      const matchesDateRange = (!dateRange.from || txnDate >= dateRange.from) && 
+                              (!dateRange.to || txnDate <= dateRange.to);
+      
+      return matchesSearch && matchesStatus && matchesType && matchesProvider && matchesDateRange;
+    });
+  };
+
+  // Apply filters to all transaction types
+  const filteredAllTransactions = filterTransactions(allTransactions, { type: true });
+  const filteredTranscriptionTransactions = filterTransactions(mockTranscriptionTransactions);
+  const filteredAnalysisTransactions = filterTransactions(mockAnalysisTransactions);
+  const filteredFailedTransactions = filterTransactions(allFailedTransactions, { type: true });
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("all");
+    setTypeFilter("all");
+    setProviderFilter("all");
+    setDateRange({ from: new Date(), to: new Date() });
+  };
+
+  const FiltersSection = ({ showTypeFilter = false }: { showTypeFilter?: boolean }) => (
+    <div className="flex flex-wrap gap-4 items-center p-4 bg-gray-50 rounded-lg">
+      <div className="flex items-center gap-2">
+        <Filter className="h-4 w-4" />
+        <span className="text-sm font-medium">Filters:</span>
+      </div>
+      
+      <Input
+        placeholder="Search by Call ID or Transaction ID..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="max-w-sm"
+      />
+      
+      <CostApiDateRangeSelector
+        value={dateRange}
+        onChange={setDateRange}
+      />
+      
+      {showTypeFilter && (
+        <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="transcription">Transcription</SelectItem>
+            <SelectItem value="analysis">AI Analysis</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
+      
+      <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <SelectTrigger className="w-40">
+          <SelectValue placeholder="Status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Status</SelectItem>
+          <SelectItem value="success">Success</SelectItem>
+          <SelectItem value="failed">Failed</SelectItem>
+        </SelectContent>
+      </Select>
+      
+      <Select value={providerFilter} onValueChange={setProviderFilter}>
+        <SelectTrigger className="w-40">
+          <SelectValue placeholder="Provider" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Providers</SelectItem>
+          <SelectItem value="Deepgram">Deepgram</SelectItem>
+          <SelectItem value="Google Gemini">Google Gemini</SelectItem>
+        </SelectContent>
+      </Select>
+      
+      <Button variant="outline" size="sm" onClick={clearFilters}>
+        Clear Filters
+      </Button>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -486,44 +569,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         </TabsContent>
 
         <TabsContent value="all-transactions" className="space-y-6">
-          <div className="flex gap-4 items-center">
-            <Input
-              placeholder="Search by Call ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="transcription">Transcription</SelectItem>
-                <SelectItem value="analysis">AI Analysis</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="success">Success</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Date Range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <FiltersSection showTypeFilter={true} />
 
           <Card>
             <CardHeader>
@@ -565,34 +611,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         </TabsContent>
 
         <TabsContent value="transcription" className="space-y-6">
-          <div className="flex gap-4 items-center">
-            <Input
-              placeholder="Search by Call ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="success">Success</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Date Range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <FiltersSection />
 
           <Card>
             <CardHeader>
@@ -634,24 +653,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-6">
-          <div className="flex gap-4 items-center">
-            <Input
-              placeholder="Search by Call ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="success">Success</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <FiltersSection />
 
           <Card>
             <CardHeader>
@@ -695,6 +697,8 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         </TabsContent>
 
         <TabsContent value="failures" className="space-y-6">
+          <FiltersSection showTypeFilter={true} />
+
           <Card>
             <CardHeader>
               <CardTitle>Failure Summary</CardTitle>
@@ -721,7 +725,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-red-600">
                 <XCircle className="w-5 h-5" />
-                All API Failures ({allFailedTransactions.length})
+                All API Failures ({filteredFailedTransactions.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -738,7 +742,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {allFailedTransactions.map((txn) => (
+                  {filteredFailedTransactions.map((txn) => (
                     <TableRow key={`${txn.type}-${txn.id}`}>
                       <TableCell>{getTypeBadge(txn.type)}</TableCell>
                       <TableCell className="font-mono text-xs">{txn.id}</TableCell>

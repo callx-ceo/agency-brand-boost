@@ -148,6 +148,63 @@ const mockTranscriptionTransactions = [
     provider: "Deepgram",
     audioLength: "432 seconds",
     wordCount: 756
+  },
+  {
+    id: "txn_011",
+    callId: "call_12355",
+    timestamp: "2024-01-15 14:05:12",
+    duration: "3.8 min",
+    status: "success",
+    cost: 0.076,
+    provider: "Deepgram",
+    audioLength: "228 seconds",
+    wordCount: 387
+  },
+  {
+    id: "txn_012",
+    callId: "call_12356",
+    timestamp: "2024-01-15 14:02:45",
+    duration: "2.4 min",
+    status: "failed",
+    cost: 0.00,
+    provider: "Deepgram",
+    audioLength: "144 seconds",
+    error: "Invalid audio format",
+    failureDetails: "Unsupported codec: AMR-WB"
+  },
+  {
+    id: "txn_013",
+    callId: "call_12357",
+    timestamp: "2024-01-15 13:58:33",
+    duration: "5.7 min",
+    status: "success",
+    cost: 0.114,
+    provider: "Deepgram",
+    audioLength: "342 seconds",
+    wordCount: 578
+  },
+  {
+    id: "txn_014",
+    callId: "call_12358",
+    timestamp: "2024-01-15 13:55:21",
+    duration: "4.1 min",
+    status: "success",
+    cost: 0.082,
+    provider: "Deepgram",
+    audioLength: "246 seconds",
+    wordCount: 412
+  },
+  {
+    id: "txn_015",
+    callId: "call_12359",
+    timestamp: "2024-01-15 13:52:18",
+    duration: "1.9 min",
+    status: "failed",
+    cost: 0.00,
+    provider: "Deepgram",
+    audioLength: "114 seconds",
+    error: "Network error",
+    failureDetails: "Connection refused, Server unavailable"
   }
 ];
 
@@ -259,6 +316,60 @@ const mockAnalysisTransactions = [
     provider: "Google Gemini",
     error: "Model temporarily unavailable",
     failureDetails: "Service maintenance, ETA: 15 minutes"
+  },
+  {
+    id: "ai_011",
+    callId: "call_12358",
+    timestamp: "2024-01-15 14:01:45",
+    status: "success",
+    cost: 0.056,
+    provider: "Google Gemini",
+    inputTokens: 1567,
+    outputTokens: 445,
+    analysisType: "Full Analysis"
+  },
+  {
+    id: "ai_012",
+    callId: "call_12359",
+    timestamp: "2024-01-15 13:59:22",
+    status: "success",
+    cost: 0.034,
+    provider: "Google Gemini",
+    inputTokens: 987,
+    outputTokens: 234,
+    analysisType: "Quick Analysis"
+  },
+  {
+    id: "ai_013",
+    callId: "call_12360",
+    timestamp: "2024-01-15 13:57:08",
+    status: "failed",
+    cost: 0.00,
+    provider: "Google Gemini",
+    error: "Authentication failed",
+    failureDetails: "API key expired, Renewal required"
+  },
+  {
+    id: "ai_014",
+    callId: "call_12361",
+    timestamp: "2024-01-15 13:54:33",
+    status: "success",
+    cost: 0.067,
+    provider: "Google Gemini",
+    inputTokens: 1834,
+    outputTokens: 512,
+    analysisType: "Full Analysis"
+  },
+  {
+    id: "ai_015",
+    callId: "call_12362",
+    timestamp: "2024-01-15 13:52:11",
+    status: "success",
+    cost: 0.029,
+    provider: "Google Gemini",
+    inputTokens: 845,
+    outputTokens: 187,
+    analysisType: "Quick Analysis"
   }
 ];
 

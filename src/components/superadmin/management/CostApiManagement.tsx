@@ -99,119 +99,6 @@ const mockTranscriptionTransactions = [
     audioLength: "108 seconds",
     error: "Connection timeout",
     failureDetails: "Timeout after 30s, Retry attempts: 3"
-  },
-  {
-    id: "txn_006",
-    callId: "call_12350",
-    timestamp: formatToday(14, 18),
-    duration: "5.3 min",
-    status: "success",
-    cost: 0.106,
-    provider: "Deepgram",
-    audioLength: "318 seconds",
-    wordCount: 534
-  },
-  {
-    id: "txn_007",
-    callId: "call_12351",
-    timestamp: formatToday(14, 15),
-    duration: "2.9 min",
-    status: "success",
-    cost: 0.058,
-    provider: "Deepgram",
-    audioLength: "174 seconds",
-    wordCount: 298
-  },
-  {
-    id: "txn_008",
-    callId: "call_12352",
-    timestamp: formatToday(14, 12),
-    duration: "4.7 min",
-    status: "failed",
-    cost: 0.00,
-    provider: "Deepgram",
-    audioLength: "282 seconds",
-    error: "API rate limit exceeded",
-    failureDetails: "Rate limit: 100/min, Reset in: 45s"
-  },
-  {
-    id: "txn_009",
-    callId: "call_12353",
-    timestamp: formatToday(14, 10),
-    duration: "3.1 min",
-    status: "success",
-    cost: 0.062,
-    provider: "Deepgram",
-    audioLength: "186 seconds",
-    wordCount: 289
-  },
-  {
-    id: "txn_010",
-    callId: "call_12354",
-    timestamp: formatToday(14, 8),
-    duration: "7.2 min",
-    status: "success",
-    cost: 0.144,
-    provider: "Deepgram",
-    audioLength: "432 seconds",
-    wordCount: 756
-  },
-  {
-    id: "txn_011",
-    callId: "call_12355",
-    timestamp: formatToday(14, 5),
-    duration: "3.8 min",
-    status: "success",
-    cost: 0.076,
-    provider: "Deepgram",
-    audioLength: "228 seconds",
-    wordCount: 387
-  },
-  {
-    id: "txn_012",
-    callId: "call_12356",
-    timestamp: formatToday(14, 2),
-    duration: "2.4 min",
-    status: "failed",
-    cost: 0.00,
-    provider: "Deepgram",
-    audioLength: "144 seconds",
-    error: "Invalid audio format",
-    failureDetails: "Unsupported codec: AMR-WB"
-  },
-  {
-    id: "txn_013",
-    callId: "call_12357",
-    timestamp: formatToday(13, 58),
-    duration: "5.7 min",
-    status: "success",
-    cost: 0.114,
-    provider: "Deepgram",
-    audioLength: "342 seconds",
-    wordCount: 578
-  },
-  {
-    id: "txn_014",
-    callId: "call_12358",
-    timestamp: formatToday(13, 55),
-    duration: "4.1 min",
-    status: "success",
-    cost: 0.082,
-    provider: "Deepgram",
-    audioLength: "246 seconds",
-    wordCount: 412
-  },
-  {
-    id: "txn_015",
-    callId: "call_12359",
-    timestamp: formatToday(13, 52),
-    duration: "1.9 min",
-    status: "failed",
-    cost: 0.00,
-    provider: "Deepgram",
-    audioLength: "114 seconds",
-    error: "Network error",
-    failureDetails: "Connection refused, Server unavailable"
   }
 ];
 
@@ -270,113 +157,6 @@ const mockAnalysisTransactions = [
     inputTokens: 1098,
     outputTokens: 298,
     analysisType: "Quick Analysis"
-  },
-  {
-    id: "ai_006",
-    callId: "call_12353",
-    timestamp: formatToday(14, 11),
-    status: "success",
-    cost: 0.041,
-    provider: "Google Gemini",
-    inputTokens: 1189,
-    outputTokens: 325,
-    analysisType: "Full Analysis"
-  },
-  {
-    id: "ai_007",
-    callId: "call_12354",
-    timestamp: formatToday(14, 9),
-    status: "success",
-    cost: 0.078,
-    provider: "Google Gemini",
-    inputTokens: 2156,
-    outputTokens: 634,
-    analysisType: "Full Analysis"
-  },
-  {
-    id: "ai_008",
-    callId: "call_12355",
-    timestamp: formatToday(14, 7),
-    status: "failed",
-    cost: 0.00,
-    provider: "Google Gemini",
-    error: "Invalid request format",
-    failureDetails: "JSON parsing error: Unexpected token at line 42"
-  },
-  {
-    id: "ai_009",
-    callId: "call_12356",
-    timestamp: formatToday(14, 5),
-    status: "success",
-    cost: 0.049,
-    provider: "Google Gemini",
-    inputTokens: 1423,
-    outputTokens: 387,
-    analysisType: "Full Analysis"
-  },
-  {
-    id: "ai_010",
-    callId: "call_12357",
-    timestamp: formatToday(14, 3),
-    status: "failed",
-    cost: 0.00,
-    provider: "Google Gemini",
-    error: "Model temporarily unavailable",
-    failureDetails: "Service maintenance, ETA: 15 minutes"
-  },
-  {
-    id: "ai_011",
-    callId: "call_12358",
-    timestamp: formatToday(14, 1),
-    status: "success",
-    cost: 0.056,
-    provider: "Google Gemini",
-    inputTokens: 1567,
-    outputTokens: 445,
-    analysisType: "Full Analysis"
-  },
-  {
-    id: "ai_012",
-    callId: "call_12359",
-    timestamp: formatToday(13, 59),
-    status: "success",
-    cost: 0.034,
-    provider: "Google Gemini",
-    inputTokens: 987,
-    outputTokens: 234,
-    analysisType: "Quick Analysis"
-  },
-  {
-    id: "ai_013",
-    callId: "call_12360",
-    timestamp: formatToday(13, 57),
-    status: "failed",
-    cost: 0.00,
-    provider: "Google Gemini",
-    error: "Authentication failed",
-    failureDetails: "API key expired, Renewal required"
-  },
-  {
-    id: "ai_014",
-    callId: "call_12361",
-    timestamp: formatToday(13, 54),
-    status: "success",
-    cost: 0.067,
-    provider: "Google Gemini",
-    inputTokens: 1834,
-    outputTokens: 512,
-    analysisType: "Full Analysis"
-  },
-  {
-    id: "ai_015",
-    callId: "call_12362",
-    timestamp: formatToday(13, 52),
-    status: "success",
-    cost: 0.029,
-    provider: "Google Gemini",
-    inputTokens: 845,
-    outputTokens: 187,
-    analysisType: "Quick Analysis"
   }
 ];
 
@@ -391,6 +171,15 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
     to: new Date()
   });
   const [showOverviewFilters, setShowOverviewFilters] = useState(false);
+
+  // Debug logging
+  console.log("CostApiManagement - Mock data loaded:", {
+    transcriptionCount: mockTranscriptionTransactions.length,
+    analysisCount: mockAnalysisTransactions.length,
+    activeTab,
+    dateRange,
+    filters: { searchTerm, statusFilter, typeFilter, providerFilter }
+  });
 
   // Filter transactions based on date range for overview
   const getFilteredOverviewData = () => {
@@ -478,31 +267,37 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
     return <Badge variant="outline" className="bg-purple-50 text-purple-700">AI Analysis</Badge>;
   };
 
-  // Enhanced filtering function
-  const filterTransactions = (transactions: any[], additionalFilters?: any) => {
-    return transactions.filter(txn => {
+  // Enhanced filtering function - simplified for debugging
+  const filterTransactions = (transactions: any[]) => {
+    console.log("Filtering transactions:", {
+      inputCount: transactions.length,
+      searchTerm,
+      statusFilter,
+      typeFilter,
+      providerFilter
+    });
+
+    const filtered = transactions.filter(txn => {
       const matchesSearch = searchTerm === "" || 
         txn.callId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         txn.id.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
-      const matchesType = typeFilter === "all" || (additionalFilters?.type ? txn.type === typeFilter : true);
+      const matchesType = typeFilter === "all" || txn.type === typeFilter;
       const matchesProvider = providerFilter === "all" || txn.provider === providerFilter;
       
-      // Date range filtering
-      const txnDate = new Date(txn.timestamp);
-      const matchesDateRange = (!dateRange.from || txnDate >= dateRange.from) && 
-                              (!dateRange.to || txnDate <= dateRange.to);
-      
-      return matchesSearch && matchesStatus && matchesType && matchesProvider && matchesDateRange;
+      return matchesSearch && matchesStatus && matchesType && matchesProvider;
     });
+
+    console.log("Filtered result:", { outputCount: filtered.length });
+    return filtered;
   };
 
   // Apply filters to all transaction types
-  const filteredAllTransactions = filterTransactions(allTransactions, { type: true });
+  const filteredAllTransactions = filterTransactions(allTransactions);
   const filteredTranscriptionTransactions = filterTransactions(mockTranscriptionTransactions);
   const filteredAnalysisTransactions = filterTransactions(mockAnalysisTransactions);
-  const filteredFailedTransactions = filterTransactions(allFailedTransactions, { type: true });
+  const filteredFailedTransactions = filterTransactions(allFailedTransactions);
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -789,36 +584,45 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               <CardTitle>All Transactions ({filteredAllTransactions.length})</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Transaction ID</TableHead>
-                    <TableHead>Call ID</TableHead>
-                    <TableHead>Timestamp</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Cost</TableHead>
-                    <TableHead>Provider</TableHead>
-                    <TableHead>Details</TableHead>
-                    <TableHead>Error</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredAllTransactions.map((txn) => (
-                    <TableRow key={`${txn.type}-${txn.id}`}>
-                      <TableCell>{getTypeBadge(txn.type)}</TableCell>
-                      <TableCell className="font-mono text-xs">{txn.id}</TableCell>
-                      <TableCell className="font-mono text-xs">{txn.callId}</TableCell>
-                      <TableCell>{txn.timestamp}</TableCell>
-                      <TableCell>{getStatusBadge(txn.status)}</TableCell>
-                      <TableCell>${txn.cost.toFixed(3)}</TableCell>
-                      <TableCell>{txn.provider}</TableCell>
-                      <TableCell className="text-sm text-gray-600">{txn.details}</TableCell>
-                      <TableCell className="text-red-600 text-xs">{txn.error || "-"}</TableCell>
+              {filteredAllTransactions.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No transactions found matching the current filters.</p>
+                  <Button variant="outline" size="sm" onClick={clearFilters} className="mt-2">
+                    Clear Filters
+                  </Button>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Transaction ID</TableHead>
+                      <TableHead>Call ID</TableHead>
+                      <TableHead>Timestamp</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Cost</TableHead>
+                      <TableHead>Provider</TableHead>
+                      <TableHead>Details</TableHead>
+                      <TableHead>Error</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAllTransactions.map((txn) => (
+                      <TableRow key={`${txn.type}-${txn.id}`}>
+                        <TableCell>{getTypeBadge(txn.type)}</TableCell>
+                        <TableCell className="font-mono text-xs">{txn.id}</TableCell>
+                        <TableCell className="font-mono text-xs">{txn.callId}</TableCell>
+                        <TableCell>{txn.timestamp}</TableCell>
+                        <TableCell>{getStatusBadge(txn.status)}</TableCell>
+                        <TableCell>${txn.cost.toFixed(3)}</TableCell>
+                        <TableCell>{txn.provider}</TableCell>
+                        <TableCell className="text-sm text-gray-600">{txn.details}</TableCell>
+                        <TableCell className="text-red-600 text-xs">{txn.error || "-"}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -831,36 +635,45 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               <CardTitle>Transcription Transactions ({filteredTranscriptionTransactions.length})</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-3">Transaction ID</th>
-                      <th className="text-left p-3">Call ID</th>
-                      <th className="text-left p-3">Timestamp</th>
-                      <th className="text-left p-3">Duration</th>
-                      <th className="text-left p-3">Status</th>
-                      <th className="text-left p-3">Cost</th>
-                      <th className="text-left p-3">Word Count</th>
-                      <th className="text-left p-3">Error</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTranscriptionTransactions.map((txn) => (
-                      <tr key={txn.id} className="border-b hover:bg-gray-50">
-                        <td className="p-3 font-mono text-xs">{txn.id}</td>
-                        <td className="p-3 font-mono text-xs">{txn.callId}</td>
-                        <td className="p-3">{txn.timestamp}</td>
-                        <td className="p-3">{txn.duration}</td>
-                        <td className="p-3">{getStatusBadge(txn.status)}</td>
-                        <td className="p-3">${txn.cost.toFixed(3)}</td>
-                        <td className="p-3">{txn.wordCount || "-"}</td>
-                        <td className="p-3 text-red-600 text-xs">{txn.error || "-"}</td>
+              {filteredTranscriptionTransactions.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No transcription transactions found matching the current filters.</p>
+                  <Button variant="outline" size="sm" onClick={clearFilters} className="mt-2">
+                    Clear Filters
+                  </Button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-3">Transaction ID</th>
+                        <th className="text-left p-3">Call ID</th>
+                        <th className="text-left p-3">Timestamp</th>
+                        <th className="text-left p-3">Duration</th>
+                        <th className="text-left p-3">Status</th>
+                        <th className="text-left p-3">Cost</th>
+                        <th className="text-left p-3">Word Count</th>
+                        <th className="text-left p-3">Error</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {filteredTranscriptionTransactions.map((txn) => (
+                        <tr key={txn.id} className="border-b hover:bg-gray-50">
+                          <td className="p-3 font-mono text-xs">{txn.id}</td>
+                          <td className="p-3 font-mono text-xs">{txn.callId}</td>
+                          <td className="p-3">{txn.timestamp}</td>
+                          <td className="p-3">{txn.duration}</td>
+                          <td className="p-3">{getStatusBadge(txn.status)}</td>
+                          <td className="p-3">${txn.cost.toFixed(3)}</td>
+                          <td className="p-3">{txn.wordCount || "-"}</td>
+                          <td className="p-3 text-red-600 text-xs">{txn.error || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -873,38 +686,47 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               <CardTitle>AI Analysis Transactions ({filteredAnalysisTransactions.length})</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-3">Transaction ID</th>
-                      <th className="text-left p-3">Call ID</th>
-                      <th className="text-left p-3">Timestamp</th>
-                      <th className="text-left p-3">Status</th>
-                      <th className="text-left p-3">Cost</th>
-                      <th className="text-left p-3">Input Tokens</th>
-                      <th className="text-left p-3">Output Tokens</th>
-                      <th className="text-left p-3">Analysis Type</th>
-                      <th className="text-left p-3">Error</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredAnalysisTransactions.map((txn) => (
-                      <tr key={txn.id} className="border-b hover:bg-gray-50">
-                        <td className="p-3 font-mono text-xs">{txn.id}</td>
-                        <td className="p-3 font-mono text-xs">{txn.callId}</td>
-                        <td className="p-3">{txn.timestamp}</td>
-                        <td className="p-3">{getStatusBadge(txn.status)}</td>
-                        <td className="p-3">${txn.cost.toFixed(3)}</td>
-                        <td className="p-3">{txn.inputTokens || "-"}</td>
-                        <td className="p-3">{txn.outputTokens || "-"}</td>
-                        <td className="p-3">{txn.analysisType || "-"}</td>
-                        <td className="p-3 text-red-600 text-xs">{txn.error || "-"}</td>
+              {filteredAnalysisTransactions.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No AI analysis transactions found matching the current filters.</p>
+                  <Button variant="outline" size="sm" onClick={clearFilters} className="mt-2">
+                    Clear Filters
+                  </Button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-3">Transaction ID</th>
+                        <th className="text-left p-3">Call ID</th>
+                        <th className="text-left p-3">Timestamp</th>
+                        <th className="text-left p-3">Status</th>
+                        <th className="text-left p-3">Cost</th>
+                        <th className="text-left p-3">Input Tokens</th>
+                        <th className="text-left p-3">Output Tokens</th>
+                        <th className="text-left p-3">Analysis Type</th>
+                        <th className="text-left p-3">Error</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {filteredAnalysisTransactions.map((txn) => (
+                        <tr key={txn.id} className="border-b hover:bg-gray-50">
+                          <td className="p-3 font-mono text-xs">{txn.id}</td>
+                          <td className="p-3 font-mono text-xs">{txn.callId}</td>
+                          <td className="p-3">{txn.timestamp}</td>
+                          <td className="p-3">{getStatusBadge(txn.status)}</td>
+                          <td className="p-3">${txn.cost.toFixed(3)}</td>
+                          <td className="p-3">{txn.inputTokens || "-"}</td>
+                          <td className="p-3">{txn.outputTokens || "-"}</td>
+                          <td className="p-3">{txn.analysisType || "-"}</td>
+                          <td className="p-3 text-red-600 text-xs">{txn.error || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -942,32 +764,41 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Transaction ID</TableHead>
-                    <TableHead>Call ID</TableHead>
-                    <TableHead>Timestamp</TableHead>
-                    <TableHead>Provider</TableHead>
-                    <TableHead>Details</TableHead>
-                    <TableHead>Error</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredFailedTransactions.map((txn) => (
-                    <TableRow key={`${txn.type}-${txn.id}`}>
-                      <TableCell>{getTypeBadge(txn.type)}</TableCell>
-                      <TableCell className="font-mono text-xs">{txn.id}</TableCell>
-                      <TableCell className="font-mono text-xs">{txn.callId}</TableCell>
-                      <TableCell>{txn.timestamp}</TableCell>
-                      <TableCell>{txn.provider}</TableCell>
-                      <TableCell className="text-sm text-gray-600">{txn.details}</TableCell>
-                      <TableCell className="text-red-600 text-sm">{txn.error}</TableCell>
+              {filteredFailedTransactions.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No failed transactions found matching the current filters.</p>
+                  <Button variant="outline" size="sm" onClick={clearFilters} className="mt-2">
+                    Clear Filters
+                  </Button>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Transaction ID</TableHead>
+                      <TableHead>Call ID</TableHead>
+                      <TableHead>Timestamp</TableHead>
+                      <TableHead>Provider</TableHead>
+                      <TableHead>Details</TableHead>
+                      <TableHead>Error</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredFailedTransactions.map((txn) => (
+                      <TableRow key={`${txn.type}-${txn.id}`}>
+                        <TableCell>{getTypeBadge(txn.type)}</TableCell>
+                        <TableCell className="font-mono text-xs">{txn.id}</TableCell>
+                        <TableCell className="font-mono text-xs">{txn.callId}</TableCell>
+                        <TableCell>{txn.timestamp}</TableCell>
+                        <TableCell>{txn.provider}</TableCell>
+                        <TableCell className="text-sm text-gray-600">{txn.details}</TableCell>
+                        <TableCell className="text-red-600 text-sm">{txn.error}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

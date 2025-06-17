@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -696,6 +697,28 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         <TabsContent value="failures" className="space-y-6">
           <Card>
             <CardHeader>
+              <CardTitle>Failure Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-red-50 rounded">
+                  <p className="text-2xl font-bold text-red-600">{transcriptionFailures + analysisFailures}</p>
+                  <p className="text-sm text-gray-600">Total Failures Today</p>
+                </div>
+                <div className="text-center p-4 bg-blue-50 rounded">
+                  <p className="text-2xl font-bold text-blue-600">{((successfulTransactions / totalTransactions) * 100).toFixed(1)}%</p>
+                  <p className="text-sm text-gray-600">Success Rate</p>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded">
+                  <p className="text-2xl font-bold text-green-600">${(totalTranscriptionCost + totalAnalysisCost).toFixed(3)}</p>
+                  <p className="text-sm text-gray-600">Total Cost Today</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle className="flex items-center gap-2 text-red-600">
                 <XCircle className="w-5 h-5" />
                 All API Failures ({allFailedTransactions.length})
@@ -728,28 +751,6 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Failure Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-red-50 rounded">
-                  <p className="text-2xl font-bold text-red-600">{transcriptionFailures + analysisFailures}</p>
-                  <p className="text-sm text-gray-600">Total Failures Today</p>
-                </div>
-                <div className="text-center p-4 bg-blue-50 rounded">
-                  <p className="text-2xl font-bold text-blue-600">{((successfulTransactions / totalTransactions) * 100).toFixed(1)}%</p>
-                  <p className="text-sm text-gray-600">Success Rate</p>
-                </div>
-                <div className="text-center p-4 bg-green-50 rounded">
-                  <p className="text-2xl font-bold text-green-600">${(totalTranscriptionCost + totalAnalysisCost).toFixed(3)}</p>
-                  <p className="text-sm text-gray-600">Total Cost Today</p>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>

@@ -52,7 +52,8 @@ const mockTranscriptionTransactions = [
     cost: 0.00,
     provider: "Deepgram",
     audioLength: "126 seconds",
-    error: "Audio quality too poor"
+    error: "Audio quality too poor",
+    failureDetails: "SNR: -12dB, Background noise detected"
   },
   {
     id: "txn_003",
@@ -85,7 +86,8 @@ const mockTranscriptionTransactions = [
     cost: 0.00,
     provider: "Deepgram",
     audioLength: "108 seconds",
-    error: "Connection timeout"
+    error: "Connection timeout",
+    failureDetails: "Timeout after 30s, Retry attempts: 3"
   },
   {
     id: "txn_006",
@@ -118,7 +120,8 @@ const mockTranscriptionTransactions = [
     cost: 0.00,
     provider: "Deepgram",
     audioLength: "282 seconds",
-    error: "API rate limit exceeded"
+    error: "API rate limit exceeded",
+    failureDetails: "Rate limit: 100/min, Reset in: 45s"
   },
   {
     id: "txn_009",
@@ -175,7 +178,8 @@ const mockAnalysisTransactions = [
     status: "failed",
     cost: 0.00,
     provider: "Google Gemini",
-    error: "Rate limit exceeded"
+    error: "Rate limit exceeded",
+    failureDetails: "Daily quota exceeded, Reset: 00:00 UTC"
   },
   {
     id: "ai_004",
@@ -228,7 +232,8 @@ const mockAnalysisTransactions = [
     status: "failed",
     cost: 0.00,
     provider: "Google Gemini",
-    error: "Invalid request format"
+    error: "Invalid request format",
+    failureDetails: "JSON parsing error: Unexpected token at line 42"
   },
   {
     id: "ai_009",
@@ -248,7 +253,8 @@ const mockAnalysisTransactions = [
     status: "failed",
     cost: 0.00,
     provider: "Google Gemini",
-    error: "Model temporarily unavailable"
+    error: "Model temporarily unavailable",
+    failureDetails: "Service maintenance, ETA: 15 minutes"
   }
 ];
 
@@ -302,7 +308,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         ...txn,
         type: 'transcription' as const,
         provider: txn.provider,
-        details: `${txn.duration} • ${txn.audioLength}`
+        details: txn.failureDetails || `Audio: ${txn.audioLength}, Format issues detected`
       })),
     ...mockAnalysisTransactions
       .filter(t => t.status === "failed")
@@ -310,7 +316,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         ...txn,
         type: 'analysis' as const,
         provider: txn.provider,
-        details: `${txn.inputTokens || 0} in • ${txn.outputTokens || 0} out tokens`
+        details: txn.failureDetails || `Request validation failed`
       }))
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 

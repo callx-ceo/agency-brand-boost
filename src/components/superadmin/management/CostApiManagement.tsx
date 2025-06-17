@@ -283,6 +283,26 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
     }))
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
+  // Combine all failed transactions for the unified failures view
+  const allFailedTransactions = [
+    ...mockTranscriptionTransactions
+      .filter(t => t.status === "failed")
+      .map(txn => ({
+        ...txn,
+        type: 'transcription' as const,
+        provider: txn.provider,
+        details: `${txn.duration} • ${txn.audioLength}`
+      })),
+    ...mockAnalysisTransactions
+      .filter(t => t.status === "failed")
+      .map(txn => ({
+        ...txn,
+        type: 'analysis' as const,
+        provider: txn.provider,
+        details: `${txn.inputTokens || 0} in • ${txn.outputTokens || 0} out tokens`
+      }))
+  ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
   // Filter all transactions
   const filteredAllTransactions = allTransactions.filter(txn => {
     const matchesSearch = searchTerm === "" || txn.callId.toLowerCase().includes(searchTerm.toLowerCase());
@@ -674,61 +694,42 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
         </TabsContent>
 
         <TabsContent value="failures" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-red-600">
-                  <XCircle className="w-5 h-5" />
-                  Transcription Failures ({transcriptionFailures})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {mockTranscriptionTransactions
-                    .filter(t => t.status === "failed")
-                    .map((txn) => (
-                      <div key={txn.id} className="p-3 bg-red-50 border border-red-200 rounded">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="font-mono text-xs">{txn.callId}</span>
-                          <span className="text-xs text-gray-500">{txn.timestamp}</span>
-                        </div>
-                        <p className="text-sm text-red-700">{txn.error}</p>
-                        <div className="text-xs text-gray-600 mt-1">
-                          Duration: {txn.duration} • Audio: {txn.audioLength}
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-600">
-                  <AlertTriangle className="w-5 h-5" />
-                  AI Analysis Failures ({analysisFailures})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {mockAnalysisTransactions
-                    .filter(t => t.status === "failed")
-                    .map((txn) => (
-                      <div key={txn.id} className="p-3 bg-orange-50 border border-orange-200 rounded">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="font-mono text-xs">{txn.callId}</span>
-                          <span className="text-xs text-gray-500">{txn.timestamp}</span>
-                        </div>
-                        <p className="text-sm text-orange-700">{txn.error}</p>
-                        <div className="text-xs text-gray-600 mt-1">
-                          Provider: {txn.provider}
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-600">
+                <XCircle className="w-5 h-5" />
+                All API Failures ({allFailedTransactions.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Transaction ID</TableHead>
+                    <TableHead>Call ID</TableHead>
+                    <TableHead>Timestamp</TableHead>
+                    <TableHead>Provider</TableHead>
+                    <TableHead>Details</TableHead>
+                    <TableHead>Error</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allFailedTransactions.map((txn) => (
+                    <TableRow key={`${txn.type}-${txn.id}`}>
+                      <TableCell>{getTypeBadge(txn.type)}</TableCell>
+                      <TableCell className="font-mono text-xs">{txn.id}</TableCell>
+                      <TableCell className="font-mono text-xs">{txn.callId}</TableCell>
+                      <TableCell>{txn.timestamp}</TableCell>
+                      <TableCell>{txn.provider}</TableCell>
+                      <TableCell className="text-sm text-gray-600">{txn.details}</TableCell>
+                      <TableCell className="text-red-600 text-sm">{txn.error}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>

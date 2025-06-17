@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface CostApiManagementProps {
   onBackToDashboard: () => void;
@@ -250,6 +250,7 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("today");
+  const [typeFilter, setTypeFilter] = useState("all");
 
   const totalTranscriptionCost = mockTranscriptionTransactions
     .filter(t => t.status === "success")
@@ -265,6 +266,30 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
   const totalTransactions = mockTranscriptionTransactions.length + mockAnalysisTransactions.length;
   const successfulTransactions = mockTranscriptionTransactions.filter(t => t.status === "success").length + 
                                 mockAnalysisTransactions.filter(t => t.status === "success").length;
+
+  // Combine all transactions for the unified view
+  const allTransactions = [
+    ...mockTranscriptionTransactions.map(txn => ({
+      ...txn,
+      type: 'transcription' as const,
+      provider: txn.provider,
+      details: `${txn.duration} • ${txn.wordCount || 0} words`
+    })),
+    ...mockAnalysisTransactions.map(txn => ({
+      ...txn,
+      type: 'analysis' as const,
+      provider: txn.provider,
+      details: `${txn.inputTokens || 0} in • ${txn.outputTokens || 0} out tokens`
+    }))
+  ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+  // Filter all transactions
+  const filteredAllTransactions = allTransactions.filter(txn => {
+    const matchesSearch = searchTerm === "" || txn.callId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
+    const matchesType = typeFilter === "all" || txn.type === typeFilter;
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
   const getStatusBadge = (status: string) => {
     if (status === "success") {
@@ -285,6 +310,13 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
     const matchesStatus = statusFilter === "all" || txn.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const getTypeBadge = (type: string) => {
+    if (type === 'transcription') {
+      return <Badge variant="outline" className="bg-blue-50 text-blue-700">Transcription</Badge>;
+    }
+    return <Badge variant="outline" className="bg-purple-50 text-purple-700">AI Analysis</Badge>;
+  };
 
   return (
     <div className="space-y-6">
@@ -309,8 +341,9 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="all-transactions">All Transactions</TabsTrigger>
           <TabsTrigger value="transcription">Transcription</TabsTrigger>
           <TabsTrigger value="analysis">AI Analysis</TabsTrigger>
           <TabsTrigger value="failures">API Failures</TabsTrigger>
@@ -429,6 +462,85 @@ const CostApiManagement = ({ onBackToDashboard }: CostApiManagementProps) => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="all-transactions" className="space-y-6">
+          <div className="flex gap-4 items-center">
+            <Input
+              placeholder="Search by Call ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-sm"
+            />
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="transcription">Transcription</SelectItem>
+                <SelectItem value="analysis">AI Analysis</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="success">Success</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Date Range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>All Transactions ({filteredAllTransactions.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Transaction ID</TableHead>
+                    <TableHead>Call ID</TableHead>
+                    <TableHead>Timestamp</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Cost</TableHead>
+                    <TableHead>Provider</TableHead>
+                    <TableHead>Details</TableHead>
+                    <TableHead>Error</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredAllTransactions.map((txn) => (
+                    <TableRow key={`${txn.type}-${txn.id}`}>
+                      <TableCell>{getTypeBadge(txn.type)}</TableCell>
+                      <TableCell className="font-mono text-xs">{txn.id}</TableCell>
+                      <TableCell className="font-mono text-xs">{txn.callId}</TableCell>
+                      <TableCell>{txn.timestamp}</TableCell>
+                      <TableCell>{getStatusBadge(txn.status)}</TableCell>
+                      <TableCell>${txn.cost.toFixed(3)}</TableCell>
+                      <TableCell>{txn.provider}</TableCell>
+                      <TableCell className="text-sm text-gray-600">{txn.details}</TableCell>
+                      <TableCell className="text-red-600 text-xs">{txn.error || "-"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="transcription" className="space-y-6">

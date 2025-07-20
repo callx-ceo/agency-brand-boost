@@ -514,15 +514,6 @@ Successful quote generation with high probability of conversion. Customer expres
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      onClick={() => handleOpenSummary(call)}
-                      title="View Call Summary"
-                      className="h-8 w-8 p-0"
-                    >
-                      <MessageSquare className="w-4 h-4 text-orange-500" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
                       onClick={() => handleViewContact(call.id)}
                       title="View Contact"
                       className="h-8 w-8 p-0"
@@ -542,6 +533,7 @@ Successful quote generation with high probability of conversion. Customer expres
                         <TabsTrigger value="tags">Tags</TabsTrigger>
                         <TabsTrigger value="transcription">Transcription</TabsTrigger>
                         <TabsTrigger value="ai-summary">AI Summary</TabsTrigger>
+                        <TabsTrigger value="call-summary">Call Summary</TabsTrigger>
                       </TabsList>
 
                       <div className="p-4">
@@ -912,6 +904,15 @@ Successful quote generation with high probability of conversion. Customer expres
                             </div>
                           </div>
                         </TabsContent>
+
+                        <TabsContent value="call-summary" className="mt-0">
+                          <CallSummary 
+                            contactId={call.from}
+                            onSave={(data) => {
+                              console.log("Saving call summary for call:", call.id, data);
+                            }}
+                          />
+                        </TabsContent>
                       </div>
                     </Tabs>
                   </div>
@@ -923,53 +924,31 @@ Successful quote generation with high probability of conversion. Customer expres
       </Card>
     </TabsContent>
 
-          <TabsContent value="summary" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Call Summary Management</CardTitle>
-                <p className="text-gray-600">View and manage detailed call summaries with customer information, discussion points, and next steps.</p>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <MessageSquare className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No Call Summary Selected</h3>
-                  <p className="text-gray-600 mb-4">
-                    Select a call from the Call History tab and click the summary icon to view detailed call summary information.
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      const firstCall = mockCallHistoryData[0];
-                      if (firstCall) handleOpenSummary(firstCall);
-                    }}
-                  >
-                    View Sample Summary
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+    <TabsContent value="summary" className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Call Summary Management</CardTitle>
+          <p className="text-gray-600">Click on any call in the Call History tab to expand it and access the Call Summary tab for detailed information.</p>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <MessageSquare className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium mb-2">Call Summary Now Integrated</h3>
+            <p className="text-gray-600 mb-4">
+              Call Summary functionality is now available as a tab within each expanded call in the Call History section.
+            </p>
+            <p className="text-sm text-gray-500">
+              To access: Go to Call History → Click any call to expand → Select "Call Summary" tab
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </TabsContent>
+  </Tabs>
 
-        {/* Call Summary Modal */}
-        <Dialog open={summaryModalOpen} onOpenChange={handleCloseSummary}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">
-                Call Summary - {selectedCallForSummary?.contactName}
-              </DialogTitle>
-            </DialogHeader>
-            <CallSummary 
-              contactId={selectedCallForSummary?.from}
-              onSave={(data) => {
-                console.log("Saving call summary for call:", selectedCallForSummary?.id, data);
-                handleCloseSummary();
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
-  };
+  {/* Remove the separate Call Summary Modal since it's now integrated */}
+</div>
+);
+};
 
-  export default CallHistoryReport;
+export default CallHistoryReport;

@@ -12,6 +12,8 @@ import DashboardWidgetSelector, { DashboardWidget } from "./dashboard/DashboardW
 const mockDashboardData = {
   qualifiedCallsMTD: 362,
   totalCallsToday: 79,
+  liveCalls: 12,
+  completedCalls: 67,
   avgCallDuration: 3.8,
   callConversionRate: 76.3,
   walletBalance: 412.57,
@@ -169,12 +171,13 @@ const AgencyDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <DashboardHeader
-        totalCallsToday={mockDashboardData.totalCallsToday}
-        fallbackCallsToday={mockDashboardData.fallbackCallsToday}
-        onCustomizeKPIs={() => setShowKPISelector(true)}
-        onCustomizeWidgets={() => setShowWidgetSelector(true)}
-      />
+        <DashboardHeader 
+          liveCalls={mockDashboardData.liveCalls}
+          completedCalls={mockDashboardData.completedCalls}
+          fallbackCallsToday={mockDashboardData.fallbackCallsToday}
+          onCustomizeKPIs={() => setShowKPISelector(true)}
+          onCustomizeWidgets={() => setShowWidgetSelector(true)}
+        />
 
       <NavigationTabs
         activeView={activeView}

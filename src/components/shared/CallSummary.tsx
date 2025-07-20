@@ -50,24 +50,46 @@ interface CallSummaryProps {
 
 const defaultData: CallSummaryData = {
   customerWhy: {
-    primaryReason: "",
-    currentSituation: "",
-    specificConcerns: [],
-    urgencyLevel: ""
+    primaryReason: "Customer wants to ensure family doesn't burden with funeral costs. Recent death of spouse made them realize importance of having coverage in place.",
+    currentSituation: "Currently has no life insurance coverage. Fixed income of $2,400/month from Social Security. Concerned about rising funeral costs after seeing recent quotes of $12,000-15,000.",
+    specificConcerns: [
+      "Doesn't want children to pay for funeral expenses",
+      "Worried about qualification due to diabetes",
+      "Concerned about premium affordability on fixed income",
+      "Wants coverage to start immediately"
+    ],
+    urgencyLevel: "High - motivated to apply today"
   },
   customerConfirmation: {
-    age: "",
-    dependents: "",
-    maritalStatus: "",
-    insurancePurpose: "",
-    beneficiaries: "",
-    priority: "",
-    budget: "",
-    timeline: ""
+    age: "72",
+    dependents: "2 adult children, 1 spouse",
+    maritalStatus: "Widowed",
+    insurancePurpose: "Final expense/burial coverage",
+    beneficiaries: "Daughter Sarah (primary), Son Michael (secondary)",
+    priority: "Immediate coverage, guaranteed acceptance",
+    budget: "$75-100 per month maximum",
+    timeline: "Wants coverage effective immediately"
   },
-  discussionSummary: [],
-  agentCommitments: [],
-  nextSteps: []
+  discussionSummary: [
+    "Customer expressed genuine concern about burdening family with funeral costs",
+    "Discussed guaranteed acceptance whole life policy - no medical exam required",
+    "Explained $15,000 coverage amount would cover average funeral costs in their area",
+    "Customer appreciates that premiums never increase and coverage builds cash value",
+    "Addressed concerns about diabetes - confirmed guaranteed acceptance regardless of health"
+  ],
+  agentCommitments: [
+    "Will email policy documents within 24 hours of application approval",
+    "Promised to call back tomorrow to confirm first payment processed",
+    "Committed to sending beneficiary change forms if needed in the future",
+    "Will provide customer service number for any future questions"
+  ],
+  nextSteps: [
+    "Complete application over the phone today",
+    "Set up automatic monthly payment of $89/month",
+    "Email confirmation and policy documents within 24 hours",
+    "Schedule follow-up call in 30 days to ensure customer satisfaction",
+    "Mail physical policy documents within 7-10 business days"
+  ]
 };
 
 const CallSummary = ({ contactId, initialData = defaultData, onSave }: CallSummaryProps) => {

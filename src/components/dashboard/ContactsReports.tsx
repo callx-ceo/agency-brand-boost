@@ -14,7 +14,7 @@ import {
   PaginationPrevious,
   PaginationEllipsis
 } from "@/components/ui/pagination";
-import { Download, Search, Filter, Edit, FileText, Building2, ChevronDown, ChevronRight, MessageSquare } from "lucide-react";
+import { Download, Search, Filter, Edit, Building2, ChevronDown, ChevronRight, MessageSquare } from "lucide-react";
 import DateRangeSelector from "./DateRangeSelector";
 import AddContactModal from "./AddContactModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -562,9 +562,6 @@ const ContactsReports = () => {
                     title="View Call Summary"
                   >
                     <MessageSquare className="w-4 h-4 text-green-500" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <FileText className="w-4 h-4 text-orange-500" />
                   </Button>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                     <Edit className="w-4 h-4 text-blue-500" />

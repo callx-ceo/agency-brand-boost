@@ -14,9 +14,11 @@ import {
   PaginationPrevious,
   PaginationEllipsis
 } from "@/components/ui/pagination";
-import { Download, Search, Filter, Edit, FileText, Building2, ChevronDown, ChevronRight } from "lucide-react";
+import { Download, Search, Filter, Edit, FileText, Building2, ChevronDown, ChevronRight, MessageSquare } from "lucide-react";
 import DateRangeSelector from "./DateRangeSelector";
 import AddContactModal from "./AddContactModal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import CallSummary from "../shared/CallSummary";
 
 // Enhanced mock data with agency information
 const initialContactsData = [
@@ -190,6 +192,8 @@ const ContactsReports = () => {
   const [selectedAgency, setSelectedAgency] = useState("all");
   const [expandedContact, setExpandedContact] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const [selectedContactForSummary, setSelectedContactForSummary] = useState<any>(null);
   const [dateRange, setDateRange] = useState({
     from: new Date(),
     to: new Date()
@@ -237,6 +241,16 @@ const ContactsReports = () => {
 
   const toggleExpanded = (contactId: string) => {
     setExpandedContact(expandedContact === contactId ? null : contactId);
+  };
+
+  const handleOpenSummary = (contact: any) => {
+    setSelectedContactForSummary(contact);
+    setSummaryModalOpen(true);
+  };
+
+  const handleCloseSummary = () => {
+    setSummaryModalOpen(false);
+    setSelectedContactForSummary(null);
   };
 
   const resetFilters = () => {
@@ -540,6 +554,15 @@ const ContactsReports = () => {
                 </div>
                 <div className="text-xs text-gray-500">{contact.lastContact}</div>
                 <div className="action-buttons flex gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0"
+                    onClick={() => handleOpenSummary(contact)}
+                    title="View Call Summary"
+                  >
+                    <MessageSquare className="w-4 h-4 text-green-500" />
+                  </Button>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                     <FileText className="w-4 h-4 text-orange-500" />
                   </Button>
@@ -644,6 +667,25 @@ const ContactsReports = () => {
           )}
         </div>
       </CardContent>
+
+      {/* Call Summary Modal */}
+      <Dialog open={summaryModalOpen} onOpenChange={handleCloseSummary}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">
+              Call Summary - {selectedContactForSummary?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <CallSummary 
+            contactId={selectedContactForSummary?.phone}
+            onSave={(data) => {
+              console.log("Saving call summary for contact:", selectedContactForSummary?.phone, data);
+              // Here you would typically save to your backend
+              handleCloseSummary();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

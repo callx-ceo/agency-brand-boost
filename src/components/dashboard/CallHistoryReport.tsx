@@ -410,16 +410,8 @@ Successful quote generation with high probability of conversion. Customer expres
         </Card>
       </div>
 
-      {/* Tabs for Call History and Call Summary */}
-      <Tabs defaultValue="history" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="history">Call History</TabsTrigger>
-          <TabsTrigger value="summary">Call Summary</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="history" className="space-y-6">
-          {/* Call History Table */}
-          <Card>
+      {/* Call History Table */}
+      <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>History</CardTitle>
@@ -922,33 +914,8 @@ Successful quote generation with high probability of conversion. Customer expres
           </div>
         </CardContent>
       </Card>
-    </TabsContent>
-
-    <TabsContent value="summary" className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Call Summary Management</CardTitle>
-          <p className="text-gray-600">Click on any call in the Call History tab to expand it and access the Call Summary tab for detailed information.</p>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <MessageSquare className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium mb-2">Call Summary Now Integrated</h3>
-            <p className="text-gray-600 mb-4">
-              Call Summary functionality is now available as a tab within each expanded call in the Call History section.
-            </p>
-            <p className="text-sm text-gray-500">
-              To access: Go to Call History → Click any call to expand → Select "Call Summary" tab
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </TabsContent>
-  </Tabs>
-
-  {/* Remove the separate Call Summary Modal since it's now integrated */}
-</div>
-);
+    </div>
+  );
 };
 
 export default CallHistoryReport;

@@ -3,10 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, Phone, Download, ChevronDown, ChevronRight, Headphones, Eye } from "lucide-react";
+import { Search, Phone, Download, ChevronDown, ChevronRight, Headphones, Eye, MessageSquare } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import DateRangeSelector from "./DateRangeSelector";
+import CallSummary from "../shared/CallSummary";
 
 // Updated mock data with Contact Name, From/To numbers, and other requested fields
 const mockCallHistoryData = [
@@ -131,6 +133,8 @@ const mockCallHistoryData = [
 const CallHistoryReport = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCall, setExpandedCall] = useState<string | null>(null);
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const [selectedCallForSummary, setSelectedCallForSummary] = useState<any>(null);
   const [dateRange, setDateRange] = useState({
     from: new Date(),
     to: new Date()
@@ -175,6 +179,16 @@ const CallHistoryReport = () => {
   const handleViewContact = (callId: string) => {
     console.log("View contact for call:", callId);
     // TODO: Implement contact view
+  };
+
+  const handleOpenSummary = (call: any) => {
+    setSelectedCallForSummary(call);
+    setSummaryModalOpen(true);
+  };
+
+  const handleCloseSummary = () => {
+    setSummaryModalOpen(false);
+    setSelectedCallForSummary(null);
   };
 
   // Mock data for the expanded view sections
@@ -396,51 +410,59 @@ Successful quote generation with high probability of conversion. Customer expres
         </Card>
       </div>
 
-      {/* Call History Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>History</CardTitle>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
-            </div>
-          </div>
-          <div className="flex gap-4 items-center flex-wrap">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Contact name, phone, or agent..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <DateRangeSelector
-              value={dateRange}
-              onChange={setDateRange}
-            />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {/* Table Headers */}
-            <div className="grid grid-cols-9 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
-              <div>Contact Name</div>
-              <div>From Number</div>
-              <div>To Number</div>
-              <div>Connect Duration</div>
-              <div>Date</div>
-              <div>Agent Name</div>
-              <div>Call Status</div>
-              <div>AI Score</div>
-              <div>Actions</div>
-            </div>
+      {/* Tabs for Call History and Call Summary */}
+      <Tabs defaultValue="history" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="history">Call History</TabsTrigger>
+          <TabsTrigger value="summary">Call Summary</TabsTrigger>
+        </TabsList>
 
-            {/* Table Rows */}
-            {filteredCalls.map((call) => (
+        <TabsContent value="history" className="space-y-6">
+          {/* Call History Table */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>History</CardTitle>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export
+                  </Button>
+                </div>
+              </div>
+              <div className="flex gap-4 items-center flex-wrap">
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    placeholder="Contact name, phone, or agent..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <DateRangeSelector
+                  value={dateRange}
+                  onChange={setDateRange}
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {/* Table Headers */}
+                <div className="grid grid-cols-9 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
+                  <div>Contact Name</div>
+                  <div>From Number</div>
+                  <div>To Number</div>
+                  <div>Connect Duration</div>
+                  <div>Date</div>
+                  <div>Agent Name</div>
+                  <div>Call Status</div>
+                  <div>AI Score</div>
+                  <div>Actions</div>
+                </div>
+
+                {/* Table Rows */}
+                {filteredCalls.map((call) => (
               <div key={call.id} className="space-y-2">
                 <div 
                   className="grid grid-cols-9 gap-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
@@ -457,8 +479,7 @@ Successful quote generation with high probability of conversion. Customer expres
                     ) : (
                       <ChevronRight className="w-4 h-4" />
                     )}
-                    <Phone className="w-4 h-4 text-blue-600" />
-                    <span className="font-medium text-blue-600">{call.contactName}</span>
+                    <span className="font-medium">{call.contactName}</span>
                   </div>
                   <div>{call.from}</div>
                   <div>{call.to}</div>
@@ -472,41 +493,41 @@ Successful quote generation with high probability of conversion. Customer expres
                     {call.aiScore > 0 ? `${call.aiScore}%` : 'N/A'}
                   </div>
                   <div className="action-buttons flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleListenRecording(call.id);
-                      }}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleListenRecording(call.id)}
+                      title="Listen to Recording"
                       className="h-8 w-8 p-0"
-                      title="Listen to recording"
                     >
-                      <Headphones className="w-4 h-4" />
+                      <Headphones className="w-4 h-4 text-blue-500" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownloadRecording(call.id);
-                      }}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleDownloadRecording(call.id)}
+                      title="Download Recording"
                       className="h-8 w-8 p-0"
-                      title="Download recording"
                     >
-                      <Download className="w-4 h-4" />
+                      <Download className="w-4 h-4 text-green-500" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleViewContact(call.id);
-                      }}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleOpenSummary(call)}
+                      title="View Call Summary"
                       className="h-8 w-8 p-0"
-                      title="View contact"
                     >
-                      <Eye className="w-4 h-4" />
+                      <MessageSquare className="w-4 h-4 text-orange-500" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleViewContact(call.id)}
+                      title="View Contact"
+                      className="h-8 w-8 p-0"
+                    >
+                      <Eye className="w-4 h-4 text-purple-500" />
                     </Button>
                   </div>
                 </div>
@@ -900,8 +921,55 @@ Successful quote generation with high probability of conversion. Customer expres
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
-};
+    </TabsContent>
 
-export default CallHistoryReport;
+          <TabsContent value="summary" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Call Summary Management</CardTitle>
+                <p className="text-gray-600">View and manage detailed call summaries with customer information, discussion points, and next steps.</p>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <MessageSquare className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Call Summary Selected</h3>
+                  <p className="text-gray-600 mb-4">
+                    Select a call from the Call History tab and click the summary icon to view detailed call summary information.
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      const firstCall = mockCallHistoryData[0];
+                      if (firstCall) handleOpenSummary(firstCall);
+                    }}
+                  >
+                    View Sample Summary
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Call Summary Modal */}
+        <Dialog open={summaryModalOpen} onOpenChange={handleCloseSummary}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">
+                Call Summary - {selectedCallForSummary?.contactName}
+              </DialogTitle>
+            </DialogHeader>
+            <CallSummary 
+              contactId={selectedCallForSummary?.from}
+              onSave={(data) => {
+                console.log("Saving call summary for call:", selectedCallForSummary?.id, data);
+                handleCloseSummary();
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };
+
+  export default CallHistoryReport;

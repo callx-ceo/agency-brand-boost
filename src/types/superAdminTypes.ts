@@ -17,6 +17,7 @@ export type SuperAdminViewType =
   | 'offer-details'
   | 'leads'
   | 'contacts'
+  | 'customers'
   | 'agency-applications'
   | 'products'
   | 'carriers'

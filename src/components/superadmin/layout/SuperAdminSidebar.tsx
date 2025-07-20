@@ -123,6 +123,11 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       icon: <ContactRound className="w-5 h-5" />,
       badge: mockAlerts.pendingContacts > 0 ? mockAlerts.pendingContacts : undefined
     },
+    { 
+      id: "customers", 
+      label: "Customer Management", 
+      icon: <Users className="w-5 h-5" />
+    },
   ];
 
   // System & Administration sections

@@ -7,7 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Settings, Target, Eye, Save, Play, Download, Upload, Copy } from "lucide-react";
+import { 
+  ArrowLeft, 
+  Settings, 
+  Target, 
+  Eye, 
+  Save, 
+  Play, 
+  Download, 
+  Upload, 
+  Copy 
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface PromptConfig {

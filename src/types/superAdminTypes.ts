@@ -36,4 +36,5 @@ export type SuperAdminViewType =
   | 'reports-agent-list'
   | 'reports-agencies'
   | 'goals-management'
-  | 'cost-api-management';
+  | 'cost-api-management'
+  | 'prompt-management';

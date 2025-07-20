@@ -51,7 +51,6 @@ const PromptManagement = ({ onBackToDashboard }: PromptManagementProps) => {
   const [selectedAgency, setSelectedAgency] = useState<string>("all");
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [isTestingPrompt, setIsTestingPrompt] = useState(false);
-
   // Mock data for demonstration
   const mockAgencies = [
     { id: "all", name: "All Agencies" },
@@ -60,12 +59,96 @@ const PromptManagement = ({ onBackToDashboard }: PromptManagementProps) => {
     { id: "agency3", name: "Premier Health Solutions" },
   ];
 
+  // Real prompt data based on your actual scoring prompt
   const mockPrompts: PromptConfig[] = [
     {
       id: "1",
-      sectionLabel: "Opening",
+      sectionLabel: "Final Expense Insurance Call Scoring",
+      sectionName: "comprehensive-scoring",
+      prompt: `You are an expert final expense insurance call analyst. Analyze the following call transcription and provide a comprehensive scoring report.
+
+SCORING FRAMEWORK:
+Score each category on a 0-100 scale based on the weighted criteria below:
+
+1. RAPPORT BUILDING & OPENING (15% weight)
+- Professional greeting and introduction
+- Confirms prospect information accurately  
+- Builds initial rapport through warm conversation
+- Sets proper expectations for the call
+- NOTE: It is acceptable and compliant for agents to introduce themselves as "field underwriters" when representing the insurance company
+
+2. NEEDS DISCOVERY & QUALIFICATION (25% weight)
+- Asks about current life insurance coverage
+- Explores family situation and dependents
+- Discusses financial concerns about final expenses
+- Identifies specific burial/funeral cost concerns
+- Qualifies health status appropriately
+- Confirms age and coverage eligibility
+
+3. PRODUCT PRESENTATION (20% weight)
+- Explains final expense insurance clearly
+- Tailors coverage amount to prospect's needs
+- Addresses guaranteed acceptance benefits
+- Explains premium structure and payment options
+- Compares to prospect's current situation
+
+4. OBJECTION HANDLING (15% weight)
+- Listens actively to concerns
+- Addresses price objections effectively
+- Handles health-related concerns
+- Overcomes "think it over" responses
+- Provides reassurance about company stability
+
+5. CLOSING & APPLICATION (15% weight)
+- Asks for the sale confidently
+- Guides through application process
+- Confirms all required information
+- Explains next steps clearly
+- Secures payment method if applicable
+
+6. COMPLIANCE & PROFESSIONALISM (10% weight)
+- Maintains professional tone throughout
+- Provides required disclosures
+- Respects prospect's time and decisions
+- Avoids high-pressure tactics
+- Documents call appropriately
+- NOTE: Agent introducing themselves as a "field underwriter" is NOT a compliance violation
+
+ANALYSIS FORMAT:
+Provide your analysis in the following structure:
+
+**OVERALL SCORE: [0-100]**
+
+**CATEGORY BREAKDOWN:**
+1. Rapport Building & Opening: [Score]/100
+2. Needs Discovery & Qualification: [Score]/100
+3. Product Presentation: [Score]/100
+4. Objection Handling: [Score]/100
+5. Closing & Application: [Score]/100
+6. Compliance & Professionalism: [Score]/100
+
+**STRENGTHS:** (3-5 bullet points of what was done well)
+
+**AREAS FOR IMPROVEMENT:** (3-5 specific, actionable recommendations)
+
+**KEY MOMENTS:** (Highlight 2-3 critical moments that significantly impacted the call outcome)
+
+**COMPLIANCE NOTES:** (Any regulatory or ethical concerns identified. Remember: "field underwriter" introduction is acceptable)
+
+**CALL OUTCOME:** (Successful close, follow-up scheduled, declined, etc.)
+
+TRANSCRIPTION TO ANALYZE:`,
+      isActive: true,
+      agencyId: "global",
+      agencyName: "Global Template",
+      lastModified: new Date().toLocaleDateString(),
+      performance: { accuracy: 94, usage: 287 }
+    },
+    {
+      id: "2",
+      sectionLabel: "Opening Section Analysis",
       sectionName: "greeting",
-      prompt: "Analyze this opening section for professionalism, engagement, and compliance with industry standards.",
+      prompt: "Analyze this opening section for professionalism, engagement, and compliance with industry standards. NOTE: Field underwriter introductions are compliant.",
       isActive: true,
       agencyId: "agency1",
       agencyName: "Elite Insurance Partners",
@@ -73,7 +156,7 @@ const PromptManagement = ({ onBackToDashboard }: PromptManagementProps) => {
       performance: { accuracy: 92, usage: 145 }
     },
     {
-      id: "2",
+      id: "3",
       sectionLabel: "Needs Assessment",
       sectionName: "discovery",
       prompt: "Evaluate the agent's questioning technique, listening skills, and ability to identify customer needs.",
@@ -84,7 +167,7 @@ const PromptManagement = ({ onBackToDashboard }: PromptManagementProps) => {
       performance: { accuracy: 88, usage: 132 }
     },
     {
-      id: "3",
+      id: "4",
       sectionLabel: "Product Presentation",
       sectionName: "presentation",
       prompt: "Assess how well the agent presents product features, benefits, and addresses customer concerns.",
@@ -93,28 +176,6 @@ const PromptManagement = ({ onBackToDashboard }: PromptManagementProps) => {
       agencyName: "National Coverage Group",
       lastModified: "2024-01-13",
       performance: { accuracy: 85, usage: 98 }
-    },
-    {
-      id: "4",
-      sectionLabel: "Objection Handling",
-      sectionName: "objections",
-      prompt: "Evaluate the agent's ability to handle objections professionally and turn them into opportunities.",
-      isActive: true,
-      agencyId: "global",
-      agencyName: "Global Template",
-      lastModified: "2024-01-12",
-      performance: { accuracy: 94, usage: 287 }
-    },
-    {
-      id: "5",
-      sectionLabel: "Closing",
-      sectionName: "close",
-      prompt: "Analyze the closing technique, urgency creation, and next steps communication.",
-      isActive: true,
-      agencyId: "global",
-      agencyName: "Global Template",
-      lastModified: "2024-01-11",
-      performance: { accuracy: 90, usage: 243 }
     }
   ];
 

@@ -2,6 +2,8 @@
 export const mockExecutiveDashboardData = {
   totalPlatformRevenue: 2400000,
   totalCallVolume: 15847,
+  liveCalls: 47,
+  endedCalls: 1204,
   globalConversionRate: 23.4,
   systemUptime: 99.97,
   totalAgencies: 47,

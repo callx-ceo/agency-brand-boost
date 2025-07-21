@@ -30,6 +30,8 @@ const SuperAdminDashboardContent = ({
     <div className="space-y-6">
       <SuperAdminDashboardHeader
         totalCallsToday={mockExecutiveDashboardData.totalCallVolume}
+        liveCalls={mockExecutiveDashboardData.liveCalls}
+        endedCalls={mockExecutiveDashboardData.endedCalls}
         activeAgencies={mockExecutiveDashboardData.activeAgencies}
         systemUptime={mockExecutiveDashboardData.systemUptime}
         activeAlerts={mockExecutiveDashboardData.activeSecurityAlerts}

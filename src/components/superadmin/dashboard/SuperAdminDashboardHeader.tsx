@@ -2,10 +2,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Layout, AlertTriangle, Activity } from "lucide-react";
+import { Settings, Layout, AlertTriangle, Activity, Phone, CheckCircle } from "lucide-react";
 
 interface SuperAdminDashboardHeaderProps {
   totalCallsToday: number;
+  liveCalls: number;
+  endedCalls: number;
   activeAgencies: number;
   systemUptime: number;
   activeAlerts: number;
@@ -14,7 +16,9 @@ interface SuperAdminDashboardHeaderProps {
 }
 
 const SuperAdminDashboardHeader = ({ 
-  totalCallsToday, 
+  totalCallsToday,
+  liveCalls,
+  endedCalls,
   activeAgencies,
   systemUptime,
   activeAlerts,
@@ -25,16 +29,29 @@ const SuperAdminDashboardHeader = ({
     <div className="flex justify-between items-start">
       <div>
         <h1 className="text-3xl font-bold mb-2">SuperAdmin Dashboard</h1>
-        <div className="flex items-center gap-6 text-sm text-gray-600">
+        <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <Phone className="w-4 h-4 text-green-500" />
+            <span className="text-foreground font-medium">Live:</span>
+            <span className="text-green-600 font-semibold">{liveCalls}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-blue-500" />
+            <span className="text-foreground font-medium">Ended:</span>
+            <span className="text-blue-600 font-semibold">{endedCalls}</span>
+          </div>
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4" />
-            Today: {totalCallsToday.toLocaleString()} calls
+            <span className="text-foreground font-medium">Today:</span>
+            <span className="font-semibold">{totalCallsToday.toLocaleString()}</span>
           </div>
           <div className="flex items-center gap-2">
-            System Uptime: <Badge variant="outline" className="text-green-600">{systemUptime}%</Badge>
+            <span className="text-foreground font-medium">Uptime:</span>
+            <Badge variant="outline" className="text-green-600">{systemUptime}%</Badge>
           </div>
           <div className="flex items-center gap-2">
-            Active Agencies: <Badge variant="secondary">{activeAgencies}</Badge>
+            <span className="text-foreground font-medium">Agencies:</span>
+            <Badge variant="secondary">{activeAgencies}</Badge>
           </div>
           {activeAlerts > 0 && (
             <div className="flex items-center gap-2">

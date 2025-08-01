@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, Copy, Link } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
@@ -19,6 +20,8 @@ interface TeamMember {
   email: string;
   role: "admin" | "manager" | "agent";
   status: "active" | "pending" | "inactive" | "paused";
+  callStatus: "on-call" | "offline";
+  loggedIn: boolean;
   joinDate: string;
   lastActive: string;
 }
@@ -33,6 +36,8 @@ const TeamMembersTab = () => {
       email: "john@sampleagency.com",
       role: "admin",
       status: "active",
+      callStatus: "offline",
+      loggedIn: true,
       joinDate: "2024-01-15",
       lastActive: "2024-05-24"
     },
@@ -42,6 +47,8 @@ const TeamMembersTab = () => {
       email: "sarah@sampleagency.com",
       role: "manager",
       status: "active",
+      callStatus: "on-call",
+      loggedIn: true,
       joinDate: "2024-02-20",
       lastActive: "2024-05-23"
     },
@@ -51,6 +58,8 @@ const TeamMembersTab = () => {
       email: "mike@sampleagency.com",
       role: "agent",
       status: "active",
+      callStatus: "on-call",
+      loggedIn: true,
       joinDate: "2024-03-10",
       lastActive: "2024-05-24"
     },
@@ -60,6 +69,8 @@ const TeamMembersTab = () => {
       email: "emily@sampleagency.com",
       role: "agent",
       status: "pending",
+      callStatus: "offline",
+      loggedIn: false,
       joinDate: "2024-05-20",
       lastActive: "-"
     },
@@ -69,6 +80,8 @@ const TeamMembersTab = () => {
       email: "alex@sampleagency.com",
       role: "agent",
       status: "active",
+      callStatus: "offline",
+      loggedIn: true,
       joinDate: "2024-04-05",
       lastActive: "2024-05-24"
     },
@@ -78,6 +91,8 @@ const TeamMembersTab = () => {
       email: "jessica@sampleagency.com",
       role: "manager",
       status: "active",
+      callStatus: "offline",
+      loggedIn: false,
       joinDate: "2024-03-25",
       lastActive: "2024-05-23"
     },
@@ -87,6 +102,8 @@ const TeamMembersTab = () => {
       email: "david@sampleagency.com",
       role: "agent",
       status: "paused",
+      callStatus: "offline",
+      loggedIn: true,
       joinDate: "2024-02-14",
       lastActive: "2024-05-20"
     },
@@ -96,6 +113,8 @@ const TeamMembersTab = () => {
       email: "lisa@sampleagency.com",
       role: "agent",
       status: "active",
+      callStatus: "on-call",
+      loggedIn: true,
       joinDate: "2024-04-18",
       lastActive: "2024-05-24"
     },
@@ -105,6 +124,8 @@ const TeamMembersTab = () => {
       email: "robert@sampleagency.com",
       role: "agent",
       status: "inactive",
+      callStatus: "offline",
+      loggedIn: false,
       joinDate: "2024-01-30",
       lastActive: "2024-05-15"
     },
@@ -114,6 +135,8 @@ const TeamMembersTab = () => {
       email: "amanda@sampleagency.com",
       role: "agent",
       status: "pending",
+      callStatus: "offline",
+      loggedIn: false,
       joinDate: "2024-05-22",
       lastActive: "-"
     }
@@ -123,23 +146,61 @@ const TeamMembersTab = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [activeFilter, setActiveFilter] = useState("all");
   const [newMember, setNewMember] = useState({
     name: "",
     email: "",
     role: "agent" as "admin" | "manager" | "agent"
   });
 
-  // Filter members based on search query
+  // Filter members based on search query and active filter
   const filteredMembers = useMemo(() => {
-    if (!searchQuery) return teamMembers;
+    let filtered = teamMembers;
+
+    // Apply status filter
+    switch (activeFilter) {
+      case "on-call":
+        filtered = filtered.filter(member => member.callStatus === "on-call");
+        break;
+      case "offline":
+        filtered = filtered.filter(member => member.callStatus === "offline");
+        break;
+      case "paused":
+        filtered = filtered.filter(member => member.status === "paused");
+        break;
+      case "active":
+        filtered = filtered.filter(member => member.status === "active");
+        break;
+      case "not-active":
+        filtered = filtered.filter(member => member.status !== "active");
+        break;
+      case "pending":
+        filtered = filtered.filter(member => member.status === "pending");
+        break;
+      case "logged-in":
+        filtered = filtered.filter(member => member.loggedIn === true);
+        break;
+      case "not-logged-in":
+        filtered = filtered.filter(member => member.loggedIn === false);
+        break;
+      case "all":
+      default:
+        // No filter applied
+        break;
+    }
+
+    // Apply search query filter
+    if (searchQuery) {
+      filtered = filtered.filter(member =>
+        member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.status.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
     
-    return teamMembers.filter(member =>
-      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.status.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [teamMembers, searchQuery]);
+    return filtered;
+  }, [teamMembers, searchQuery, activeFilter]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
@@ -243,6 +304,8 @@ const TeamMembersTab = () => {
       email: newMember.email,
       role: newMember.role,
       status: "pending",
+      callStatus: "offline",
+      loggedIn: false,
       joinDate: new Date().toISOString().split('T')[0],
       lastActive: "-"
     };
@@ -499,11 +562,11 @@ const TeamMembersTab = () => {
         </Card>
       </div>
 
-      {/* Search and Team Members Table */}
+      {/* Search and Team Members Table with Tabs */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>All Team Members</CardTitle>
+            <CardTitle>Team Members</CardTitle>
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -523,174 +586,202 @@ const TeamMembersTab = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {filteredMembers.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No team members found matching your search.</p>
-            </div>
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Join Date</TableHead>
-                    <TableHead>Last Active</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {displayedMembers.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell className="font-medium">{member.name}</TableCell>
-                      <TableCell>{member.email}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Badge className={`${getRoleBadgeColor(member.role)} flex items-center gap-1 w-fit`}>
-                            {getRoleIcon(member.role)}
-                            {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                          </Badge>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                <ChevronDown className="w-3 h-3" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="bg-white">
-                              <DropdownMenuItem 
-                                onClick={() => handleRoleChange(member.id, "admin")}
-                                className="cursor-pointer flex items-center gap-2"
-                              >
-                                <Shield className="w-4 h-4 text-red-600" />
-                                Admin
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleRoleChange(member.id, "manager")}
-                                className="cursor-pointer flex items-center gap-2"
-                              >
-                                <Users className="w-4 h-4 text-blue-600" />
-                                Manager
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleRoleChange(member.id, "agent")}
-                                className="cursor-pointer flex items-center gap-2"
-                              >
-                                <User className="w-4 h-4 text-green-600" />
-                                Agent
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Badge className={`${getStatusBadgeColor(member.status)} w-fit`}>
-                            {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
-                          </Badge>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                <ChevronDown className="w-3 h-3" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="bg-white">
-                              <DropdownMenuItem 
-                                onClick={() => handleStatusChange(member.id, "active")}
-                                className="cursor-pointer"
-                              >
-                                Active
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleStatusChange(member.id, "pending")}
-                                className="cursor-pointer"
-                              >
-                                Pending
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleStatusChange(member.id, "paused")}
-                                className="cursor-pointer"
-                              >
-                                Paused
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleStatusChange(member.id, "inactive")}
-                                className="cursor-pointer"
-                              >
-                                Inactive
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </TableCell>
-                      <TableCell>{member.joinDate}</TableCell>
-                      <TableCell>{member.lastActive}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          {member.status === "pending" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleResendInvite(member.email)}
-                            >
-                              <Mail className="w-4 h-4" />
-                            </Button>
-                          )}
-                          {(member.role === "agent" || member.role === "manager") && member.status === "active" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleImpersonate(member)}
-                              className="text-blue-600 hover:text-blue-700"
-                            >
-                              <User className="w-4 h-4" />
-                            </Button>
-                          )}
-                          <Button variant="outline" size="sm">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleRemoveMember(member.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-6 flex justify-center">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                      
-                      {renderPaginationItems()}
-                      
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+          <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
+            <TabsList className="grid w-full grid-cols-9">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="on-call">On Call</TabsTrigger>
+              <TabsTrigger value="offline">Offline</TabsTrigger>
+              <TabsTrigger value="paused">Paused</TabsTrigger>
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="not-active">Not Active</TabsTrigger>
+              <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsTrigger value="logged-in">Logged In</TabsTrigger>
+              <TabsTrigger value="not-logged-in">Not Logged In</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value={activeFilter} className="mt-6">
+              {filteredMembers.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No team members found matching your search and filter criteria.</p>
                 </div>
+              ) : (
+                <>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Call Status</TableHead>
+                        <TableHead>Logged In</TableHead>
+                        <TableHead>Join Date</TableHead>
+                        <TableHead>Last Active</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {displayedMembers.map((member) => (
+                        <TableRow key={member.id}>
+                          <TableCell className="font-medium">{member.name}</TableCell>
+                          <TableCell>{member.email}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Badge className={`${getRoleBadgeColor(member.role)} flex items-center gap-1 w-fit`}>
+                                {getRoleIcon(member.role)}
+                                {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                              </Badge>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                    <ChevronDown className="w-3 h-3" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className="bg-white">
+                                  <DropdownMenuItem 
+                                    onClick={() => handleRoleChange(member.id, "admin")}
+                                    className="cursor-pointer flex items-center gap-2"
+                                  >
+                                    <Shield className="w-4 h-4 text-red-600" />
+                                    Admin
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => handleRoleChange(member.id, "manager")}
+                                    className="cursor-pointer flex items-center gap-2"
+                                  >
+                                    <Users className="w-4 h-4 text-blue-600" />
+                                    Manager
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => handleRoleChange(member.id, "agent")}
+                                    className="cursor-pointer flex items-center gap-2"
+                                  >
+                                    <User className="w-4 h-4 text-green-600" />
+                                    Agent
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Badge className={`${getStatusBadgeColor(member.status)} w-fit`}>
+                                {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                              </Badge>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                    <ChevronDown className="w-3 h-3" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className="bg-white">
+                                  <DropdownMenuItem 
+                                    onClick={() => handleStatusChange(member.id, "active")}
+                                    className="cursor-pointer"
+                                  >
+                                    Active
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => handleStatusChange(member.id, "pending")}
+                                    className="cursor-pointer"
+                                  >
+                                    Pending
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => handleStatusChange(member.id, "paused")}
+                                    className="cursor-pointer"
+                                  >
+                                    Paused
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => handleStatusChange(member.id, "inactive")}
+                                    className="cursor-pointer"
+                                  >
+                                    Inactive
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={member.callStatus === "on-call" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}>
+                              {member.callStatus === "on-call" ? "On Call" : "Offline"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={member.loggedIn ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
+                              {member.loggedIn ? "Logged In" : "Not Logged In"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{member.joinDate}</TableCell>
+                          <TableCell>{member.lastActive}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              {member.status === "pending" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleResendInvite(member.email)}
+                                >
+                                  <Mail className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {(member.role === "agent" || member.role === "manager") && member.status === "active" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleImpersonate(member)}
+                                  className="text-blue-600 hover:text-blue-700"
+                                >
+                                  <User className="w-4 h-4" />
+                                </Button>
+                              )}
+                              <Button variant="outline" size="sm">
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRemoveMember(member.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="mt-6 flex justify-center">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                          
+                          {renderPaginationItems()}
+                          
+                          <PaginationItem>
+                            <PaginationNext
+                              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                              className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </>
               )}
-            </>
-          )}
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 

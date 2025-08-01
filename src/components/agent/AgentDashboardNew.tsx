@@ -17,6 +17,7 @@ import AgentContactsView from "./AgentContactsView";
 import AgentApplicationsView from "./AgentApplicationsView";
 import AgentHistoryView from "./AgentHistoryView";
 import AgentSettingsView from "./AgentSettingsView";
+import AgentInsights from "./AgentInsights";
 
 const AgentDashboardNew = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -161,13 +162,18 @@ const AgentDashboardNew = () => {
         <div className="flex-1 p-6">
           {activeNav === "home" && (
             <div className="space-y-6">
-              <h1 className="text-2xl font-bold">Agent Dashboard</h1>
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Agent Dashboard</h1>
+                <div className="text-sm text-gray-500">
+                  Welcome back, {agentData.name}
+                </div>
+              </div>
               
               {!isOnline && (
                 <Card>
                   <CardContent className="p-6 text-center">
                     <h2 className="text-lg font-semibold mb-2">You are currently offline</h2>
-                    <p className="text-gray-600 mb-4">Click the "OFF" button in the sidebar to go online and start receiving calls.</p>
+                    <p className="text-gray-600 mb-4">Review your AI insights below, then click "Go Online" when you're ready to start receiving calls.</p>
                     <Button 
                       onClick={() => setIsOnline(true)}
                       className="bg-green-600 hover:bg-green-700"
@@ -187,7 +193,7 @@ const AgentDashboardNew = () => {
                 </Card>
               )}
 
-              {/* Daily Stats */}
+              {/* Today's Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card>
                   <CardContent className="p-6 text-center">
@@ -208,6 +214,9 @@ const AgentDashboardNew = () => {
                   </CardContent>
                 </Card>
               </div>
+
+              {/* AI Insights Section */}
+              <AgentInsights agentData={agentData} />
             </div>
           )}
 

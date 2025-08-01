@@ -30,7 +30,14 @@ const App = () => (
             } 
           />
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
-          <Route path="/agent" element={<AgentDashboardPage />} />
+          <Route 
+            path="/agent" 
+            element={
+              <ImpersonationProvider>
+                <AgentDashboardPage />
+              </ImpersonationProvider>
+            } 
+          />
           <Route path="/publisher" element={<div className="p-8 text-center"><h1 className="text-2xl">Publisher Dashboard - Coming Soon</h1></div>} />
           <Route path="/advertiser" element={<div className="p-8 text-center"><h1 className="text-2xl">Advertiser Dashboard - Coming Soon</h1></div>} />
           <Route path="/guide" element={<div className="p-8 text-center"><h1 className="text-2xl">Guide Dashboard - Coming Soon</h1></div>} />

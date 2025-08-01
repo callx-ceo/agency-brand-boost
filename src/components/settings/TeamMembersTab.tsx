@@ -587,7 +587,7 @@ const TeamMembersTab = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
-            <TabsList className="grid w-full grid-cols-9">
+            <TabsList className="inline-flex w-auto">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="on-call">On Call</TabsTrigger>
               <TabsTrigger value="offline">Offline</TabsTrigger>

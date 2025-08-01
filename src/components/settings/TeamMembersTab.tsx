@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, Copy, Link } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 
 interface TeamMember {
@@ -262,6 +262,12 @@ const TeamMembersTab = () => {
     toast.success(`Invitation resent to ${email}`);
   };
 
+  const copySignupLink = () => {
+    const signupLink = "https://app.yourplatform.com/signup/agency/sampleagency";
+    navigator.clipboard.writeText(signupLink);
+    toast.success("Signup link copied to clipboard!");
+  };
+
   const renderPaginationItems = () => {
     const items = [];
     const showEllipsis = totalPages > 7;
@@ -348,6 +354,37 @@ const TeamMembersTab = () => {
 
   return (
     <div className="space-y-6">
+      {/* Agent Signup Link Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Link className="w-5 h-5" />
+            Agent Signup Link
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Share this link with potential agents to let them signup directly for your agency.
+            </p>
+            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+              <code className="flex-1 text-sm font-mono">
+                https://app.yourplatform.com/signup/agency/sampleagency
+              </code>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={copySignupLink}
+                className="shrink-0"
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Copy
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Header Section */}
       <div className="flex justify-between items-center">
         <div>

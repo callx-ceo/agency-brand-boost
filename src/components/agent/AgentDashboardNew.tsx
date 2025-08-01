@@ -13,6 +13,10 @@ import {
 } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import ImpersonationBanner from "@/components/ImpersonationBanner";
+import AgentContactsView from "./AgentContactsView";
+import AgentApplicationsView from "./AgentApplicationsView";
+import AgentHistoryView from "./AgentHistoryView";
+import AgentSettingsView from "./AgentSettingsView";
 
 const AgentDashboardNew = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -207,11 +211,16 @@ const AgentDashboardNew = () => {
             </div>
           )}
 
-          {activeNav !== "home" && (
+          {activeNav === "contacts" && <AgentContactsView />}
+          {activeNav === "applications" && <AgentApplicationsView />}
+          {activeNav === "history" && <AgentHistoryView />}
+          {activeNav === "settings" && <AgentSettingsView />}
+          
+          {activeNav === "support" && (
             <div className="text-center py-8">
-              <h2 className="text-2xl font-bold mb-4">{navigationItems.find(item => item.id === activeNav)?.label}</h2>
+              <h2 className="text-2xl font-bold mb-4">Support</h2>
               <div className="text-gray-500">
-                This section is coming soon.
+                Contact support for assistance with the platform.
               </div>
             </div>
           )}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,6 +152,24 @@ const TeamMembersTab = () => {
     email: "",
     role: "agent" as "admin" | "manager" | "agent"
   });
+
+  // Get count for each filter
+  const getFilterCount = useCallback((filter: string) => {
+    return teamMembers.filter(member => {
+      switch (filter) {
+        case "all": return true;
+        case "on-call": return member.callStatus === "on-call";
+        case "offline": return member.callStatus === "offline";
+        case "paused": return member.status === "paused";
+        case "active": return member.status === "active";
+        case "not-active": return member.status !== "active";
+        case "pending": return member.status === "pending";
+        case "logged-in": return member.loggedIn === true;
+        case "not-logged-in": return member.loggedIn === false;
+        default: return false;
+      }
+    }).length;
+  }, [teamMembers]);
 
   // Filter members based on search query and active filter
   const filteredMembers = useMemo(() => {
@@ -588,15 +606,15 @@ const TeamMembersTab = () => {
         <CardContent>
           <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
             <TabsList className="inline-flex w-auto">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="on-call">On Call</TabsTrigger>
-              <TabsTrigger value="offline">Offline</TabsTrigger>
-              <TabsTrigger value="paused">Paused</TabsTrigger>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="not-active">Not Active</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="logged-in">Logged In</TabsTrigger>
-              <TabsTrigger value="not-logged-in">Not Logged In</TabsTrigger>
+              <TabsTrigger value="all">All ({getFilterCount("all")})</TabsTrigger>
+              <TabsTrigger value="on-call">On Call ({getFilterCount("on-call")})</TabsTrigger>
+              <TabsTrigger value="offline">Offline ({getFilterCount("offline")})</TabsTrigger>
+              <TabsTrigger value="paused">Paused ({getFilterCount("paused")})</TabsTrigger>
+              <TabsTrigger value="active">Active ({getFilterCount("active")})</TabsTrigger>
+              <TabsTrigger value="not-active">Not Active ({getFilterCount("not-active")})</TabsTrigger>
+              <TabsTrigger value="pending">Pending ({getFilterCount("pending")})</TabsTrigger>
+              <TabsTrigger value="logged-in">Logged In ({getFilterCount("logged-in")})</TabsTrigger>
+              <TabsTrigger value="not-logged-in">Not Logged In ({getFilterCount("not-logged-in")})</TabsTrigger>
             </TabsList>
             
             <TabsContent value={activeFilter} className="mt-6">

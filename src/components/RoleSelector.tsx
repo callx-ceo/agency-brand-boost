@@ -90,7 +90,7 @@ const RoleSelector = () => {
       title: "Agent",
       description: "Handle calls, manage leads, and track performance metrics",
       icon: <Headphones className="w-8 h-8 text-blue-600" />,
-      status: "coming-soon" as const,
+      status: "active" as const,
       path: "/agent"
     }
   ];

@@ -5,18 +5,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { User, Bell, Phone, Headphones, Save, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
-    name: "Sean Frank",
-    email: "sean.frank@company.com",
-    phone: "(555) 123-4567",
-    timezone: "America/New_York",
-    bio: "Experienced insurance agent specializing in life and auto insurance."
+    firstName: "Aaron",
+    lastName: "Javier", 
+    email: "aaron.javier@fffieldunderwriter.com",
+    phone: "(510) 566-0817",
+    zipCode: "94579",
+    city: "San Leandro",
+    state: "CA",
+    bidAmount: "65.00"
   });
 
   const [security, setSecurity] = useState({
@@ -74,302 +77,275 @@ const AgentSettingsView = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Agent Settings</h1>
+        <h1 className="text-2xl font-bold">Settings Dashboard</h1>
       </div>
 
-      {/* Profile Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" />
-            Profile Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                value={profile.name}
-                onChange={(e) => setProfile({...profile, name: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={profile.email}
-                onChange={(e) => setProfile({...profile, email: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                value={profile.phone}
-                onChange={(e) => setProfile({...profile, phone: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="timezone">Timezone</Label>
-              <Select value={profile.timezone} onValueChange={(value) => setProfile({...profile, timezone: value})}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                  <SelectItem value="America/Chicago">Central Time</SelectItem>
-                  <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                  <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="bio">Bio</Label>
-            <Textarea
-              id="bio"
-              value={profile.bio}
-              onChange={(e) => setProfile({...profile, bio: e.target.value})}
-              rows={3}
-            />
-          </div>
-          <Button onClick={handleSaveProfile} className="flex items-center gap-2">
-            <Save className="w-4 h-4" />
-            Save Profile
-          </Button>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="profile">Profile Data</TabsTrigger>
+          <TabsTrigger value="target">Target States</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
+        </TabsList>
 
-      {/* Security Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lock className="w-5 h-5" />
-            Security Settings
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
-            <div className="relative">
-              <Input
-                id="currentPassword"
-                type={showPasswords.current ? "text" : "password"}
-                value={security.currentPassword}
-                onChange={(e) => setSecurity({...security, currentPassword: e.target.value})}
-                placeholder="Enter current password"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowPasswords({...showPasswords, current: !showPasswords.current})}
-              >
-                {showPasswords.current ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+        <TabsContent value="profile" className="space-y-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    value={profile.firstName}
+                    onChange={(e) => setProfile({...profile, firstName: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    value={profile.lastName}
+                    onChange={(e) => setProfile({...profile, lastName: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    value={profile.phone}
+                    onChange={(e) => setProfile({...profile, phone: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="zipCode">Zip Code</Label>
+                  <Input
+                    id="zipCode"
+                    value={profile.zipCode}
+                    onChange={(e) => setProfile({...profile, zipCode: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    value={profile.city}
+                    onChange={(e) => setProfile({...profile, city: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="state">State</Label>
+                  <Select value={profile.state} onValueChange={(value) => setProfile({...profile, state: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="CA">CA</SelectItem>
+                      <SelectItem value="NY">NY</SelectItem>
+                      <SelectItem value="TX">TX</SelectItem>
+                      <SelectItem value="FL">FL</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bidAmount">Bid Amount</Label>
+                  <Input
+                    id="bidAmount"
+                    type="number"
+                    value={profile.bidAmount}
+                    onChange={(e) => setProfile({...profile, bidAmount: e.target.value})}
+                  />
+                  <div className="text-sm text-muted-foreground">Min bid $65.00</div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={profile.email}
+                    onChange={(e) => setProfile({...profile, email: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end mt-6">
+                <Button onClick={handleSaveProfile} className="flex items-center gap-2">
+                  <Save className="w-4 h-4" />
+                  Save Profile
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="target" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Target States Configuration</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-muted-foreground">Configure your target states for lead routing and campaign preferences.</div>
+              {/* Add target states configuration here */}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="w-5 h-5" />
+                Notification Preferences
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Email Notifications</div>
+                  <div className="text-sm text-muted-foreground">Receive updates via email</div>
+                </div>
+                <Switch
+                  checked={notifications.emailNotifications}
+                  onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">SMS Notifications</div>
+                  <div className="text-sm text-muted-foreground">Receive text message alerts</div>
+                </div>
+                <Switch
+                  checked={notifications.smsNotifications}
+                  onCheckedChange={(checked) => setNotifications({...notifications, smsNotifications: checked})}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Call Reminders</div>
+                  <div className="text-sm text-muted-foreground">Get notified about scheduled calls</div>
+                </div>
+                <Switch
+                  checked={notifications.callReminders}
+                  onCheckedChange={(checked) => setNotifications({...notifications, callReminders: checked})}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Lead Assignments</div>
+                  <div className="text-sm text-muted-foreground">Notify when new leads are assigned</div>
+                </div>
+                <Switch
+                  checked={notifications.leadAssignments}
+                  onCheckedChange={(checked) => setNotifications({...notifications, leadAssignments: checked})}
+                />
+              </div>
+              <Button onClick={handleSaveNotifications} className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                Save Preferences
               </Button>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
-              <div className="relative">
-                <Input
-                  id="newPassword"
-                  type={showPasswords.new ? "text" : "password"}
-                  value={security.newPassword}
-                  onChange={(e) => setSecurity({...security, newPassword: e.target.value})}
-                  placeholder="Enter new password"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPasswords({...showPasswords, new: !showPasswords.new})}
-                >
-                  {showPasswords.new ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showPasswords.confirm ? "text" : "password"}
-                  value={security.confirmPassword}
-                  onChange={(e) => setSecurity({...security, confirmPassword: e.target.value})}
-                  placeholder="Confirm new password"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPasswords({...showPasswords, confirm: !showPasswords.confirm})}
-                >
-                  {showPasswords.confirm ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-          
-          <div className="text-sm text-muted-foreground">
-            Password must be at least 8 characters long and contain a mix of letters, numbers, and symbols.
-          </div>
-          
-          <Button onClick={handleSavePassword} className="flex items-center gap-2">
-            <Save className="w-4 h-4" />
-            Update Password
-          </Button>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* Notification Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="w-5 h-5" />
-            Notification Preferences
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Email Notifications</div>
-              <div className="text-sm text-gray-500">Receive updates via email</div>
-            </div>
-            <Switch
-              checked={notifications.emailNotifications}
-              onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">SMS Notifications</div>
-              <div className="text-sm text-gray-500">Receive text message alerts</div>
-            </div>
-            <Switch
-              checked={notifications.smsNotifications}
-              onCheckedChange={(checked) => setNotifications({...notifications, smsNotifications: checked})}
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Call Reminders</div>
-              <div className="text-sm text-gray-500">Get notified about scheduled calls</div>
-            </div>
-            <Switch
-              checked={notifications.callReminders}
-              onCheckedChange={(checked) => setNotifications({...notifications, callReminders: checked})}
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Lead Assignments</div>
-              <div className="text-sm text-gray-500">Notify when new leads are assigned</div>
-            </div>
-            <Switch
-              checked={notifications.leadAssignments}
-              onCheckedChange={(checked) => setNotifications({...notifications, leadAssignments: checked})}
-            />
-          </div>
-          <Button onClick={handleSaveNotifications} className="flex items-center gap-2">
-            <Save className="w-4 h-4" />
-            Save Preferences
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Call Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Phone className="w-5 h-5" />
-            Call Settings
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Auto-Answer Calls</div>
-              <div className="text-sm text-gray-500">Automatically answer incoming calls</div>
-            </div>
-            <Switch
-              checked={callSettings.autoAnswer}
-              onCheckedChange={(checked) => setCallSettings({...callSettings, autoAnswer: checked})}
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Call Recording</div>
-              <div className="text-sm text-gray-500">Record all calls for quality assurance</div>
-            </div>
-            <Switch
-              checked={callSettings.callRecording}
-              onCheckedChange={(checked) => setCallSettings({...callSettings, callRecording: checked})}
-            />
-          </div>
-          <Separator />
-          <div className="space-y-2">
-            <Label htmlFor="callScript">Call Script</Label>
-            <Textarea
-              id="callScript"
-              value={callSettings.callScript}
-              onChange={(e) => setCallSettings({...callSettings, callScript: e.target.value})}
-              rows={3}
-              placeholder="Enter your opening call script..."
-            />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="maxDuration">Max Call Duration (minutes)</Label>
-              <Input
-                id="maxDuration"
-                type="number"
-                value={callSettings.maxCallDuration}
-                onChange={(e) => setCallSettings({...callSettings, maxCallDuration: e.target.value})}
-              />
-            </div>
-            <div className="flex items-center justify-between pt-6">
-              <div>
-                <div className="font-medium">Voicemail Enabled</div>
-                <div className="text-sm text-gray-500">Allow voicemail for missed calls</div>
+        <TabsContent value="security" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="w-5 h-5" />
+                Security Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <div className="relative">
+                  <Input
+                    id="currentPassword"
+                    type={showPasswords.current ? "text" : "password"}
+                    value={security.currentPassword}
+                    onChange={(e) => setSecurity({...security, currentPassword: e.target.value})}
+                    placeholder="Enter current password"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPasswords({...showPasswords, current: !showPasswords.current})}
+                  >
+                    {showPasswords.current ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
-              <Switch
-                checked={callSettings.voicemailEnabled}
-                onCheckedChange={(checked) => setCallSettings({...callSettings, voicemailEnabled: checked})}
-              />
-            </div>
-          </div>
-          <Button onClick={handleSaveCallSettings} className="flex items-center gap-2">
-            <Save className="w-4 h-4" />
-            Save Call Settings
-          </Button>
-        </CardContent>
-      </Card>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword">New Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="newPassword"
+                      type={showPasswords.new ? "text" : "password"}
+                      value={security.newPassword}
+                      onChange={(e) => setSecurity({...security, newPassword: e.target.value})}
+                      placeholder="Enter new password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPasswords({...showPasswords, new: !showPasswords.new})}
+                    >
+                      {showPasswords.new ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showPasswords.confirm ? "text" : "password"}
+                      value={security.confirmPassword}
+                      onChange={(e) => setSecurity({...security, confirmPassword: e.target.value})}
+                      placeholder="Confirm new password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPasswords({...showPasswords, confirm: !showPasswords.confirm})}
+                    >
+                      {showPasswords.confirm ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="text-sm text-muted-foreground">
+                Password must be at least 8 characters long and contain a mix of letters, numbers, and symbols.
+              </div>
+              
+              <Button onClick={handleSavePassword} className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                Update Password
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

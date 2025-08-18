@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,8 +7,9 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Gift, DollarSign, Users, Calendar, Settings, Shield, Target, Phone, MapPin } from "lucide-react";
+import { Plus, Gift, DollarSign, Users, Calendar, Settings, Target, Phone, MapPin, Search, Edit } from "lucide-react";
 import BulkBonusDialog from "./BulkBonusDialog";
 
 const verticals = [
@@ -29,7 +29,7 @@ const states = [
   'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
 ];
 
-// Mock data for agents with vertical settings
+// Mock data for agents with all settings
 const mockAgentBalances = [
   {
     agentId: "agent_user_123",
@@ -42,26 +42,10 @@ const mockAgentBalances = [
     dailyBudget: 50.00,
     maxCallsPerDay: 25,
     verticals: {
-      final_expense: { 
-        enabled: true, 
-        maxBid: 2.50, 
-        states: ['California', 'Texas', 'Florida'] 
-      },
-      auto_insurance: { 
-        enabled: true, 
-        maxBid: 1.75, 
-        states: ['California', 'Nevada'] 
-      },
-      health_insurance: { 
-        enabled: false, 
-        maxBid: 3.00, 
-        states: [] 
-      },
-      medicare: { 
-        enabled: true, 
-        maxBid: 2.25, 
-        states: ['California', 'Texas'] 
-      }
+      final_expense: { enabled: true, maxBid: 2.50, states: ['California', 'Texas', 'Florida'] },
+      auto_insurance: { enabled: true, maxBid: 1.75, states: ['California', 'Nevada'] },
+      health_insurance: { enabled: false, maxBid: 3.00, states: [] },
+      medicare: { enabled: true, maxBid: 2.25, states: ['California', 'Texas'] }
     }
   },
   {
@@ -75,26 +59,27 @@ const mockAgentBalances = [
     dailyBudget: 30.00,
     maxCallsPerDay: 15,
     verticals: {
-      final_expense: { 
-        enabled: true, 
-        maxBid: 2.00, 
-        states: ['Texas', 'Arizona'] 
-      },
-      auto_insurance: { 
-        enabled: false, 
-        maxBid: 1.50, 
-        states: [] 
-      },
-      health_insurance: { 
-        enabled: true, 
-        maxBid: 2.75, 
-        states: ['Texas'] 
-      },
-      medicare: { 
-        enabled: false, 
-        maxBid: 2.00, 
-        states: [] 
-      }
+      final_expense: { enabled: true, maxBid: 2.00, states: ['Texas', 'Arizona'] },
+      auto_insurance: { enabled: false, maxBid: 1.50, states: [] },
+      health_insurance: { enabled: true, maxBid: 2.75, states: ['Texas'] },
+      medicare: { enabled: false, maxBid: 2.00, states: [] }
+    }
+  },
+  {
+    agentId: "agent_user_789",
+    agentName: "Michael Johnson",
+    agentEmail: "michael.johnson@example.com",
+    baseBalance: 200.00,
+    bonusBalance: 50.00,
+    usedAmount: 145.25,
+    remainingBalance: 104.75,
+    dailyBudget: 75.00,
+    maxCallsPerDay: 40,
+    verticals: {
+      final_expense: { enabled: true, maxBid: 3.00, states: ['California', 'Texas', 'Florida', 'Nevada'] },
+      auto_insurance: { enabled: true, maxBid: 2.25, states: ['California', 'Texas'] },
+      health_insurance: { enabled: true, maxBid: 3.50, states: ['California', 'Texas', 'Arizona'] },
+      medicare: { enabled: true, maxBid: 2.75, states: ['California', 'Texas', 'Florida'] }
     }
   }
 ];
@@ -103,15 +88,20 @@ const CallCreditsManagement = () => {
   const [selectedAgent, setSelectedAgent] = useState<string>("");
   const [bonusAmount, setBonusAmount] = useState<string>("");
   const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [editingAgent, setEditingAgent] = useState<string>("");
-  const [editingVertical, setEditingVertical] = useState<string>("");
-  const [newMaxBid, setNewMaxBid] = useState<string>("");
-  const [newDailyBudget, setNewDailyBudget] = useState<string>("");
-  const [newMaxCalls, setNewMaxCalls] = useState<string>("");
-  const [editingStates, setEditingStates] = useState<string[]>([]);
-  const [stateMode, setStateMode] = useState<"all" | "specific">("specific");
+  const [editingField, setEditingField] = useState<string>("");
+  const [editValue, setEditValue] = useState<string>("");
+  const [verticalDialogOpen, setVerticalDialogOpen] = useState(false);
+  const [selectedAgentForVertical, setSelectedAgentForVertical] = useState<string>("");
 
   const currentBillingPeriod = "December 2024";
+  const agencyBilledAgents = mockAgentBalances.filter(agent => agent.remainingBalance > 0);
+
+  const filteredAgents = mockAgentBalances.filter(agent =>
+    agent.agentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    agent.agentEmail.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleAllocateBonus = () => {
     if (!selectedAgent || !bonusAmount) {
@@ -124,55 +114,33 @@ const CallCreditsManagement = () => {
     setSelectedAgent("");
   };
 
-  const handleUpdateDailySettings = (agentId: string) => {
-    if (!newDailyBudget && !newMaxCalls) {
-      toast.error("Please enter daily budget or max calls");
+  const handleUpdateField = (agentId: string, field: string) => {
+    if (!editValue) {
+      toast.error("Please enter a valid value");
       return;
     }
 
     const agent = mockAgentBalances.find(a => a.agentId === agentId);
     if (agent) {
-      toast.success(`Updated daily settings for ${agent.agentName}`);
+      const fieldLabels = {
+        dailyBudget: "daily budget",
+        maxCallsPerDay: "max calls per day"
+      };
+      toast.success(`Updated ${fieldLabels[field as keyof typeof fieldLabels]} to ${editValue} for ${agent.agentName}`);
       setEditingAgent("");
-      setNewDailyBudget("");
-      setNewMaxCalls("");
-    }
-  };
-
-  const handleUpdateVerticalBid = (agentId: string, verticalId: string) => {
-    if (!newMaxBid || parseFloat(newMaxBid) <= 0) {
-      toast.error("Please enter a valid max bid amount");
-      return;
-    }
-
-    const agent = mockAgentBalances.find(a => a.agentId === agentId);
-    if (agent) {
-      toast.success(`Updated ${verticals.find(v => v.id === verticalId)?.name} max bid to $${newMaxBid} for ${agent.agentName}`);
-      setEditingAgent("");
-      setEditingVertical("");
-      setNewMaxBid("");
-    }
-  };
-
-  const handleUpdateStates = (agentId: string, verticalId: string) => {
-    const agent = mockAgentBalances.find(a => a.agentId === agentId);
-    const vertical = verticals.find(v => v.id === verticalId);
-    if (agent && vertical) {
-      const stateText = stateMode === "all" ? "All US" : `${editingStates.length} states`;
-      toast.success(`Updated ${vertical.name} licensing states (${stateText}) for ${agent.agentName}`);
-      setEditingAgent("");
-      setEditingVertical("");
-      setEditingStates([]);
+      setEditingField("");
+      setEditValue("");
     }
   };
 
   return (
     <div className="space-y-6">
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="verticals">Verticals & States</TabsTrigger>
           <TabsTrigger value="limits">Daily Limits</TabsTrigger>
+          <TabsTrigger value="verticals">Verticals</TabsTrigger>
+          <TabsTrigger value="balances">Balances</TabsTrigger>
           <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
         </TabsList>
 
@@ -180,12 +148,23 @@ const CallCreditsManagement = () => {
           <Card>
             <CardHeader>
               <CardTitle>Agent Call Management Overview</CardTitle>
-              <CardDescription className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Usage tracked for billing period: {currentBillingPeriod}
+              <CardDescription>
+                Quick overview of all agent settings and performance
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="mb-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search agents..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 max-w-md"
+                  />
+                </div>
+              </div>
+              
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -194,11 +173,11 @@ const CallCreditsManagement = () => {
                     <TableHead>Max Calls/Day</TableHead>
                     <TableHead>Remaining Balance</TableHead>
                     <TableHead>Active Verticals</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>Total States</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAgentBalances.map((agent) => (
+                  {filteredAgents.map((agent) => (
                     <TableRow key={agent.agentId}>
                       <TableCell>
                         <div>
@@ -235,9 +214,7 @@ const CallCreditsManagement = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Button size="sm" variant="outline">
-                          Configure
-                        </Button>
+                        {Object.values(agent.verticals).reduce((total, config) => total + config.states.length, 0)} states
                       </TableCell>
                     </TableRow>
                   ))}
@@ -245,198 +222,6 @@ const CallCreditsManagement = () => {
               </Table>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="verticals" className="space-y-6">
-          {mockAgentBalances.map((agent) => (
-            <Card key={agent.agentId}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5" />
-                  {agent.agentName} - Vertical Configuration
-                </CardTitle>
-                <CardDescription>
-                  Configure which verticals this agent can purchase calls in and their licensing states
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {verticals.map((vertical) => {
-                  const config = agent.verticals[vertical.id as keyof typeof agent.verticals];
-                  const isEditing = editingAgent === agent.agentId && editingVertical === vertical.id;
-                  
-                  return (
-                    <div key={vertical.id} className="border rounded-lg p-4 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Checkbox checked={config.enabled} />
-                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${vertical.color}`}>
-                            {vertical.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm text-gray-600">
-                            Max Bid: <span className="font-medium">${config.maxBid.toFixed(2)}</span>
-                          </span>
-                          <span className="text-sm text-gray-600">
-                            States: <span className="font-medium">{config.states.length}</span>
-                          </span>
-                        </div>
-                      </div>
-                      
-                      {config.enabled && (
-                        <div className="pl-8 space-y-3">
-                          <div className="flex gap-4 items-end">
-                            <div className="flex-1">
-                              <Label>Max Bid Per Call</Label>
-                              {isEditing ? (
-                                <div className="flex gap-2">
-                                  <div className="relative">
-                                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                    <Input
-                                      type="number"
-                                      step="0.01"
-                                      min="0.01"
-                                      value={newMaxBid}
-                                      onChange={(e) => setNewMaxBid(e.target.value)}
-                                      placeholder={config.maxBid.toFixed(2)}
-                                      className="w-32 pl-8"
-                                    />
-                                  </div>
-                                  <Button 
-                                    size="sm" 
-                                    onClick={() => handleUpdateVerticalBid(agent.agentId, vertical.id)}
-                                  >
-                                    Save
-                                  </Button>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => {
-                                      setEditingAgent("");
-                                      setEditingVertical("");
-                                      setNewMaxBid("");
-                                    }}
-                                  >
-                                    Cancel
-                                  </Button>
-                                </div>
-                              ) : (
-                                <div className="flex gap-2 items-center">
-                                  <span className="text-lg font-medium">${config.maxBid.toFixed(2)}</span>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => {
-                                      setEditingAgent(agent.agentId);
-                                      setEditingVertical(vertical.id);
-                                      setNewMaxBid(config.maxBid.toString());
-                                    }}
-                                  >
-                                    Edit
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                            
-                            <div className="flex-1">
-                              <Label>Licensed States</Label>
-                              <div className="flex gap-2 items-center">
-                                <span className="text-sm">
-                                  {config.states.length > 0 ? `${config.states.join(', ')}` : 'No states selected'}
-                                </span>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => {
-                                    setEditingAgent(agent.agentId);
-                                    setEditingVertical(vertical.id);
-                                    setEditingStates(config.states);
-                                  }}
-                                >
-                                  <MapPin className="h-4 w-4 mr-1" />
-                                  Edit States
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {isEditing && editingVertical === vertical.id && (
-                            <div className="border-t pt-4 space-y-4">
-                              <Label>Select Licensed States</Label>
-                              <RadioGroup value={stateMode} onValueChange={(value: "all" | "specific") => setStateMode(value)}>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="all" id="all-us" />
-                                  <Label htmlFor="all-us">All US</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="specific" id="specific-states" />
-                                  <Label htmlFor="specific-states">Specific States</Label>
-                                </div>
-                              </RadioGroup>
-                              
-                              {stateMode === "specific" && (
-                                <div>
-                                  <div className="flex justify-between items-center mb-2">
-                                    <Label>Select States</Label>
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm"
-                                      onClick={() => {
-                                        const allSelected = editingStates.length === states.length;
-                                        setEditingStates(allSelected ? [] : [...states]);
-                                      }}
-                                    >
-                                      {editingStates.length === states.length ? 'Deselect All' : 'Select All'}
-                                    </Button>
-                                  </div>
-                                  <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto border rounded p-3">
-                                    {states.map((state) => (
-                                      <div key={state} className="flex items-center space-x-2">
-                                        <Checkbox
-                                          id={`${vertical.id}-${state}`}
-                                          checked={editingStates.includes(state)}
-                                          onCheckedChange={(checked) => {
-                                            if (checked) {
-                                              setEditingStates([...editingStates, state]);
-                                            } else {
-                                              setEditingStates(editingStates.filter(s => s !== state));
-                                            }
-                                          }}
-                                        />
-                                        <Label htmlFor={`${vertical.id}-${state}`} className="text-sm">
-                                          {state}
-                                        </Label>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              
-                              <div className="flex gap-2">
-                                <Button onClick={() => handleUpdateStates(agent.agentId, vertical.id)}>
-                                  Update States
-                                </Button>
-                                <Button 
-                                  variant="outline"
-                                  onClick={() => {
-                                    setEditingAgent("");
-                                    setEditingVertical("");
-                                    setEditingStates([]);
-                                  }}
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          ))}
         </TabsContent>
 
         <TabsContent value="limits" className="space-y-6">
@@ -451,6 +236,18 @@ const CallCreditsManagement = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="mb-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search agents..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 max-w-md"
+                  />
+                </div>
+              </div>
+              
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -461,7 +258,7 @@ const CallCreditsManagement = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAgentBalances.map((agent) => (
+                  {filteredAgents.map((agent) => (
                     <TableRow key={agent.agentId}>
                       <TableCell>
                         <div>
@@ -470,17 +267,17 @@ const CallCreditsManagement = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {editingAgent === agent.agentId ? (
+                        {editingAgent === agent.agentId && editingField === "dailyBudget" ? (
                           <div className="relative">
                             <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <Input
                               type="number"
                               step="0.01"
                               min="0"
-                              value={newDailyBudget}
-                              onChange={(e) => setNewDailyBudget(e.target.value)}
-                              placeholder={agent.dailyBudget.toFixed(2)}
+                              value={editValue}
+                              onChange={(e) => setEditValue(e.target.value)}
                               className="w-32 pl-8"
+                              autoFocus
                             />
                           </div>
                         ) : (
@@ -488,14 +285,14 @@ const CallCreditsManagement = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        {editingAgent === agent.agentId ? (
+                        {editingAgent === agent.agentId && editingField === "maxCallsPerDay" ? (
                           <Input
                             type="number"
                             min="1"
-                            value={newMaxCalls}
-                            onChange={(e) => setNewMaxCalls(e.target.value)}
-                            placeholder={agent.maxCallsPerDay.toString()}
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
                             className="w-24"
+                            autoFocus
                           />
                         ) : (
                           <span className="font-medium">{agent.maxCallsPerDay} calls</span>
@@ -506,7 +303,7 @@ const CallCreditsManagement = () => {
                           <div className="flex gap-2">
                             <Button 
                               size="sm" 
-                              onClick={() => handleUpdateDailySettings(agent.agentId)}
+                              onClick={() => handleUpdateField(agent.agentId, editingField)}
                             >
                               Save
                             </Button>
@@ -515,25 +312,38 @@ const CallCreditsManagement = () => {
                               variant="outline"
                               onClick={() => {
                                 setEditingAgent("");
-                                setNewDailyBudget("");
-                                setNewMaxCalls("");
+                                setEditingField("");
+                                setEditValue("");
                               }}
                             >
                               Cancel
                             </Button>
                           </div>
                         ) : (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => {
-                              setEditingAgent(agent.agentId);
-                              setNewDailyBudget(agent.dailyBudget.toString());
-                              setNewMaxCalls(agent.maxCallsPerDay.toString());
-                            }}
-                          >
-                            Edit Limits
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                setEditingAgent(agent.agentId);
+                                setEditingField("dailyBudget");
+                                setEditValue(agent.dailyBudget.toString());
+                              }}
+                            >
+                              Edit Budget
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                setEditingAgent(agent.agentId);
+                                setEditingField("maxCallsPerDay");
+                                setEditValue(agent.maxCallsPerDay.toString());
+                              }}
+                            >
+                              Edit Calls
+                            </Button>
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>
@@ -544,9 +354,181 @@ const CallCreditsManagement = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="bonuses" className="space-y-6">
+        <TabsContent value="verticals" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Vertical Configuration
+              </CardTitle>
+              <CardDescription>
+                Manage which verticals agents can purchase calls in and their max bids per vertical
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search agents..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 max-w-md"
+                  />
+                </div>
+              </div>
+              
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Agent Name</TableHead>
+                    {verticals.map(vertical => (
+                      <TableHead key={vertical.id} className="text-center">
+                        <span className={`px-2 py-1 rounded text-xs ${vertical.color}`}>
+                          {vertical.name}
+                        </span>
+                      </TableHead>
+                    ))}
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredAgents.map((agent) => (
+                    <TableRow key={agent.agentId}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{agent.agentName}</div>
+                          <div className="text-sm text-gray-500">{agent.agentEmail}</div>
+                        </div>
+                      </TableCell>
+                      {verticals.map(vertical => {
+                        const config = agent.verticals[vertical.id as keyof typeof agent.verticals];
+                        return (
+                          <TableCell key={vertical.id} className="text-center">
+                            {config.enabled ? (
+                              <div className="space-y-1">
+                                <div className="text-green-600 font-medium">${config.maxBid.toFixed(2)}</div>
+                                <div className="text-xs text-gray-500">{config.states.length} states</div>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400">Disabled</span>
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                      <TableCell>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedAgentForVertical(agent.agentId);
+                            setVerticalDialogOpen(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Configure
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          {/* Credit Allocation */}
+        <TabsContent value="balances" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Agent Call Balance Overview</CardTitle>
+              <CardDescription className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Usage tracked for billing period: {currentBillingPeriod}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Used Amount:</strong> Shows dollars spent on calls during the current billing period ({currentBillingPeriod}). 
+                  This resets at the start of each billing cycle.
+                </p>
+              </div>
+
+              <div className="mb-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search agents..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 max-w-md"
+                  />
+                </div>
+              </div>
+              
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Agent Name</TableHead>
+                    <TableHead>Base Balance</TableHead>
+                    <TableHead>Bonus Balance</TableHead>
+                    <TableHead>Used This Period</TableHead>
+                    <TableHead>Remaining</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredAgents.map((agent) => (
+                    <TableRow key={agent.agentId}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{agent.agentName}</div>
+                          <div className="text-sm text-gray-500">{agent.agentEmail}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>${agent.baseBalance.toFixed(2)}</TableCell>
+                      <TableCell>
+                        {agent.bonusBalance > 0 ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <Gift className="h-3 w-3 mr-1" />
+                            ${agent.bonusBalance.toFixed(2)}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">$0.00</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <span>${agent.usedAmount.toFixed(2)}</span>
+                          <span className="text-xs text-gray-500">({currentBillingPeriod})</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`font-medium ${
+                          agent.remainingBalance < 20 ? 'text-red-600' : 
+                          agent.remainingBalance < 50 ? 'text-yellow-600' : 'text-green-600'
+                        }`}>
+                          ${agent.remainingBalance.toFixed(2)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => setSelectedAgent(agent.agentId)}
+                        >
+                          Add Bonus
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="bonuses" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -606,7 +588,7 @@ const CallCreditsManagement = () => {
                   className="flex items-center gap-2"
                 >
                   <Users className="h-4 w-4" />
-                  Bulk Allocate Bonus
+                  Bulk Allocate Bonus ({agencyBilledAgents.length} Agency-Billed Agents)
                 </Button>
               </div>
             </CardContent>

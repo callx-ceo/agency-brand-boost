@@ -13,10 +13,10 @@ import { Plus, Gift, DollarSign, Users, Calendar, Settings, Target, Phone, MapPi
 import BulkBonusDialog from "./BulkBonusDialog";
 
 const verticals = [
-  { id: 'final_expense', name: 'Final Expense', color: 'bg-purple-100 text-purple-800' },
-  { id: 'auto_insurance', name: 'Auto Insurance', color: 'bg-blue-100 text-blue-800' },
-  { id: 'health_insurance', name: 'Health Insurance', color: 'bg-green-100 text-green-800' },
-  { id: 'medicare', name: 'Medicare', color: 'bg-orange-100 text-orange-800' }
+  { id: 'final_expense', name: 'Final Expense', color: 'bg-purple-100 text-purple-800', minBid: 2.00 },
+  { id: 'auto_insurance', name: 'Auto Insurance', color: 'bg-blue-100 text-blue-800', minBid: 1.50 },
+  { id: 'health_insurance', name: 'Health Insurance', color: 'bg-green-100 text-green-800', minBid: 2.50 },
+  { id: 'medicare', name: 'Medicare', color: 'bg-orange-100 text-orange-800', minBid: 2.00 }
 ];
 
 const states = [
@@ -176,8 +176,16 @@ const CallCreditsManagement = () => {
   const handleMaxBidChange = (verticalId: string, maxBid: string) => {
     if (!tempAgentSettings) return;
     
+    const vertical = verticals.find(v => v.id === verticalId);
+    const bidValue = parseFloat(maxBid) || 0;
+    
+    if (vertical && bidValue < vertical.minBid) {
+      toast.error(`Minimum bid for ${vertical.name} is $${vertical.minBid.toFixed(2)}`);
+      return;
+    }
+    
     const updatedSettings = { ...tempAgentSettings };
-    updatedSettings.verticals[verticalId].maxBid = parseFloat(maxBid) || 0;
+    updatedSettings.verticals[verticalId].maxBid = bidValue;
     setTempAgentSettings(updatedSettings);
     setHasUnsavedChanges(true);
   };
@@ -347,20 +355,25 @@ const CallCreditsManagement = () => {
                                             </Label>
                                           </div>
                                           <div className="flex items-center gap-2">
-                                            <Label htmlFor={`${agent.agentId}-${vertical.id}-bid`} className="text-sm">
+                                            <Label htmlFor={`${tempAgentSettings.agentId}-${vertical.id}-bid`} className="text-sm">
                                               Max Bid:
                                             </Label>
-                                            <div className="relative">
-                                              <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
-                                              <Input
-                                                id={`${tempAgentSettings.agentId}-${vertical.id}-bid`}
-                                                type="number"
-                                                step="0.01"
-                                                min="0"
-                                                value={config.maxBid}
-                                                onChange={(e) => handleMaxBidChange(vertical.id, e.target.value)}
-                                                className="w-24 pl-6 text-sm"
-                                              />
+                                            <div className="flex items-center gap-2">
+                                              <div className="relative">
+                                                <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+                                                <Input
+                                                  id={`${tempAgentSettings.agentId}-${vertical.id}-bid`}
+                                                  type="number"
+                                                  step="0.01"
+                                                  min={vertical.minBid}
+                                                  value={config.maxBid}
+                                                  onChange={(e) => handleMaxBidChange(vertical.id, e.target.value)}
+                                                  className="w-24 pl-6 text-sm"
+                                                />
+                                              </div>
+                                              <span className="text-xs text-gray-500">
+                                                (Min: ${vertical.minBid.toFixed(2)})
+                                              </span>
                                             </div>
                                           </div>
                                         </div>

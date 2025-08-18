@@ -94,6 +94,10 @@ const CallCreditsManagement = () => {
   const [editValue, setEditValue] = useState<string>("");
   const [verticalDialogOpen, setVerticalDialogOpen] = useState(false);
   const [selectedAgentForVertical, setSelectedAgentForVertical] = useState<string>("");
+  const [agentDialogOpen, setAgentDialogOpen] = useState(false);
+  const [selectedAgentForEdit, setSelectedAgentForEdit] = useState<string>("");
+  const [tempAgentSettings, setTempAgentSettings] = useState<any>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const currentBillingPeriod = "December 2024";
   const agencyBilledAgents = mockAgentBalances.filter(agent => agent.remainingBalance > 0);
@@ -130,6 +134,71 @@ const CallCreditsManagement = () => {
       setEditingField("");
       setEditValue("");
     }
+  };
+
+  const openAgentDialog = (agentId: string) => {
+    const agent = mockAgentBalances.find(a => a.agentId === agentId);
+    if (agent) {
+      setSelectedAgentForEdit(agentId);
+      setTempAgentSettings(JSON.parse(JSON.stringify(agent))); // Deep copy
+      setHasUnsavedChanges(false);
+      setAgentDialogOpen(true);
+    }
+  };
+
+  const handleStateToggle = (verticalId: string, state: string, checked: boolean) => {
+    if (!tempAgentSettings) return;
+    
+    const updatedSettings = { ...tempAgentSettings };
+    const currentStates = updatedSettings.verticals[verticalId].states;
+    
+    if (checked) {
+      if (!currentStates.includes(state)) {
+        updatedSettings.verticals[verticalId].states = [...currentStates, state];
+      }
+    } else {
+      updatedSettings.verticals[verticalId].states = currentStates.filter((s: string) => s !== state);
+    }
+    
+    setTempAgentSettings(updatedSettings);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleVerticalToggle = (verticalId: string, enabled: boolean) => {
+    if (!tempAgentSettings) return;
+    
+    const updatedSettings = { ...tempAgentSettings };
+    updatedSettings.verticals[verticalId].enabled = enabled;
+    setTempAgentSettings(updatedSettings);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleMaxBidChange = (verticalId: string, maxBid: string) => {
+    if (!tempAgentSettings) return;
+    
+    const updatedSettings = { ...tempAgentSettings };
+    updatedSettings.verticals[verticalId].maxBid = parseFloat(maxBid) || 0;
+    setTempAgentSettings(updatedSettings);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleCloseDialog = () => {
+    if (hasUnsavedChanges) {
+      toast.error("You have unsaved changes. Please save or they will be lost.");
+      return;
+    }
+    setAgentDialogOpen(false);
+    setSelectedAgentForEdit("");
+    setTempAgentSettings(null);
+  };
+
+  const handleSaveChanges = () => {
+    // Here you would save to your backend
+    toast.success(`Settings saved for ${tempAgentSettings?.agentName}`);
+    setHasUnsavedChanges(false);
+    setAgentDialogOpen(false);
+    setSelectedAgentForEdit("");
+    setTempAgentSettings(null);
   };
 
   return (
@@ -209,21 +278,26 @@ const CallCreditsManagement = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Dialog>
+                        <Dialog open={agentDialogOpen} onOpenChange={(open) => !open && handleCloseDialog()}>
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => openAgentDialog(agent.agentId)}
+                            >
                               <Edit className="h-4 w-4 mr-1" />
                               Edit Settings
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                             <DialogHeader>
-                              <DialogTitle>Edit Call Settings - {agent.agentName}</DialogTitle>
+                              <DialogTitle>Edit Call Settings - {tempAgentSettings?.agentName}</DialogTitle>
                               <DialogDescription>
                                 Configure agent's vertical settings, max bids, and licensed states
                               </DialogDescription>
                             </DialogHeader>
                             
+                            {tempAgentSettings && (
                             <div className="space-y-6">
                               {/* Daily Budget Section */}
                               <div className="border rounded-lg p-4">
@@ -240,6 +314,10 @@ const CallCreditsManagement = () => {
                                         min="0"
                                         defaultValue={agent.dailyBudget}
                                         className="pl-8"
+                                        onChange={(e) => {
+                                          setTempAgentSettings({...tempAgentSettings, dailyBudget: parseFloat(e.target.value) || 0});
+                                          setHasUnsavedChanges(true);
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -251,17 +329,18 @@ const CallCreditsManagement = () => {
                                 <h3 className="text-lg font-semibold mb-4">Vertical Settings</h3>
                                 <div className="space-y-6">
                                   {verticals.map(vertical => {
-                                    const config = agent.verticals[vertical.id as keyof typeof agent.verticals];
+                                    const config = tempAgentSettings.verticals[vertical.id as keyof typeof tempAgentSettings.verticals];
                                     return (
                                       <div key={vertical.id} className="border rounded-lg p-4">
                                         <div className="flex items-center justify-between mb-4">
                                           <div className="flex items-center gap-3">
                                             <Checkbox 
-                                              id={`${agent.agentId}-${vertical.id}`}
-                                              defaultChecked={config.enabled}
+                                              id={`${tempAgentSettings.agentId}-${vertical.id}`}
+                                              checked={config.enabled}
+                                              onCheckedChange={(checked) => handleVerticalToggle(vertical.id, checked as boolean)}
                                             />
                                             <Label 
-                                              htmlFor={`${agent.agentId}-${vertical.id}`}
+                                              htmlFor={`${tempAgentSettings.agentId}-${vertical.id}`}
                                               className={`px-3 py-1 rounded text-sm font-medium ${vertical.color}`}
                                             >
                                               {vertical.name}
@@ -274,11 +353,12 @@ const CallCreditsManagement = () => {
                                             <div className="relative">
                                               <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                                               <Input
-                                                id={`${agent.agentId}-${vertical.id}-bid`}
+                                                id={`${tempAgentSettings.agentId}-${vertical.id}-bid`}
                                                 type="number"
                                                 step="0.01"
                                                 min="0"
-                                                defaultValue={config.maxBid}
+                                                value={config.maxBid}
+                                                onChange={(e) => handleMaxBidChange(vertical.id, e.target.value)}
                                                 className="w-24 pl-6 text-sm"
                                               />
                                             </div>
@@ -310,7 +390,8 @@ const CallCreditsManagement = () => {
                                               {states.map(state => (
                                                 <label key={state} className="flex items-center space-x-3 text-sm hover:bg-white rounded p-2 cursor-pointer">
                                                   <Checkbox 
-                                                    defaultChecked={config.states.includes(state)}
+                                                    checked={config.states.includes(state)}
+                                                    onCheckedChange={(checked) => handleStateToggle(vertical.id, state, checked as boolean)}
                                                     className="h-4 w-4"
                                                   />
                                                   <span className="text-sm font-medium">{state}</span>
@@ -326,10 +407,11 @@ const CallCreditsManagement = () => {
                               </div>
                               
                               <div className="flex justify-end gap-2 pt-4">
-                                <Button variant="outline">Cancel</Button>
-                                <Button>Save Changes</Button>
+                                <Button variant="outline" onClick={handleCloseDialog}>Cancel</Button>
+                                <Button onClick={handleSaveChanges}>Save Changes</Button>
                               </div>
                             </div>
+                            )}
                           </DialogContent>
                         </Dialog>
                       </TableCell>

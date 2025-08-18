@@ -287,18 +287,18 @@ const CallCreditsManagement = () => {
                                         
                                         {/* States Selection */}
                                         <div>
-                                          <Label className="text-sm font-medium mb-2 block">
+                                          <Label className="text-sm font-medium mb-3 block">
                                             Licensed States ({config.states.length} selected)
                                           </Label>
-                                          <div className="max-h-32 overflow-y-auto border rounded p-3 bg-gray-50">
-                                            <div className="grid grid-cols-3 gap-2">
+                                          <div className="max-h-40 overflow-y-auto border rounded p-4 bg-gray-50">
+                                            <div className="grid grid-cols-2 gap-3">
                                               {states.map(state => (
-                                                <label key={state} className="flex items-center space-x-2 text-sm">
+                                                <label key={state} className="flex items-center space-x-3 text-sm hover:bg-white rounded p-2 cursor-pointer">
                                                   <Checkbox 
                                                     defaultChecked={config.states.includes(state)}
-                                                    className="h-3 w-3"
+                                                    className="h-4 w-4"
                                                   />
-                                                  <span className="text-xs">{state}</span>
+                                                  <span className="text-sm font-medium">{state}</span>
                                                 </label>
                                               ))}
                                             </div>

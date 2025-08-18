@@ -123,8 +123,7 @@ const CallCreditsManagement = () => {
     const agent = mockAgentBalances.find(a => a.agentId === agentId);
     if (agent) {
       const fieldLabels = {
-        dailyBudget: "daily budget",
-        maxCallsPerDay: "max calls per day"
+        dailyBudget: "daily budget"
       };
       toast.success(`Updated ${fieldLabels[field as keyof typeof fieldLabels]} to ${editValue} for ${agent.agentName}`);
       setEditingAgent("");
@@ -170,7 +169,6 @@ const CallCreditsManagement = () => {
                   <TableRow>
                     <TableHead>Agent Name</TableHead>
                     <TableHead>Daily Budget</TableHead>
-                    <TableHead>Max Calls/Day</TableHead>
                     <TableHead>Remaining Balance</TableHead>
                     <TableHead>Active Verticals</TableHead>
                     <TableHead>Actions</TableHead>
@@ -187,9 +185,6 @@ const CallCreditsManagement = () => {
                       </TableCell>
                       <TableCell>
                         <span className="font-medium">${agent.dailyBudget.toFixed(2)}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium">{agent.maxCallsPerDay} calls</span>
                       </TableCell>
                       <TableCell>
                         <span className={`font-medium ${
@@ -230,10 +225,10 @@ const CallCreditsManagement = () => {
                             </DialogHeader>
                             
                             <div className="space-y-6">
-                              {/* Daily Limits Section */}
+                              {/* Daily Budget Section */}
                               <div className="border rounded-lg p-4">
-                                <h3 className="text-lg font-semibold mb-4">Daily Limits</h3>
-                                <div className="grid grid-cols-2 gap-4">
+                                <h3 className="text-lg font-semibold mb-4">Daily Budget</h3>
+                                <div className="grid grid-cols-1 gap-4">
                                   <div>
                                     <Label htmlFor="dailyBudget">Daily Budget</Label>
                                     <div className="relative">
@@ -247,15 +242,6 @@ const CallCreditsManagement = () => {
                                         className="pl-8"
                                       />
                                     </div>
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="maxCalls">Max Calls Per Day</Label>
-                                    <Input
-                                      id="maxCalls"
-                                      type="number"
-                                      min="1"
-                                      defaultValue={agent.maxCallsPerDay}
-                                    />
                                   </div>
                                 </div>
                               </div>
@@ -345,10 +331,10 @@ const CallCreditsManagement = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Phone className="h-5 w-5" />
-                Daily Limits Configuration
+                Daily Budget Configuration
               </CardTitle>
               <CardDescription>
-                Set daily budget and call volume limits for each agent
+                Set daily budget limits for each agent
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -369,7 +355,6 @@ const CallCreditsManagement = () => {
                   <TableRow>
                     <TableHead>Agent Name</TableHead>
                     <TableHead>Daily Budget</TableHead>
-                    <TableHead>Max Calls/Day</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -398,20 +383,6 @@ const CallCreditsManagement = () => {
                           </div>
                         ) : (
                           <span className="font-medium">${agent.dailyBudget.toFixed(2)}</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editingAgent === agent.agentId && editingField === "maxCallsPerDay" ? (
-                          <Input
-                            type="number"
-                            min="1"
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="w-24"
-                            autoFocus
-                          />
-                        ) : (
-                          <span className="font-medium">{agent.maxCallsPerDay} calls</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -447,17 +418,6 @@ const CallCreditsManagement = () => {
                               }}
                             >
                               Edit Budget
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => {
-                                setEditingAgent(agent.agentId);
-                                setEditingField("maxCallsPerDay");
-                                setEditValue(agent.maxCallsPerDay.toString());
-                              }}
-                            >
-                              Edit Calls
                             </Button>
                           </div>
                         )}

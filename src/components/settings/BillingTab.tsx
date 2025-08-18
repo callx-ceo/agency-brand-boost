@@ -27,7 +27,7 @@ const BillingTab = ({ onWhiteLabelChange }: BillingTabProps) => {
         <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
         <TabsTrigger value="transactions">Transactions</TabsTrigger>
         <TabsTrigger value="agent-billing">Agent Billing</TabsTrigger>
-        <TabsTrigger value="call-credits">Call Balance</TabsTrigger>
+        <TabsTrigger value="call-credits">Call Management</TabsTrigger>
         <TabsTrigger value="rate-config">Rate Config</TabsTrigger>
         <TabsTrigger value="settings">Service Settings</TabsTrigger>
       </TabsList>

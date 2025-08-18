@@ -245,7 +245,7 @@ const CallCreditsManagement = () => {
       {/* Balance Overview Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Agent Call Balance Overview</CardTitle>
+          <CardTitle>Agent Call Management Overview</CardTitle>
           <CardDescription className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             Usage tracked for billing period: {currentBillingPeriod}

@@ -290,6 +290,21 @@ const CallCreditsManagement = () => {
                                           <Label className="text-sm font-medium mb-3 block">
                                             Licensed States ({config.states.length} selected)
                                           </Label>
+                                          
+                                          {/* Display Selected States */}
+                                          {config.states.length > 0 && (
+                                            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                                              <div className="text-xs text-blue-600 font-medium mb-2">Selected States:</div>
+                                              <div className="flex flex-wrap gap-2">
+                                                {config.states.map(state => (
+                                                  <span key={state} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                                                    {state}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+                                          
                                           <div className="max-h-40 overflow-y-auto border rounded p-4 bg-gray-50">
                                             <div className="grid grid-cols-2 gap-3">
                                               {states.map(state => (

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Plus, Gift, DollarSign, Users, Calendar } from "lucide-react";
+import { Plus, Gift, DollarSign, Users, Calendar, Settings } from "lucide-react";
 import BulkBonusDialog from "./BulkBonusDialog";
 
 // Mock data for call balance in USD
@@ -18,7 +18,8 @@ const mockAgentBalances = [
     baseBalance: 100.00,
     bonusBalance: 25.00,
     usedAmount: 67.50, // Used since last billing cycle (monthly)
-    remainingBalance: 57.50
+    remainingBalance: 57.50,
+    maxBidPerCall: 2.50
   },
   {
     agentId: "agent_user_456",
@@ -27,7 +28,8 @@ const mockAgentBalances = [
     baseBalance: 50.00,
     bonusBalance: 0.00,
     usedAmount: 32.75,
-    remainingBalance: 17.25
+    remainingBalance: 17.25,
+    maxBidPerCall: 1.75
   },
   {
     agentId: "agent_user_789",
@@ -36,7 +38,8 @@ const mockAgentBalances = [
     baseBalance: 200.00,
     bonusBalance: 50.00,
     usedAmount: 145.25,
-    remainingBalance: 104.75
+    remainingBalance: 104.75,
+    maxBidPerCall: 3.00
   }
 ];
 
@@ -44,6 +47,8 @@ const CallCreditsManagement = () => {
   const [selectedAgent, setSelectedAgent] = useState<string>("");
   const [bonusAmount, setBonusAmount] = useState<string>("");
   const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+  const [editingBidAgent, setEditingBidAgent] = useState<string>("");
+  const [newMaxBid, setNewMaxBid] = useState<string>("");
 
   const currentBillingPeriod = "December 2024"; // This would come from your billing system
 
@@ -56,6 +61,20 @@ const CallCreditsManagement = () => {
     toast.success(`Allocated $${bonusAmount} bonus to ${mockAgentBalances.find(a => a.agentId === selectedAgent)?.agentName}`);
     setBonusAmount("");
     setSelectedAgent("");
+  };
+
+  const handleUpdateMaxBid = (agentId: string) => {
+    if (!newMaxBid || parseFloat(newMaxBid) <= 0) {
+      toast.error("Please enter a valid max bid amount");
+      return;
+    }
+
+    const agent = mockAgentBalances.find(a => a.agentId === agentId);
+    if (agent) {
+      toast.success(`Updated max bid per call to $${newMaxBid} for ${agent.agentName}`);
+      setEditingBidAgent("");
+      setNewMaxBid("");
+    }
   };
 
   const agencyBilledAgents = mockAgentBalances.filter(agent => agent.remainingBalance > 0);
@@ -128,6 +147,101 @@ const CallCreditsManagement = () => {
         </CardContent>
       </Card>
 
+      {/* Max Bid Management */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Max Bid Per Call Settings
+          </CardTitle>
+          <CardDescription>
+            Set maximum bid amounts per call for each agent to control spending limits
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800">
+              <strong>Max Bid Per Call:</strong> This controls the maximum amount an agent can bid on each call. 
+              Setting appropriate limits helps manage costs and prevent overspending.
+            </p>
+          </div>
+          
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Agent Name</TableHead>
+                <TableHead>Current Max Bid</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {mockAgentBalances.map((agent) => (
+                <TableRow key={agent.agentId}>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium">{agent.agentName}</div>
+                      <div className="text-sm text-gray-500">{agent.agentEmail}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {editingBidAgent === agent.agentId ? (
+                      <div className="flex items-center gap-2">
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            value={newMaxBid}
+                            onChange={(e) => setNewMaxBid(e.target.value)}
+                            placeholder={agent.maxBidPerCall.toFixed(2)}
+                            className="w-32 pl-8"
+                          />
+                        </div>
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleUpdateMaxBid(agent.agentId)}
+                        >
+                          Save
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setEditingBidAgent("");
+                            setNewMaxBid("");
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <span className="font-medium text-green-600">
+                        ${agent.maxBidPerCall.toFixed(2)}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {editingBidAgent !== agent.agentId && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          setEditingBidAgent(agent.agentId);
+                          setNewMaxBid(agent.maxBidPerCall.toString());
+                        }}
+                      >
+                        Edit Max Bid
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
       {/* Balance Overview Table */}
       <Card>
         <CardHeader>
@@ -153,6 +267,7 @@ const CallCreditsManagement = () => {
                 <TableHead>Bonus Balance</TableHead>
                 <TableHead>Used This Period</TableHead>
                 <TableHead>Remaining</TableHead>
+                <TableHead>Max Bid/Call</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -188,6 +303,11 @@ const CallCreditsManagement = () => {
                       agent.remainingBalance < 50 ? 'text-yellow-600' : 'text-green-600'
                     }`}>
                       ${agent.remainingBalance.toFixed(2)}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-medium text-blue-600">
+                      ${agent.maxBidPerCall.toFixed(2)}
                     </span>
                   </TableCell>
                   <TableCell>

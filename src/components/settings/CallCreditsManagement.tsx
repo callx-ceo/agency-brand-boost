@@ -174,6 +174,7 @@ const CallCreditsManagement = () => {
                     <TableHead>Remaining Balance</TableHead>
                     <TableHead>Active Verticals</TableHead>
                     <TableHead>Total States</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -215,6 +216,125 @@ const CallCreditsManagement = () => {
                       </TableCell>
                       <TableCell>
                         {Object.values(agent.verticals).reduce((total, config) => total + config.states.length, 0)} states
+                      </TableCell>
+                      <TableCell>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4 mr-1" />
+                              Edit Settings
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Edit Call Settings - {agent.agentName}</DialogTitle>
+                              <DialogDescription>
+                                Configure agent's vertical settings, max bids, and licensed states
+                              </DialogDescription>
+                            </DialogHeader>
+                            
+                            <div className="space-y-6">
+                              {/* Daily Limits Section */}
+                              <div className="border rounded-lg p-4">
+                                <h3 className="text-lg font-semibold mb-4">Daily Limits</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label htmlFor="dailyBudget">Daily Budget</Label>
+                                    <div className="relative">
+                                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                      <Input
+                                        id="dailyBudget"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        defaultValue={agent.dailyBudget}
+                                        className="pl-8"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="maxCalls">Max Calls Per Day</Label>
+                                    <Input
+                                      id="maxCalls"
+                                      type="number"
+                                      min="1"
+                                      defaultValue={agent.maxCallsPerDay}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Verticals Configuration */}
+                              <div className="border rounded-lg p-4">
+                                <h3 className="text-lg font-semibold mb-4">Vertical Settings</h3>
+                                <div className="space-y-6">
+                                  {verticals.map(vertical => {
+                                    const config = agent.verticals[vertical.id as keyof typeof agent.verticals];
+                                    return (
+                                      <div key={vertical.id} className="border rounded-lg p-4">
+                                        <div className="flex items-center justify-between mb-4">
+                                          <div className="flex items-center gap-3">
+                                            <Checkbox 
+                                              id={`${agent.agentId}-${vertical.id}`}
+                                              defaultChecked={config.enabled}
+                                            />
+                                            <Label 
+                                              htmlFor={`${agent.agentId}-${vertical.id}`}
+                                              className={`px-3 py-1 rounded text-sm font-medium ${vertical.color}`}
+                                            >
+                                              {vertical.name}
+                                            </Label>
+                                          </div>
+                                          <div className="flex items-center gap-2">
+                                            <Label htmlFor={`${agent.agentId}-${vertical.id}-bid`} className="text-sm">
+                                              Max Bid:
+                                            </Label>
+                                            <div className="relative">
+                                              <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+                                              <Input
+                                                id={`${agent.agentId}-${vertical.id}-bid`}
+                                                type="number"
+                                                step="0.01"
+                                                min="0"
+                                                defaultValue={config.maxBid}
+                                                className="w-24 pl-6 text-sm"
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                        
+                                        {/* States Selection */}
+                                        <div>
+                                          <Label className="text-sm font-medium mb-2 block">
+                                            Licensed States ({config.states.length} selected)
+                                          </Label>
+                                          <div className="max-h-32 overflow-y-auto border rounded p-3 bg-gray-50">
+                                            <div className="grid grid-cols-3 gap-2">
+                                              {states.map(state => (
+                                                <label key={state} className="flex items-center space-x-2 text-sm">
+                                                  <Checkbox 
+                                                    defaultChecked={config.states.includes(state)}
+                                                    className="h-3 w-3"
+                                                  />
+                                                  <span className="text-xs">{state}</span>
+                                                </label>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                              
+                              <div className="flex justify-end gap-2 pt-4">
+                                <Button variant="outline">Cancel</Button>
+                                <Button>Save Changes</Button>
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </TableCell>
                     </TableRow>
                   ))}

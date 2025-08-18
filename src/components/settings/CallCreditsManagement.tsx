@@ -173,7 +173,6 @@ const CallCreditsManagement = () => {
                     <TableHead>Max Calls/Day</TableHead>
                     <TableHead>Remaining Balance</TableHead>
                     <TableHead>Active Verticals</TableHead>
-                    <TableHead>Total States</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -213,9 +212,6 @@ const CallCreditsManagement = () => {
                               ) : null;
                             })}
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        {Object.values(agent.verticals).reduce((total, config) => total + config.states.length, 0)} states
                       </TableCell>
                       <TableCell>
                         <Dialog>

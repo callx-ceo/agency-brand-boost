@@ -28,6 +28,7 @@ import CostApiManagement from "../management/CostApiManagement";
 import PromptManagement from "../entities/PromptManagement";
 import CustomerManagement from "../entities/CustomerManagement";
 import MinimumBidManagement from "../entities/MinimumBidManagement";
+import CallSettingsManagement from "../entities/CallSettingsManagement";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -173,6 +174,9 @@ const SuperAdminViewRenderer = ({
     
     case 'minimum-bid-management':
       return <MinimumBidManagement onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'call-settings-management':
+      return <CallSettingsManagement onBackToDashboard={handleBackToDashboard} />;
     
     default:
       return (

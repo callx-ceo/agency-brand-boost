@@ -39,4 +39,5 @@ export type SuperAdminViewType =
   | 'goals-management'
   | 'cost-api-management'
   | 'prompt-management'
-  | 'minimum-bid-management';
+  | 'minimum-bid-management'
+  | 'call-settings-management';

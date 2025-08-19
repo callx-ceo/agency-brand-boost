@@ -59,7 +59,9 @@ const mockAgentBalances = [
       final_expense: { enabled: true, maxBid: 2.50, states: ['California', 'Texas', 'Florida'] },
       auto_insurance: { enabled: true, maxBid: 1.75, states: ['California', 'Nevada'] },
       health_insurance: { enabled: false, maxBid: 3.00, states: [] },
-      medicare: { enabled: true, maxBid: 2.25, states: ['California', 'Texas'] }
+      medicare: { enabled: true, maxBid: 2.25, states: ['California', 'Texas'] },
+      life_insurance: { enabled: false, maxBid: 1.75, states: [] },
+      home_insurance: { enabled: false, maxBid: 1.25, states: [] }
     }
   },
   {
@@ -76,7 +78,9 @@ const mockAgentBalances = [
       final_expense: { enabled: true, maxBid: 2.00, states: ['Texas', 'Arizona'] },
       auto_insurance: { enabled: false, maxBid: 1.50, states: [] },
       health_insurance: { enabled: true, maxBid: 2.75, states: ['Texas'] },
-      medicare: { enabled: false, maxBid: 2.00, states: [] }
+      medicare: { enabled: false, maxBid: 2.00, states: [] },
+      life_insurance: { enabled: false, maxBid: 1.75, states: [] },
+      home_insurance: { enabled: false, maxBid: 1.25, states: [] }
     }
   },
   {
@@ -93,7 +97,9 @@ const mockAgentBalances = [
       final_expense: { enabled: true, maxBid: 3.00, states: ['California', 'Texas', 'Florida', 'Nevada'] },
       auto_insurance: { enabled: true, maxBid: 2.25, states: ['California', 'Texas'] },
       health_insurance: { enabled: true, maxBid: 3.50, states: ['California', 'Texas', 'Arizona'] },
-      medicare: { enabled: true, maxBid: 2.75, states: ['California', 'Texas', 'Florida'] }
+      medicare: { enabled: true, maxBid: 2.75, states: ['California', 'Texas', 'Florida'] },
+      life_insurance: { enabled: true, maxBid: 1.85, states: ['California', 'Texas'] },
+      home_insurance: { enabled: false, maxBid: 1.25, states: [] }
     }
   }
 ];

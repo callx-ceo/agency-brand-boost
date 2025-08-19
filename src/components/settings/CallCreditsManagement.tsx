@@ -13,11 +13,25 @@ import { Plus, Gift, DollarSign, Users, Calendar, Settings, Target, Phone, MapPi
 import BulkBonusDialog from "./BulkBonusDialog";
 
 const verticals = [
-  { id: 'final_expense', name: 'Final Expense', color: 'bg-purple-100 text-purple-800', minBid: 2.00 },
-  { id: 'auto_insurance', name: 'Auto Insurance', color: 'bg-blue-100 text-blue-800', minBid: 1.50 },
-  { id: 'health_insurance', name: 'Health Insurance', color: 'bg-green-100 text-green-800', minBid: 2.50 },
-  { id: 'medicare', name: 'Medicare', color: 'bg-orange-100 text-orange-800', minBid: 2.00 }
+  { id: 'final_expense', name: 'Final Expense', color: 'bg-purple-100 text-purple-800' },
+  { id: 'auto_insurance', name: 'Auto Insurance', color: 'bg-blue-100 text-blue-800' },
+  { id: 'health_insurance', name: 'Health Insurance', color: 'bg-green-100 text-green-800' },
+  { id: 'medicare', name: 'Medicare', color: 'bg-orange-100 text-orange-800' },
+  { id: 'life_insurance', name: 'Life Insurance', color: 'bg-red-100 text-red-800' },
+  { id: 'home_insurance', name: 'Home Insurance', color: 'bg-teal-100 text-teal-800' }
 ];
+
+// Mock function to get minimum bids - in real app this would be an API call
+const getMinimumBids = () => {
+  return {
+    'final_expense': 2.00,
+    'auto_insurance': 1.50,
+    'health_insurance': 2.50,
+    'medicare': 2.00,
+    'life_insurance': 1.75,
+    'home_insurance': 1.25
+  };
+};
 
 const states = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware',
@@ -98,6 +112,7 @@ const CallCreditsManagement = () => {
   const [selectedAgentForEdit, setSelectedAgentForEdit] = useState<string>("");
   const [tempAgentSettings, setTempAgentSettings] = useState<any>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [minimumBids] = useState(getMinimumBids());
 
   const currentBillingPeriod = "December 2024";
   const agencyBilledAgents = mockAgentBalances.filter(agent => agent.remainingBalance > 0);
@@ -176,11 +191,12 @@ const CallCreditsManagement = () => {
   const handleMaxBidChange = (verticalId: string, maxBid: string) => {
     if (!tempAgentSettings) return;
     
-    const vertical = verticals.find(v => v.id === verticalId);
+    const minBid = minimumBids[verticalId as keyof typeof minimumBids] || 0;
     const bidValue = parseFloat(maxBid) || 0;
     
-    if (vertical && bidValue < vertical.minBid) {
-      toast.error(`Minimum bid for ${vertical.name} is $${vertical.minBid.toFixed(2)}`);
+    if (bidValue < minBid) {
+      const vertical = verticals.find(v => v.id === verticalId);
+      toast.error(`Minimum bid for ${vertical?.name || verticalId} is $${minBid.toFixed(2)}`);
       return;
     }
     
@@ -365,14 +381,14 @@ const CallCreditsManagement = () => {
                                                   id={`${tempAgentSettings.agentId}-${vertical.id}-bid`}
                                                   type="number"
                                                   step="0.01"
-                                                  min={vertical.minBid}
+                                                  min={minimumBids[vertical.id as keyof typeof minimumBids] || 0}
                                                   value={config.maxBid}
                                                   onChange={(e) => handleMaxBidChange(vertical.id, e.target.value)}
                                                   className="w-24 pl-6 text-sm"
                                                 />
                                               </div>
                                               <span className="text-xs text-gray-500">
-                                                (Min: ${vertical.minBid.toFixed(2)})
+                                                (Min: ${(minimumBids[vertical.id as keyof typeof minimumBids] || 0).toFixed(2)})
                                               </span>
                                             </div>
                                           </div>

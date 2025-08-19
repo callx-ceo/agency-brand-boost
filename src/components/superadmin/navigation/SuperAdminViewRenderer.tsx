@@ -27,6 +27,7 @@ import RealtimeReport from "../../dashboard/RealtimeReport";
 import CostApiManagement from "../management/CostApiManagement";
 import PromptManagement from "../entities/PromptManagement";
 import CustomerManagement from "../entities/CustomerManagement";
+import MinimumBidManagement from "../entities/MinimumBidManagement";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -169,6 +170,9 @@ const SuperAdminViewRenderer = ({
     
     case 'prompt-management':
       return <PromptManagement onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'minimum-bid-management':
+      return <MinimumBidManagement onBackToDashboard={handleBackToDashboard} />;
     
     default:
       return (

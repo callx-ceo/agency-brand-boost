@@ -147,6 +147,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       icon: <DollarSign className="w-5 h-5" />,
       badge: mockAlerts.apiFailures > 0 ? mockAlerts.apiFailures : undefined
     },
+    { id: "minimum-bid-management", label: "Minimum Bid Management", icon: <DollarSign className="w-5 h-5" /> },
     { id: "settings", label: "Platform Settings", icon: <Settings className="w-5 h-5" /> },
   ];
 

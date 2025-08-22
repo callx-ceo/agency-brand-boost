@@ -15,7 +15,8 @@ import {
   Contact,
   History,
   UserCheck,
-  Briefcase
+  Briefcase,
+  Headphones
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -29,6 +30,12 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       category: "Dashboard", 
       items: [
         { id: "dashboard", label: "Dashboard", icon: Home },
+      ]
+    },
+    { 
+      category: "Agent Operations", 
+      items: [
+        { id: "go-live", label: "Go Live", icon: Headphones },
       ]
     },
     { 

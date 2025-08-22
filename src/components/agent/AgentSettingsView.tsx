@@ -7,8 +7,9 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Bell, Phone, Headphones, Save, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Bell, Phone, Headphones, Save, Lock, Eye, EyeOff, ArrowRightLeft } from "lucide-react";
 import { toast } from "sonner";
+import { AgentTransferRequestModal } from "./AgentTransferRequestModal";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -49,6 +50,8 @@ const AgentSettingsView = () => {
     voicemailEnabled: true
   });
 
+  const [showTransferModal, setShowTransferModal] = useState(false);
+
   const handleSaveProfile = () => {
     toast.success("Profile updated successfully");
   };
@@ -81,11 +84,12 @@ const AgentSettingsView = () => {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="profile">Profile Data</TabsTrigger>
           <TabsTrigger value="target">Target States</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="transfer">Transfer</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
@@ -345,7 +349,76 @@ const AgentSettingsView = () => {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="transfer" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ArrowRightLeft className="w-5 h-5" />
+                Agency Transfer
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <h3 className="font-semibold text-amber-800 mb-2">Current Agency Status</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-amber-700">Agency:</span>
+                    <span className="font-medium text-amber-900">Premium Insurance Partners</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-amber-700">Role:</span>
+                    <span className="font-medium text-amber-900">Agent</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-amber-700">Status:</span>
+                    <span className="font-medium text-amber-900">Active</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-amber-700">Member Since:</span>
+                    <span className="font-medium text-amber-900">March 15, 2024</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold mb-2">Request Agency Transfer</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    If you'd like to join a different agency, you can submit a transfer request. 
+                    Both your current agency and the destination agency must approve the transfer.
+                  </p>
+                </div>
+
+                <Button 
+                  onClick={() => setShowTransferModal(true)}
+                  className="flex items-center gap-2"
+                  variant="outline"
+                >
+                  <ArrowRightLeft className="w-4 h-4" />
+                  Request Transfer
+                </Button>
+              </div>
+
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-semibold text-blue-800 mb-2">Transfer Process</h4>
+                <ol className="text-sm text-blue-700 space-y-1">
+                  <li>1. Submit your transfer request with reason</li>
+                  <li>2. Your current agency owner will be notified</li>
+                  <li>3. The destination agency reviews and approves/rejects</li>
+                  <li>4. If approved, transfer is completed automatically</li>
+                  <li>5. You'll receive email updates throughout the process</li>
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
+
+      <AgentTransferRequestModal
+        open={showTransferModal}
+        onOpenChange={setShowTransferModal}
+      />
     </div>
   );
 };

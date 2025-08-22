@@ -11,6 +11,7 @@ import AgentCallStats from "./AgentCallStats";
 import CustomerContacts from "./CustomerContacts";
 import HangUpConfirmDialog from "./HangUpConfirmDialog";
 import ClientInfoModal from "./ClientInfoModal";
+import { AIRebuttalPanel } from "./AIRebuttalPanel";
 import { useToast } from "@/hooks/use-toast";
 
 const AgentDashboard = () => {
@@ -43,6 +44,7 @@ const AgentDashboard = () => {
   const sidebarItems = [
     { id: "script", icon: <div className="w-2 h-2 bg-white rounded-full"></div>, active: activeView === "script" },
     { id: "contacts", icon: <Users className="w-4 h-4 text-white" />, active: activeView === "contacts" },
+    { id: "ai-assistant", icon: <div className="w-4 h-4 bg-white rounded text-xs flex items-center justify-center font-bold">AI</div>, active: activeView === "ai-assistant" },
     { id: "clock", icon: <Clock className="w-4 h-4 text-white" />, active: false },
     { id: "phone", icon: <Phone className="w-4 h-4 text-white" />, active: false }
   ];
@@ -258,6 +260,11 @@ const AgentDashboard = () => {
           /* Customer Contacts View */
           <div className="flex-1">
             <CustomerContacts />
+          </div>
+        ) : activeView === "ai-assistant" ? (
+          /* AI Assistant View */
+          <div className="flex-1 p-6 bg-white">
+            <AIRebuttalPanel />
           </div>
         ) : (
           /* Placeholder for other views */

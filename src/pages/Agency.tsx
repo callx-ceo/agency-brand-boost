@@ -8,6 +8,7 @@ import ContactsReports from "../components/dashboard/ContactsReports";
 import CallHistoryReport from "../components/dashboard/CallHistoryReport";
 import ApplicationsReport from "../components/dashboard/ApplicationsReport";
 import AgencyOffersManagement from "../components/agency/AgencyOffersManagement";
+import { AgencySettings } from "../components/settings/AgencySettings";
 import { Toaster } from "sonner";
 
 const Agency = () => {
@@ -73,6 +74,8 @@ const Agency = () => {
             <ContactsReports />
           </div>
         );
+      case "team":
+        return <AgencySettings onBackToDashboard={() => setActiveSection("dashboard")} />;
       default:
         return (
           <>

@@ -11,6 +11,7 @@ import AgentCallStats from "./AgentCallStats";
 import CustomerContacts from "./CustomerContacts";
 import HangUpConfirmDialog from "./HangUpConfirmDialog";
 import ClientInfoModal from "./ClientInfoModal";
+import { useToast } from "@/hooks/use-toast";
 
 const AgentDashboard = () => {
   const [isOnCall, setIsOnCall] = useState(true);
@@ -21,6 +22,7 @@ const AgentDashboard = () => {
   const [activeView, setActiveView] = useState("script");
   const [showHangUpDialog, setShowHangUpDialog] = useState(false);
   const [showClientInfoModal, setShowClientInfoModal] = useState(false);
+  const { toast } = useToast();
 
   // Mock call data
   const currentCall = {
@@ -186,7 +188,17 @@ const AgentDashboard = () => {
                     size="lg"
                     variant={isMuted ? "destructive" : "outline"}
                     className="w-12 h-12 rounded-full"
-                    onClick={() => setIsMuted(!isMuted)}
+                    onClick={() => {
+                      const newMutedState = !isMuted;
+                      setIsMuted(newMutedState);
+                      toast({
+                        title: newMutedState ? "Call Muted" : "Call Unmuted",
+                        description: newMutedState 
+                          ? "Your microphone is now muted" 
+                          : "Your microphone is now active",
+                        duration: 2000,
+                      });
+                    }}
                   >
                     {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                   </Button>

@@ -282,7 +282,7 @@ Next Steps:
                       size="lg" 
                       variant="outline" 
                       onClick={() => toggleExpanded(action.id)}
-                      className="rounded-2xl border-border hover:border-primary/20 px-6 py-3 text-base font-medium"
+                      className="rounded-2xl border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/5 px-6 py-3 text-base font-semibold text-primary"
                     >
                       {isExpanded ? <ChevronUp className="w-5 h-5 mr-2" /> : <ChevronDown className="w-5 h-5 mr-2" />}
                       {isExpanded ? 'Collapse' : 'Expand'}
@@ -291,7 +291,7 @@ Next Steps:
                     <Button 
                       size="lg" 
                       onClick={() => handleAccept(action)}
-                      className="bg-gradient-success border-0 rounded-2xl text-white hover:opacity-90 px-8 py-3 text-base font-semibold shadow-apple-md"
+                      className="bg-green-600 hover:bg-green-700 border-0 rounded-2xl text-white hover:opacity-95 px-8 py-3 text-base font-bold shadow-apple-md transition-all duration-200"
                     >
                       <Check className="w-5 h-5 mr-2" />
                       Accept
@@ -301,7 +301,7 @@ Next Steps:
                       size="lg" 
                       variant="outline" 
                       onClick={() => handleDismiss(action.id)}
-                      className="rounded-2xl border-border hover:border-destructive/20 hover:text-destructive px-4 py-3"
+                      className="rounded-2xl border-2 border-red-300 hover:border-red-400 hover:bg-red-50 text-red-600 hover:text-red-700 px-4 py-3 font-semibold"
                     >
                       <X className="w-5 h-5" />
                     </Button>
@@ -319,7 +319,7 @@ Next Steps:
                         size="lg" 
                         variant="outline" 
                         onClick={() => handleEdit(action.id)}
-                        className="rounded-2xl border-border hover:border-primary/20 px-6 py-3 text-base font-medium"
+                        className="rounded-2xl border-2 border-blue-300 hover:border-blue-400 hover:bg-blue-50 text-blue-600 hover:text-blue-700 px-6 py-3 text-base font-semibold"
                       >
                         <Edit3 className="w-5 h-5 mr-2" />
                         Edit
@@ -339,10 +339,10 @@ Next Steps:
                         className="font-mono text-base resize-none border-border focus:border-primary/20 rounded-2xl p-4"
                       />
                       <div className="flex gap-3">
-                        <Button
+                        <Button 
                           size="lg" 
                           onClick={() => handleSaveEdit(action.id)}
-                          className="bg-gradient-primary border-0 rounded-2xl text-white px-6 py-3 text-base font-semibold"
+                          className="bg-blue-600 hover:bg-blue-700 border-0 rounded-2xl text-white px-6 py-3 text-base font-bold"
                         >
                           <Save className="w-5 h-5 mr-2" />
                           Save Changes
@@ -351,7 +351,7 @@ Next Steps:
                           size="lg" 
                           variant="outline" 
                           onClick={() => handleCancelEdit(action.id)}
-                          className="rounded-2xl border-border px-6 py-3 text-base font-medium"
+                          className="rounded-2xl border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600 hover:text-gray-700 px-6 py-3 text-base font-semibold"
                         >
                           <Undo2 className="w-5 h-5 mr-2" />
                           Cancel

@@ -88,42 +88,6 @@ const AgentHistoryView = () => {
         <h1 className="text-2xl font-bold">Call History</h1>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{callHistory.length}</div>
-            <div className="text-sm text-gray-500">Total Calls</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {callHistory.filter(call => call.disposition === "interested" || call.disposition === "application-completed").length}
-            </div>
-            <div className="text-sm text-gray-500">Positive Outcomes</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">
-              {callHistory.filter(call => call.disposition === "application-completed").length}
-            </div>
-            <div className="text-sm text-gray-500">Applications</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-orange-600">
-              {Math.round(callHistory.reduce((total, call) => {
-                const [minutes, seconds] = call.duration.split(':').map(Number);
-                return total + minutes + seconds / 60;
-              }, 0) / callHistory.length)}m
-            </div>
-            <div className="text-sm text-gray-500">Avg Call Time</div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Call History Table */}
       <Card>

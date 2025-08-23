@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RecommendedActions from "./RecommendedActions";
+import InboxPanel from "./InboxPanel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,7 @@ const AgentDashboardNew = () => {
 
   const navigationItems = [
     { id: "home", icon: Home, label: "Home", active: true },
+    { id: "inbox", icon: Users, label: "Inbox", active: false },
     { id: "history", icon: History, label: "History", active: false },
     { id: "contacts", icon: Users, label: "Contacts", active: false },
     { id: "applications", icon: FileText, label: "Applications", active: false },
@@ -224,6 +226,7 @@ const AgentDashboardNew = () => {
             </div>
           )}
 
+          {activeNav === "inbox" && <InboxPanel />}
           {activeNav === "contacts" && <AgentContactsView />}
           {activeNav === "applications" && <AgentApplicationsView />}
           {activeNav === "history" && <AgentHistoryView />}

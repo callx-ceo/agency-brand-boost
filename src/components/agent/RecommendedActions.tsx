@@ -55,7 +55,9 @@ This policy would provide excellent protection for your family while fitting com
 Would you like to schedule a brief 10-minute call this week to review the details and answer any questions you might have?
 
 Best regards,
-Alex`,
+Alex
+
+P.S. I've also attached a comparison chart showing how this policy stacks up against competitors - you'll see we're offering exceptional value.`,
       estimatedTime: '2 min',
       impact: 'High conversion probability'
     },
@@ -67,20 +69,30 @@ Alex`,
       description: 'Hot lead requested callback for policy review',
       fullContext: `Calendar Invitation Details:
 
-Meeting: Life Insurance Policy Review
+Meeting: Life Insurance Policy Review with Sarah Johnson
 Duration: 30 minutes
-Suggested Times: 
-- Tomorrow 2:00 PM - 3:00 PM
-- Thursday 10:00 AM - 11:00 AM  
-- Friday 3:00 PM - 4:00 PM
+Attendees: sarah.johnson@techcorp.com, alex@insuranceagency.com
 
-Agenda:
+Suggested Times: 
+- Tomorrow 2:00 PM - 2:30 PM
+- Thursday 10:00 AM - 10:30 AM  
+- Friday 3:00 PM - 3:30 PM
+
+Meeting Agenda:
 - Review current coverage gaps
-- Discuss family protection goals
+- Discuss family protection goals  
 - Present customized policy options
 - Address any concerns or questions
+- Next steps and timeline
 
-Notes: Sarah mentioned she's particularly interested in term life insurance with conversion options. She has a $200K mortgage and two young children.`,
+Pre-meeting Preparation:
+- Current policy documents (if any)
+- Family financial overview
+- Protection goals discussion
+
+Notes: Sarah mentioned she's particularly interested in term life insurance with conversion options. She has a $200K mortgage and two young children (ages 3 and 5). Current employer provides basic $50K coverage.
+
+Meeting Link: https://meet.google.com/abc-defg-hij`,
       estimatedTime: '1 min',
       impact: 'Prevent lead from going cold'
     },
@@ -135,11 +147,66 @@ Next Steps:
   };
 
   const handleAccept = (action: RecommendedAction) => {
-    toast({
-      title: "Action Executed",
-      description: `${action.title} has been completed successfully.`,
-      duration: 3000,
-    });
+    // Simulate different actions based on type
+    switch (action.type) {
+      case 'email':
+        // Simulate opening email client with pre-filled content
+        const emailSubject = action.fullContext.split('\n')[0].replace('Subject: ', '');
+        const emailBody = action.fullContext.split('\n').slice(2).join('\n');
+        const mailtoLink = `mailto:josh.baker@example.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        window.open(mailtoLink, '_blank');
+        
+        toast({
+          title: "Email Draft Opened",
+          description: `Email client opened with pre-filled message for ${action.title.includes('Josh') ? 'Josh Baker' : 'the contact'}.`,
+          duration: 4000,
+        });
+        break;
+        
+      case 'calendar':
+        // Simulate opening calendar with meeting details
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() + 1); // Tomorrow
+        startDate.setHours(14, 0, 0, 0); // 2 PM
+        
+        const endDate = new Date(startDate);
+        endDate.setMinutes(endDate.getMinutes() + 30);
+        
+        const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Life Insurance Policy Review with Sarah Johnson')}&dates=${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(action.fullContext)}&location=Conference%20Call`;
+        
+        window.open(calendarUrl, '_blank');
+        
+        toast({
+          title: "Calendar Event Created",
+          description: "Google Calendar opened with meeting details. Sarah will receive an invitation once you save the event.",
+          duration: 4000,
+        });
+        break;
+        
+      case 'document':
+        // Simulate document generation
+        toast({
+          title: "Proposal Generated",
+          description: "Insurance proposal document has been generated and saved to your documents folder. You can now send it to Mike Davis.",
+          duration: 4000,
+        });
+        
+        // Simulate file download
+        setTimeout(() => {
+          const link = document.createElement('a');
+          link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(action.fullContext);
+          link.download = 'Mike_Davis_Insurance_Proposal.txt';
+          link.click();
+        }, 1000);
+        break;
+        
+      default:
+        toast({
+          title: "Action Executed",
+          description: `${action.title} has been completed successfully.`,
+          duration: 3000,
+        });
+    }
     
     // Remove the action from the list
     setActions(actions.filter(a => a.id !== action.id));

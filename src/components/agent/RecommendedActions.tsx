@@ -32,6 +32,7 @@ interface RecommendedAction {
 
 const RecommendedActions = () => {
   const { toast } = useToast();
+  const [showAll, setShowAll] = useState(false);
   const [actions, setActions] = useState<RecommendedAction[]>([
     {
       id: '1',
@@ -45,7 +46,7 @@ Hi Josh,
 
 I hope this email finds you well. I wanted to follow up on our conversation yesterday regarding your life insurance needs for your growing family.
 
-Based on our discussion, I've prepared a customized quote that includes:
+Based on our discussion, I have prepared a customized quote that includes:
 - $500,000 term life insurance policy
 - 20-year level premium guarantee
 - Competitive monthly premium of $45
@@ -57,7 +58,7 @@ Would you like to schedule a brief 10-minute call this week to review the detail
 Best regards,
 Alex
 
-P.S. I've also attached a comparison chart showing how this policy stacks up against competitors - you'll see we're offering exceptional value.`,
+P.S. I have also attached a comparison chart showing how this policy stacks up against competitors - you will see we are offering exceptional value.`,
       estimatedTime: '2 min',
       impact: 'High conversion probability'
     },
@@ -90,7 +91,7 @@ Pre-meeting Preparation:
 - Family financial overview
 - Protection goals discussion
 
-Notes: Sarah mentioned she's particularly interested in term life insurance with conversion options. She has a $200K mortgage and two young children (ages 3 and 5). Current employer provides basic $50K coverage.
+Notes: Sarah mentioned she is particularly interested in term life insurance with conversion options. She has a $200K mortgage and two young children (ages 3 and 5). Current employer provides basic $50K coverage.
 
 Meeting Link: https://meet.google.com/abc-defg-hij`,
       estimatedTime: '1 min',
@@ -98,6 +99,29 @@ Meeting Link: https://meet.google.com/abc-defg-hij`,
     },
     {
       id: '3',
+      title: 'Send text message to Mike Davis',
+      type: 'call',
+      priority: 'medium',
+      description: 'Quick SMS follow-up on missed call',
+      fullContext: `Text Message to: (555) 123-4567
+
+Hi Mike! This is Alex from SecureLife Insurance. I tried calling you earlier about your life insurance inquiry. 
+
+I have some great news - I found a policy that could save you $30/month compared to your current plan while increasing your coverage by $100K! 
+
+When would be a good time for a quick 10-minute call? I can work around your schedule.
+
+Reply STOP to opt out.
+
+Best,
+Alex
+SecureLife Insurance
+(555) 987-6543`,
+      estimatedTime: '30 sec',
+      impact: 'Immediate engagement opportunity'
+    },
+    {
+      id: '4',
       title: 'Create proposal document for Mike Davis',
       type: 'document', 
       priority: 'medium',
@@ -129,6 +153,164 @@ Next Steps:
 - Schedule medical exam if needed`,
       estimatedTime: '5 min',
       impact: 'Professional presentation increases close rate'
+    },
+    {
+      id: '5',
+      title: 'Send birthday email to Jennifer Walsh',
+      type: 'email',
+      priority: 'low',
+      description: 'Personal touch birthday follow-up',
+      fullContext: `Subject: Happy Birthday Jennifer! 🎂
+
+Dear Jennifer,
+
+Happy Birthday! I hope you are having a wonderful day celebrating with family and friends.
+
+As you start another year, it might be a perfect time to review your life insurance coverage to ensure your family continues to be protected as your life evolves.
+
+I would love to schedule a brief call to discuss any changes in your coverage needs. Plus, I have some exciting new policy options that might save you money!
+
+Enjoy your special day!
+
+Warm regards,
+Alex
+SecureLife Insurance
+
+P.S. I will send you a small gift card as a birthday surprise!`,
+      estimatedTime: '2 min',
+      impact: 'Strengthen client relationship'
+    },
+    {
+      id: '6',
+      title: 'Text reminder to Robert Chen',
+      type: 'call',
+      priority: 'medium',
+      description: 'Policy renewal due in 30 days',
+      fullContext: `Text Message to: (555) 456-7890
+
+Hi Robert! This is Alex from SecureLife Insurance. 
+
+Your term life policy is up for renewal in 30 days. The good news? Your rates are still locked in!
+
+However, I found a NEW policy that could increase your coverage by 25% at the SAME price. 
+
+Can we chat for 5 minutes this week? I think you will love what I found.
+
+Best,
+Alex
+(555) 987-6543`,
+      estimatedTime: '30 sec',
+      impact: 'Prevent policy lapse'
+    },
+    {
+      id: '7',
+      title: 'Email quote comparison to Lisa Martinez',
+      type: 'email',
+      priority: 'high',
+      description: 'Competitive analysis vs current provider',
+      fullContext: `Subject: You Could Save $840/Year on Life Insurance
+
+Hi Lisa,
+
+I completed the analysis you requested comparing your current MetLife policy to our SecureLife options.
+
+The results are impressive:
+
+Current MetLife Policy:
+- $250,000 coverage
+- $95/month ($1,140/year)
+- Limited conversion options
+
+Our Recommended Policy:
+- $300,000 coverage (20% more!)
+- $25/month ($300/year)
+- Full conversion privileges
+- A+ rated carrier
+
+Annual Savings: $840
+Increased Coverage: $50,000
+
+This analysis is valid for 30 days. Would you like to lock in these savings with a quick call this week?
+
+Best regards,
+Alex`,
+      estimatedTime: '3 min',
+      impact: 'Strong value proposition for conversion'
+    },
+    {
+      id: '8',
+      title: 'Text check-in to David Kim',
+      type: 'call',
+      priority: 'low',
+      description: 'Post-application status update',
+      fullContext: `Text Message to: (555) 789-0123
+
+Hi David! 
+
+Great news! Your life insurance application was approved and your policy is now ACTIVE! 🎉
+
+Your first premium will be auto-drafted on the 15th as requested. 
+
+You should receive your policy documents via email within 24 hours. Please review and let me know if you have any questions.
+
+Thanks for choosing SecureLife!
+
+Alex
+(555) 987-6543`,
+      estimatedTime: '1 min',
+      impact: 'Excellent customer service touchpoint'
+    },
+    {
+      id: '9',
+      title: 'Send referral request to Amanda Foster',
+      type: 'email',
+      priority: 'medium',
+      description: 'Happy client referral opportunity',
+      fullContext: `Subject: Could You Help a Friend Save on Life Insurance?
+
+Hi Amanda,
+
+I hope you and your family are doing wonderful! It has been 6 months since we set up your life insurance policy, and I wanted to check in.
+
+Since you have been so happy with your coverage and savings, I was wondering if you might know anyone who could benefit from our services?
+
+For every friend or family member you refer who gets a quote, I will send you a $50 Amazon gift card. If they purchase a policy, you will receive an additional $100 gift card!
+
+There is no limit to how many people you can refer. Some of my best clients have earned over $500 in gift cards!
+
+Would you like me to send you some referral cards to share?
+
+Best regards,
+Alex`,
+      estimatedTime: '2 min',
+      impact: 'Potential for multiple new leads'
+    },
+    {
+      id: '10',
+      title: 'Text appointment reminder to Susan Wilson',
+      type: 'call',
+      priority: 'high',
+      description: 'Tomorrow appointment confirmation',
+      fullContext: `Text Message to: (555) 234-5678
+
+Hi Susan!
+
+This is Alex from SecureLife Insurance. Just confirming our appointment tomorrow (Thursday) at 2:00 PM to review your life insurance options.
+
+We will be meeting at:
+Starbucks on Main Street
+123 Main St, Downtown
+
+I will have all your customized quotes ready to review. This should take about 30 minutes.
+
+Please reply Y to confirm or call me if you need to reschedule.
+
+Looking forward to seeing you!
+
+Alex
+(555) 987-6543`,
+      estimatedTime: '1 min',
+      impact: 'Reduce no-shows by 60%'
     }
   ]);
 
@@ -153,12 +335,32 @@ Next Steps:
         // Simulate opening email client with pre-filled content
         const emailSubject = action.fullContext.split('\n')[0].replace('Subject: ', '');
         const emailBody = action.fullContext.split('\n').slice(2).join('\n');
-        const mailtoLink = `mailto:josh.baker@example.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        const emailRecipient = action.title.includes('Josh') ? 'josh.baker@example.com' : 
+                              action.title.includes('Jennifer') ? 'jennifer.walsh@example.com' :
+                              action.title.includes('Lisa') ? 'lisa.martinez@example.com' :
+                              action.title.includes('Amanda') ? 'amanda.foster@example.com' :
+                              'contact@example.com';
+        const mailtoLink = `mailto:${emailRecipient}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
         window.open(mailtoLink, '_blank');
         
         toast({
           title: "Email Draft Opened",
-          description: `Email client opened with pre-filled message for ${action.title.includes('Josh') ? 'Josh Baker' : 'the contact'}.`,
+          description: `Email client opened with pre-filled message for ${emailRecipient}.`,
+          duration: 4000,
+        });
+        break;
+      case 'call':
+        // Simulate SMS/text message actions
+        const phoneNumber = action.fullContext.match(/\(\d{3}\) \d{3}-\d{4}/)?.[0] || '(555) 123-4567';
+        const smsBody = action.fullContext.split('\n').slice(2).join('\n').replace(/Reply STOP.*\n?/g, '');
+        const smsLink = `sms:${phoneNumber.replace(/\D/g, '')}?body=${encodeURIComponent(smsBody)}`;
+        
+        // Try to open SMS app (works on mobile)
+        window.open(smsLink, '_blank');
+        
+        toast({
+          title: "SMS App Opened",
+          description: `Text message app opened with pre-filled message for ${phoneNumber}.`,
           duration: 4000,
         });
         break;
@@ -178,7 +380,7 @@ Next Steps:
         
         toast({
           title: "Calendar Event Created",
-          description: "Google Calendar opened with meeting details. Sarah will receive an invitation once you save the event.",
+          description: "Google Calendar opened with meeting details. Contact will receive an invitation once you save the event.",
           duration: 4000,
         });
         break;
@@ -280,6 +482,10 @@ Next Steps:
     }
   };
 
+  // Show first 3 items by default, all items when showAll is true
+  const visibleActions = showAll ? actions : actions.slice(0, 3);
+  const hasMoreActions = actions.length > 3;
+
   if (actions.length === 0) {
     return (
       <Card className="border-0 shadow-apple-lg bg-gradient-card backdrop-blur-sm animate-slide-in rounded-3xl">
@@ -304,12 +510,12 @@ Next Steps:
             <div className="text-lg font-normal text-muted-foreground">One-click optimizations powered by AI</div>
           </div>
           <Badge variant="secondary" className="bg-gradient-soft text-primary border-0 px-4 py-2 text-base font-semibold rounded-2xl">
-            {actions.length} pending
+            {actions.length} total {showAll ? '' : `(showing ${visibleActions.length})`}
           </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 px-8 pb-8">
-        {actions.map((action, index) => {
+        {visibleActions.map((action, index) => {
           const isExpanded = expandedActions.has(action.id);
           const isEditing = editingActions.has(action.id);
           
@@ -435,8 +641,32 @@ Next Steps:
                 </div>
               )}
             </div>
-          );
-        })}
+            );
+          })}
+        
+        {/* Show More/Less Button */}
+        {hasMoreActions && (
+          <div className="pt-4 text-center border-t border-border">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => setShowAll(!showAll)}
+              className="rounded-2xl border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/5 px-8 py-3 text-base font-semibold text-primary"
+            >
+              {showAll ? (
+                <>
+                  <ChevronUp className="w-5 h-5 mr-2" />
+                  Show Less
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-5 h-5 mr-2" />
+                  Show {actions.length - 3} More Optimizations
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

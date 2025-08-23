@@ -215,47 +215,52 @@ Next Steps:
 
   if (actions.length === 0) {
     return (
-      <Card className="border-0 shadow-apple-lg bg-card/80 backdrop-blur-sm animate-slide-in">
-        <CardContent className="p-8 text-center">
-          <Zap className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">No recommendations at the moment. Check back soon!</p>
+      <Card className="border-0 shadow-apple-lg bg-gradient-card backdrop-blur-sm animate-slide-in rounded-3xl">
+        <CardContent className="p-12 text-center">
+          <Zap className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
+          <h3 className="text-2xl font-bold text-foreground mb-2">All Caught Up!</h3>
+          <p className="text-lg text-muted-foreground">No recommendations at the moment. Check back soon!</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="border-0 shadow-apple-lg bg-card/80 backdrop-blur-sm animate-slide-in">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-2xl font-bold flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-primary text-white">
-            <Zap className="w-5 h-5" />
+    <Card className="border-0 shadow-apple-lg bg-gradient-card backdrop-blur-sm animate-slide-in rounded-3xl overflow-hidden">
+      <CardHeader className="pb-6 pt-8 px-8">
+        <CardTitle className="text-3xl font-bold flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-gradient-primary text-white shadow-apple-md">
+            <Zap className="w-7 h-7" />
           </div>
-          Recommended One-Click Optimizations
-          <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-0">
+          <div className="flex-1">
+            <div className="text-foreground mb-1">Recommended Actions</div>
+            <div className="text-lg font-normal text-muted-foreground">One-click optimizations powered by AI</div>
+          </div>
+          <Badge variant="secondary" className="bg-gradient-soft text-primary border-0 px-4 py-2 text-base font-semibold rounded-2xl">
             {actions.length} pending
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {actions.map((action) => {
+      <CardContent className="space-y-6 px-8 pb-8">
+        {actions.map((action, index) => {
           const isExpanded = expandedActions.has(action.id);
           const isEditing = editingActions.has(action.id);
           
           return (
             <div 
               key={action.id}
-              className="border border-border rounded-2xl overflow-hidden hover:border-primary/20 transition-all duration-200 bg-background"
+              className={`border border-border rounded-3xl overflow-hidden hover:border-primary/20 transition-all duration-500 bg-gradient-soft hover:shadow-apple-md hover:-translate-y-1 animate-fade-in`}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Action Header */}
-              <div className="p-4">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="p-2 rounded-lg bg-gradient-secondary text-primary">
+              <div className="p-6">
+                <div className="flex items-center gap-5 mb-4">
+                  <div className="p-3 rounded-2xl bg-gradient-secondary text-primary shadow-apple-sm">
                     {getActionIcon(action.type)}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-foreground mb-1">{action.title}</h4>
-                    <p className="text-sm text-muted-foreground">{action.description}</p>
+                    <h4 className="text-xl font-bold text-foreground mb-2">{action.title}</h4>
+                    <p className="text-base text-muted-foreground">{action.description}</p>
                   </div>
                   <Badge className={`${getPriorityColor(action.priority)} border`}>
                     {action.priority}
@@ -263,38 +268,42 @@ Next Steps:
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span>⏱️ {action.estimatedTime}</span>
-                    <span>📈 {action.impact}</span>
+                  <div className="flex items-center gap-6 text-base text-muted-foreground">
+                    <span className="flex items-center gap-2">
+                      ⏱️ <span className="font-medium">{action.estimatedTime}</span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      📈 <span className="font-medium">{action.impact}</span>
+                    </span>
                   </div>
                   
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <Button 
-                      size="sm" 
+                      size="lg" 
                       variant="outline" 
                       onClick={() => toggleExpanded(action.id)}
-                      className="rounded-full border-border hover:border-primary/20"
+                      className="rounded-2xl border-border hover:border-primary/20 px-6 py-3 text-base font-medium"
                     >
-                      {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      {isExpanded ? <ChevronUp className="w-5 h-5 mr-2" /> : <ChevronDown className="w-5 h-5 mr-2" />}
                       {isExpanded ? 'Collapse' : 'Expand'}
                     </Button>
                     
                     <Button 
-                      size="sm" 
+                      size="lg" 
                       onClick={() => handleAccept(action)}
-                      className="bg-gradient-success border-0 rounded-full text-white hover:opacity-90"
+                      className="bg-gradient-success border-0 rounded-2xl text-white hover:opacity-90 px-8 py-3 text-base font-semibold shadow-apple-md"
                     >
-                      <Check className="w-4 h-4 mr-1" />
+                      <Check className="w-5 h-5 mr-2" />
                       Accept
                     </Button>
                     
                     <Button 
-                      size="sm" 
+                      size="lg" 
                       variant="outline" 
                       onClick={() => handleDismiss(action.id)}
-                      className="rounded-full border-border hover:border-destructive/20 hover:text-destructive"
+                      className="rounded-2xl border-border hover:border-destructive/20 hover:text-destructive px-4 py-3"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                     </Button>
                   </div>
                 </div>
@@ -302,56 +311,56 @@ Next Steps:
 
               {/* Expanded Content */}
               {isExpanded && (
-                <div className="border-t border-border bg-muted/30 p-4 animate-fade-in">
-                  <div className="flex items-center justify-between mb-3">
-                    <h5 className="font-semibold text-foreground">Full Context</h5>
+                <div className="border-t border-border bg-gradient-soft p-6 animate-slide-in">
+                  <div className="flex items-center justify-between mb-4">
+                    <h5 className="text-xl font-bold text-foreground">Full Context</h5>
                     {!isEditing && (
                       <Button 
-                        size="sm" 
+                        size="lg" 
                         variant="outline" 
                         onClick={() => handleEdit(action.id)}
-                        className="rounded-full border-border hover:border-primary/20"
+                        className="rounded-2xl border-border hover:border-primary/20 px-6 py-3 text-base font-medium"
                       >
-                        <Edit3 className="w-4 h-4 mr-1" />
+                        <Edit3 className="w-5 h-5 mr-2" />
                         Edit
                       </Button>
                     )}
                   </div>
                   
                   {isEditing ? (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <Textarea 
                         value={editedContent[action.id] || action.fullContext}
                         onChange={(e) => setEditedContent({
                           ...editedContent, 
                           [action.id]: e.target.value
                         })}
-                        rows={8}
-                        className="font-mono text-sm resize-none border-border focus:border-primary/20"
+                        rows={10}
+                        className="font-mono text-base resize-none border-border focus:border-primary/20 rounded-2xl p-4"
                       />
-                      <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
+                      <div className="flex gap-3">
+                        <Button
+                          size="lg" 
                           onClick={() => handleSaveEdit(action.id)}
-                          className="bg-gradient-primary border-0 rounded-full text-white"
+                          className="bg-gradient-primary border-0 rounded-2xl text-white px-6 py-3 text-base font-semibold"
                         >
-                          <Save className="w-4 h-4 mr-1" />
+                          <Save className="w-5 h-5 mr-2" />
                           Save Changes
                         </Button>
                         <Button 
-                          size="sm" 
+                          size="lg" 
                           variant="outline" 
                           onClick={() => handleCancelEdit(action.id)}
-                          className="rounded-full border-border"
+                          className="rounded-2xl border-border px-6 py-3 text-base font-medium"
                         >
-                          <Undo2 className="w-4 h-4 mr-1" />
+                          <Undo2 className="w-5 h-5 mr-2" />
                           Cancel
                         </Button>
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-background rounded-xl p-4 border border-border">
-                      <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                    <div className="bg-background rounded-2xl p-6 border border-border shadow-apple-sm">
+                      <pre className="text-base text-foreground whitespace-pre-wrap font-mono leading-relaxed">
                         {action.fullContext}
                       </pre>
                     </div>

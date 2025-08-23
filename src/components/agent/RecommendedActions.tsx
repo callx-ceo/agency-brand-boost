@@ -465,11 +465,11 @@ Alex
 
   const getActionIcon = (type: string) => {
     switch (type) {
-      case 'email': return <Mail className="w-4 h-4" />;
-      case 'call': return <Phone className="w-4 h-4" />;
-      case 'document': return <FileText className="w-4 h-4" />;
-      case 'calendar': return <Calendar className="w-4 h-4" />;
-      default: return <Zap className="w-4 h-4" />;
+      case 'email': return <Mail className="w-5 h-5" />;
+      case 'call': return <Phone className="w-5 h-5" />;
+      case 'document': return <FileText className="w-5 h-5" />;
+      case 'calendar': return <Calendar className="w-5 h-5" />;
+      default: return <Zap className="w-5 h-5" />;
     }
   };
 
@@ -502,7 +502,7 @@ Alex
     <Card className="border-0 shadow-apple-lg bg-gradient-card backdrop-blur-sm animate-slide-in rounded-3xl overflow-hidden">
       <CardHeader className="pb-6 pt-8 px-8">
         <CardTitle className="text-3xl font-bold flex items-center gap-4">
-          <div className="p-3 rounded-2xl bg-gradient-primary text-white shadow-apple-md">
+          <div className="p-3 rounded-2xl bg-blue-600 text-white shadow-apple-md">
             <Zap className="w-7 h-7" />
           </div>
           <div className="flex-1">
@@ -528,7 +528,7 @@ Alex
               {/* Action Header */}
               <div className="p-6">
                 <div className="flex items-center gap-5 mb-4">
-                  <div className="p-3 rounded-2xl bg-gradient-secondary text-primary shadow-apple-sm">
+                  <div className="p-3 rounded-2xl bg-blue-100 text-blue-700 shadow-apple-sm border border-blue-200">
                     {getActionIcon(action.type)}
                   </div>
                   <div className="flex-1">

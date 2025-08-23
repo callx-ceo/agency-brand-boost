@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import RecommendedActions from "./RecommendedActions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -214,6 +215,9 @@ const AgentDashboardNew = () => {
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Recommended Actions */}
+              <RecommendedActions />
 
               {/* AI Insights Section */}
               <AgentInsights agentData={agentData} />

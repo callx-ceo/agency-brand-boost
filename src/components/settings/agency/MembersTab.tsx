@@ -76,16 +76,33 @@ const mockMembers: AgencyMember[] = [
 
 export const MembersTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'away' | 'in-call' | 'offline' | 'active' | 'suspended'>('all');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showRoleChangeDialog, setShowRoleChangeDialog] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState<AgencyMember | null>(null);
   const [pendingRoleChange, setPendingRoleChange] = useState<{ member: AgencyMember; newRole: UserRole } | null>(null);
 
-  const filteredMembers = mockMembers.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMembers = mockMembers.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (statusFilter === 'all') return matchesSearch;
+    if (statusFilter === 'active' || statusFilter === 'suspended') {
+      return matchesSearch && member.status === statusFilter;
+    }
+    return matchesSearch && member.presence === statusFilter;
+  });
+
+  const getFilterCount = (filter: string) => {
+    return mockMembers.filter(member => {
+      if (filter === 'all') return true;
+      if (filter === 'active' || filter === 'suspended') {
+        return member.status === filter;
+      }
+      return member.presence === filter;
+    }).length;
+  };
 
   const getRoleIcon = (role: UserRole) => {
     switch (role) {
@@ -175,6 +192,75 @@ export const MembersTab: React.FC = () => {
           <UserPlus className="h-4 w-4 mr-2" />
           Invite User
         </Button>
+      </div>
+
+      {/* Quick Status Filters */}
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-muted-foreground">Filter by Status</p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={statusFilter === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("all")}
+            className="flex items-center gap-2"
+          >
+            All ({getFilterCount("all")})
+          </Button>
+          <Button
+            variant={statusFilter === "available" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("available")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-green-500 rounded-full" />
+            Available ({getFilterCount("available")})
+          </Button>
+          <Button
+            variant={statusFilter === "in-call" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("in-call")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-blue-500 rounded-full" />
+            In Call ({getFilterCount("in-call")})
+          </Button>
+          <Button
+            variant={statusFilter === "away" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("away")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+            Away ({getFilterCount("away")})
+          </Button>
+          <Button
+            variant={statusFilter === "offline" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("offline")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-gray-400 rounded-full" />
+            Offline ({getFilterCount("offline")})
+          </Button>
+          <Button
+            variant={statusFilter === "active" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("active")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-green-600 rounded-full" />
+            Active ({getFilterCount("active")})
+          </Button>
+          <Button
+            variant={statusFilter === "suspended" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("suspended")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-red-500 rounded-full" />
+            Suspended ({getFilterCount("suspended")})
+          </Button>
+        </div>
       </div>
 
       {/* Members Table */}

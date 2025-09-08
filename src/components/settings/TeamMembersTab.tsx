@@ -604,20 +604,92 @@ const TeamMembersTab = () => {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Quick Status Filters */}
+          <div className="mb-6">
+            <p className="text-sm font-medium text-muted-foreground mb-3">Quick Filter by Status</p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={activeFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveFilter("all")}
+                className="flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                All ({getFilterCount("all")})
+              </Button>
+              <Button
+                variant={activeFilter === "on-call" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveFilter("on-call")}
+                className="flex items-center gap-2"
+              >
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                On Call ({getFilterCount("on-call")})
+              </Button>
+              <Button
+                variant={activeFilter === "logged-in" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveFilter("logged-in")}
+                className="flex items-center gap-2"
+              >
+                <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                Logged In ({getFilterCount("logged-in")})
+              </Button>
+              <Button
+                variant={activeFilter === "offline" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveFilter("offline")}
+                className="flex items-center gap-2"
+              >
+                <div className="w-2 h-2 bg-gray-400 rounded-full" />
+                Offline ({getFilterCount("offline")})
+              </Button>
+              <Button
+                variant={activeFilter === "paused" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveFilter("paused")}
+                className="flex items-center gap-2"
+              >
+                <div className="w-2 h-2 bg-orange-500 rounded-full" />
+                Paused ({getFilterCount("paused")})
+              </Button>
+              <Button
+                variant={activeFilter === "pending" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveFilter("pending")}
+                className="flex items-center gap-2"
+              >
+                <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+                Pending ({getFilterCount("pending")})
+              </Button>
+              <Button
+                variant={activeFilter === "active" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveFilter("active")}
+                className="flex items-center gap-2"
+              >
+                <div className="w-2 h-2 bg-green-600 rounded-full" />
+                Active ({getFilterCount("active")})
+              </Button>
+            </div>
+          </div>
+
           <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
-            <TabsList className="inline-flex w-auto">
-              <TabsTrigger value="all">All ({getFilterCount("all")})</TabsTrigger>
-              <TabsTrigger value="on-call">On Call ({getFilterCount("on-call")})</TabsTrigger>
-              <TabsTrigger value="offline">Offline ({getFilterCount("offline")})</TabsTrigger>
-              <TabsTrigger value="paused">Paused ({getFilterCount("paused")})</TabsTrigger>
-              <TabsTrigger value="active">Active ({getFilterCount("active")})</TabsTrigger>
-              <TabsTrigger value="not-active">Not Active ({getFilterCount("not-active")})</TabsTrigger>
-              <TabsTrigger value="pending">Pending ({getFilterCount("pending")})</TabsTrigger>
-              <TabsTrigger value="logged-in">Logged In ({getFilterCount("logged-in")})</TabsTrigger>
-              <TabsTrigger value="not-logged-in">Not Logged In ({getFilterCount("not-logged-in")})</TabsTrigger>
-            </TabsList>
+            <div className="hidden">
+              <TabsList>
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="on-call">On Call</TabsTrigger>
+                <TabsTrigger value="offline">Offline</TabsTrigger>
+                <TabsTrigger value="paused">Paused</TabsTrigger>
+                <TabsTrigger value="active">Active</TabsTrigger>
+                <TabsTrigger value="not-active">Not Active</TabsTrigger>
+                <TabsTrigger value="pending">Pending</TabsTrigger>
+                <TabsTrigger value="logged-in">Logged In</TabsTrigger>
+                <TabsTrigger value="not-logged-in">Not Logged In</TabsTrigger>
+              </TabsList>
+            </div>
             
-            <TabsContent value={activeFilter} className="mt-6">
+            <TabsContent value={activeFilter} className="mt-0">
               {filteredMembers.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500">No team members found matching your search and filter criteria.</p>

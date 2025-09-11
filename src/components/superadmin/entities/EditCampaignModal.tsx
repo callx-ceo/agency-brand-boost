@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Campaign } from "@/types/campaignTypes";
-import { CAMPAIGN_VERTICALS } from "./types/campaignTypes";
+import { CAMPAIGN_VERTICALS, CAMPAIGN_LANGUAGES } from "./types/campaignTypes";
 import { US_STATES } from "./types/offerTypes";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,6 +22,7 @@ const EditCampaignModal = ({ campaign, isOpen, onClose, onSave }: EditCampaignMo
   const [formData, setFormData] = useState({
     name: campaign.name,
     vertical: campaign.vertical,
+    language: campaign.language || "English",
     category: campaign.category,
     targetStates: [] as string[], // Would come from campaign data in real app
   });
@@ -61,10 +62,20 @@ const EditCampaignModal = ({ campaign, isOpen, onClose, onSave }: EditCampaignMo
       return;
     }
 
+    if (!formData.language) {
+      toast({
+        title: "Error",
+        description: "Language is required", 
+        variant: "destructive",
+      });
+      return;
+    }
+
     const updatedCampaign: Campaign = {
       ...campaign,
       name: formData.name,
       vertical: formData.vertical,
+      language: formData.language,
       category: formData.category,
     };
 
@@ -98,6 +109,28 @@ const EditCampaignModal = ({ campaign, isOpen, onClose, onSave }: EditCampaignMo
                   placeholder="Campaign name"
                   className="mt-1"
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="language">Language *</Label>
+                <Select
+                  value={formData.language}
+                  onValueChange={(value) => setFormData({ ...formData, language: value })}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select campaign language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CAMPAIGN_LANGUAGES.map((language) => (
+                      <SelectItem key={language} value={language}>
+                        {language}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Calls will only be routed to agents who speak this language
+                </p>
               </div>
 
               <div>

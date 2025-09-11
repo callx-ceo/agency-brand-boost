@@ -64,6 +64,10 @@ export const CampaignSummaryStep = ({ formData }: CampaignSummaryStepProps) => {
             <Badge className="ml-2">{formData.vertical}</Badge>
           </div>
           <div>
+            <span className="font-medium">Language:</span>
+            <span className="ml-2">{formData.language}</span>
+          </div>
+          <div>
             <span className="font-medium">Target States ({formData.targetStates.length}):</span>
             <div className="mt-1 flex flex-wrap gap-1">
               {formData.targetStates.map(state => (

@@ -3,6 +3,7 @@ export interface CampaignFormData {
   // Basic Info
   name: string;
   vertical: string;
+  language: string;
   targetStates: string[];
   
   // Bid Floor Settings
@@ -57,4 +58,17 @@ export const CAMPAIGN_VERTICALS = [
   "Debt Settlement",
   "Home Services",
   "Legal"
+];
+
+export const CAMPAIGN_LANGUAGES = [
+  "English",
+  "Spanish", 
+  "French",
+  "Portuguese",
+  "Mandarin",
+  "Cantonese",
+  "Korean",
+  "Vietnamese",
+  "Arabic",
+  "Hindi"
 ];

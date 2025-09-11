@@ -14,6 +14,7 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
   const [formData, setFormData] = useState<CampaignFormData>({
     name: "",
     vertical: "",
+    language: "",
     targetStates: [],
     bidFloorEnabled: false,
     minimumBidFloor: 0,

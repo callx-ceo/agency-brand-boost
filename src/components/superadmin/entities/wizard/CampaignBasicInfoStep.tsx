@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Building2 } from "lucide-react";
-import { CampaignFormData, CAMPAIGN_VERTICALS } from "../types/campaignTypes";
+import { CampaignFormData, CAMPAIGN_VERTICALS, CAMPAIGN_LANGUAGES } from "../types/campaignTypes";
 import { US_STATES } from "../types/offerTypes";
 
 interface CampaignBasicInfoStepProps {
@@ -72,6 +72,28 @@ export const CampaignBasicInfoStep = ({ formData, updateFormData }: CampaignBasi
             </Select>
             <p className="text-xs text-muted-foreground mt-1">
               Calls will only be routed to agents assigned to this vertical
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="language">Language *</Label>
+            <Select
+              value={formData.language}
+              onValueChange={(value) => updateFormData({ language: value })}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select campaign language" />
+              </SelectTrigger>
+              <SelectContent>
+                {CAMPAIGN_LANGUAGES.map((language) => (
+                  <SelectItem key={language} value={language}>
+                    {language}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-1">
+              Calls will only be routed to agents who speak this language
             </p>
           </div>
 

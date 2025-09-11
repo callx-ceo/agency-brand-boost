@@ -67,6 +67,10 @@ const CampaignDetailsTab = ({ campaign, onCampaignUpdate }: CampaignDetailsTabPr
               <p className="text-lg">{campaign.vertical}</p>
             </div>
             <div>
+              <label className="text-sm font-medium text-gray-600">Language</label>
+              <p className="text-lg">{campaign.language}</p>
+            </div>
+            <div>
               <label className="text-sm font-medium text-gray-600">Bundle Category</label>
               <p className="text-lg">{campaign.category}</p>
             </div>

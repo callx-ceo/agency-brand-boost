@@ -60,6 +60,10 @@ const CampaignDetailsTab = ({ campaign }: CampaignDetailsTabProps) => {
               <p className="text-lg">Bundle</p>
             </div>
             <div>
+              <label className="text-sm font-medium text-gray-600">Vertical</label>
+              <p className="text-lg">{campaign.vertical}</p>
+            </div>
+            <div>
               <label className="text-sm font-medium text-gray-600">Bundle Category</label>
               <p className="text-lg">{campaign.category}</p>
             </div>

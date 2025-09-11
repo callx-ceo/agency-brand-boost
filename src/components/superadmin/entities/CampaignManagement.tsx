@@ -56,6 +56,7 @@ const CampaignManagement = ({ onBackToDashboard }: CampaignManagementProps) => {
       name: newCampaign.name,
       type: "Call Campaign",
       category: newCampaign.vertical,
+      vertical: newCampaign.vertical,
       accepts: "Calls",
       approvedPublishers: 0,
       pendingPublishers: 0,

@@ -4,6 +4,7 @@ export interface Campaign {
   name: string;
   type: string;
   category: string;
+  vertical: string;
   accepts: string;
   approvedPublishers: number;
   pendingPublishers: number;

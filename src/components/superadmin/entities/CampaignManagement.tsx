@@ -29,6 +29,10 @@ const CampaignManagement = ({ onBackToDashboard }: CampaignManagementProps) => {
       <CampaignDetailView
         campaign={selectedCampaign}
         onBack={() => setSelectedCampaign(null)}
+        onCampaignUpdate={(updatedCampaign) => {
+          setCampaigns(campaigns.map(c => c.id === updatedCampaign.id ? updatedCampaign : c));
+          setSelectedCampaign(updatedCampaign);
+        }}
       />
     );
   }

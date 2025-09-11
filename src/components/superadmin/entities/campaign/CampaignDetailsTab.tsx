@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,12 +6,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Slider } from "@/components/ui/slider";
 import { Campaign } from "@/types/campaignTypes";
 import BidFloorSettings from "./BidFloorSettings";
+import EditCampaignModal from "../EditCampaignModal";
 
 interface CampaignDetailsTabProps {
   campaign: Campaign;
+  onCampaignUpdate?: (updatedCampaign: Campaign) => void;
 }
 
-const CampaignDetailsTab = ({ campaign }: CampaignDetailsTabProps) => {
+const CampaignDetailsTab = ({ campaign, onCampaignUpdate }: CampaignDetailsTabProps) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const handleBidFloorSave = (settings: any) => {
     console.log("Saving bid floor settings:", settings);
     // Here you would typically make an API call to save the settings
@@ -42,7 +45,7 @@ const CampaignDetailsTab = ({ campaign }: CampaignDetailsTabProps) => {
               {campaign.name}
               <Badge className="bg-green-100 text-green-800">Active</Badge>
             </CardTitle>
-            <Button variant="outline" size="sm">EDIT</Button>
+            <Button variant="outline" size="sm" onClick={() => setIsEditModalOpen(true)}>EDIT</Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -251,6 +254,16 @@ const CampaignDetailsTab = ({ campaign }: CampaignDetailsTabProps) => {
           </div>
         </CardContent>
       </Card>
+
+      <EditCampaignModal
+        campaign={campaign}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={(updatedCampaign) => {
+          onCampaignUpdate?.(updatedCampaign);
+          setIsEditModalOpen(false);
+        }}
+      />
     </div>
   );
 };

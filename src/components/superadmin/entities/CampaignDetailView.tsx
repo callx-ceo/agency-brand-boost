@@ -12,9 +12,10 @@ import ManageAdvertisersTab from "./campaign/ManageAdvertisersTab";
 interface CampaignDetailViewProps {
   campaign: Campaign;
   onBack: () => void;
+  onCampaignUpdate?: (updatedCampaign: Campaign) => void;
 }
 
-const CampaignDetailView = ({ campaign, onBack }: CampaignDetailViewProps) => {
+const CampaignDetailView = ({ campaign, onBack, onCampaignUpdate }: CampaignDetailViewProps) => {
   const [activeTab, setActiveTab] = useState("campaign-statistics");
   const [dateRange, setDateRange] = useState("Today");
 
@@ -51,7 +52,7 @@ const CampaignDetailView = ({ campaign, onBack }: CampaignDetailViewProps) => {
         </TabsContent>
 
         <TabsContent value="campaign-details">
-          <CampaignDetailsTab campaign={campaign} />
+          <CampaignDetailsTab campaign={campaign} onCampaignUpdate={onCampaignUpdate} />
         </TabsContent>
 
         <TabsContent value="promo-numbers">

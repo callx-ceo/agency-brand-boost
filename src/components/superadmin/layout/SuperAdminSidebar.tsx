@@ -95,6 +95,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
     { id: "offers", label: "Offers", icon: <DollarSign className="w-5 h-5" /> },
     { id: "verticals", label: "Verticals", icon: <Target className="w-5 h-5" /> },
+    { id: "languages", label: "Languages", icon: <Globe className="w-5 h-5" /> },
   ];
 
   // Agency Management sections - NEW SECTION

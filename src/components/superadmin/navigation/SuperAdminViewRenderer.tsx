@@ -7,6 +7,7 @@ import PublisherManagement from "../entities/PublisherManagement";
 import CampaignManagement from "../entities/CampaignManagement";
 import OfferManagement from "../entities/OfferManagement";
 import VerticalManagement from "../entities/VerticalManagement";
+import { LanguageManagement } from "../entities/LanguageManagement";
 import ProductsManagement from "../entities/ProductsManagement";
 import CarriersManagement from "../entities/CarriersManagement";
 import AdvancedAnalytics from "../analytics/AdvancedAnalytics";
@@ -87,6 +88,9 @@ const SuperAdminViewRenderer = ({
 
     case 'verticals':
       return <VerticalManagement onBackToDashboard={handleBackToDashboard} />;
+
+    case 'languages':
+      return <LanguageManagement />;
 
     case 'products':
       return <ProductsManagement onBackToDashboard={handleBackToDashboard} />;

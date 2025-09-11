@@ -13,6 +13,7 @@ export type SuperAdminViewType =
   | 'agency-agents'
   | 'campaigns'
   | 'offers'
+  | 'verticals'
   | 'offer-statistics'
   | 'offer-details'
   | 'leads'

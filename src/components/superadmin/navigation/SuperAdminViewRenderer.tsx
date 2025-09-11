@@ -6,6 +6,7 @@ import AdvertiserManagement from "../entities/AdvertiserManagement";
 import PublisherManagement from "../entities/PublisherManagement";
 import CampaignManagement from "../entities/CampaignManagement";
 import OfferManagement from "../entities/OfferManagement";
+import VerticalManagement from "../entities/VerticalManagement";
 import ProductsManagement from "../entities/ProductsManagement";
 import CarriersManagement from "../entities/CarriersManagement";
 import AdvancedAnalytics from "../analytics/AdvancedAnalytics";
@@ -83,6 +84,9 @@ const SuperAdminViewRenderer = ({
           onViewOfferStatistics={handleViewOfferDetails}
         />
       );
+
+    case 'verticals':
+      return <VerticalManagement onBackToDashboard={handleBackToDashboard} />;
 
     case 'products':
       return <ProductsManagement onBackToDashboard={handleBackToDashboard} />;

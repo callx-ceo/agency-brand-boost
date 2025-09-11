@@ -4,7 +4,6 @@ export interface CampaignFormData {
   name: string;
   vertical: string;
   targetStates: string[];
-  callDurationRequirement: number;
   
   // Bid Floor Settings
   bidFloorEnabled?: boolean;

@@ -75,18 +75,6 @@ export const CampaignBasicInfoStep = ({ formData, updateFormData }: CampaignBasi
             </p>
           </div>
 
-          <div>
-            <Label htmlFor="callDuration">Minimum Call Duration (seconds) *</Label>
-            <Input
-              id="callDuration"
-              type="number"
-              value={formData.callDurationRequirement}
-              onChange={(e) => updateFormData({ callDurationRequirement: parseInt(e.target.value) || 60 })}
-              placeholder="60"
-              className="mt-1"
-              min="1"
-            />
-          </div>
         </CardContent>
       </Card>
 

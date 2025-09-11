@@ -15,7 +15,6 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
     name: "",
     vertical: "",
     targetStates: [],
-    callDurationRequirement: 60,
     bidFloorEnabled: false,
     minimumBidFloor: 0,
     bidFloorCurrency: "USD",

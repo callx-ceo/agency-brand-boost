@@ -70,6 +70,9 @@ export const CampaignBasicInfoStep = ({ formData, updateFormData }: CampaignBasi
                 ))}
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground mt-1">
+              Calls will only be routed to agents assigned to this vertical
+            </p>
           </div>
 
           <div>

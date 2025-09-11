@@ -29,6 +29,7 @@ interface AgencyMember {
   canTakeCalls: boolean;
   lastSeen: string;
   presence?: 'available' | 'away' | 'in-call' | 'offline';
+  verticals?: string[];
 }
 
 const mockMembers: AgencyMember[] = [
@@ -40,7 +41,8 @@ const mockMembers: AgencyMember[] = [
     status: 'active',
     canTakeCalls: true,
     lastSeen: '2 minutes ago',
-    presence: 'available'
+    presence: 'available',
+    verticals: ['Medicare', 'Final Expense']
   },
   {
     id: '2',
@@ -50,7 +52,8 @@ const mockMembers: AgencyMember[] = [
     status: 'active',
     canTakeCalls: true,
     lastSeen: '15 minutes ago',
-    presence: 'away'
+    presence: 'away',
+    verticals: ['Auto Insurance']
   },
   {
     id: '3',
@@ -60,7 +63,8 @@ const mockMembers: AgencyMember[] = [
     status: 'active',
     canTakeCalls: true,
     lastSeen: '1 hour ago',
-    presence: 'available'
+    presence: 'available',
+    verticals: ['Medicare']
   },
   {
     id: '4',
@@ -270,6 +274,7 @@ export const MembersTab: React.FC = () => {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Verticals</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Presence</TableHead>
               <TableHead>Can Take Calls</TableHead>
@@ -287,6 +292,19 @@ export const MembersTab: React.FC = () => {
                   </div>
                 </TableCell>
                 <TableCell>{getRoleBadge(member.role)}</TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {member.verticals && member.verticals.length > 0 ? (
+                      member.verticals.map((vertical) => (
+                        <Badge key={vertical} variant="outline" className="text-xs">
+                          {vertical}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-xs text-muted-foreground">No verticals assigned</span>
+                    )}
+                  </div>
+                </TableCell>
                 <TableCell>{getStatusBadge(member.status)}</TableCell>
                 <TableCell>{getPresenceBadge(member.presence)}</TableCell>
                 <TableCell>

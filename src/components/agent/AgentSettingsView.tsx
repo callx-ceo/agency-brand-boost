@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { User, Bell, Phone, Headphones, Save, Lock, Eye, EyeOff, ArrowRightLeft } from "lucide-react";
 import { toast } from "sonner";
 import { AgentTransferRequestModal } from "./AgentTransferRequestModal";
+import { AgentVerticalSettings } from "../settings/AgentVerticalSettings";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -84,8 +85,9 @@ const AgentSettingsView = () => {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="profile">Profile Data</TabsTrigger>
+          <TabsTrigger value="verticals">Verticals</TabsTrigger>
           <TabsTrigger value="target">Target States</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
@@ -190,6 +192,16 @@ const AgentSettingsView = () => {
               {/* Add target states configuration here */}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="verticals" className="space-y-6">
+          <AgentVerticalSettings 
+            currentVerticals={["Medicare"]}
+            onUpdate={(verticals) => {
+              // Handle vertical update
+              console.log('Updated verticals:', verticals);
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-6">

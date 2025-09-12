@@ -11,7 +11,7 @@ import { User, Bell, Phone, Headphones, Save, Lock, Eye, EyeOff, ArrowRightLeft 
 import { toast } from "sonner";
 import { AgentTransferRequestModal } from "./AgentTransferRequestModal";
 import { AgentVerticalSettings } from "../settings/AgentVerticalSettings";
-import { AgentLanguageSettings } from "../settings/AgentLanguageSettings";
+import { AgentLanguagePicker } from "../settings/AgentLanguageSettings";
 import { AgentVerticalBidSettings } from "../settings/AgentVerticalBidSettings";
 import { AgentTargetStatesSettings } from "../settings/AgentTargetStatesSettings";
 
@@ -23,11 +23,11 @@ const AgentSettingsView = () => {
     phone: "(510) 566-0817",
     zipCode: "94579",
     city: "San Leandro",
-    state: "CA"
+    state: "CA",
+    languages: ["English"]
   });
 
   const [selectedVerticals, setSelectedVerticals] = useState<string[]>(["Medicare"]);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["English"]);
 
   const [security, setSecurity] = useState({
     currentPassword: "",
@@ -59,7 +59,7 @@ const AgentSettingsView = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
 
   const handleSaveProfile = () => {
-    toast.success("Profile updated successfully");
+    toast.success("Profile and language skills updated successfully");
   };
 
   const handleSavePassword = () => {
@@ -171,9 +171,9 @@ const AgentSettingsView = () => {
               
               {/* Language Skills Section */}
               <div className="mt-8">
-                <AgentLanguageSettings 
-                  currentLanguages={selectedLanguages}
-                  onUpdate={setSelectedLanguages}
+                <AgentLanguagePicker 
+                  selectedLanguages={profile.languages}
+                  onLanguageChange={(languages) => setProfile({...profile, languages})}
                 />
               </div>
               <div className="flex justify-end mt-6">

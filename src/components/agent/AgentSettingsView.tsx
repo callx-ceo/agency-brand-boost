@@ -13,6 +13,7 @@ import { AgentTransferRequestModal } from "./AgentTransferRequestModal";
 import { AgentVerticalSettings } from "../settings/AgentVerticalSettings";
 import { AgentLanguageSettings } from "../settings/AgentLanguageSettings";
 import { AgentVerticalBidSettings } from "../settings/AgentVerticalBidSettings";
+import { AgentTargetStatesSettings } from "../settings/AgentTargetStatesSettings";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -89,9 +90,10 @@ const AgentSettingsView = () => {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="profile">Profile Data</TabsTrigger>
           <TabsTrigger value="verticals">Verticals</TabsTrigger>
+          <TabsTrigger value="states">Target States</TabsTrigger>
           <TabsTrigger value="bids">Bid Settings</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
@@ -189,6 +191,15 @@ const AgentSettingsView = () => {
           <AgentVerticalSettings 
             currentVerticals={selectedVerticals}
             onUpdate={setSelectedVerticals}
+          />
+        </TabsContent>
+
+        <TabsContent value="states" className="space-y-6">
+          <AgentTargetStatesSettings 
+            selectedVerticals={selectedVerticals}
+            onUpdate={(targetStates) => {
+              console.log('Updated target states:', targetStates);
+            }}
           />
         </TabsContent>
 

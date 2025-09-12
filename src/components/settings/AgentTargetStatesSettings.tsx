@@ -214,7 +214,7 @@ export const AgentTargetStatesSettings: React.FC<AgentTargetStatesSettingsProps>
                         </Button>
                       </div>
                       
-                      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {US_STATES.map((state) => (
                           <div key={state.code} className="flex items-center space-x-2">
                             <Checkbox
@@ -226,7 +226,7 @@ export const AgentTargetStatesSettings: React.FC<AgentTargetStatesSettingsProps>
                               htmlFor={`${verticalStates.vertical}-${state.code}`}
                               className="text-sm cursor-pointer"
                             >
-                              {state.code}
+                              {state.code} - {state.name}
                             </Label>
                           </div>
                         ))}
@@ -236,11 +236,14 @@ export const AgentTargetStatesSettings: React.FC<AgentTargetStatesSettingsProps>
                         <div className="mt-4 pt-4 border-t">
                           <h4 className="text-sm font-medium mb-2">Selected States:</h4>
                           <div className="flex flex-wrap gap-1">
-                            {verticalStates.states.map(stateCode => (
-                              <Badge key={stateCode} variant="secondary" className="text-xs">
-                                {stateCode}
-                              </Badge>
-                            ))}
+                            {verticalStates.states.map(stateCode => {
+                              const state = US_STATES.find(s => s.code === stateCode);
+                              return (
+                                <Badge key={stateCode} variant="secondary" className="text-xs">
+                                  {stateCode} - {state?.name}
+                                </Badge>
+                              );
+                            })}
                           </div>
                         </div>
                       )}

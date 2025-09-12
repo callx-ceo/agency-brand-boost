@@ -226,7 +226,7 @@ export const AgentTargetStatesSettings: React.FC<AgentTargetStatesSettingsProps>
                               htmlFor={`${verticalStates.vertical}-${state.code}`}
                               className="text-sm cursor-pointer"
                             >
-                              {state.code} - {state.name}
+                              {state.name} ({state.code})
                             </Label>
                           </div>
                         ))}
@@ -240,7 +240,7 @@ export const AgentTargetStatesSettings: React.FC<AgentTargetStatesSettingsProps>
                               const state = US_STATES.find(s => s.code === stateCode);
                               return (
                                 <Badge key={stateCode} variant="secondary" className="text-xs">
-                                  {stateCode} - {state?.name}
+                                  {state?.name} ({stateCode})
                                 </Badge>
                               );
                             })}

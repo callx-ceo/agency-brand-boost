@@ -11,6 +11,8 @@ import { User, Bell, Phone, Headphones, Save, Lock, Eye, EyeOff, ArrowRightLeft 
 import { toast } from "sonner";
 import { AgentTransferRequestModal } from "./AgentTransferRequestModal";
 import { AgentVerticalSettings } from "../settings/AgentVerticalSettings";
+import { AgentLanguageSettings } from "../settings/AgentLanguageSettings";
+import { AgentVerticalBidSettings } from "../settings/AgentVerticalBidSettings";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -20,9 +22,11 @@ const AgentSettingsView = () => {
     phone: "(510) 566-0817",
     zipCode: "94579",
     city: "San Leandro",
-    state: "CA",
-    bidAmount: "65.00"
+    state: "CA"
   });
+
+  const [selectedVerticals, setSelectedVerticals] = useState<string[]>(["Medicare"]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["English"]);
 
   const [security, setSecurity] = useState({
     currentPassword: "",
@@ -88,7 +92,7 @@ const AgentSettingsView = () => {
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="profile">Profile Data</TabsTrigger>
           <TabsTrigger value="verticals">Verticals</TabsTrigger>
-          <TabsTrigger value="target">Target States</TabsTrigger>
+          <TabsTrigger value="bids">Bid Settings</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="transfer">Transfer</TabsTrigger>
@@ -153,16 +157,6 @@ const AgentSettingsView = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="bidAmount">Bid Amount</Label>
-                  <Input
-                    id="bidAmount"
-                    type="number"
-                    value={profile.bidAmount}
-                    onChange={(e) => setProfile({...profile, bidAmount: e.target.value})}
-                  />
-                  <div className="text-sm text-muted-foreground">Min bid $65.00</div>
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
@@ -171,6 +165,14 @@ const AgentSettingsView = () => {
                     onChange={(e) => setProfile({...profile, email: e.target.value})}
                   />
                 </div>
+              </div>
+              
+              {/* Language Skills Section */}
+              <div className="mt-8">
+                <AgentLanguageSettings 
+                  currentLanguages={selectedLanguages}
+                  onUpdate={setSelectedLanguages}
+                />
               </div>
               <div className="flex justify-end mt-6">
                 <Button onClick={handleSaveProfile} className="flex items-center gap-2">
@@ -182,24 +184,19 @@ const AgentSettingsView = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="target" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Target States Configuration</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-muted-foreground">Configure your target states for lead routing and campaign preferences.</div>
-              {/* Add target states configuration here */}
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="verticals" className="space-y-6">
           <AgentVerticalSettings 
-            currentVerticals={["Medicare"]}
-            onUpdate={(verticals) => {
-              // Handle vertical update
-              console.log('Updated verticals:', verticals);
+            currentVerticals={selectedVerticals}
+            onUpdate={setSelectedVerticals}
+          />
+        </TabsContent>
+
+        <TabsContent value="bids" className="space-y-6">
+          <AgentVerticalBidSettings 
+            selectedVerticals={selectedVerticals}
+            onUpdate={(bids) => {
+              console.log('Updated bid settings:', bids);
             }}
           />
         </TabsContent>

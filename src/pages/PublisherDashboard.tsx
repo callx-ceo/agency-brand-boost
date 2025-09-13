@@ -9,6 +9,7 @@ import PublisherKPICards from "@/components/publisher/PublisherKPICards";
 import PublisherOverviewChart from "@/components/publisher/PublisherOverviewChart";
 import PublisherCampaignsTable from "@/components/publisher/PublisherCampaignsTable";
 import PublisherSidebar from "@/components/publisher/PublisherSidebar";
+import PublisherSettings from "@/components/publisher/PublisherSettings";
 
 const PublisherDashboard = () => {
   const [activeView, setActiveView] = useState("dashboard");
@@ -52,44 +53,57 @@ const PublisherDashboard = () => {
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto p-6">
-          <div className="space-y-6">
-            {/* Date Range and Filters */}
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-semibold text-foreground">
-                Sep 12, 2025 - Sep 12, 2025
-              </h1>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">Today</Button>
-                <Button variant="secondary" size="sm">Yesterday</Button>
-                <Button variant="outline" size="sm">Last 7 days</Button>
-                <Button variant="outline" size="sm">Last 30 days</Button>
-                <Button variant="outline" size="sm">Last Month</Button>
-                <Button variant="outline" size="sm">This Month</Button>
-                <Button variant="outline" size="sm">This Year</Button>
-              </div>
-            </div>
-
-            {/* KPI Cards */}
-            <PublisherKPICards />
-
-            {/* Overview Chart */}
-            <div className="space-y-4">
+          {activeView === "dashboard" && (
+            <div className="space-y-6">
+              {/* Date Range and Filters */}
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Overview</h2>
+                <h1 className="text-2xl font-semibold text-foreground">
+                  Sep 12, 2025 - Sep 12, 2025
+                </h1>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">Calls</Button>
-                  <Button variant="secondary" size="sm">Earnings</Button>
+                  <Button variant="outline" size="sm">Today</Button>
+                  <Button variant="secondary" size="sm">Yesterday</Button>
+                  <Button variant="outline" size="sm">Last 7 days</Button>
+                  <Button variant="outline" size="sm">Last 30 days</Button>
+                  <Button variant="outline" size="sm">Last Month</Button>
+                  <Button variant="outline" size="sm">This Month</Button>
+                  <Button variant="outline" size="sm">This Year</Button>
                 </div>
               </div>
-              <PublisherOverviewChart />
-            </div>
 
-            {/* Campaigns Table */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Campaigns</h2>
-              <PublisherCampaignsTable />
+              {/* KPI Cards */}
+              <PublisherKPICards />
+
+              {/* Overview Chart */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold">Overview</h2>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm">Calls</Button>
+                    <Button variant="secondary" size="sm">Earnings</Button>
+                  </div>
+                </div>
+                <PublisherOverviewChart />
+              </div>
+
+              {/* Campaigns Table */}
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Campaigns</h2>
+                <PublisherCampaignsTable />
+              </div>
             </div>
-          </div>
+          )}
+          
+          {activeView === "settings" && <PublisherSettings />}
+          
+          {activeView !== "dashboard" && activeView !== "settings" && (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <h3 className="text-lg font-medium mb-2">Coming Soon</h3>
+                <p className="text-muted-foreground">This section is under development.</p>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>

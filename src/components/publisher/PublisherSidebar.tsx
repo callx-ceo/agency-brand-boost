@@ -74,6 +74,12 @@ const PublisherSidebar = ({ activeView, onViewChange }: PublisherSidebarProps) =
         { id: "agents", label: "Agents", icon: Users },
         { id: "carriers", label: "Carriers", icon: Phone },
       ]
+    },
+    {
+      section: "SETTINGS",
+      items: [
+        { id: "settings", label: "Settings", icon: Settings },
+      ]
     }
   ];
 

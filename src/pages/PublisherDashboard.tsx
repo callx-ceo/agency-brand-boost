@@ -10,6 +10,7 @@ import PublisherOverviewChart from "@/components/publisher/PublisherOverviewChar
 import PublisherCampaignsTable from "@/components/publisher/PublisherCampaignsTable";
 import PublisherSidebar from "@/components/publisher/PublisherSidebar";
 import PublisherSettings from "@/components/publisher/PublisherSettings";
+import PublisherCampaignsView from "@/components/publisher/PublisherCampaignsView";
 
 const PublisherDashboard = () => {
   const [activeView, setActiveView] = useState("dashboard");
@@ -94,6 +95,8 @@ const PublisherDashboard = () => {
             </div>
           ) : activeView === "settings" ? (
             <PublisherSettings />
+          ) : activeView === "campaigns" ? (
+            <PublisherCampaignsView />
           ) : (
             <div className="flex items-center justify-center h-64">
               <div className="text-center">

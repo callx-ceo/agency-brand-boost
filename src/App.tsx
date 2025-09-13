@@ -9,6 +9,7 @@ import Agency from "./pages/Agency";
 import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./components/superadmin/SuperAdminDashboard";
 import AgentDashboardPage from "./pages/AgentDashboard";
+import PublisherDashboard from "./pages/PublisherDashboard";
 import { ImpersonationProvider } from "./contexts/ImpersonationContext";
 
 const queryClient = new QueryClient();
@@ -38,7 +39,7 @@ const App = () => (
               </ImpersonationProvider>
             } 
           />
-          <Route path="/publisher" element={<div className="p-8 text-center"><h1 className="text-2xl">Publisher Dashboard - Coming Soon</h1></div>} />
+          <Route path="/publisher" element={<PublisherDashboard />} />
           <Route path="/advertiser" element={<div className="p-8 text-center"><h1 className="text-2xl">Advertiser Dashboard - Coming Soon</h1></div>} />
           <Route path="/guide" element={<div className="p-8 text-center"><h1 className="text-2xl">Guide Dashboard - Coming Soon</h1></div>} />
           <Route path="*" element={<NotFound />} />

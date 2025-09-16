@@ -15,8 +15,7 @@ const AVAILABLE_VERTICALS = [
   "Life Insurance",
   "Debt Settlement",
   "Home Services",
-  "Legal",
-  "Solar"
+  "Legal"
 ];
 
 // System minimum bids per vertical (set by admin)
@@ -29,8 +28,7 @@ const MINIMUM_BIDS = {
   "Life Insurance": 50,
   "Debt Settlement": 20,
   "Home Services": 15,
-  "Legal": 55,
-  "Solar": 65
+  "Legal": 55
 };
 
 interface VerticalBid {

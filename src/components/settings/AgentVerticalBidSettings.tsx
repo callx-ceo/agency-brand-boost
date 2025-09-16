@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { DollarSign } from 'lucide-react';
+import { DollarSign, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AVAILABLE_VERTICALS = [
@@ -18,9 +18,23 @@ const AVAILABLE_VERTICALS = [
   "Legal"
 ];
 
+// System minimum bids per vertical (set by admin)
+const MINIMUM_BIDS = {
+  "Final Expense": 45,
+  "Medicare": 35,
+  "Auto Insurance": 30,
+  "Home Insurance": 25,
+  "Health Insurance": 40,
+  "Life Insurance": 50,
+  "Debt Settlement": 20,
+  "Home Services": 15,
+  "Legal": 55
+};
+
 interface VerticalBid {
   vertical: string;
   bidAmount: number;
+  isValid?: boolean;
 }
 
 interface AgentVerticalBidSettingsProps {
@@ -38,43 +52,60 @@ export const AgentVerticalBidSettings: React.FC<AgentVerticalBidSettingsProps> =
     // Initialize bid settings for selected verticals
     return selectedVerticals.map(vertical => {
       const existingBid = currentBids.find(bid => bid.vertical === vertical);
+      const minBid = getMinimumBid(vertical);
+      const currentAmount = existingBid?.bidAmount || getDefaultBidAmount(vertical);
       return {
         vertical,
-        bidAmount: existingBid?.bidAmount || getDefaultBidAmount(vertical)
+        bidAmount: currentAmount,
+        isValid: currentAmount >= minBid
       };
     });
   });
 
   const { toast } = useToast();
 
+  function getMinimumBid(vertical: string): number {
+    return MINIMUM_BIDS[vertical] || 25;
+  }
+
   function getDefaultBidAmount(vertical: string): number {
-    const defaults: Record<string, number> = {
-      "Final Expense": 65,
-      "Medicare": 50,
-      "Auto Insurance": 45,
-      "Home Insurance": 40,
-      "Health Insurance": 55,
-      "Life Insurance": 60,
-      "Debt Settlement": 35,
-      "Home Services": 30,
-      "Legal": 70
-    };
-    return defaults[vertical] || 50;
+    const minBid = getMinimumBid(vertical);
+    // Default to 20% above minimum bid
+    return Math.ceil(minBid * 1.2);
   }
 
   const handleBidChange = (vertical: string, newBid: string) => {
     const bidAmount = parseFloat(newBid) || 0;
+    const minBid = getMinimumBid(vertical);
+    const isValid = bidAmount >= minBid;
+    
     setBidSettings(prev => prev.map(bid => 
-      bid.vertical === vertical ? { ...bid, bidAmount } : bid
+      bid.vertical === vertical ? { ...bid, bidAmount, isValid } : bid
     ));
   };
 
   const handleSave = () => {
+    const invalidBids = bidSettings.filter(bid => !bid.isValid);
+    
+    if (invalidBids.length > 0) {
+      toast({
+        title: "Invalid Bid Amounts",
+        description: `Please fix bids below minimum for: ${invalidBids.map(bid => bid.vertical).join(', ')}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     onUpdate?.(bidSettings);
     toast({
       title: "Bid Settings Updated", 
       description: `Updated bid amounts for ${bidSettings.length} vertical(s)`,
     });
+  };
+
+  const setMinimumBid = (vertical: string) => {
+    const minBid = getMinimumBid(vertical);
+    handleBidChange(vertical, minBid.toString());
   };
 
   if (selectedVerticals.length === 0) {
@@ -85,9 +116,9 @@ export const AgentVerticalBidSettings: React.FC<AgentVerticalBidSettingsProps> =
             <DollarSign className="w-5 h-5" />
             Bid Settings by Vertical
           </CardTitle>
-          <CardDescription>
-            Configure your bid amounts for each vertical you work with.
-          </CardDescription>
+        <CardDescription>
+          Set your bid amounts for each vertical. Must meet or exceed minimum bids.
+        </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
@@ -106,32 +137,57 @@ export const AgentVerticalBidSettings: React.FC<AgentVerticalBidSettingsProps> =
           Bid Settings by Vertical
         </CardTitle>
         <CardDescription>
-          Set your bid amounts for each vertical. Higher bids may result in more call volume.
+          Set your bid amounts for each vertical. Must meet or exceed minimum bids to receive calls.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-          {bidSettings.map((bid) => (
-            <div key={bid.vertical} className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex-1">
-                <Label className="font-medium">{bid.vertical}</Label>
-                <p className="text-sm text-muted-foreground">
-                  Recommended: ${getDefaultBidAmount(bid.vertical)}
-                </p>
+          {bidSettings.map((bid) => {
+            const minBid = getMinimumBid(bid.vertical);
+            const isValid = bid.isValid !== false;
+            
+            return (
+              <div key={bid.vertical} className={`p-4 border rounded-lg ${!isValid ? 'border-destructive bg-destructive/5' : 'border-border'}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <Label className="font-medium">{bid.vertical}</Label>
+                    <div className="space-y-1 mt-1">
+                      <p className="text-sm text-muted-foreground">
+                        Minimum: ${minBid} • Suggested: ${getDefaultBidAmount(bid.vertical)}
+                      </p>
+                      {!isValid && (
+                        <div className="flex items-center gap-1 text-sm text-destructive">
+                          <AlertCircle className="w-3 h-3" />
+                          Bid must be at least ${minBid}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setMinimumBid(bid.vertical)}
+                      className="text-xs px-2 h-7"
+                    >
+                      Use Min
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="number"
+                        min={minBid}
+                        step="0.01"
+                        value={bid.bidAmount}
+                        onChange={(e) => handleBidChange(bid.vertical, e.target.value)}
+                        className={`w-24 ${!isValid ? 'border-destructive focus:border-destructive' : ''}`}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm">$</span>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={bid.bidAmount}
-                  onChange={(e) => handleBidChange(bid.vertical, e.target.value)}
-                  className="w-24"
-                />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="pt-4 border-t">
@@ -146,9 +202,17 @@ export const AgentVerticalBidSettings: React.FC<AgentVerticalBidSettingsProps> =
           </div>
         </div>
 
-        <Button onClick={handleSave} className="w-full">
-          Save Bid Settings
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button onClick={handleSave} className="flex-1">
+            Save Bid Settings
+          </Button>
+          {bidSettings.some(bid => bid.isValid === false) && (
+            <div className="flex items-center gap-1 text-sm text-destructive">
+              <AlertCircle className="w-4 h-4" />
+              Fix invalid bids
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

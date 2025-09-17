@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Users, Search, UserCheck, Edit, Eye } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { toast } from "sonner";
+import AgentTimeFilter, { TimeFilterPeriod } from "../../agent/AgentTimeFilter";
 
 interface AgentManagementProps {
   onBackToDashboard: () => void;
@@ -27,7 +28,18 @@ const mockAgents = [
 const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [filteredAgents, setFilteredAgents] = useState(mockAgents);
   const { startImpersonation } = useImpersonation();
+
+  const handleFilterChange = (period: TimeFilterPeriod, dateRange?: any) => {
+    // Mock filtering logic - in real app, this would filter data from API
+    const filtered = mockAgents.map(agent => ({
+      ...agent,
+      onlineTime: period === "monthly" ? "168h 20m" : period === "yesterday" ? "7h 45m" : agent.onlineTime,
+      callTime: period === "monthly" ? "112h 45m" : period === "yesterday" ? "5h 12m" : agent.callTime,
+    }));
+    setFilteredAgents(filtered);
+  };
 
   const handleImpersonateAgent = (agent: any) => {
     const impersonationData = {
@@ -56,10 +68,10 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
   };
 
   const filterAgentsByStatus = (status: string) => {
-    let filtered = mockAgents;
+    let filtered = filteredAgents;
     
     if (status !== "all") {
-      filtered = mockAgents.filter(agent => agent.status === status);
+      filtered = filteredAgents.filter(agent => agent.status === status);
     }
     
     if (searchTerm) {

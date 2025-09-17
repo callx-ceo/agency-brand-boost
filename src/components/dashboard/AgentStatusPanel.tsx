@@ -75,11 +75,18 @@ const AgentStatusPanel = () => {
                 </div>
                 <div>
                   <div className="font-medium text-sm">{agent.name}</div>
-                  <div className="text-xs text-gray-500">
-                    {agent.callsToday} calls • Online: {agent.onlineTime}
+                  <div className="text-xs text-muted-foreground">
+                    {agent.callsToday} calls
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Call time: {agent.callTime}
+                  <div className="flex items-center gap-3 text-xs mt-1">
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                      <span className="text-emerald-600 font-medium">{agent.onlineTime}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-violet-500 rounded-full"></div>
+                      <span className="text-violet-600 font-medium">{agent.callTime}</span>
+                    </div>
                   </div>
                 </div>
               </div>

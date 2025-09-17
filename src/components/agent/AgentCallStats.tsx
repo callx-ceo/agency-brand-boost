@@ -23,7 +23,7 @@ const AgentCallStats = () => {
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Time on Calls:</span>
+            <span className="text-muted-foreground">Talk Time:</span>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-violet-500 rounded-full"></div>
               <span className="text-violet-400 font-semibold font-mono tracking-wide">4h 18m</span>

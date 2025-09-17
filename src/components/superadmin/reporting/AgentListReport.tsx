@@ -389,7 +389,7 @@ const AgentListReport = ({ onBackToDashboard }: AgentListReportProps) => {
                 <TableHead>Logged In</TableHead>
                 <TableHead>Calls Taken</TableHead>
                 <TableHead>Online Time</TableHead>
-                <TableHead>Call Time</TableHead>
+                <TableHead>Talk Time</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Conversion Rate</TableHead>
                 <TableHead>Actions</TableHead>

@@ -117,7 +117,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
                 <TableHead>Status</TableHead>
                 <TableHead>Performance Score</TableHead>
                 <TableHead>Online Time</TableHead>
-                <TableHead>Call Time</TableHead>
+                <TableHead>Talk Time</TableHead>
                 <TableHead>Last Login</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>

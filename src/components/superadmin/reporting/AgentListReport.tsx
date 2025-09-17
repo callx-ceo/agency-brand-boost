@@ -26,6 +26,8 @@ interface Agent {
   conversionRate: number;
   lastActivity: string;
   securityRating: string;
+  onlineTime: string;
+  callTime: string;
 }
 
 const mockAgents: Agent[] = [
@@ -40,7 +42,9 @@ const mockAgents: Agent[] = [
     role: "Admin",
     conversionRate: 65,
     lastActivity: "2 min ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "6h 32m",
+    callTime: "4h 18m"
   },
   {
     id: "2",
@@ -53,7 +57,9 @@ const mockAgents: Agent[] = [
     role: "Admin",
     conversionRate: 65,
     lastActivity: "1 hour ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "0h 0m",
+    callTime: "0h 0m"
   },
   {
     id: "3",
@@ -66,7 +72,9 @@ const mockAgents: Agent[] = [
     role: "Agent",
     conversionRate: 65,
     lastActivity: "5 min ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "5h 45m",
+    callTime: "3h 52m"
   },
   {
     id: "4",
@@ -79,7 +87,9 @@ const mockAgents: Agent[] = [
     role: "Agent",
     conversionRate: 65,
     lastActivity: "Just now",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "2h 15m",
+    callTime: "1h 43m"
   },
   {
     id: "5",
@@ -92,7 +102,9 @@ const mockAgents: Agent[] = [
     role: "Manager",
     conversionRate: 65,
     lastActivity: "1 min ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "7h 21m",
+    callTime: "5h 9m"
   },
   {
     id: "6",
@@ -105,7 +117,9 @@ const mockAgents: Agent[] = [
     role: "Agent",
     conversionRate: 65,
     lastActivity: "3 min ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "4h 12m",
+    callTime: "2h 48m"
   },
   {
     id: "7",
@@ -118,7 +132,9 @@ const mockAgents: Agent[] = [
     role: "Agent",
     conversionRate: 65,
     lastActivity: "2 min ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "3h 28m",
+    callTime: "2h 12m"
   },
   {
     id: "8",
@@ -131,7 +147,9 @@ const mockAgents: Agent[] = [
     role: "Agent",
     conversionRate: 65,
     lastActivity: "4 min ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "6h 15m",
+    callTime: "4h 32m"
   },
   {
     id: "9",
@@ -144,7 +162,9 @@ const mockAgents: Agent[] = [
     role: "Agent",
     conversionRate: 65,
     lastActivity: "1 min ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "5h 12m",
+    callTime: "3h 28m"
   },
   {
     id: "10",
@@ -157,7 +177,9 @@ const mockAgents: Agent[] = [
     role: "Agent",
     conversionRate: 65,
     lastActivity: "2 min ago",
-    securityRating: "5% growth"
+    securityRating: "5% growth",
+    onlineTime: "8h 05m",
+    callTime: "6h 21m"
   }
 ];
 
@@ -366,6 +388,8 @@ const AgentListReport = ({ onBackToDashboard }: AgentListReportProps) => {
                 <TableHead>Agent Status</TableHead>
                 <TableHead>Logged In</TableHead>
                 <TableHead>Calls Taken</TableHead>
+                <TableHead>Online Time</TableHead>
+                <TableHead>Call Time</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Conversion Rate</TableHead>
                 <TableHead>Actions</TableHead>
@@ -383,6 +407,8 @@ const AgentListReport = ({ onBackToDashboard }: AgentListReportProps) => {
                     </Badge>
                   </TableCell>
                   <TableCell>{agent.callsTaken}</TableCell>
+                  <TableCell className="text-sm font-mono">{agent.onlineTime}</TableCell>
+                  <TableCell className="text-sm font-mono">{agent.callTime}</TableCell>
                   <TableCell>{getRoleBadge(agent.role)}</TableCell>
                   <TableCell>{agent.conversionRate}%</TableCell>
                   <TableCell>

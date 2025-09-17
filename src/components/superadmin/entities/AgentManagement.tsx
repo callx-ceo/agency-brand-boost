@@ -15,13 +15,13 @@ interface AgentManagementProps {
 }
 
 const mockAgents = [
-  { id: 1, name: "Sarah Johnson", agency: "Elite Insurance Group", status: "active", performance: 94, lastLogin: "1 hour ago" },
-  { id: 2, name: "Mike Rodriguez", agency: "Premier Coverage Solutions", status: "active", performance: 87, lastLogin: "30 min ago" },
-  { id: 3, name: "Emily Chen", agency: "Guardian Life Services", status: "pending", performance: 76, lastLogin: "2 hours ago" },
-  { id: 4, name: "David Thompson", agency: "ProTech Insurance", status: "suspended", performance: 45, lastLogin: "3 days ago" },
-  { id: 5, name: "Lisa Anderson", agency: "Dynasty Coverage Group", status: "active", performance: 91, lastLogin: "15 min ago" },
-  { id: 6, name: "Robert Wilson", agency: "SecureLife Partners", status: "suspended", performance: 38, lastLogin: "1 week ago" },
-  { id: 7, name: "Jennifer Davis", agency: "TrustGuard Insurance", status: "pending", performance: 82, lastLogin: "4 hours ago" },
+  { id: 1, name: "Sarah Johnson", agency: "Elite Insurance Group", status: "active", performance: 94, lastLogin: "1 hour ago", onlineTime: "6h 32m", callTime: "4h 18m" },
+  { id: 2, name: "Mike Rodriguez", agency: "Premier Coverage Solutions", status: "active", performance: 87, lastLogin: "30 min ago", onlineTime: "5h 45m", callTime: "3h 52m" },
+  { id: 3, name: "Emily Chen", agency: "Guardian Life Services", status: "pending", performance: 76, lastLogin: "2 hours ago", onlineTime: "2h 15m", callTime: "1h 43m" },
+  { id: 4, name: "David Thompson", agency: "ProTech Insurance", status: "suspended", performance: 45, lastLogin: "3 days ago", onlineTime: "0h 0m", callTime: "0h 0m" },
+  { id: 5, name: "Lisa Anderson", agency: "Dynasty Coverage Group", status: "active", performance: 91, lastLogin: "15 min ago", onlineTime: "7h 21m", callTime: "5h 9m" },
+  { id: 6, name: "Robert Wilson", agency: "SecureLife Partners", status: "suspended", performance: 38, lastLogin: "1 week ago", onlineTime: "0h 0m", callTime: "0h 0m" },
+  { id: 7, name: "Jennifer Davis", agency: "TrustGuard Insurance", status: "pending", performance: 82, lastLogin: "4 hours ago", onlineTime: "3h 12m", callTime: "2h 28m" },
 ];
 
 const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
@@ -109,17 +109,19 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
         </div>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Agent Name</TableHead>
-              <TableHead>Agency</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Performance Score</TableHead>
-              <TableHead>Last Login</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Agent Name</TableHead>
+                <TableHead>Agency</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Performance Score</TableHead>
+                <TableHead>Online Time</TableHead>
+                <TableHead>Call Time</TableHead>
+                <TableHead>Last Login</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
           <TableBody>
             {agents.map((agent) => (
               <TableRow key={agent.id}>
@@ -127,6 +129,8 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
                 <TableCell>{agent.agency}</TableCell>
                 <TableCell>{getStatusBadge(agent.status)}</TableCell>
                 <TableCell>{getPerformanceBadge(agent.performance)}</TableCell>
+                <TableCell className="text-sm font-mono">{agent.onlineTime}</TableCell>
+                <TableCell className="text-sm font-mono">{agent.callTime}</TableCell>
                 <TableCell>{agent.lastLogin}</TableCell>
                 <TableCell>
                   <div className="flex gap-1">

@@ -13,6 +13,8 @@ const mockLeaderboardData = [
     applications: 12,
     submitted: 5400,
     issued: 5400,
+    onlineTime: "7h 21m",
+    callTime: "5h 9m",
     icon: <Trophy className="w-4 h-4 text-yellow-500" />
   },
   {
@@ -21,6 +23,8 @@ const mockLeaderboardData = [
     applications: 12,
     submitted: 5200,
     issued: 5200,
+    onlineTime: "6h 32m",
+    callTime: "4h 18m",
     icon: <Medal className="w-4 h-4 text-gray-400" />
   },
   {
@@ -29,6 +33,8 @@ const mockLeaderboardData = [
     applications: 12,
     submitted: 5500,
     issued: 5500,
+    onlineTime: "5h 45m",
+    callTime: "3h 52m",
     icon: <Award className="w-4 h-4 text-amber-600" />
   },
   {
@@ -37,6 +43,8 @@ const mockLeaderboardData = [
     applications: 12,
     submitted: 5200,
     issued: 5200,
+    onlineTime: "4h 15m",
+    callTime: "2h 43m",
     icon: null
   }
 ];
@@ -70,7 +78,10 @@ const AgentLeaderboardWidget = () => {
                 <div>
                   <div className="font-medium text-sm">{agent.agent}</div>
                   <div className="text-xs text-gray-500">
-                    {agent.applications} applications
+                    {agent.applications} applications • Online: {agent.onlineTime}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Call time: {agent.callTime}
                   </div>
                 </div>
               </div>

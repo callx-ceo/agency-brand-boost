@@ -11,7 +11,9 @@ const mockAgents = [
     status: "online",
     currentLoad: 2,
     maxConcurrency: 3,
-    callsToday: 23
+    callsToday: 23,
+    onlineTime: "6h 32m",
+    callTime: "4h 18m"
   },
   {
     id: 2,
@@ -19,7 +21,9 @@ const mockAgents = [
     status: "online",
     currentLoad: 3,
     maxConcurrency: 3,
-    callsToday: 19
+    callsToday: 19,
+    onlineTime: "5h 45m",
+    callTime: "3h 52m"
   },
   {
     id: 3,
@@ -27,7 +31,9 @@ const mockAgents = [
     status: "offline",
     currentLoad: 0,
     maxConcurrency: 2,
-    callsToday: 15
+    callsToday: 15,
+    onlineTime: "2h 15m",
+    callTime: "1h 43m"
   },
   {
     id: 4,
@@ -35,7 +41,9 @@ const mockAgents = [
     status: "online",
     currentLoad: 1,
     maxConcurrency: 4,
-    callsToday: 31
+    callsToday: 31,
+    onlineTime: "7h 21m",
+    callTime: "5h 9m"
   }
 ];
 
@@ -68,7 +76,10 @@ const AgentStatusPanel = () => {
                 <div>
                   <div className="font-medium text-sm">{agent.name}</div>
                   <div className="text-xs text-gray-500">
-                    {agent.callsToday} calls today
+                    {agent.callsToday} calls • Online: {agent.onlineTime}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Call time: {agent.callTime}
                   </div>
                 </div>
               </div>

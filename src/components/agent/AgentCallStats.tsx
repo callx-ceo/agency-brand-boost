@@ -16,6 +16,14 @@ const AgentCallStats = () => {
             <span className="text-white font-medium">8</span>
           </div>
           <div className="flex justify-between">
+            <span className="text-gray-400">Time Online:</span>
+            <span className="text-blue-400 font-medium font-mono">6h 32m</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Time on Calls:</span>
+            <span className="text-purple-400 font-medium font-mono">4h 18m</span>
+          </div>
+          <div className="flex justify-between">
             <span className="text-gray-400">Conversion Rate:</span>
             <span className="text-green-400 font-medium">67%</span>
           </div>

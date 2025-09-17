@@ -1,8 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import AgentTimeFilter, { TimeFilterPeriod } from "../agent/AgentTimeFilter";
 
 const mockAgents = [
   {
@@ -48,19 +49,33 @@ const mockAgents = [
 ];
 
 const AgentStatusPanel = () => {
-  const onlineAgents = mockAgents.filter(agent => agent.status === "online").length;
+  const [filteredAgents, setFilteredAgents] = useState(mockAgents);
+  const onlineAgents = filteredAgents.filter(agent => agent.status === "online").length;
   
+  const handleFilterChange = (period: TimeFilterPeriod, dateRange?: any) => {
+    // Mock filtering logic - in real app, this would filter data from API
+    const filteredData = mockAgents.map(agent => ({
+      ...agent,
+      onlineTime: period === "monthly" ? "168h 20m" : period === "yesterday" ? "7h 45m" : agent.onlineTime,
+      callTime: period === "monthly" ? "112h 45m" : period === "yesterday" ? "5h 12m" : agent.callTime,
+    }));
+    setFilteredAgents(filteredData);
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          Agent Status
-          <Badge variant="secondary">{onlineAgents}/{mockAgents.length} online</Badge>
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            Agent Status
+            <Badge variant="secondary">{onlineAgents}/{filteredAgents.length} online</Badge>
+          </CardTitle>
+        </div>
+        <AgentTimeFilter onFilterChange={handleFilterChange} />
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {mockAgents.map((agent) => (
+          {filteredAgents.map((agent) => (
             <div key={agent.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
               <div className="flex items-center gap-3">
                 <div className="relative">

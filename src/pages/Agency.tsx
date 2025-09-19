@@ -9,6 +9,7 @@ import CallHistoryReport from "../components/dashboard/CallHistoryReport";
 import ApplicationsReport from "../components/dashboard/ApplicationsReport";
 import AgencyOffersManagement from "../components/agency/AgencyOffersManagement";
 import { AgencySettings } from "../components/settings/AgencySettings";
+import BillingTab from "../components/settings/BillingTab";
 import AgentDashboard from "../components/agent/AgentDashboard";
 import { Toaster } from "sonner";
 
@@ -79,6 +80,16 @@ const Agency = () => {
         return <AgentDashboard />;
       case "team":
         return <AgencySettings onBackToDashboard={() => setActiveSection("dashboard")} />;
+      case "billing":
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Billing & Payments</h1>
+              <p className="text-gray-600">Manage billing, payments, and financial settings</p>
+            </div>
+            <BillingTab />
+          </div>
+        );
       default:
         return (
           <>

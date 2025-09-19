@@ -59,6 +59,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
         { id: "publishers", label: "Publishers", icon: UserPlus },
         { id: "referrals", label: "Referrals", icon: Gift },
         { id: "notifications", label: "Notifications", icon: Bell },
+        { id: "billing", label: "Billing", icon: CreditCard },
         { id: "upgrade", label: "Upgrade Plans", icon: CreditCard },
       ]
     }

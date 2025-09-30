@@ -3,8 +3,26 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, DollarSign, Phone, TrendingUp, Clock, CheckCircle2, Calendar, Wallet, Edit } from "lucide-react";
+import { CreditCard, DollarSign, Phone, TrendingUp, Clock, CheckCircle2, Calendar, Wallet, Edit, MoreVertical, ChevronDown, Info, FileText } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Dialog,
   DialogContent,
@@ -19,25 +37,51 @@ import { toast } from "sonner";
 
 const AgentBillingView = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedYear, setSelectedYear] = useState("2025");
+  const [expandedMonths, setExpandedMonths] = useState<string[]>([]);
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: "",
     expiryDate: "",
     cvv: "",
     cardholderName: ""
   });
+
   // Mock agent billing data
-  const agentPlan = {
-    name: "Agent Pro",
-    price: 149,
-    billingCycle: "monthly",
-    nextBillingDate: "2024-06-15",
-    status: "active"
+  const balance = {
+    current: 17941.03,
+    threshold: 25000.00
   };
 
-  const balance = {
-    current: 1247.50,
-    pending: 348.00,
-    available: 899.50
+  const nextPayment = {
+    date: "Oct 1",
+    condition: "or when your balance reaches $25,000.00",
+    paymentMethod: "Amex •••• 3003"
+  };
+
+  const lastPayment = {
+    date: "Sep 30",
+    amount: 18046.12,
+    type: "Manual payment",
+    paymentMethod: "Amex •••• 3003"
+  };
+
+  const currentMonth = {
+    name: "September",
+    netCost: 87941.03,
+    payments: 78723.01
+  };
+
+  const monthlyHistory = [
+    { month: "August", netCost: 83723.01, payments: 100715.98 },
+    { month: "July", netCost: 73180.10, payments: 51609.88 },
+    { month: "June", netCost: 79145.76, payments: 78216.95 },
+    { month: "May", netCost: 65432.10, payments: 62100.50 },
+  ];
+
+  const toggleMonth = (month: string) => {
+    setExpandedMonths(prev => 
+      prev.includes(month) ? prev.filter(m => m !== month) : [...prev, month]
+    );
   };
 
   const handleUpdatePayment = () => {
@@ -51,251 +95,178 @@ const AgentBillingView = () => {
     });
   };
 
-  const callCharges = {
-    totalCalls: 156,
-    qualifiedCalls: 124,
-    avgCallDuration: 4.2,
-    totalCallCost: 872,
-    agentResponsibleAmount: 348, // What agent pays
-    agencyCoversAmount: 524, // What agency covers
-    costPerQualifiedCall: 7.03
-  };
-
-  const currentPeriod = {
-    periodStart: "May 1, 2024",
-    periodEnd: "May 31, 2024",
-    callMinutesUsed: 654,
-    callMinutesIncluded: 1000,
-    aiToolUsage: 45.50,
-    telephonyCharges: 23.80
-  };
-
   return (
     <div className="space-y-6">
-      {/* Balance Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wallet className="w-5 h-5" />
-            Account Balance
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 border rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Current Balance</div>
-              <div className="text-2xl font-bold">${balance.current.toFixed(2)}</div>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Pending Charges</div>
-              <div className="text-2xl font-bold text-amber-600">${balance.pending.toFixed(2)}</div>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Available Balance</div>
-              <div className="text-2xl font-bold text-green-600">${balance.available.toFixed(2)}</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Current Plan Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5" />
-                Your Billing Plan
-              </CardTitle>
-              <CardDescription className="mt-2">
-                Manage your personal agent billing and call charges
-              </CardDescription>
-            </div>
-            <Badge variant="default" className="h-fit">
-              <CheckCircle2 className="w-3 h-3 mr-1" />
-              {agentPlan.status}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-baseline justify-between">
-            <div>
-              <h3 className="text-2xl font-bold">{agentPlan.name}</h3>
-              <p className="text-sm text-muted-foreground mt-1">Base subscription fee</p>
-            </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold">${agentPlan.price}</div>
-              <div className="text-sm text-muted-foreground">per month</div>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Billing Cycle</div>
-              <div className="font-medium capitalize">{agentPlan.billingCycle}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                Next Billing Date
-              </div>
-              <div className="font-medium">{agentPlan.nextBillingDate}</div>
-            </div>
-          </div>
-
-          <Button variant="outline" className="w-full">
-            Upgrade Plan
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Call Charges Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Phone className="w-5 h-5" />
-            Call Charges (Current Period)
-          </CardTitle>
-          <CardDescription>
-            {currentPeriod.periodStart} - {currentPeriod.periodEnd}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <div className="text-sm text-muted-foreground">Total Calls</div>
-              <div className="text-2xl font-bold">{callCharges.totalCalls}</div>
-              <div className="text-xs text-muted-foreground">
-                {callCharges.qualifiedCalls} qualified
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-sm text-muted-foreground">Avg Duration</div>
-              <div className="text-2xl font-bold flex items-baseline gap-1">
-                {callCharges.avgCallDuration}
-                <span className="text-sm font-normal text-muted-foreground">min</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-sm text-muted-foreground">Cost Per Call</div>
-              <div className="text-2xl font-bold">${callCharges.costPerQualifiedCall}</div>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-              <div>
-                <div className="font-medium">Total Call Costs</div>
-                <div className="text-sm text-muted-foreground mt-1">
-                  All charges for this billing period
-                </div>
-              </div>
-              <div className="text-2xl font-bold">${callCharges.totalCallCost.toFixed(2)}</div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">Agency Covers</div>
-                <div className="font-medium text-green-600">
-                  -${callCharges.agencyCoversAmount.toFixed(2)}
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-lg">
-                <div className="font-semibold">You Pay</div>
-                <div className="font-bold">${callCharges.agentResponsibleAmount.toFixed(2)}</div>
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Call Minutes Used</span>
-              <span className="text-sm font-medium">
-                {currentPeriod.callMinutesUsed} / {currentPeriod.callMinutesIncluded}
-              </span>
-            </div>
-            <Progress 
-              value={(currentPeriod.callMinutesUsed / currentPeriod.callMinutesIncluded) * 100} 
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Additional Charges Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5" />
-            Additional Charges
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 border rounded-lg">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <div className="font-medium">AI Tool Usage</div>
-                <div className="text-sm text-muted-foreground">Speech recognition, AI insights</div>
-              </div>
-            </div>
-            <div className="font-bold">${currentPeriod.aiToolUsage.toFixed(2)}</div>
-          </div>
-
-          <div className="flex items-center justify-between p-3 border rounded-lg">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Phone className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <div className="font-medium">Telephony Charges</div>
-                <div className="text-sm text-muted-foreground">Inbound/outbound minutes</div>
-              </div>
-            </div>
-            <div className="font-bold">${currentPeriod.telephonyCharges.toFixed(2)}</div>
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg">
-            <div className="font-semibold">Estimated Total This Period</div>
-            <div className="text-xl font-bold">
-              ${(agentPlan.price + callCharges.agentResponsibleAmount + currentPeriod.aiToolUsage + currentPeriod.telephonyCharges).toFixed(2)}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Payment Method Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Method</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div className="flex items-center gap-3">
-              <CreditCard className="w-5 h-5" />
-              <div>
-                <div className="font-medium">•••• •••• •••• 4242</div>
-                <div className="text-sm text-muted-foreground">Expires 12/2025</div>
-              </div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setShowPaymentModal(true)}
-            >
-              <Edit className="w-4 h-4 mr-2" />
-              Update
+      {/* Top Three Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Balance Card */}
+        <Card>
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Balance</CardTitle>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>View details</DropdownMenuItem>
+                <DropdownMenuItem>Download statement</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-4xl font-bold">${balance.current.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <Button variant="link" className="p-0 h-auto text-primary">
+              See how this is calculated
             </Button>
+            <Button className="w-full">
+              Make an optional payment
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Next Automatic Payment Card */}
+        <Card>
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Next automatic payment</CardTitle>
+              <Info className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Edit schedule</DropdownMenuItem>
+                <DropdownMenuItem>Pause automatic payments</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="text-4xl font-bold mb-1">{nextPayment.date}</div>
+              <div className="text-sm text-muted-foreground">{nextPayment.condition}</div>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <span>{nextPayment.paymentMethod}</span>
+            </div>
+            <Button variant="link" className="p-0 h-auto text-primary">
+              Edit payment threshold
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Last Payment Card */}
+        <Card>
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Last payment</CardTitle>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>View receipt</DropdownMenuItem>
+                <DropdownMenuItem>Download invoice</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="text-4xl font-bold">{lastPayment.date}</div>
+              <div className="text-lg font-semibold mt-1">${lastPayment.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div className="text-sm text-muted-foreground">{lastPayment.type}</div>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <span>{lastPayment.paymentMethod}</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Current Month Summary */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-lg font-medium">{currentMonth.name} (current month)</div>
+            <div className="flex items-center gap-8">
+              <div className="text-right">
+                <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                  Net cost
+                  <Info className="h-3 w-3" />
+                </div>
+                <div className="text-xl font-bold">${currentMonth.netCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-muted-foreground mb-1">Payments</div>
+                <div className="text-xl font-bold">${currentMonth.payments.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              </div>
+              <ChevronDown className="h-5 w-5 text-muted-foreground" />
+            </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Year Selector and View Documents */}
+      <div className="flex items-center justify-between">
+        <Select value={selectedYear} onValueChange={setSelectedYear}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select year" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="2025">2025</SelectItem>
+            <SelectItem value="2024">2024</SelectItem>
+            <SelectItem value="2023">2023</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button>
+          <FileText className="w-4 h-4 mr-2" />
+          View documents
+        </Button>
+      </div>
+
+      {/* Monthly History */}
+      <Card>
+        <CardContent className="p-0">
+          {monthlyHistory.map((month, index) => (
+            <Collapsible
+              key={month.month}
+              open={expandedMonths.includes(month.month)}
+              onOpenChange={() => toggleMonth(month.month)}
+            >
+              <div className={index !== 0 ? "border-t" : ""}>
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between p-6 hover:bg-muted/50 transition-colors">
+                    <div className="text-lg font-medium">{month.month}</div>
+                    <div className="flex items-center gap-8">
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground mb-1">Net cost</div>
+                        <div className="text-xl font-bold">${month.netCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground mb-1">Payments</div>
+                        <div className="text-xl font-bold">${month.payments.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      </div>
+                      <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${expandedMonths.includes(month.month) ? 'rotate-180' : ''}`} />
+                    </div>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="px-6 pb-6 pt-2 bg-muted/30">
+                    <div className="text-sm text-muted-foreground">
+                      Detailed breakdown will appear here
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+          ))}
         </CardContent>
       </Card>
 

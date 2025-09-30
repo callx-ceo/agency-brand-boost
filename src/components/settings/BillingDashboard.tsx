@@ -55,6 +55,10 @@ const BillingDashboard = () => {
     { month: "July", netCost: 125670.85, payments: 98450.60 },
     { month: "June", netCost: 134280.95, payments: 142650.40 },
     { month: "May", netCost: 118540.20, payments: 110320.80 },
+    { month: "April", netCost: 145820.60, payments: 152440.30 },
+    { month: "March", netCost: 162350.40, payments: 168720.15 },
+    { month: "February", netCost: 135670.90, payments: 142580.65 },
+    { month: "January", netCost: 128940.50, payments: 135220.40 },
   ];
 
   const toggleMonth = (month: string) => {
@@ -199,7 +203,7 @@ const BillingDashboard = () => {
         </Button>
       </div>
 
-      {/* Monthly History */}
+      {/* Monthly History Ledger */}
       <Card>
         <CardContent className="p-0">
           {monthlyHistory.map((month, index) => (
@@ -212,23 +216,52 @@ const BillingDashboard = () => {
                 <CollapsibleTrigger className="w-full">
                   <div className="flex items-center justify-between p-6 hover:bg-muted/50 transition-colors">
                     <div className="text-lg font-medium">{month.month}</div>
-                    <div className="flex items-center gap-8">
-                      <div className="text-right">
+                    <div className="flex items-center gap-16">
+                      <div className="text-right min-w-[140px]">
                         <div className="text-xs text-muted-foreground mb-1">Net cost</div>
-                        <div className="text-xl font-bold">${month.netCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        <div className="text-lg font-semibold">${month.netCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right min-w-[140px]">
                         <div className="text-xs text-muted-foreground mb-1">Payments</div>
-                        <div className="text-xl font-bold">${month.payments.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        <div className="text-lg font-semibold">${month.payments.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                       </div>
                       <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${expandedMonths.includes(month.month) ? 'rotate-180' : ''}`} />
                     </div>
                   </div>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <div className="px-6 pb-6 pt-2 bg-muted/30">
-                    <div className="text-sm text-muted-foreground">
-                      Detailed breakdown will appear here
+                  <div className="px-6 pb-6 pt-2 border-t bg-muted/30">
+                    <div className="grid grid-cols-2 gap-6 py-4">
+                      <div>
+                        <h4 className="font-semibold mb-3">Cost Breakdown</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Agent costs</span>
+                            <span className="font-medium">$85,420.30</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Platform fees</span>
+                            <span className="font-medium">$28,650.50</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">AI & telephony</span>
+                            <span className="font-medium">$12,840.75</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-3">Payment Details</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Total payments</span>
+                            <span className="font-medium">${month.payments.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Payment method</span>
+                            <span className="font-medium">Amex •••• 3003</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CollapsibleContent>

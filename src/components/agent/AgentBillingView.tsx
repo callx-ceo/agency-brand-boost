@@ -109,7 +109,10 @@ const AgentBillingView = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Three Cards */}
+      {/* NEW BILLING VIEW - If you see this, the component loaded correctly */}
+      <div className="p-4 bg-green-100 border border-green-400 rounded text-green-800 font-semibold">
+        ✓ New Billing Dashboard Loaded Successfully
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Balance Card */}
         <Card>

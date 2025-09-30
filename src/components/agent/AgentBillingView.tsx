@@ -48,8 +48,8 @@ const AgentBillingView = () => {
 
   // Mock agent billing data
   const balance = {
-    current: 17941.03,
-    threshold: 25000.00
+    currentCharges: 17941.03,
+    paymentThreshold: 25000.00
   };
 
   const nextPayment = {
@@ -114,7 +114,7 @@ const AgentBillingView = () => {
         {/* Balance Card */}
         <Card>
           <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Balance</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Current charges</CardTitle>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -128,7 +128,7 @@ const AgentBillingView = () => {
             </DropdownMenu>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-4xl font-bold">${balance.current.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="text-4xl font-bold">${balance.currentCharges.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             <Button variant="link" className="p-0 h-auto text-primary">
               See how this is calculated
             </Button>

@@ -78,6 +78,14 @@ const AgentBillingView = () => {
     { month: "May", netCost: 65432.10, payments: 62100.50 },
   ];
 
+  const callCharges = {
+    totalCalls: 156,
+    totalPaidCalls: 124,
+    avgCallDuration: 4.2,
+    costPerRawCall: 5.59,
+    costPerPaidCall: 7.03
+  };
+
   const toggleMonth = (month: string) => {
     setExpandedMonths(prev => 
       prev.includes(month) ? prev.filter(m => m !== month) : [...prev, month]
@@ -189,6 +197,41 @@ const AgentBillingView = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Call Charges Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Phone className="w-5 h-5" />
+            Call Charges
+          </CardTitle>
+          <CardDescription>Current billing period statistics</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Total Calls</div>
+              <div className="text-2xl font-bold">{callCharges.totalCalls}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Total Paid Calls</div>
+              <div className="text-2xl font-bold">{callCharges.totalPaidCalls}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Average Duration</div>
+              <div className="text-2xl font-bold">{callCharges.avgCallDuration}<span className="text-sm font-normal text-muted-foreground ml-1">min</span></div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Cost Per Raw Call</div>
+              <div className="text-2xl font-bold">${callCharges.costPerRawCall.toFixed(2)}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">Cost Per Paid Call</div>
+              <div className="text-2xl font-bold">${callCharges.costPerPaidCall.toFixed(2)}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Current Month Summary */}
       <Card>

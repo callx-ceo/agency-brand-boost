@@ -90,6 +90,13 @@ const AgentBillingView = () => {
     costPerPaidCall: 7.03
   };
 
+  const subscription = {
+    planName: "Agent Pro",
+    monthlyFee: 149.00,
+    billingCycle: "Monthly",
+    nextBillingDate: "Oct 1, 2025"
+  };
+
   const toggleMonth = (month: string) => {
     setExpandedMonths(prev => 
       prev.includes(month) ? prev.filter(m => m !== month) : [...prev, month]
@@ -109,10 +116,6 @@ const AgentBillingView = () => {
 
   return (
     <div className="space-y-6">
-      {/* NEW BILLING VIEW - If you see this, the component loaded correctly */}
-      <div className="p-4 bg-green-100 border border-green-400 rounded text-green-800 font-semibold">
-        ✓ New Billing Dashboard Loaded Successfully
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Balance Card */}
         <Card>
@@ -204,6 +207,31 @@ const AgentBillingView = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Subscription Fee Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="w-5 h-5" />
+            Monthly Subscription
+          </CardTitle>
+          <CardDescription>Your base plan and recurring charges</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between p-4 border rounded-lg bg-primary/5">
+            <div>
+              <div className="text-lg font-semibold">{subscription.planName}</div>
+              <div className="text-sm text-muted-foreground mt-1">
+                {subscription.billingCycle} • Next billing: {subscription.nextBillingDate}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold">${subscription.monthlyFee.toFixed(2)}</div>
+              <div className="text-sm text-muted-foreground">per month</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Call Charges Section */}
       <Card>

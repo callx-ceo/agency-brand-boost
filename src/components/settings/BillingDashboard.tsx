@@ -67,8 +67,13 @@ const BillingDashboard = () => {
     );
   };
 
+  console.log("BillingDashboard rendering with", monthlyHistory.length, "months");
+  
   return (
     <div className="space-y-6">
+      <div className="text-sm text-muted-foreground mb-4">
+        Debug: Showing {monthlyHistory.length} months of history
+      </div>
       {/* Top Three Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Balance Card */}

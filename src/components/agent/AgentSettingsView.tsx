@@ -14,7 +14,7 @@ import { AgentVerticalSettings } from "../settings/AgentVerticalSettings";
 import { AgentLanguagePicker } from "../settings/AgentLanguageSettings";
 import { AgentVerticalBidSettings } from "../settings/AgentVerticalBidSettings";
 import { AgentTargetStatesSettings } from "../settings/AgentTargetStatesSettings";
-import BillingTab from "../settings/BillingTab";
+import AgentBillingView from "./AgentBillingView";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -373,7 +373,7 @@ const AgentSettingsView = () => {
         </TabsContent>
 
         <TabsContent value="billing" className="space-y-6">
-          <BillingTab />
+          <AgentBillingView />
         </TabsContent>
 
         <TabsContent value="transfer" className="space-y-6">

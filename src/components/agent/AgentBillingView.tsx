@@ -1,19 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, DollarSign, Phone, TrendingUp, Clock, CheckCircle2, Calendar } from "lucide-react";
+import { CreditCard, DollarSign, Phone, TrendingUp, Clock, CheckCircle2, Calendar, Wallet, Edit } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const AgentBillingView = () => {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardholderName: ""
+  });
   // Mock agent billing data
   const agentPlan = {
     name: "Agent Pro",
-    price: 49,
+    price: 149,
     billingCycle: "monthly",
     nextBillingDate: "2024-06-15",
     status: "active"
+  };
+
+  const balance = {
+    current: 1247.50,
+    pending: 348.00,
+    available: 899.50
+  };
+
+  const handleUpdatePayment = () => {
+    toast.success("Payment method updated successfully");
+    setShowPaymentModal(false);
+    setPaymentDetails({
+      cardNumber: "",
+      expiryDate: "",
+      cvv: "",
+      cardholderName: ""
+    });
   };
 
   const callCharges = {
@@ -37,6 +72,32 @@ const AgentBillingView = () => {
 
   return (
     <div className="space-y-6">
+      {/* Balance Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="w-5 h-5" />
+            Account Balance
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 border rounded-lg">
+              <div className="text-sm text-muted-foreground mb-1">Current Balance</div>
+              <div className="text-2xl font-bold">${balance.current.toFixed(2)}</div>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <div className="text-sm text-muted-foreground mb-1">Pending Charges</div>
+              <div className="text-2xl font-bold text-amber-600">${balance.pending.toFixed(2)}</div>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <div className="text-sm text-muted-foreground mb-1">Available Balance</div>
+              <div className="text-2xl font-bold text-green-600">${balance.available.toFixed(2)}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Current Plan Card */}
       <Card>
         <CardHeader>
@@ -226,10 +287,86 @@ const AgentBillingView = () => {
                 <div className="text-sm text-muted-foreground">Expires 12/2025</div>
               </div>
             </div>
-            <Button variant="outline" size="sm">Update</Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowPaymentModal(true)}
+            >
+              <Edit className="w-4 h-4 mr-2" />
+              Update
+            </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* Payment Method Modal */}
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Payment Method</DialogTitle>
+            <DialogDescription>
+              Update your credit or debit card information
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="cardholderName">Cardholder Name</Label>
+              <Input
+                id="cardholderName"
+                placeholder="John Doe"
+                value={paymentDetails.cardholderName}
+                onChange={(e) => setPaymentDetails({...paymentDetails, cardholderName: e.target.value})}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="cardNumber">Card Number</Label>
+              <Input
+                id="cardNumber"
+                placeholder="1234 5678 9012 3456"
+                value={paymentDetails.cardNumber}
+                onChange={(e) => setPaymentDetails({...paymentDetails, cardNumber: e.target.value})}
+                maxLength={19}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="expiryDate">Expiry Date</Label>
+                <Input
+                  id="expiryDate"
+                  placeholder="MM/YY"
+                  value={paymentDetails.expiryDate}
+                  onChange={(e) => setPaymentDetails({...paymentDetails, expiryDate: e.target.value})}
+                  maxLength={5}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="cvv">CVV</Label>
+                <Input
+                  id="cvv"
+                  placeholder="123"
+                  type="password"
+                  value={paymentDetails.cvv}
+                  onChange={(e) => setPaymentDetails({...paymentDetails, cvv: e.target.value})}
+                  maxLength={4}
+                />
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPaymentModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdatePayment}>
+              Save Payment Method
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

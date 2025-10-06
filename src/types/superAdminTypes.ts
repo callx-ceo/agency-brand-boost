@@ -15,6 +15,7 @@ export type SuperAdminViewType =
   | 'offers'
   | 'verticals'
   | 'languages'
+  | 'agent-verticals'
   | 'offer-statistics'
   | 'offer-details'
   | 'leads'

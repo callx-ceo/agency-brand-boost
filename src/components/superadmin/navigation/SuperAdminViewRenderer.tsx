@@ -31,6 +31,7 @@ import PromptManagement from "../entities/PromptManagement";
 import CustomerManagement from "../entities/CustomerManagement";
 import MinimumBidManagement from "../entities/MinimumBidManagement";
 import CallSettingsManagement from "../entities/CallSettingsManagement";
+import { AgentVerticalManagement } from "../entities/AgentVerticalManagement";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -68,6 +69,9 @@ const SuperAdminViewRenderer = ({
     
     case 'agents':
       return <AgentManagement onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'agent-verticals':
+      return <AgentVerticalManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'advertisers':
       return <AdvertiserManagement onBackToDashboard={handleBackToDashboard} />;

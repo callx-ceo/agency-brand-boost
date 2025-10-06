@@ -90,6 +90,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       icon: <Users className="w-5 h-5" />,
       badge: mockAlerts.suspendedAgents > 0 ? mockAlerts.suspendedAgents : undefined
     },
+    { id: "agent-verticals", label: "Agent Verticals & Bids", icon: <UserCog className="w-5 h-5" /> },
     { id: "advertisers", label: "Advertisers", icon: <Megaphone className="w-5 h-5" /> },
     { id: "publishers", label: "Publishers", icon: <Globe className="w-5 h-5" /> },
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },

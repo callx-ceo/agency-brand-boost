@@ -5,13 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Users, Search, UserCheck, Edit, Eye, CheckCircle2, DollarSign } from "lucide-react";
+import { Users, Search, UserCheck, Eye } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { toast } from "sonner";
 import AgentTimeFilter, { TimeFilterPeriod } from "../../agent/AgentTimeFilter";
+import { AgentDetailView } from "./AgentDetailView";
 
 interface AgentManagementProps {
   onBackToDashboard: () => void;
@@ -154,11 +152,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [filteredAgents, setFilteredAgents] = useState(mockAgents);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editType, setEditType] = useState<'verticals' | 'bids'>('verticals');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
-  const [selectedVerticals, setSelectedVerticals] = useState<string[]>([]);
-  const [editBids, setEditBids] = useState<VerticalBid[]>([]);
   const { startImpersonation } = useImpersonation();
 
   const handleFilterChange = (period: TimeFilterPeriod, dateRange?: any) => {
@@ -222,63 +216,21 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
     };
   };
 
-  const handleEditVerticals = (agent: any) => {
+  const handleViewAgent = (agent: any) => {
     setSelectedAgent(agent);
-    setSelectedVerticals(agent.verticals || []);
-    setEditType('verticals');
-    setEditDialogOpen(true);
-  };
-
-  const handleEditBids = (agent: any) => {
-    setSelectedAgent(agent);
-    setEditBids(agent.bids || []);
-    setEditType('bids');
-    setEditDialogOpen(true);
-  };
-
-  const handleVerticalToggle = (vertical: string) => {
-    setSelectedVerticals(prev =>
-      prev.includes(vertical)
-        ? prev.filter(v => v !== vertical)
-        : [...prev, vertical]
-    );
-  };
-
-  const handleBidChange = (vertical: string, value: string) => {
-    const numValue = parseFloat(value) || 0;
-    const minBid = MINIMUM_BIDS[vertical] || 0;
-    
-    setEditBids(prev => {
-      const existing = prev.find(b => b.vertical === vertical);
-      if (existing) {
-        return prev.map(b =>
-          b.vertical === vertical
-            ? { ...b, bidAmount: numValue, isValid: numValue >= minBid }
-            : b
-        );
-      } else {
-        return [...prev, { vertical, bidAmount: numValue, isValid: numValue >= minBid }];
-      }
-    });
-  };
-
-  const handleSaveVerticals = () => {
-    toast.success(`Updated verticals for ${selectedAgent?.name}`);
-    setEditDialogOpen(false);
-  };
-
-  const handleSaveBids = () => {
-    const invalidBids = editBids.filter(b => !b.isValid);
-    if (invalidBids.length > 0) {
-      toast.error("Please ensure all bids meet minimum requirements");
-      return;
-    }
-    
-    toast.success(`Updated bid settings for ${selectedAgent?.name}`);
-    setEditDialogOpen(false);
   };
 
   const tabCounts = getTabCounts();
+
+  // Show detail view if an agent is selected
+  if (selectedAgent) {
+    return (
+      <AgentDetailView 
+        agent={selectedAgent} 
+        onBack={() => setSelectedAgent(null)} 
+      />
+    );
+  }
 
   const renderAgentsTable = (agents: any[]) => (
     <Card>
@@ -360,18 +312,10 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => handleEditVerticals(agent)}
+                      onClick={() => handleViewAgent(agent)}
                     >
-                      <CheckCircle2 className="h-4 w-4 mr-1" />
-                      Verticals
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleEditBids(agent)}
-                    >
-                      <DollarSign className="h-4 w-4 mr-1" />
-                      Bids
+                      <Eye className="h-4 w-4 mr-1" />
+                      View Details
                     </Button>
                     <Button 
                       variant="outline" 
@@ -433,148 +377,6 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
           {renderAgentsTable(filterAgentsByStatus("suspended"))}
         </TabsContent>
       </Tabs>
-
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              {editType === 'verticals' ? 'Manage Verticals' : 'Manage Bid Prices'} - {selectedAgent?.name}
-            </DialogTitle>
-            <DialogDescription>
-              {editType === 'verticals' 
-                ? 'Select which verticals this agent can handle calls for'
-                : 'Set bid amounts for each vertical (must meet minimum requirements)'}
-            </DialogDescription>
-          </DialogHeader>
-
-          {editType === 'verticals' ? (
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <Label className="text-sm font-medium">Available Verticals</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {AVAILABLE_VERTICALS.map((vertical) => (
-                    <div key={vertical} className="flex items-center space-x-3">
-                      <Checkbox
-                        id={`modal-${vertical}`}
-                        checked={selectedVerticals.includes(vertical)}
-                        onCheckedChange={() => handleVerticalToggle(vertical)}
-                      />
-                      <Label 
-                        htmlFor={`modal-${vertical}`}
-                        className="text-sm font-normal cursor-pointer flex-1"
-                      >
-                        {vertical}
-                      </Label>
-                      {selectedVerticals.includes(vertical) && (
-                        <Badge variant="secondary" className="text-xs">
-                          Active
-                        </Badge>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 border-t">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm font-medium">
-                    {selectedVerticals.length === 0 
-                      ? "No verticals selected"
-                      : `${selectedVerticals.length} vertical(s) selected`}
-                  </p>
-                </div>
-                <Button onClick={handleSaveVerticals} className="w-full">
-                  Save Vertical Assignments
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="space-y-4">
-                {selectedAgent?.verticals.map((vertical: string) => {
-                  const currentBid = editBids.find(b => b.vertical === vertical);
-                  const minBid = MINIMUM_BIDS[vertical] || 0;
-                  const isValid = currentBid ? currentBid.bidAmount >= minBid : false;
-
-                  return (
-                    <Card key={vertical}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-sm font-medium">{vertical}</CardTitle>
-                          <Badge variant="outline" className="text-xs">
-                            Min: ${minBid.toFixed(2)}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2">
-                          <Label htmlFor={`bid-${vertical}`} className="text-xs">
-                            Your Bid Amount
-                          </Label>
-                          <div className="flex gap-2 items-center">
-                            <div className="relative flex-1">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                $
-                              </span>
-                              <Input
-                                id={`bid-${vertical}`}
-                                type="number"
-                                step="0.01"
-                                min={minBid}
-                                value={currentBid?.bidAmount || minBid}
-                                onChange={(e) => handleBidChange(vertical, e.target.value)}
-                                className={`pl-7 ${!isValid ? 'border-destructive' : ''}`}
-                              />
-                            </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleBidChange(vertical, minBid.toString())}
-                            >
-                              Set Min
-                            </Button>
-                          </div>
-                          {!isValid && currentBid && (
-                            <p className="text-xs text-destructive">
-                              Must be at least ${minBid.toFixed(2)}
-                            </p>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-
-              {selectedAgent?.verticals.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p className="text-sm">No verticals assigned to this agent.</p>
-                  <p className="text-xs mt-1">Assign verticals first to set bid prices.</p>
-                </div>
-              )}
-
-              <div className="pt-4 border-t space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">Estimated Weekly Spend</span>
-                  <span className="text-lg font-semibold">
-                    ${editBids.reduce((sum, bid) => sum + (bid.bidAmount * 50), 0).toFixed(2)}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Based on ~50 calls per vertical per week
-                </p>
-                <Button 
-                  onClick={handleSaveBids} 
-                  className="w-full"
-                  disabled={selectedAgent?.verticals.length === 0}
-                >
-                  Save Bid Settings
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

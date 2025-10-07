@@ -30,12 +30,14 @@ import {
   Clock,
   Download,
   Edit,
+  ArrowRight,
 } from "lucide-react";
 
 interface AgencyBillingDetailModalProps {
   agency: any;
   isOpen: boolean;
   onClose: () => void;
+  onViewAgents?: (agencyId: string) => void;
 }
 
 const mockTransactions = [
@@ -57,6 +59,7 @@ export const AgencyBillingDetailModal = ({
   agency,
   isOpen,
   onClose,
+  onViewAgents,
 }: AgencyBillingDetailModalProps) => {
   if (!agency) return null;
 
@@ -202,6 +205,20 @@ export const AgencyBillingDetailModal = ({
                   <p className="text-xs text-muted-foreground mt-1">
                     agents under this agency
                   </p>
+                  {onViewAgents && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-3 w-full"
+                      onClick={() => {
+                        onViewAgents(agency.id);
+                        onClose();
+                      }}
+                    >
+                      View All Agents
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </div>

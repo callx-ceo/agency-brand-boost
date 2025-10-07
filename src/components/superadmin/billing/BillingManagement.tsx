@@ -142,6 +142,7 @@ const mockAgents = generateAgents();
 
 const BillingManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("agencies");
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: startOfMonth(new Date()),
     to: endOfMonth(new Date()),
@@ -151,6 +152,7 @@ const BillingManagement = () => {
   // Agency filters
   const [agencyStatusFilter, setAgencyStatusFilter] = useState<string>("all");
   const [agencyBillingFilter, setAgencyBillingFilter] = useState<string>("all");
+  const [selectedAgencyFilter, setSelectedAgencyFilter] = useState<string | null>(null);
   
   // Agent filters and sorting
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -261,7 +263,8 @@ const BillingManagement = () => {
                           agent.agency.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = selectedStatus === "all" || agent.status === selectedStatus;
       const matchesBillingModel = selectedBillingModel === "all" || agent.billingModel === selectedBillingModel;
-      return matchesSearch && matchesStatus && matchesBillingModel;
+      const matchesAgency = !selectedAgencyFilter || agent.agencyId === selectedAgencyFilter;
+      return matchesSearch && matchesStatus && matchesBillingModel && matchesAgency;
     })
     .sort((a, b) => {
       let comparison = 0;
@@ -427,10 +430,17 @@ const BillingManagement = () => {
       </div>
 
       {/* Tabs for Agency vs Agent Billing */}
-      <Tabs defaultValue="agencies" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList>
           <TabsTrigger value="agencies">Agency Billing</TabsTrigger>
-          <TabsTrigger value="agents">Agent Billing</TabsTrigger>
+          <TabsTrigger value="agents">
+            Agent Billing
+            {selectedAgencyFilter && (
+              <Badge variant="secondary" className="ml-2">
+                Filtered
+              </Badge>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="services">Service Breakdown</TabsTrigger>
         </TabsList>
 
@@ -662,7 +672,14 @@ const BillingManagement = () => {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Agent Billing Overview</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Agent Billing Overview</CardTitle>
+                  {selectedAgencyFilter && (
+                    <Badge variant="secondary" className="text-sm">
+                      {mockAgencies.find(a => a.id === selectedAgencyFilter)?.name}
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <div className="relative">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -678,6 +695,20 @@ const BillingManagement = () => {
               
               {/* Filter shortcuts */}
               <div className="flex flex-wrap items-center gap-2 mt-4">
+                {selectedAgencyFilter && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedAgencyFilter(null)}
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      Clear Agency Filter
+                    </Button>
+                    <div className="h-6 w-px bg-border mx-2" />
+                  </>
+                )}
+                
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm font-medium">Status:</span>
@@ -934,6 +965,10 @@ const BillingManagement = () => {
         onClose={() => {
           setIsAgencyModalOpen(false);
           setSelectedAgency(null);
+        }}
+        onViewAgents={(agencyId) => {
+          setSelectedAgencyFilter(agencyId);
+          setActiveTab("agents");
         }}
       />
       

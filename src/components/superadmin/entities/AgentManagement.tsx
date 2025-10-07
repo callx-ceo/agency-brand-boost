@@ -286,8 +286,8 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
               />
             </div>
             <Button size="sm" className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4" />
-              Assign Agent
+              <Search className="w-4 h-4" />
+              Search
             </Button>
           </div>
         </div>

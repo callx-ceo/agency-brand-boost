@@ -148,6 +148,10 @@ const BillingManagement = () => {
   });
   const [expandedAgency, setExpandedAgency] = useState<string | null>(null);
   
+  // Agency filters
+  const [agencyStatusFilter, setAgencyStatusFilter] = useState<string>("all");
+  const [agencyBillingFilter, setAgencyBillingFilter] = useState<string>("all");
+  
   // Agent filters and sorting
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedBillingModel, setSelectedBillingModel] = useState<string>("all");
@@ -241,6 +245,14 @@ const BillingManagement = () => {
     }
     return <span className="text-sm text-muted-foreground">N/A</span>;
   };
+
+  // Filter agencies
+  const filteredAgencies = mockAgencies.filter((agency) => {
+    const matchesSearch = agency.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = agencyStatusFilter === "all" || agency.status === agencyStatusFilter;
+    const matchesBilling = agencyBillingFilter === "all" || agency.billingModel === agencyBillingFilter;
+    return matchesSearch && matchesStatus && matchesBilling;
+  });
 
   // Filter and sort agents
   const filteredAndSortedAgents = mockAgents
@@ -440,6 +452,87 @@ const BillingManagement = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Filter shortcuts */}
+              <div className="flex flex-wrap items-center gap-2 mt-4">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Status:</span>
+                  <Button
+                    variant={agencyStatusFilter === "all" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAgencyStatusFilter("all")}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={agencyStatusFilter === "active" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAgencyStatusFilter("active")}
+                  >
+                    Active
+                  </Button>
+                  <Button
+                    variant={agencyStatusFilter === "payment_overdue" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAgencyStatusFilter("payment_overdue")}
+                  >
+                    Overdue
+                  </Button>
+                  <Button
+                    variant={agencyStatusFilter === "suspended" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAgencyStatusFilter("suspended")}
+                  >
+                    Suspended
+                  </Button>
+                </div>
+                
+                <div className="h-6 w-px bg-border mx-2" />
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Billing:</span>
+                  <Button
+                    variant={agencyBillingFilter === "all" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAgencyBillingFilter("all")}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={agencyBillingFilter === "prepaid" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAgencyBillingFilter("prepaid")}
+                  >
+                    Prepaid
+                  </Button>
+                  <Button
+                    variant={agencyBillingFilter === "postpaid" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAgencyBillingFilter("postpaid")}
+                  >
+                    Postpaid
+                  </Button>
+                </div>
+                
+                {(agencyStatusFilter !== "all" || agencyBillingFilter !== "all") && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setAgencyStatusFilter("all");
+                      setAgencyBillingFilter("all");
+                    }}
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Clear filters
+                  </Button>
+                )}
+                
+                <div className="ml-auto text-sm text-muted-foreground">
+                  Showing {filteredAgencies.length} of {mockAgencies.length} agencies
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
@@ -458,7 +551,7 @@ const BillingManagement = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAgencies.map((agency) => (
+                  {filteredAgencies.map((agency) => (
                     <React.Fragment key={agency.id}>
                       <TableRow>
                         <TableCell>

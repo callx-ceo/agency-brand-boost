@@ -132,6 +132,11 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     },
   ];
 
+  // Billing & Finance sections
+  const billingSections = [
+    { id: "billing-management", label: "Billing Management", icon: <DollarSign className="w-5 h-5" /> },
+  ];
+
   // System & Administration sections
   const systemSections = [
     { 
@@ -281,6 +286,18 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
           </h3>
           <ul>
             {leadContactSections.map(renderMenuItem)}
+          </ul>
+        </div>
+
+        <Separator className="my-4" />
+
+        {/* Billing & Finance */}
+        <div className="mb-4">
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
+            Billing & Finance
+          </h3>
+          <ul>
+            {billingSections.map(renderMenuItem)}
           </ul>
         </div>
 

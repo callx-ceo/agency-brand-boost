@@ -32,6 +32,7 @@ import CustomerManagement from "../entities/CustomerManagement";
 import MinimumBidManagement from "../entities/MinimumBidManagement";
 import CallSettingsManagement from "../entities/CallSettingsManagement";
 import { AgentVerticalManagement } from "../entities/AgentVerticalManagement";
+import BillingManagement from "../billing/BillingManagement";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -189,6 +190,9 @@ const SuperAdminViewRenderer = ({
     
     case 'call-settings-management':
       return <CallSettingsManagement onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'billing-management':
+      return <BillingManagement />;
     
     default:
       return (

@@ -83,51 +83,100 @@ const US_STATES = [
   "West Virginia", "Wisconsin", "Wyoming"
 ];
 
-const mockMembers: AgencyMember[] = [
-  {
+// Generate 200 agents with dummy data
+const generateMockMembers = (): AgencyMember[] => {
+  const firstNames = ['John', 'Sarah', 'Mike', 'Lisa', 'David', 'Emily', 'James', 'Maria', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Patricia', 'Richard', 'Elizabeth', 'Joseph', 'Susan', 'Thomas', 'Jessica', 'Christopher', 'Karen', 'Daniel', 'Nancy', 'Matthew', 'Lisa', 'Anthony', 'Betty', 'Mark', 'Margaret', 'Donald', 'Sandra', 'Steven', 'Ashley', 'Paul', 'Kimberly', 'Andrew', 'Emily', 'Joshua', 'Donna', 'Kenneth', 'Michelle', 'Kevin', 'Carol', 'Brian', 'Amanda', 'George', 'Melissa', 'Timothy', 'Deborah'];
+  
+  const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'];
+  
+  const roles: UserRole[] = ['Agent', 'Agent', 'Agent', 'Agent', 'Agent', 'Agent', 'Agent', 'Admin', 'Agent', 'Agent'];
+  const statuses: UserStatus[] = ['active', 'active', 'active', 'active', 'active', 'active', 'suspended', 'active'];
+  const presences: AgencyMember['presence'][] = ['available', 'away', 'in-call', 'offline', 'available', 'available'];
+  const verticalsOptions = [
+    ['Medicare'],
+    ['Final Expense'],
+    ['Auto Insurance'],
+    ['Medicare', 'Final Expense'],
+    ['Medicare', 'ACA'],
+    ['Final Expense', 'Life Insurance'],
+    ['Auto Insurance', 'Home Insurance'],
+    ['ACA'],
+    ['Life Insurance'],
+    ['Medicare', 'Final Expense', 'ACA']
+  ];
+  
+  const timeAgo = ['Just now', '2 min ago', '5 min ago', '15 min ago', '30 min ago', '1 hour ago', '2 hours ago', '5 hours ago', '1 day ago', '2 days ago', '1 week ago'];
+  
+  const members: AgencyMember[] = [];
+  
+  // Add owner
+  members.push({
     id: '1',
     name: 'John Smith',
-    email: 'john@agency.com',
+    email: 'john.smith@agency.com',
     role: 'Owner',
     status: 'active',
     canTakeCalls: true,
     lastSeen: '2 minutes ago',
     presence: 'available',
-    verticals: ['Medicare', 'Final Expense']
-  },
-  {
+    verticals: ['Medicare', 'Final Expense', 'ACA']
+  });
+  
+  // Add 2 admins
+  members.push({
     id: '2',
     name: 'Sarah Johnson',
-    email: 'sarah@agency.com',
+    email: 'sarah.johnson@agency.com',
     role: 'Admin',
     status: 'active',
     canTakeCalls: true,
-    lastSeen: '15 minutes ago',
-    presence: 'away',
-    verticals: ['Auto Insurance']
-  },
-  {
+    lastSeen: '5 minutes ago',
+    presence: 'in-call',
+    verticals: ['Medicare', 'Auto Insurance']
+  });
+  
+  members.push({
     id: '3',
-    name: 'Mike Wilson',
-    email: 'mike@agency.com',
-    role: 'Agent',
+    name: 'Michael Davis',
+    email: 'michael.davis@agency.com',
+    role: 'Admin',
     status: 'active',
     canTakeCalls: true,
-    lastSeen: '1 hour ago',
+    lastSeen: '10 minutes ago',
     presence: 'available',
-    verticals: ['Medicare']
-  },
-  {
-    id: '4',
-    name: 'Lisa Brown',
-    email: 'lisa@agency.com',
-    role: 'Agent',
-    status: 'suspended',
-    canTakeCalls: false,
-    lastSeen: '2 days ago',
-    presence: 'offline'
+    verticals: ['Final Expense', 'Life Insurance']
+  });
+  
+  // Generate 197 agents
+  for (let i = 4; i <= 200; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const name = `${firstName} ${lastName}`;
+    const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@agency.com`;
+    const role = roles[Math.floor(Math.random() * roles.length)];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const presence = presences[Math.floor(Math.random() * presences.length)];
+    const verticals = verticalsOptions[Math.floor(Math.random() * verticalsOptions.length)];
+    const lastSeen = timeAgo[Math.floor(Math.random() * timeAgo.length)];
+    const canTakeCalls = status === 'active' && Math.random() > 0.1;
+    
+    members.push({
+      id: i.toString(),
+      name,
+      email,
+      role,
+      status,
+      canTakeCalls,
+      lastSeen,
+      presence: status === 'suspended' ? 'offline' : presence,
+      verticals
+    });
   }
-];
+  
+  return members;
+};
+
+const mockMembers: AgencyMember[] = generateMockMembers();
 
 export const MembersTab: React.FC = () => {
   const [members, setMembers] = useState<AgencyMember[]>(mockMembers);

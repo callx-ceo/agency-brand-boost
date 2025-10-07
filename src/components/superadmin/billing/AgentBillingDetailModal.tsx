@@ -97,9 +97,9 @@ export const AgentBillingDetailModal = ({
 
   const getBillingModelBadge = (model: string) => {
     if (model === "agency_pays") {
-      return <Badge className="bg-green-100 text-green-800">Agency Pays</Badge>;
+      return <Badge className="bg-green-100 text-green-800">Agency Paid</Badge>;
     } else if (model === "agent_pays") {
-      return <Badge className="bg-orange-100 text-orange-800">Agent Pays</Badge>;
+      return <Badge className="bg-orange-100 text-orange-800">Agent Paid</Badge>;
     }
     return <Badge variant="outline">{model}</Badge>;
   };
@@ -204,8 +204,8 @@ export const AgentBillingDetailModal = ({
                     </span>
                     <p className="font-medium mt-1">
                       {agent.billingModel === "agency_pays"
-                        ? "Agency Pays"
-                        : "Agent Pays"}
+                        ? "Agency Paid"
+                        : "Agent Paid"}
                     </p>
                   </div>
                   <div>

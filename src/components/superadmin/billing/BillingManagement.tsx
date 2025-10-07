@@ -223,9 +223,9 @@ const BillingManagement = () => {
     } else if (model === "postpaid") {
       return <Badge className="bg-purple-100 text-purple-800">Postpaid - Invoice</Badge>;
     } else if (model === "agency_pays") {
-      return <Badge className="bg-green-100 text-green-800">Agency Pays</Badge>;
+      return <Badge className="bg-green-100 text-green-800">Agency Paid</Badge>;
     } else if (model === "agent_pays") {
-      return <Badge className="bg-orange-100 text-orange-800">Agent Pays</Badge>;
+      return <Badge className="bg-orange-100 text-orange-800">Agent Paid</Badge>;
     }
     return <Badge variant="outline">{model}</Badge>;
   };

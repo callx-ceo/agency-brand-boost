@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { InviteUserModal } from './InviteUserModal';
 import { RoleChangeConfirmDialog } from './RoleChangeConfirmDialog';
 import { TransferUserModal } from './TransferUserModal';
+import { AgencyMemberDetailView } from './AgencyMemberDetailView';
 
 type UserRole = 'Owner' | 'Admin' | 'Agent';
 type UserStatus = 'active' | 'suspended';
@@ -145,6 +146,8 @@ export const MembersTab: React.FC = () => {
   const [selectedVerticals, setSelectedVerticals] = useState<string[]>([]);
   const [bidSettings, setBidSettings] = useState<VerticalBid[]>([]);
   const [targetStates, setTargetStates] = useState<string[]>([]);
+  const [viewDetailsMode, setViewDetailsMode] = useState(false);
+  const [detailMember, setDetailMember] = useState<any>(null);
 
   const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -230,6 +233,32 @@ export const MembersTab: React.FC = () => {
   const handleTransferUser = (member: AgencyMember) => {
     setSelectedMember(member);
     setShowTransferModal(true);
+  };
+
+  const handleViewDetails = (member: AgencyMember) => {
+    // Add mock performance data for detail view
+    const enhancedMember: any = {
+      id: member.id,
+      name: member.name,
+      email: member.email,
+      agency: "Elite Insurance Group",
+      status: member.status,
+      performance: "94%",
+      onlineTime: "6h 32m",
+      callTime: "4h 18m",
+      lastLogin: member.lastSeen,
+      verticals: member.verticals || [],
+      bids: member.bids || [],
+      targetStates: member.targetStates || []
+    };
+    setDetailMember(enhancedMember);
+    setViewDetailsMode(true);
+  };
+
+  const handleUpdateMember = (updatedMember: any) => {
+    setMembers(prev => prev.map(m =>
+      m.id === updatedMember.id ? { ...m, ...updatedMember } : m
+    ));
   };
 
   // Verticals management
@@ -336,6 +365,19 @@ export const MembersTab: React.FC = () => {
   const handleCanTakeCallsToggle = (memberId: string, canTakeCalls: boolean) => {
     console.log(`Setting canTakeCalls to ${canTakeCalls} for member ${memberId}`);
   };
+
+  if (viewDetailsMode && detailMember) {
+    return (
+      <AgencyMemberDetailView
+        member={detailMember}
+        onBack={() => {
+          setViewDetailsMode(false);
+          setDetailMember(null);
+        }}
+        onUpdate={handleUpdateMember}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -485,7 +527,7 @@ export const MembersTab: React.FC = () => {
                       </Button>
                     </DropdownMenuTrigger>
                      <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleViewDetails(member)}>
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
                       </DropdownMenuItem>

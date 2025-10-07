@@ -7,6 +7,7 @@ import { Users, UserPlus, ArrowLeftRight, Settings } from 'lucide-react';
 import { MembersTab } from './agency/MembersTab';
 import { InvitesTab } from './agency/InvitesTab';
 import { TransfersTab } from './agency/TransfersTab';
+import { UserRoleManagement } from './agency/UserRoleManagement';
 
 interface AgencySettingsProps {
   onBackToDashboard?: () => void;
@@ -49,13 +50,16 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="members" className="flex items-center space-x-2">
                 <Users className="h-4 w-4" />
                 <span>Members</span>
                 <Badge variant="secondary" className="ml-1">
                   {tabCounts.members}
                 </Badge>
+              </TabsTrigger>
+              <TabsTrigger value="roles">
+                User Roles
               </TabsTrigger>
               <TabsTrigger value="invites" className="flex items-center space-x-2">
                 <UserPlus className="h-4 w-4" />
@@ -77,17 +81,21 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="members" className="mt-6">
-              <MembersTab />
-            </TabsContent>
+          <TabsContent value="members" className="mt-6">
+            <MembersTab />
+          </TabsContent>
 
-            <TabsContent value="invites" className="mt-6">
-              <InvitesTab />
-            </TabsContent>
+          <TabsContent value="roles" className="mt-6">
+            <UserRoleManagement />
+          </TabsContent>
 
-            <TabsContent value="transfers" className="mt-6">
-              <TransfersTab />
-            </TabsContent>
+          <TabsContent value="invites" className="mt-6">
+            <InvitesTab />
+          </TabsContent>
+
+          <TabsContent value="transfers" className="mt-6">
+            <TransfersTab />
+          </TabsContent>
           </Tabs>
         </CardContent>
       </Card>

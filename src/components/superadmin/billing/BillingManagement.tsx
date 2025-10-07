@@ -30,7 +30,12 @@ import {
   Bot,
   ChevronDown,
   ChevronRight,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  Filter,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  X
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format, subDays, startOfMonth, endOfMonth, startOfYear, subMonths } from "date-fns";
@@ -140,6 +145,12 @@ const BillingManagement = () => {
     to: endOfMonth(new Date()),
   });
   const [expandedAgency, setExpandedAgency] = useState<string | null>(null);
+  
+  // Agent filters and sorting
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedBillingModel, setSelectedBillingModel] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const shortcuts = [
     {
@@ -221,6 +232,56 @@ const BillingManagement = () => {
       return <span className="text-sm">Invoice</span>;
     }
     return <span className="text-sm text-muted-foreground">N/A</span>;
+  };
+
+  // Filter and sort agents
+  const filteredAndSortedAgents = mockAgents
+    .filter((agent) => {
+      const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          agent.agency.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = selectedStatus === "all" || agent.status === selectedStatus;
+      const matchesBillingModel = selectedBillingModel === "all" || agent.billingModel === selectedBillingModel;
+      return matchesSearch && matchesStatus && matchesBillingModel;
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case "name":
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case "agency":
+          comparison = a.agency.localeCompare(b.agency);
+          break;
+        case "monthlySpend":
+          comparison = a.monthlySpend - b.monthlySpend;
+          break;
+        case "status":
+          comparison = a.status.localeCompare(b.status);
+          break;
+        default:
+          comparison = 0;
+      }
+      
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
+
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+  };
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) {
+      return <ArrowUpDown className="w-4 h-4 ml-1 text-muted-foreground" />;
+    }
+    return sortOrder === "asc" ? 
+      <ArrowUp className="w-4 h-4 ml-1" /> : 
+      <ArrowDown className="w-4 h-4 ml-1" />;
   };
 
   return (
@@ -504,24 +565,130 @@ const BillingManagement = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Filter shortcuts */}
+              <div className="flex flex-wrap items-center gap-2 mt-4">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Status:</span>
+                  <Button
+                    variant={selectedStatus === "all" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedStatus("all")}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={selectedStatus === "active" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedStatus("active")}
+                  >
+                    Active
+                  </Button>
+                  <Button
+                    variant={selectedStatus === "suspended" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedStatus("suspended")}
+                  >
+                    Suspended
+                  </Button>
+                </div>
+                
+                <div className="h-6 w-px bg-border mx-2" />
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Billing:</span>
+                  <Button
+                    variant={selectedBillingModel === "all" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedBillingModel("all")}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={selectedBillingModel === "agency_pays" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedBillingModel("agency_pays")}
+                  >
+                    Agency Pays
+                  </Button>
+                  <Button
+                    variant={selectedBillingModel === "agent_pays" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedBillingModel("agent_pays")}
+                  >
+                    Agent Pays
+                  </Button>
+                </div>
+                
+                {(selectedStatus !== "all" || selectedBillingModel !== "all") && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedStatus("all");
+                      setSelectedBillingModel("all");
+                    }}
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Clear filters
+                  </Button>
+                )}
+                
+                <div className="ml-auto text-sm text-muted-foreground">
+                  Showing {filteredAndSortedAgents.length} of {mockAgents.length} agents
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Agent</TableHead>
-                    <TableHead>Agency</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>
+                      <button 
+                        className="flex items-center hover:text-foreground"
+                        onClick={() => handleSort("name")}
+                      >
+                        Agent
+                        <SortIcon column="name" />
+                      </button>
+                    </TableHead>
+                    <TableHead>
+                      <button 
+                        className="flex items-center hover:text-foreground"
+                        onClick={() => handleSort("agency")}
+                      >
+                        Agency
+                        <SortIcon column="agency" />
+                      </button>
+                    </TableHead>
+                    <TableHead>
+                      <button 
+                        className="flex items-center hover:text-foreground"
+                        onClick={() => handleSort("status")}
+                      >
+                        Status
+                        <SortIcon column="status" />
+                      </button>
+                    </TableHead>
                     <TableHead>Billing Model</TableHead>
                     <TableHead>Payment Method</TableHead>
-                    <TableHead>Monthly Spend</TableHead>
+                    <TableHead>
+                      <button 
+                        className="flex items-center hover:text-foreground"
+                        onClick={() => handleSort("monthlySpend")}
+                      >
+                        Monthly Spend
+                        <SortIcon column="monthlySpend" />
+                      </button>
+                    </TableHead>
                     <TableHead>Call Credits</TableHead>
                     <TableHead>Telephony</TableHead>
                     <TableHead>AI Services</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAgents.map((agent) => (
+                  {filteredAndSortedAgents.map((agent) => (
                     <TableRow key={agent.id}>
                       <TableCell className="font-medium">{agent.name}</TableCell>
                       <TableCell>{agent.agency}</TableCell>

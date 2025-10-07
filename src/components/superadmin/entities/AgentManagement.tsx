@@ -50,8 +50,8 @@ const mockAgents = [
     id: 1, 
     name: "Sarah Johnson", 
     agency: "Elite Insurance Group", 
-    status: "active", 
-    performance: 94, 
+    status: "active",
+    presence: "available",
     lastLogin: "1 hour ago", 
     onlineTime: "6h 32m", 
     callTime: "4h 18m",
@@ -65,8 +65,8 @@ const mockAgents = [
     id: 2, 
     name: "Mike Rodriguez", 
     agency: "Premier Coverage Solutions", 
-    status: "active", 
-    performance: 87, 
+    status: "active",
+    presence: "in-call",
     lastLogin: "30 min ago", 
     onlineTime: "5h 45m", 
     callTime: "3h 52m",
@@ -80,8 +80,8 @@ const mockAgents = [
     id: 3, 
     name: "Emily Chen", 
     agency: "Guardian Life Services", 
-    status: "pending", 
-    performance: 76, 
+    status: "pending",
+    presence: "away",
     lastLogin: "2 hours ago", 
     onlineTime: "2h 15m", 
     callTime: "1h 43m",
@@ -92,8 +92,8 @@ const mockAgents = [
     id: 4, 
     name: "David Thompson", 
     agency: "ProTech Insurance", 
-    status: "suspended", 
-    performance: 45, 
+    status: "suspended",
+    presence: "offline",
     lastLogin: "3 days ago", 
     onlineTime: "0h 0m", 
     callTime: "0h 0m",
@@ -106,8 +106,8 @@ const mockAgents = [
     id: 5, 
     name: "Lisa Anderson", 
     agency: "Dynasty Coverage Group", 
-    status: "active", 
-    performance: 91, 
+    status: "active",
+    presence: "available",
     lastLogin: "15 min ago", 
     onlineTime: "7h 21m", 
     callTime: "5h 9m",
@@ -121,8 +121,8 @@ const mockAgents = [
     id: 6, 
     name: "Robert Wilson", 
     agency: "SecureLife Partners", 
-    status: "suspended", 
-    performance: 38, 
+    status: "suspended",
+    presence: "offline",
     lastLogin: "1 week ago", 
     onlineTime: "0h 0m", 
     callTime: "0h 0m",
@@ -135,8 +135,8 @@ const mockAgents = [
     id: 7, 
     name: "Jennifer Davis", 
     agency: "TrustGuard Insurance", 
-    status: "pending", 
-    performance: 82, 
+    status: "pending",
+    presence: "in-call",
     lastLogin: "4 hours ago", 
     onlineTime: "3h 12m", 
     callTime: "2h 28m",
@@ -151,6 +151,7 @@ const mockAgents = [
 const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [presenceFilter, setPresenceFilter] = useState<'all' | 'available' | 'away' | 'in-call' | 'offline'>('all');
   const [filteredAgents, setFilteredAgents] = useState(mockAgents);
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const { startImpersonation } = useImpersonation();
@@ -190,13 +191,37 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
     return <Badge variant="destructive">{score}</Badge>;
   };
 
-  const filterAgentsByStatus = (status: string) => {
-    let filtered = filteredAgents;
+  const getPresenceBadge = (presence?: string) => {
+    if (!presence) return null;
     
+    const colors = {
+      available: 'bg-green-100 text-green-800',
+      away: 'bg-yellow-100 text-yellow-800',
+      'in-call': 'bg-blue-100 text-blue-800',
+      offline: 'bg-gray-100 text-gray-800'
+    };
+
+    return (
+      <Badge className={colors[presence as keyof typeof colors] || colors.offline}>
+        {presence === 'in-call' ? 'In Call' : presence.charAt(0).toUpperCase() + presence.slice(1)}
+      </Badge>
+    );
+  };
+
+  const filterAgentsByStatus = (status: string) => {
+    let filtered = mockAgents;
+    
+    // Filter by account status
     if (status !== "all") {
-      filtered = filteredAgents.filter(agent => agent.status === status);
+      filtered = filtered.filter(agent => agent.status === status);
     }
     
+    // Filter by presence
+    if (presenceFilter !== "all") {
+      filtered = filtered.filter(agent => agent.presence === presenceFilter);
+    }
+    
+    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(agent =>
         agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -205,6 +230,13 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
     }
     
     return filtered;
+  };
+
+  const getPresenceFilterCount = (presence: string) => {
+    return mockAgents.filter(agent => {
+      if (presence === 'all') return true;
+      return agent.presence === presence;
+    }).length;
   };
 
   const getTabCounts = () => {
@@ -264,6 +296,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
                 <TableHead>Agent Name</TableHead>
                 <TableHead>Agency</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Presence</TableHead>
                 <TableHead>Verticals</TableHead>
                 <TableHead>Last Login</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -275,6 +308,7 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
                 <TableCell className="font-medium">{agent.name}</TableCell>
                 <TableCell>{agent.agency}</TableCell>
                 <TableCell>{getStatusBadge(agent.status)}</TableCell>
+                <TableCell>{getPresenceBadge(agent.presence)}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {agent.verticals.length > 0 ? (
@@ -338,6 +372,57 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
         <Button variant="outline" onClick={onBackToDashboard}>
           Back to Dashboard
         </Button>
+      </div>
+
+      {/* Presence Status Filters */}
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-muted-foreground">Filter by Presence</p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={presenceFilter === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPresenceFilter("all")}
+            className="flex items-center gap-2"
+          >
+            All ({getPresenceFilterCount("all")})
+          </Button>
+          <Button
+            variant={presenceFilter === "available" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPresenceFilter("available")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-green-500 rounded-full" />
+            Available ({getPresenceFilterCount("available")})
+          </Button>
+          <Button
+            variant={presenceFilter === "in-call" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPresenceFilter("in-call")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-blue-500 rounded-full" />
+            In Call ({getPresenceFilterCount("in-call")})
+          </Button>
+          <Button
+            variant={presenceFilter === "away" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPresenceFilter("away")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+            Away ({getPresenceFilterCount("away")})
+          </Button>
+          <Button
+            variant={presenceFilter === "offline" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPresenceFilter("offline")}
+            className="flex items-center gap-2"
+          >
+            <div className="w-2 h-2 bg-gray-400 rounded-full" />
+            Offline ({getPresenceFilterCount("offline")})
+          </Button>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>

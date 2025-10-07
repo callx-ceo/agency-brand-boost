@@ -67,7 +67,6 @@ const generateAgents = () => {
   const firstNames = ["Sarah", "Michael", "Jennifer", "David", "Lisa", "Robert", "Emily", "James", "Jessica", "John", "Amanda", "Christopher", "Ashley", "Daniel", "Michelle", "Matthew", "Stephanie", "Joshua", "Nicole", "Andrew", "Elizabeth", "Ryan", "Lauren", "Tyler", "Rebecca", "Brandon", "Samantha", "Kevin", "Rachel", "Eric", "Melissa", "Jason", "Amy", "Brian", "Kimberly", "Justin", "Angela", "Mark", "Heather", "Steven", "Laura", "Anthony", "Christina", "Jacob", "Amber", "William", "Megan", "Joseph", "Kelly", "Alexander"];
   const lastNames = ["Martinez", "Chen", "Johnson", "Williams", "Davis", "Rodriguez", "Miller", "Garcia", "Wilson", "Anderson", "Taylor", "Thomas", "Moore", "Jackson", "Martin", "Lee", "Thompson", "White", "Harris", "Clark", "Lewis", "Walker", "Hall", "Allen", "Young", "King", "Wright", "Lopez", "Hill", "Scott", "Green", "Adams", "Baker", "Nelson", "Carter", "Mitchell", "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins", "Stewart", "Morris", "Rogers", "Reed", "Cook"];
   const statuses = ["active", "active", "active", "active", "suspended"];
-  const billingModels = ["agency_pays", "agency_pays", "agency_pays", "mixed", "agent_pays"];
   
   const agents = [];
   let agentId = 1;
@@ -78,20 +77,28 @@ const generateAgents = () => {
       const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
       const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
       const status = statuses[Math.floor(Math.random() * statuses.length)];
-      const billingModel = billingModels[Math.floor(Math.random() * billingModels.length)];
+      
+      // Determine if agency pays or agent pays
+      const isAgencyPays = Math.random() > 0.3; // 70% agency pays, 30% agent pays
+      const billingModel = isAgencyPays ? "agency_pays" : "agent_pays";
+      
+      // If agent pays, they choose ACH or Credit Card
+      // If agency pays, inherit agency's payment method
+      let paymentMethod = "";
+      let lastCard4 = "";
+      
+      if (isAgencyPays) {
+        // Inherit from agency
+        paymentMethod = agency.paymentMethod;
+        lastCard4 = agency.lastCard4;
+      } else {
+        // Agent chooses their own (ACH or Credit Card only)
+        paymentMethod = Math.random() > 0.5 ? "credit_card" : "ach";
+        lastCard4 = paymentMethod === "credit_card" ? Math.floor(1000 + Math.random() * 9000).toString() : "";
+      }
       
       const callCreditsUsed = Math.floor(Math.random() * 300) + 100;
       const telephonyMinutes = Math.floor(Math.random() * 200) + 80;
-      
-      // All agents are prepaid with either credit card or ACH
-      const paymentMethod = Math.random() > 0.5 ? "credit_card" : "ach";
-      const lastCard4 = paymentMethod === "credit_card" ? Math.floor(1000 + Math.random() * 9000).toString() : "";
-      
-      // For agents, billingModel indicates who pays (not payment method)
-      const callCreditsAgency = billingModel === "agency_pays" || (billingModel === "mixed" && Math.random() > 0.5);
-      const telephonyAgency = billingModel === "agency_pays" || (billingModel === "mixed" && Math.random() > 0.5);
-      const aiCoachingAgency = billingModel === "agency_pays" || (billingModel === "mixed" && Math.random() > 0.5);
-      const aiScoringAgency = billingModel === "agency_pays" || (billingModel === "mixed" && Math.random() > 0.5);
       
       const monthlySpend = 
         callCreditsUsed * 10 + 
@@ -103,16 +110,17 @@ const generateAgents = () => {
         id: agentId.toString(),
         name: `${firstName} ${lastName}`,
         agency: agency.name,
+        agencyId: agency.id,
         status,
         billingModel,
         paymentMethod,
         lastCard4,
         monthlySpend: Math.floor(monthlySpend),
         services: {
-          callCredits: { agency: callCreditsAgency, used: callCreditsUsed, cost: callCreditsUsed * 10 },
-          telephonyFees: { agency: telephonyAgency, minutes: telephonyMinutes, cost: telephonyMinutes * 10 },
-          aiCoaching: { agency: aiCoachingAgency, cost: Math.random() > 0.3 ? 250 : 0 },
-          aiScoring: { agency: aiScoringAgency, cost: Math.random() > 0.4 ? 250 : 0 }
+          callCredits: { used: callCreditsUsed, cost: callCreditsUsed * 10 },
+          telephonyFees: { minutes: telephonyMinutes, cost: telephonyMinutes * 10 },
+          aiCoaching: { cost: Math.random() > 0.3 ? 250 : 0 },
+          aiScoring: { cost: Math.random() > 0.4 ? 250 : 0 }
         }
       });
       
@@ -184,19 +192,35 @@ const BillingManagement = () => {
   const getBillingModelBadge = (model: string, paymentMethod?: string) => {
     if (model === "prepaid") {
       if (paymentMethod === "credit_card") {
-        return <Badge className="bg-blue-100 text-blue-800">Prepaid - Credit Card</Badge>;
+        return <Badge className="bg-blue-100 text-blue-800">Prepaid - Card</Badge>;
       } else if (paymentMethod === "ach") {
         return <Badge className="bg-blue-100 text-blue-800">Prepaid - ACH</Badge>;
       }
       return <Badge className="bg-blue-100 text-blue-800">Prepaid</Badge>;
     } else if (model === "postpaid") {
-      return <Badge className="bg-purple-100 text-purple-800">Postpaid - Invoicing</Badge>;
+      return <Badge className="bg-purple-100 text-purple-800">Postpaid - Invoice</Badge>;
     } else if (model === "agency_pays") {
       return <Badge className="bg-green-100 text-green-800">Agency Pays</Badge>;
-    } else if (model === "mixed") {
-      return <Badge className="bg-orange-100 text-orange-800">Mixed</Badge>;
+    } else if (model === "agent_pays") {
+      return <Badge className="bg-orange-100 text-orange-800">Agent Pays</Badge>;
     }
     return <Badge variant="outline">{model}</Badge>;
+  };
+
+  const getPaymentMethodDisplay = (paymentMethod: string, lastCard4?: string) => {
+    if (paymentMethod === "credit_card" && lastCard4) {
+      return (
+        <div className="flex items-center gap-2 text-sm">
+          <CreditCard className="h-4 w-4" />
+          <span>•••• {lastCard4}</span>
+        </div>
+      );
+    } else if (paymentMethod === "ach") {
+      return <span className="text-sm">ACH</span>;
+    } else if (paymentMethod === "invoice") {
+      return <span className="text-sm">Invoice</span>;
+    }
+    return <span className="text-sm text-muted-foreground">N/A</span>;
   };
 
   return (
@@ -384,16 +408,7 @@ const BillingManagement = () => {
                         <TableCell className="font-medium">{agency.name}</TableCell>
                         <TableCell>{getStatusBadge(agency.status)}</TableCell>
                         <TableCell>{getBillingModelBadge(agency.billingModel, agency.paymentMethod)}</TableCell>
-                        <TableCell>
-                          {agency.paymentMethod === "credit_card" && agency.lastCard4 && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <CreditCard className="h-4 w-4" />
-                              <span>•••• {agency.lastCard4}</span>
-                            </div>
-                          )}
-                          {agency.paymentMethod === "ach" && <span className="text-sm">ACH</span>}
-                          {agency.paymentMethod === "invoice" && <span className="text-sm">Invoice</span>}
-                        </TableCell>
+                        <TableCell>{getPaymentMethodDisplay(agency.paymentMethod, agency.lastCard4)}</TableCell>
                         <TableCell>{agency.agentCount}</TableCell>
                         <TableCell className="font-semibold">${agency.monthlySpend.toLocaleString()}</TableCell>
                         <TableCell className={agency.outstandingBalance > 0 ? "text-red-600 font-semibold" : ""}>
@@ -513,45 +528,31 @@ const BillingManagement = () => {
                       <TableCell>{getStatusBadge(agent.status)}</TableCell>
                       <TableCell>{getBillingModelBadge(agent.billingModel)}</TableCell>
                       <TableCell>
-                        {agent.paymentMethod === "credit_card" && agent.lastCard4 && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <CreditCard className="h-4 w-4" />
-                            <span>•••• {agent.lastCard4}</span>
+                        {agent.billingModel === "agency_pays" ? (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <span>Uses Agency ({getPaymentMethodDisplay(agent.paymentMethod, agent.lastCard4)})</span>
                           </div>
+                        ) : (
+                          getPaymentMethodDisplay(agent.paymentMethod, agent.lastCard4)
                         )}
-                        {agent.paymentMethod === "ach" && <span className="text-sm">ACH</span>}
                       </TableCell>
                       <TableCell className="font-semibold">${agent.monthlySpend.toLocaleString()}</TableCell>
                       <TableCell>
                         <div className="text-sm">
                           ${agent.services.callCredits.cost.toLocaleString()}
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            {agent.services.callCredits.agency ? "Agency" : "Agent"}
-                          </Badge>
+                          <div className="text-xs text-muted-foreground">{agent.services.callCredits.used} calls</div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
                           ${agent.services.telephonyFees.cost.toLocaleString()}
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            {agent.services.telephonyFees.agency ? "Agency" : "Agent"}
-                          </Badge>
+                          <div className="text-xs text-muted-foreground">{agent.services.telephonyFees.minutes} min</div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
-                          <div className="text-sm">
-                            Coaching: ${agent.services.aiCoaching.cost}
-                            <Badge variant="outline" className="ml-2 text-xs">
-                              {agent.services.aiCoaching.agency ? "Agency" : "Agent"}
-                            </Badge>
-                          </div>
-                          <div className="text-sm">
-                            Scoring: ${agent.services.aiScoring.cost}
-                            <Badge variant="outline" className="ml-2 text-xs">
-                              {agent.services.aiScoring.agency ? "Agency" : "Agent"}
-                            </Badge>
-                          </div>
+                          <div className="text-sm">Coaching: ${agent.services.aiCoaching.cost}</div>
+                          <div className="text-sm">Scoring: ${agent.services.aiScoring.cost}</div>
                         </div>
                       </TableCell>
                     </TableRow>

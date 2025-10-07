@@ -4,6 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { 
   Table, 
   TableBody, 
@@ -27,9 +29,13 @@ import {
   Phone,
   Bot,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Calendar as CalendarIcon
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { format, subDays, startOfMonth, endOfMonth, startOfYear, subMonths } from "date-fns";
+import { cn } from "@/lib/utils";
+import type { DateRange } from "react-day-picker";
 
 // Mock data for agencies
 const mockAgencies = [
@@ -121,8 +127,41 @@ const mockAgents = generateAgents();
 
 const BillingManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPeriod, setSelectedPeriod] = useState("current");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: startOfMonth(new Date()),
+    to: endOfMonth(new Date()),
+  });
   const [expandedAgency, setExpandedAgency] = useState<string | null>(null);
+
+  const shortcuts = [
+    {
+      label: "Today",
+      getValue: () => ({ from: new Date(), to: new Date() }),
+    },
+    {
+      label: "Last 7 days",
+      getValue: () => ({ from: subDays(new Date(), 7), to: new Date() }),
+    },
+    {
+      label: "Last 30 days",
+      getValue: () => ({ from: subDays(new Date(), 30), to: new Date() }),
+    },
+    {
+      label: "This month",
+      getValue: () => ({ from: startOfMonth(new Date()), to: endOfMonth(new Date()) }),
+    },
+    {
+      label: "Last month",
+      getValue: () => {
+        const lastMonth = subMonths(new Date(), 1);
+        return { from: startOfMonth(lastMonth), to: endOfMonth(lastMonth) };
+      },
+    },
+    {
+      label: "This year",
+      getValue: () => ({ from: startOfYear(new Date()), to: new Date() }),
+    },
+  ];
 
   const totalRevenue = mockAgencies.reduce((sum, agency) => sum + agency.monthlySpend, 0);
   const totalOutstanding = mockAgencies.reduce((sum, agency) => sum + agency.outstandingBalance, 0);
@@ -169,17 +208,55 @@ const BillingManagement = () => {
           <p className="text-muted-foreground">Monitor and manage billing across all agencies and agents</p>
         </div>
         <div className="flex gap-2">
-          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="current">Current Month</SelectItem>
-              <SelectItem value="last-month">Last Month</SelectItem>
-              <SelectItem value="last-3-months">Last 3 Months</SelectItem>
-              <SelectItem value="ytd">Year to Date</SelectItem>
-            </SelectContent>
-          </Select>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-[300px] justify-start text-left font-normal">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "LLL dd, y")} -{" "}
+                      {format(dateRange.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Pick a date range</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <div className="flex">
+                <div className="border-r">
+                  <div className="p-3 space-y-1">
+                    <p className="text-sm font-medium mb-2">Quick Select</p>
+                    {shortcuts.map((shortcut) => (
+                      <Button
+                        key={shortcut.label}
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start font-normal"
+                        onClick={() => setDateRange(shortcut.getValue())}
+                      >
+                        {shortcut.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <Calendar
+                    mode="range"
+                    defaultMonth={dateRange?.from}
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    numberOfMonths={2}
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
           <Button variant="outline">
             <Download className="w-4 h-4 mr-2" />
             Export

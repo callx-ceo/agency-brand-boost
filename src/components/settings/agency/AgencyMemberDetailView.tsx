@@ -418,15 +418,18 @@ export const AgencyMemberDetailView: React.FC<AgencyMemberDetailViewProps> = ({ 
                             return (
                               <div
                                 key={state}
-                                className="flex items-center gap-2 p-2 border rounded hover:bg-muted/50 cursor-pointer"
-                                onClick={() => handleStateToggle(state)}
+                                className="flex items-center gap-2 p-2 border rounded hover:bg-muted/50"
                               >
                                 <Checkbox
                                   id={`${selectedVerticalForStates}-${state}`}
                                   checked={isChecked}
                                   onCheckedChange={() => handleStateToggle(state)}
                                 />
-                                <Label htmlFor={`${selectedVerticalForStates}-${state}`} className="cursor-pointer text-sm font-normal">
+                                <Label 
+                                  htmlFor={`${selectedVerticalForStates}-${state}`} 
+                                  className="cursor-pointer text-sm font-normal flex-1"
+                                  onClick={() => handleStateToggle(state)}
+                                >
                                   {state}
                                 </Label>
                               </div>

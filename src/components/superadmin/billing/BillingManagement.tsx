@@ -33,87 +33,84 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 // Mock data for agencies
 const mockAgencies = [
-  {
-    id: "1",
-    name: "Premier Insurance Group",
-    status: "active",
-    monthlySpend: 45230,
-    outstandingBalance: 0,
-    billingModel: "postpaid",
-    lastPayment: "2024-12-15",
-    agentCount: 12,
-    services: {
-      callCredits: { used: 2340, total: 5000, cost: 23400 },
-      telephonyFees: { minutes: 1245, cost: 12450 },
-      aiCoaching: { enabled: true, cost: 1200 },
-      aiScoring: { enabled: true, cost: 800 }
-    }
-  },
-  {
-    id: "2",
-    name: "Healthcare Solutions LLC",
-    status: "active",
-    monthlySpend: 32100,
-    outstandingBalance: 5200,
-    billingModel: "prepaid",
-    lastPayment: "2024-12-10",
-    agentCount: 8,
-    services: {
-      callCredits: { used: 1890, total: 3000, cost: 18900 },
-      telephonyFees: { minutes: 890, cost: 8900 },
-      aiCoaching: { enabled: true, cost: 1000 },
-      aiScoring: { enabled: false, cost: 0 }
-    }
-  },
-  {
-    id: "3",
-    name: "Final Expense Direct",
-    status: "payment_overdue",
-    monthlySpend: 28900,
-    outstandingBalance: 15600,
-    billingModel: "postpaid",
-    lastPayment: "2024-11-20",
-    agentCount: 6,
-    services: {
-      callCredits: { used: 1560, total: 2500, cost: 15600 },
-      telephonyFees: { minutes: 780, cost: 7800 },
-      aiCoaching: { enabled: false, cost: 0 },
-      aiScoring: { enabled: true, cost: 600 }
-    }
-  }
+  { id: "1", name: "Premier Insurance Group", status: "active", monthlySpend: 45230, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-15", agentCount: 12, services: { callCredits: { used: 2340, total: 5000, cost: 23400 }, telephonyFees: { minutes: 1245, cost: 12450 }, aiCoaching: { enabled: true, cost: 1200 }, aiScoring: { enabled: true, cost: 800 } } },
+  { id: "2", name: "Healthcare Solutions LLC", status: "active", monthlySpend: 32100, outstandingBalance: 5200, billingModel: "prepaid", lastPayment: "2024-12-10", agentCount: 8, services: { callCredits: { used: 1890, total: 3000, cost: 18900 }, telephonyFees: { minutes: 890, cost: 8900 }, aiCoaching: { enabled: true, cost: 1000 }, aiScoring: { enabled: false, cost: 0 } } },
+  { id: "3", name: "Final Expense Direct", status: "payment_overdue", monthlySpend: 28900, outstandingBalance: 15600, billingModel: "postpaid", lastPayment: "2024-11-20", agentCount: 6, services: { callCredits: { used: 1560, total: 2500, cost: 15600 }, telephonyFees: { minutes: 780, cost: 7800 }, aiCoaching: { enabled: false, cost: 0 }, aiScoring: { enabled: true, cost: 600 } } },
+  { id: "4", name: "Medicare Advantage Partners", status: "active", monthlySpend: 38500, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-14", agentCount: 10, services: { callCredits: { used: 2100, total: 4000, cost: 21000 }, telephonyFees: { minutes: 1050, cost: 10500 }, aiCoaching: { enabled: true, cost: 1100 }, aiScoring: { enabled: true, cost: 700 } } },
+  { id: "5", name: "Life Insurance Pros", status: "active", monthlySpend: 29800, outstandingBalance: 0, billingModel: "prepaid", lastPayment: "2024-12-12", agentCount: 7, services: { callCredits: { used: 1680, total: 3200, cost: 16800 }, telephonyFees: { minutes: 840, cost: 8400 }, aiCoaching: { enabled: true, cost: 900 }, aiScoring: { enabled: false, cost: 0 } } },
+  { id: "6", name: "Senior Care Insurance", status: "active", monthlySpend: 41200, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-16", agentCount: 11, services: { callCredits: { used: 2260, total: 4500, cost: 22600 }, telephonyFees: { minutes: 1130, cost: 11300 }, aiCoaching: { enabled: true, cost: 1150 }, aiScoring: { enabled: true, cost: 750 } } },
+  { id: "7", name: "ACA Enrollment Specialists", status: "payment_overdue", monthlySpend: 18600, outstandingBalance: 8400, billingModel: "postpaid", lastPayment: "2024-11-25", agentCount: 4, services: { callCredits: { used: 980, total: 2000, cost: 9800 }, telephonyFees: { minutes: 490, cost: 4900 }, aiCoaching: { enabled: false, cost: 0 }, aiScoring: { enabled: true, cost: 400 } } },
+  { id: "8", name: "Guardian Financial Group", status: "active", monthlySpend: 35700, outstandingBalance: 0, billingModel: "prepaid", lastPayment: "2024-12-13", agentCount: 9, services: { callCredits: { used: 1960, total: 3800, cost: 19600 }, telephonyFees: { minutes: 980, cost: 9800 }, aiCoaching: { enabled: true, cost: 1050 }, aiScoring: { enabled: true, cost: 650 } } },
+  { id: "9", name: "Nationwide Benefits Inc", status: "active", monthlySpend: 48900, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-15", agentCount: 13, services: { callCredits: { used: 2680, total: 5500, cost: 26800 }, telephonyFees: { minutes: 1340, cost: 13400 }, aiCoaching: { enabled: true, cost: 1300 }, aiScoring: { enabled: true, cost: 850 } } },
+  { id: "10", name: "Family First Insurance", status: "active", monthlySpend: 26400, outstandingBalance: 0, billingModel: "prepaid", lastPayment: "2024-12-11", agentCount: 6, services: { callCredits: { used: 1460, total: 2800, cost: 14600 }, telephonyFees: { minutes: 730, cost: 7300 }, aiCoaching: { enabled: true, cost: 850 }, aiScoring: { enabled: false, cost: 0 } } },
+  { id: "11", name: "United Health Advisors", status: "active", monthlySpend: 44600, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-16", agentCount: 11, services: { callCredits: { used: 2440, total: 4800, cost: 24400 }, telephonyFees: { minutes: 1220, cost: 12200 }, aiCoaching: { enabled: true, cost: 1200 }, aiScoring: { enabled: true, cost: 800 } } },
+  { id: "12", name: "Secure Future Benefits", status: "suspended", monthlySpend: 0, outstandingBalance: 22300, billingModel: "postpaid", lastPayment: "2024-10-15", agentCount: 0, services: { callCredits: { used: 0, total: 0, cost: 0 }, telephonyFees: { minutes: 0, cost: 0 }, aiCoaching: { enabled: false, cost: 0 }, aiScoring: { enabled: false, cost: 0 } } },
+  { id: "13", name: "Elite Medicare Solutions", status: "active", monthlySpend: 39800, outstandingBalance: 0, billingModel: "prepaid", lastPayment: "2024-12-14", agentCount: 10, services: { callCredits: { used: 2180, total: 4200, cost: 21800 }, telephonyFees: { minutes: 1090, cost: 10900 }, aiCoaching: { enabled: true, cost: 1100 }, aiScoring: { enabled: true, cost: 700 } } },
+  { id: "14", name: "Advantage Insurance Group", status: "active", monthlySpend: 31200, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-12", agentCount: 8, services: { callCredits: { used: 1720, total: 3400, cost: 17200 }, telephonyFees: { minutes: 860, cost: 8600 }, aiCoaching: { enabled: true, cost: 950 }, aiScoring: { enabled: true, cost: 600 } } },
+  { id: "15", name: "Platinum Coverage LLC", status: "active", monthlySpend: 27900, outstandingBalance: 0, billingModel: "prepaid", lastPayment: "2024-12-10", agentCount: 7, services: { callCredits: { used: 1540, total: 3000, cost: 15400 }, telephonyFees: { minutes: 770, cost: 7700 }, aiCoaching: { enabled: true, cost: 900 }, aiScoring: { enabled: false, cost: 0 } } },
+  { id: "16", name: "Liberty Health Partners", status: "payment_overdue", monthlySpend: 22100, outstandingBalance: 11200, billingModel: "postpaid", lastPayment: "2024-11-28", agentCount: 5, services: { callCredits: { used: 1200, total: 2400, cost: 12000 }, telephonyFees: { minutes: 600, cost: 6000 }, aiCoaching: { enabled: false, cost: 0 }, aiScoring: { enabled: true, cost: 500 } } },
+  { id: "17", name: "Golden Years Insurance", status: "active", monthlySpend: 36500, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-15", agentCount: 9, services: { callCredits: { used: 2000, total: 3900, cost: 20000 }, telephonyFees: { minutes: 1000, cost: 10000 }, aiCoaching: { enabled: true, cost: 1000 }, aiScoring: { enabled: true, cost: 650 } } },
+  { id: "18", name: "Comprehensive Care Advisors", status: "active", monthlySpend: 42800, outstandingBalance: 0, billingModel: "prepaid", lastPayment: "2024-12-13", agentCount: 11, services: { callCredits: { used: 2340, total: 4600, cost: 23400 }, telephonyFees: { minutes: 1170, cost: 11700 }, aiCoaching: { enabled: true, cost: 1180 }, aiScoring: { enabled: true, cost: 780 } } },
+  { id: "19", name: "Integrity Benefits Group", status: "active", monthlySpend: 33600, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-14", agentCount: 8, services: { callCredits: { used: 1840, total: 3600, cost: 18400 }, telephonyFees: { minutes: 920, cost: 9200 }, aiCoaching: { enabled: true, cost: 1000 }, aiScoring: { enabled: true, cost: 650 } } },
+  { id: "20", name: "Trusted Shield Insurance", status: "active", monthlySpend: 29500, outstandingBalance: 0, billingModel: "prepaid", lastPayment: "2024-12-11", agentCount: 7, services: { callCredits: { used: 1620, total: 3100, cost: 16200 }, telephonyFees: { minutes: 810, cost: 8100 }, aiCoaching: { enabled: true, cost: 920 }, aiScoring: { enabled: false, cost: 0 } } },
+  { id: "21", name: "Summit Health Solutions", status: "active", monthlySpend: 37200, outstandingBalance: 0, billingModel: "postpaid", lastPayment: "2024-12-16", agentCount: 9, services: { callCredits: { used: 2040, total: 4000, cost: 20400 }, telephonyFees: { minutes: 1020, cost: 10200 }, aiCoaching: { enabled: true, cost: 1050 }, aiScoring: { enabled: true, cost: 680 } } }
 ];
 
-// Mock data for individual agents
-const mockAgents = [
-  {
-    id: "1",
-    name: "Sarah Martinez",
-    agency: "Premier Insurance Group",
-    status: "active",
-    billingModel: "agency_pays",
-    monthlySpend: 3850,
-    services: {
-      callCredits: { agency: true, used: 195, cost: 1950 },
-      telephonyFees: { agency: true, minutes: 140, cost: 1400 },
-      aiCoaching: { agency: true, cost: 250 },
-      aiScoring: { agency: false, cost: 250 }
+// Generate 100 agents distributed across the 21 agencies
+const generateAgents = () => {
+  const firstNames = ["Sarah", "Michael", "Jennifer", "David", "Lisa", "Robert", "Emily", "James", "Jessica", "John", "Amanda", "Christopher", "Ashley", "Daniel", "Michelle", "Matthew", "Stephanie", "Joshua", "Nicole", "Andrew", "Elizabeth", "Ryan", "Lauren", "Tyler", "Rebecca", "Brandon", "Samantha", "Kevin", "Rachel", "Eric", "Melissa", "Jason", "Amy", "Brian", "Kimberly", "Justin", "Angela", "Mark", "Heather", "Steven", "Laura", "Anthony", "Christina", "Jacob", "Amber", "William", "Megan", "Joseph", "Kelly", "Alexander"];
+  const lastNames = ["Martinez", "Chen", "Johnson", "Williams", "Davis", "Rodriguez", "Miller", "Garcia", "Wilson", "Anderson", "Taylor", "Thomas", "Moore", "Jackson", "Martin", "Lee", "Thompson", "White", "Harris", "Clark", "Lewis", "Walker", "Hall", "Allen", "Young", "King", "Wright", "Lopez", "Hill", "Scott", "Green", "Adams", "Baker", "Nelson", "Carter", "Mitchell", "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins", "Stewart", "Morris", "Rogers", "Reed", "Cook"];
+  const statuses = ["active", "active", "active", "active", "suspended"];
+  const billingModels = ["agency_pays", "agency_pays", "agency_pays", "mixed", "agent_pays"];
+  
+  const agents = [];
+  let agentId = 1;
+  
+  // Distribute agents across agencies based on agentCount
+  mockAgencies.forEach((agency) => {
+    for (let i = 0; i < agency.agentCount; i++) {
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const status = statuses[Math.floor(Math.random() * statuses.length)];
+      const billingModel = billingModels[Math.floor(Math.random() * billingModels.length)];
+      
+      const callCreditsUsed = Math.floor(Math.random() * 300) + 100;
+      const telephonyMinutes = Math.floor(Math.random() * 200) + 80;
+      
+      const callCreditsAgency = billingModel === "agency_pays" || (billingModel === "mixed" && Math.random() > 0.5);
+      const telephonyAgency = billingModel === "agency_pays" || (billingModel === "mixed" && Math.random() > 0.5);
+      const aiCoachingAgency = billingModel === "agency_pays" || (billingModel === "mixed" && Math.random() > 0.5);
+      const aiScoringAgency = billingModel === "agency_pays" || (billingModel === "mixed" && Math.random() > 0.5);
+      
+      const monthlySpend = 
+        callCreditsUsed * 10 + 
+        telephonyMinutes * 10 + 
+        (Math.random() > 0.3 ? 250 : 0) + 
+        (Math.random() > 0.4 ? 250 : 0);
+      
+      agents.push({
+        id: agentId.toString(),
+        name: `${firstName} ${lastName}`,
+        agency: agency.name,
+        status,
+        billingModel,
+        monthlySpend: Math.floor(monthlySpend),
+        services: {
+          callCredits: { agency: callCreditsAgency, used: callCreditsUsed, cost: callCreditsUsed * 10 },
+          telephonyFees: { agency: telephonyAgency, minutes: telephonyMinutes, cost: telephonyMinutes * 10 },
+          aiCoaching: { agency: aiCoachingAgency, cost: Math.random() > 0.3 ? 250 : 0 },
+          aiScoring: { agency: aiScoringAgency, cost: Math.random() > 0.4 ? 250 : 0 }
+        }
+      });
+      
+      agentId++;
     }
-  },
-  {
-    id: "2",
-    name: "Michael Chen",
-    agency: "Healthcare Solutions LLC",
-    status: "active",
-    billingModel: "mixed",
-    monthlySpend: 4200,
-    services: {
-      callCredits: { agency: false, used: 210, cost: 2100 },
-      telephonyFees: { agency: true, minutes: 156, cost: 1560 },
-      aiCoaching: { agency: true, cost: 270 },
-      aiScoring: { agency: false, cost: 270 }
-    }
-  }
-];
+  });
+  
+  return agents;
+};
+
+const mockAgents = generateAgents();
 
 const BillingManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");

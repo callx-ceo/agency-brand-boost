@@ -265,8 +265,6 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
                 <TableHead>Agency</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Verticals</TableHead>
-                <TableHead>Bid Range</TableHead>
-                <TableHead>Performance</TableHead>
                 <TableHead>Last Login</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -295,17 +293,6 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
                     )}
                   </div>
                 </TableCell>
-                <TableCell>
-                  {agent.bids.length > 0 ? (
-                    <span className="text-sm">
-                      ${Math.min(...agent.bids.map((b: VerticalBid) => b.bidAmount)).toFixed(2)} - 
-                      ${Math.max(...agent.bids.map((b: VerticalBid) => b.bidAmount)).toFixed(2)}
-                    </span>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">N/A</span>
-                  )}
-                </TableCell>
-                <TableCell>{getPerformanceBadge(agent.performance)}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">{agent.lastLogin}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">

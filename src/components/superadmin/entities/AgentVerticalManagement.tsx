@@ -289,7 +289,6 @@ export const AgentVerticalManagement: React.FC<AgentVerticalManagementProps> = (
                 <TableHead>Agency</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Verticals</TableHead>
-                <TableHead>Bid Range</TableHead>
                 <TableHead>Presence</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -320,17 +319,6 @@ export const AgentVerticalManagement: React.FC<AgentVerticalManagementProps> = (
                             {vertical}
                           </Badge>
                         ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-sm font-medium">
-                          {minBid === maxBid 
-                            ? `$${minBid.toFixed(2)}`
-                            : `$${minBid.toFixed(2)} - $${maxBid.toFixed(2)}`
-                          }
-                        </span>
                       </div>
                     </TableCell>
                     <TableCell>{getPresenceBadge(agent.presence)}</TableCell>

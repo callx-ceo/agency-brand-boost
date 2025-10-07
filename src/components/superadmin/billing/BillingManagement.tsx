@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AgencyBillingDetailModal } from "./AgencyBillingDetailModal";
+import { AgentBillingDetailModal } from "./AgentBillingDetailModal";
 import { 
   Table, 
   TableBody, 
@@ -151,6 +153,12 @@ const BillingManagement = () => {
   const [selectedBillingModel, setSelectedBillingModel] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  
+  // Modal states
+  const [selectedAgency, setSelectedAgency] = useState<any>(null);
+  const [selectedAgent, setSelectedAgent] = useState<any>(null);
+  const [isAgencyModalOpen, setIsAgencyModalOpen] = useState(false);
+  const [isAgentModalOpen, setIsAgentModalOpen] = useState(false);
 
   const shortcuts = [
     {
@@ -477,7 +485,16 @@ const BillingManagement = () => {
                         </TableCell>
                         <TableCell>{agency.lastPayment}</TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm">View Details</Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              setSelectedAgency(agency);
+                              setIsAgencyModalOpen(true);
+                            }}
+                          >
+                            View Details
+                          </Button>
                         </TableCell>
                       </TableRow>
                       
@@ -685,11 +702,12 @@ const BillingManagement = () => {
                     <TableHead>Call Credits</TableHead>
                     <TableHead>Telephony</TableHead>
                     <TableHead>AI Services</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredAndSortedAgents.map((agent) => (
-                    <TableRow key={agent.id}>
+                    <TableRow key={agent.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">{agent.name}</TableCell>
                       <TableCell>{agent.agency}</TableCell>
                       <TableCell>{getStatusBadge(agent.status)}</TableCell>
@@ -721,6 +739,18 @@ const BillingManagement = () => {
                           <div className="text-sm">Coaching: ${agent.services.aiCoaching.cost}</div>
                           <div className="text-sm">Scoring: ${agent.services.aiScoring.cost}</div>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedAgent(agent);
+                            setIsAgentModalOpen(true);
+                          }}
+                        >
+                          View Details
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -803,6 +833,25 @@ const BillingManagement = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Modals */}
+      <AgencyBillingDetailModal
+        agency={selectedAgency}
+        isOpen={isAgencyModalOpen}
+        onClose={() => {
+          setIsAgencyModalOpen(false);
+          setSelectedAgency(null);
+        }}
+      />
+      
+      <AgentBillingDetailModal
+        agent={selectedAgent}
+        isOpen={isAgentModalOpen}
+        onClose={() => {
+          setIsAgentModalOpen(false);
+          setSelectedAgent(null);
+        }}
+      />
     </div>
   );
 };

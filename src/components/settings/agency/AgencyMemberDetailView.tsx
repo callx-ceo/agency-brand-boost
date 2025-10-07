@@ -171,34 +171,6 @@ export const AgencyMemberDetailView: React.FC<AgencyMemberDetailViewProps> = ({ 
         {getStatusBadge(member.status)}
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-sm text-muted-foreground mb-1">Performance</div>
-            <div className="text-2xl font-bold">{member.performance || "N/A"}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-sm text-muted-foreground mb-1">Online Time</div>
-            <div className="text-2xl font-bold">{member.onlineTime || "N/A"}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-sm text-muted-foreground mb-1">Call Time</div>
-            <div className="text-2xl font-bold">{member.callTime || "N/A"}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-sm text-muted-foreground mb-1">Last Login</div>
-            <div className="text-2xl font-bold">{member.lastLogin || "N/A"}</div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Tabs */}
       <Tabs defaultValue="verticals" className="w-full">
         <TabsList className="grid w-full grid-cols-3">

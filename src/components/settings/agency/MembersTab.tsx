@@ -147,8 +147,8 @@ const generateMockMembers = (): AgencyMember[] => {
     verticals: ['Final Expense', 'Life Insurance']
   });
   
-  // Generate 197 agents
-  for (let i = 4; i <= 200; i++) {
+  // Generate 97 agents (total 100 with owner and 2 admins)
+  for (let i = 4; i <= 100; i++) {
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
     const name = `${firstName} ${lastName}`;

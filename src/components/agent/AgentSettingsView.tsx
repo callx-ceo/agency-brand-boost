@@ -15,9 +15,6 @@ import { AgentLanguagePicker } from "../settings/AgentLanguageSettings";
 import { AgentVerticalBidSettings } from "../settings/AgentVerticalBidSettings";
 import { AgentTargetStatesSettings } from "../settings/AgentTargetStatesSettings";
 import AgentBillingView from "./AgentBillingView";
-import { TeamMemberDetailView } from "./TeamMemberDetailView";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -61,62 +58,6 @@ const AgentSettingsView = () => {
   });
 
   const [showTransferModal, setShowTransferModal] = useState(false);
-  const [selectedTeamMember, setSelectedTeamMember] = useState<any>(null);
-
-  // Mock team members data
-  const teamMembers = [
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      email: "sarah@agency.com",
-      agency: "Elite Insurance Group",
-      status: "active" as const,
-      performance: "94%",
-      onlineTime: "6h 32m",
-      callTime: "4h 18m",
-      lastLogin: "1 hour ago",
-      verticals: ["Final Expense", "Medicare"],
-      bids: [
-        { vertical: "Final Expense", bidAmount: 10.00, isValid: true },
-        { vertical: "Medicare", bidAmount: 15.00, isValid: true }
-      ],
-      targetStates: ["California", "Texas", "Florida"]
-    },
-    {
-      id: "2",
-      name: "Mike Wilson",
-      email: "mike@agency.com",
-      agency: "Elite Insurance Group",
-      status: "active" as const,
-      performance: "87%",
-      onlineTime: "5h 15m",
-      callTime: "3h 45m",
-      lastLogin: "2 hours ago",
-      verticals: ["Auto Insurance", "Home Insurance"],
-      bids: [
-        { vertical: "Auto Insurance", bidAmount: 8.00, isValid: true },
-        { vertical: "Home Insurance", bidAmount: 9.00, isValid: true }
-      ],
-      targetStates: ["New York", "New Jersey"]
-    },
-    {
-      id: "3",
-      name: "Emily Davis",
-      email: "emily@agency.com",
-      agency: "Elite Insurance Group",
-      status: "active" as const,
-      performance: "92%",
-      onlineTime: "7h 10m",
-      callTime: "5h 20m",
-      lastLogin: "30 minutes ago",
-      verticals: ["Health Insurance", "Life Insurance"],
-      bids: [
-        { vertical: "Health Insurance", bidAmount: 12.00, isValid: true },
-        { vertical: "Life Insurance", bidAmount: 11.00, isValid: true }
-      ],
-      targetStates: ["Illinois", "Michigan", "Ohio"]
-    }
-  ];
 
   const handleSaveProfile = () => {
     toast.success("Profile and language skills updated successfully");
@@ -149,24 +90,17 @@ const AgentSettingsView = () => {
         <h1 className="text-2xl font-bold">Settings Dashboard</h1>
       </div>
 
-      {selectedTeamMember ? (
-        <TeamMemberDetailView
-          member={selectedTeamMember}
-          onBack={() => setSelectedTeamMember(null)}
-        />
-      ) : (
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-9">
-            <TabsTrigger value="profile">Profile Data</TabsTrigger>
-            <TabsTrigger value="verticals">Verticals</TabsTrigger>
-            <TabsTrigger value="states">Target States</TabsTrigger>
-            <TabsTrigger value="bids">Bid Settings</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-            <TabsTrigger value="billing">Billing</TabsTrigger>
-            <TabsTrigger value="transfer">Transfer</TabsTrigger>
-            <TabsTrigger value="team">Team Members</TabsTrigger>
-          </TabsList>
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="grid w-full grid-cols-8">
+          <TabsTrigger value="profile">Profile Data</TabsTrigger>
+          <TabsTrigger value="verticals">Verticals</TabsTrigger>
+          <TabsTrigger value="states">Target States</TabsTrigger>
+          <TabsTrigger value="bids">Bid Settings</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="billing">Billing</TabsTrigger>
+          <TabsTrigger value="transfer">Transfer</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
           <Card>
@@ -505,69 +439,7 @@ const AgentSettingsView = () => {
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="team" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Team Members</CardTitle>
-              <CardDescription>View and manage other agents in your agency</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Verticals</TableHead>
-                    <TableHead>Performance</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {teamMembers.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell className="font-medium">{member.name}</TableCell>
-                      <TableCell>{member.email}</TableCell>
-                      <TableCell>
-                        <Badge className="bg-green-500 text-white">
-                          {member.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {member.verticals.slice(0, 2).map((v) => (
-                            <Badge key={v} variant="secondary" className="text-xs">
-                              {v}
-                            </Badge>
-                          ))}
-                          {member.verticals.length > 2 && (
-                            <Badge variant="secondary" className="text-xs">
-                              +{member.verticals.length - 2}
-                            </Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>{member.performance}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedTeamMember(member)}
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
-      )}
 
       <AgentTransferRequestModal
         open={showTransferModal}

@@ -8,11 +8,17 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, CheckCircle2, DollarSign, MapPin, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { AgentTargetStatesSettings } from '@/components/settings/AgentTargetStatesSettings';
 
 interface VerticalBid {
   vertical: string;
   bidAmount: number;
   isValid?: boolean;
+}
+
+interface VerticalTargetStates {
+  vertical: string;
+  states: string[];
 }
 
 interface Agent {
@@ -27,7 +33,7 @@ interface Agent {
   callTime: string;
   verticals: string[];
   bids: VerticalBid[];
-  targetStates?: string[];
+  targetStates?: VerticalTargetStates[];
 }
 
 interface AgentDetailViewProps {
@@ -75,7 +81,7 @@ const US_STATES = [
 export const AgentDetailView: React.FC<AgentDetailViewProps> = ({ agent, onBack }) => {
   const [selectedVerticals, setSelectedVerticals] = useState<string[]>(agent.verticals || []);
   const [bidSettings, setBidSettings] = useState<VerticalBid[]>(agent.bids || []);
-  const [targetStates, setTargetStates] = useState<string[]>(agent.targetStates || []);
+  const [targetStates, setTargetStates] = useState<VerticalTargetStates[]>(agent.targetStates || []);
   const { toast } = useToast();
 
   const handleVerticalToggle = (vertical: string) => {
@@ -86,12 +92,12 @@ export const AgentDetailView: React.FC<AgentDetailViewProps> = ({ agent, onBack 
     );
   };
 
-  const handleStateToggle = (state: string) => {
-    setTargetStates(prev =>
-      prev.includes(state)
-        ? prev.filter(s => s !== state)
-        : [...prev, state]
-    );
+  const handleTargetStatesUpdate = (updatedStates: VerticalTargetStates[]) => {
+    setTargetStates(updatedStates);
+    toast({
+      title: "States Updated",
+      description: `Saved target states for ${agent.name}`,
+    });
   };
 
   const handleBidChange = (vertical: string, value: string) => {
@@ -136,12 +142,6 @@ export const AgentDetailView: React.FC<AgentDetailViewProps> = ({ agent, onBack 
     });
   };
 
-  const handleSaveStates = () => {
-    toast({
-      title: "States Updated",
-      description: `Saved ${targetStates.length} state(s) for ${agent.name}`,
-    });
-  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -370,75 +370,11 @@ export const AgentDetailView: React.FC<AgentDetailViewProps> = ({ agent, onBack 
 
         {/* States Tab */}
         <TabsContent value="states">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Target States
-              </CardTitle>
-              <CardDescription>
-                Select which US states this agent is licensed to handle. They'll only receive calls from contacts in their selected states.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">Available States</Label>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setTargetStates(US_STATES)}
-                    >
-                      Select All
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setTargetStates([])}
-                    >
-                      Clear All
-                    </Button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto border rounded-md p-4">
-                  {US_STATES.map((state) => (
-                    <div key={state} className="flex items-center space-x-3">
-                      <Checkbox
-                        id={`state-${state}`}
-                        checked={targetStates.includes(state)}
-                        onCheckedChange={() => handleStateToggle(state)}
-                      />
-                      <Label 
-                        htmlFor={`state-${state}`}
-                        className="text-sm font-normal cursor-pointer flex-1"
-                      >
-                        {state}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Selected States</p>
-                    <p className="text-xs text-muted-foreground">
-                      {targetStates.length === 0 
-                        ? "No states selected - agent won't receive location-based calls"
-                        : `${targetStates.length} state(s) selected`
-                      }
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <Button onClick={handleSaveStates} className="w-full">
-                Save Target States
-              </Button>
-            </CardContent>
-          </Card>
+          <AgentTargetStatesSettings
+            selectedVerticals={selectedVerticals}
+            currentTargetStates={targetStates}
+            onUpdate={handleTargetStatesUpdate}
+          />
         </TabsContent>
       </Tabs>
     </div>

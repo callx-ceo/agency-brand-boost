@@ -69,71 +69,69 @@ const mockAgencies = [
   { id: "21", name: "Summit Health Solutions", status: "active", monthlySpend: 37200, outstandingBalance: 0, billingModel: "postpaid", paymentMethod: "invoice", lastCard4: "", lastPayment: "2024-12-16", agentCount: 9, services: { callCredits: { used: 2040, total: 4000, cost: 20400 }, telephonyFees: { minutes: 1020, cost: 10200 }, aiCoaching: { enabled: true, cost: 1050 }, aiScoring: { enabled: true, cost: 680 } } }
 ];
 
-// Generate 100 agents distributed across the 21 agencies
+// Generate 100 agents
 const generateAgents = () => {
   const firstNames = ["Sarah", "Michael", "Jennifer", "David", "Lisa", "Robert", "Emily", "James", "Jessica", "John", "Amanda", "Christopher", "Ashley", "Daniel", "Michelle", "Matthew", "Stephanie", "Joshua", "Nicole", "Andrew", "Elizabeth", "Ryan", "Lauren", "Tyler", "Rebecca", "Brandon", "Samantha", "Kevin", "Rachel", "Eric", "Melissa", "Jason", "Amy", "Brian", "Kimberly", "Justin", "Angela", "Mark", "Heather", "Steven", "Laura", "Anthony", "Christina", "Jacob", "Amber", "William", "Megan", "Joseph", "Kelly", "Alexander"];
   const lastNames = ["Martinez", "Chen", "Johnson", "Williams", "Davis", "Rodriguez", "Miller", "Garcia", "Wilson", "Anderson", "Taylor", "Thomas", "Moore", "Jackson", "Martin", "Lee", "Thompson", "White", "Harris", "Clark", "Lewis", "Walker", "Hall", "Allen", "Young", "King", "Wright", "Lopez", "Hill", "Scott", "Green", "Adams", "Baker", "Nelson", "Carter", "Mitchell", "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins", "Stewart", "Morris", "Rogers", "Reed", "Cook"];
   const statuses = ["active", "active", "active", "active", "suspended"];
   
   const agents = [];
-  let agentId = 1;
   
-  // Distribute agents across agencies based on agentCount
-  mockAgencies.forEach((agency) => {
-    for (let i = 0; i < agency.agentCount; i++) {
-      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-      const status = statuses[Math.floor(Math.random() * statuses.length)];
-      
-      // Determine if agency pays or agent pays
-      const isAgencyPays = Math.random() > 0.3; // 70% agency pays, 30% agent pays
-      const billingModel = isAgencyPays ? "agency_pays" : "agent_pays";
-      
-      // If agent pays, they choose ACH or Credit Card
-      // If agency pays, inherit agency's payment method
-      let paymentMethod = "";
-      let lastCard4 = "";
-      
-      if (isAgencyPays) {
-        // Inherit from agency
-        paymentMethod = agency.paymentMethod;
-        lastCard4 = agency.lastCard4;
-      } else {
-        // Agent chooses their own (ACH or Credit Card only)
-        paymentMethod = Math.random() > 0.5 ? "credit_card" : "ach";
-        lastCard4 = paymentMethod === "credit_card" ? Math.floor(1000 + Math.random() * 9000).toString() : "";
-      }
-      
-      const callCreditsUsed = Math.floor(Math.random() * 300) + 100;
-      const telephonyMinutes = Math.floor(Math.random() * 200) + 80;
-      
-      const monthlySpend = 
-        callCreditsUsed * 10 + 
-        telephonyMinutes * 10 + 
-        (Math.random() > 0.3 ? 250 : 0) + 
-        (Math.random() > 0.4 ? 250 : 0);
-      
-      agents.push({
-        id: agentId.toString(),
-        name: `${firstName} ${lastName}`,
-        agency: agency.name,
-        agencyId: agency.id,
-        status,
-        billingModel,
-        paymentMethod,
-        lastCard4,
-        monthlySpend: Math.floor(monthlySpend),
-        services: {
-          callCredits: { used: callCreditsUsed, cost: callCreditsUsed * 10 },
-          telephonyFees: { minutes: telephonyMinutes, cost: telephonyMinutes * 10 },
-          aiCoaching: { cost: Math.random() > 0.3 ? 250 : 0 },
-          aiScoring: { cost: Math.random() > 0.4 ? 250 : 0 }
-        }
-      });
-      
-      agentId++;
+  // Generate exactly 100 agents
+  for (let agentId = 1; agentId <= 100; agentId++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    
+    // Select a random agency for this agent
+    const agency = mockAgencies[Math.floor(Math.random() * mockAgencies.length)];
+    
+    // Determine if agency pays or agent pays
+    const isAgencyPays = Math.random() > 0.3; // 70% agency pays, 30% agent pays
+    const billingModel = isAgencyPays ? "agency_pays" : "agent_pays";
+    
+    // If agent pays, they choose ACH or Credit Card
+    // If agency pays, inherit agency's payment method
+    let paymentMethod = "";
+    let lastCard4 = "";
+    
+    if (isAgencyPays) {
+      // Inherit from agency
+      paymentMethod = agency.paymentMethod;
+      lastCard4 = agency.lastCard4;
+    } else {
+      // Agent chooses their own (ACH or Credit Card only)
+      paymentMethod = Math.random() > 0.5 ? "credit_card" : "ach";
+      lastCard4 = paymentMethod === "credit_card" ? Math.floor(1000 + Math.random() * 9000).toString() : "";
     }
-  });
+    
+    const callCreditsUsed = Math.floor(Math.random() * 300) + 100;
+    const telephonyMinutes = Math.floor(Math.random() * 200) + 80;
+    
+    const monthlySpend = 
+      callCreditsUsed * 10 + 
+      telephonyMinutes * 10 + 
+      (Math.random() > 0.3 ? 250 : 0) + 
+      (Math.random() > 0.4 ? 250 : 0);
+    
+    agents.push({
+      id: agentId.toString(),
+      name: `${firstName} ${lastName}`,
+      agency: agency.name,
+      agencyId: agency.id,
+      status,
+      billingModel,
+      paymentMethod,
+      lastCard4,
+      monthlySpend: Math.floor(monthlySpend),
+      services: {
+        callCredits: { used: callCreditsUsed, cost: callCreditsUsed * 10 },
+        telephonyFees: { minutes: telephonyMinutes, cost: telephonyMinutes * 10 },
+        aiCoaching: { cost: Math.random() > 0.3 ? 250 : 0 },
+        aiScoring: { cost: Math.random() > 0.4 ? 250 : 0 }
+      }
+    });
+  }
   
   return agents;
 };

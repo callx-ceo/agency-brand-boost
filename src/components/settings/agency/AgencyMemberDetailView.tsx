@@ -27,7 +27,7 @@ interface AgencyMemberDetail {
   lastLogin?: string;
   verticals: string[];
   bids: VerticalBid[];
-  targetStates: string[];
+  targetStates: Record<string, string[]>; // vertical -> states mapping
 }
 
 interface AgencyMemberDetailViewProps {
@@ -76,7 +76,8 @@ const US_STATES = [
 export const AgencyMemberDetailView: React.FC<AgencyMemberDetailViewProps> = ({ member, onBack, onUpdate }) => {
   const [selectedVerticals, setSelectedVerticals] = useState<string[]>(member.verticals);
   const [bidSettings, setBidSettings] = useState<VerticalBid[]>(member.bids);
-  const [targetStates, setTargetStates] = useState<string[]>(member.targetStates);
+  const [targetStates, setTargetStates] = useState<Record<string, string[]>>(member.targetStates || {});
+  const [selectedVerticalForStates, setSelectedVerticalForStates] = useState<string>(member.verticals[0] || "");
 
   const handleVerticalToggle = (vertical: string) => {
     setSelectedVerticals(prev =>
@@ -105,11 +106,19 @@ export const AgencyMemberDetailView: React.FC<AgencyMemberDetailViewProps> = ({ 
   };
 
   const handleStateToggle = (state: string) => {
-    setTargetStates(prev =>
-      prev.includes(state)
-        ? prev.filter(s => s !== state)
-        : [...prev, state]
-    );
+    if (!selectedVerticalForStates) return;
+    
+    setTargetStates(prev => {
+      const currentStates = prev[selectedVerticalForStates] || [];
+      const newStates = currentStates.includes(state)
+        ? currentStates.filter(s => s !== state)
+        : [...currentStates, state];
+      
+      return {
+        ...prev,
+        [selectedVerticalForStates]: newStates
+      };
+    });
   };
 
   const handleSaveVerticals = () => {
@@ -369,59 +378,106 @@ export const AgencyMemberDetailView: React.FC<AgencyMemberDetailViewProps> = ({ 
                 <div>
                   <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
                     <MapPin className="w-5 h-5" />
-                    Target States
+                    Target States by Vertical
                   </h3>
                   <p className="text-sm text-muted-foreground mb-6">
-                    Select which states this agent is licensed to operate in. They'll only receive calls from these states.
+                    Select which states this agent is licensed to operate in for each vertical. They'll only receive calls from these states.
                   </p>
                 </div>
 
-                <div className="flex gap-2 mb-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setTargetStates(US_STATES)}
-                  >
-                    Select All
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setTargetStates([])}
-                  >
-                    Clear All
-                  </Button>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {US_STATES.map((state) => (
-                    <div
-                      key={state}
-                      className="flex items-center gap-2 p-2 border rounded hover:bg-muted/50 cursor-pointer"
-                      onClick={() => handleStateToggle(state)}
-                    >
-                      <Checkbox
-                        id={state}
-                        checked={targetStates.includes(state)}
-                        onCheckedChange={() => handleStateToggle(state)}
-                      />
-                      <Label htmlFor={state} className="cursor-pointer text-sm font-normal">
-                        {state}
-                      </Label>
+                {selectedVerticals.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    Please select verticals first to configure target states
+                  </p>
+                ) : (
+                  <>
+                    {/* Vertical Selector */}
+                    <div className="space-y-2">
+                      <Label>Select Vertical</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedVerticals.map((vertical) => (
+                          <Button
+                            key={vertical}
+                            variant={selectedVerticalForStates === vertical ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedVerticalForStates(vertical)}
+                          >
+                            {vertical}
+                            {targetStates[vertical]?.length > 0 && (
+                              <Badge variant="secondary" className="ml-2">
+                                {targetStates[vertical].length}
+                              </Badge>
+                            )}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                </div>
 
-                <div className="p-4 bg-muted rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">States Selected</span>
-                    <span className="text-2xl font-bold">{targetStates.length}</span>
-                  </div>
-                </div>
+                    {selectedVerticalForStates && (
+                      <>
+                        <div className="flex gap-2 mb-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setTargetStates(prev => ({
+                              ...prev,
+                              [selectedVerticalForStates]: US_STATES
+                            }))}
+                          >
+                            Select All
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setTargetStates(prev => ({
+                              ...prev,
+                              [selectedVerticalForStates]: []
+                            }))}
+                          >
+                            Clear All
+                          </Button>
+                        </div>
 
-                <Button onClick={handleSaveStates} className="w-full">
-                  Save Target States
-                </Button>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                          {US_STATES.map((state) => {
+                            const currentStates = targetStates[selectedVerticalForStates] || [];
+                            const isChecked = currentStates.includes(state);
+                            
+                            return (
+                              <div
+                                key={state}
+                                className="flex items-center gap-2 p-2 border rounded hover:bg-muted/50 cursor-pointer"
+                                onClick={() => handleStateToggle(state)}
+                              >
+                                <Checkbox
+                                  id={`${selectedVerticalForStates}-${state}`}
+                                  checked={isChecked}
+                                  onCheckedChange={() => handleStateToggle(state)}
+                                />
+                                <Label htmlFor={`${selectedVerticalForStates}-${state}`} className="cursor-pointer text-sm font-normal">
+                                  {state}
+                                </Label>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="p-4 bg-muted rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">States Selected for {selectedVerticalForStates}</span>
+                            <span className="text-2xl font-bold">
+                              {targetStates[selectedVerticalForStates]?.length || 0}
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <Button onClick={handleSaveStates} className="w-full">
+                      Save Target States
+                    </Button>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

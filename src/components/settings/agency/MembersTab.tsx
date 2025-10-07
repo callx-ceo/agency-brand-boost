@@ -43,7 +43,7 @@ interface AgencyMember {
   presence?: 'available' | 'away' | 'in-call' | 'offline';
   verticals?: string[];
   bids?: VerticalBid[];
-  targetStates?: string[];
+  targetStates?: Record<string, string[]>; // vertical -> states mapping
 }
 
 const AVAILABLE_VERTICALS = [
@@ -139,13 +139,11 @@ export const MembersTab: React.FC = () => {
   const [selectedMember, setSelectedMember] = useState<AgencyMember | null>(null);
   const [pendingRoleChange, setPendingRoleChange] = useState<{ member: AgencyMember; newRole: UserRole } | null>(null);
 
-  // Modals for verticals, bids, and states
+  // Modals for verticals and bids
   const [verticalsDialogOpen, setVerticalsDialogOpen] = useState(false);
   const [bidsDialogOpen, setBidsDialogOpen] = useState(false);
-  const [statesDialogOpen, setStatesDialogOpen] = useState(false);
   const [selectedVerticals, setSelectedVerticals] = useState<string[]>([]);
   const [bidSettings, setBidSettings] = useState<VerticalBid[]>([]);
-  const [targetStates, setTargetStates] = useState<string[]>([]);
   const [viewDetailsMode, setViewDetailsMode] = useState(false);
   const [detailMember, setDetailMember] = useState<any>(null);
 
@@ -249,7 +247,7 @@ export const MembersTab: React.FC = () => {
       lastLogin: member.lastSeen,
       verticals: member.verticals || [],
       bids: member.bids || [],
-      targetStates: member.targetStates || []
+      targetStates: member.targetStates || {}
     };
     setDetailMember(enhancedMember);
     setViewDetailsMode(true);
@@ -257,7 +255,12 @@ export const MembersTab: React.FC = () => {
 
   const handleUpdateMember = (updatedMember: any) => {
     setMembers(prev => prev.map(m =>
-      m.id === updatedMember.id ? { ...m, ...updatedMember } : m
+      m.id === updatedMember.id ? { 
+        ...m, 
+        verticals: updatedMember.verticals,
+        bids: updatedMember.bids,
+        targetStates: updatedMember.targetStates
+      } : m
     ));
   };
 
@@ -334,32 +337,9 @@ export const MembersTab: React.FC = () => {
     setBidsDialogOpen(false);
   };
 
-  // States management
+  // States management - removed as it's now handled in detail view
   const handleOpenStates = (member: AgencyMember) => {
-    setSelectedMember(member);
-    setTargetStates(member.targetStates || []);
-    setStatesDialogOpen(true);
-  };
-
-  const handleStateToggle = (state: string) => {
-    setTargetStates(prev =>
-      prev.includes(state)
-        ? prev.filter(s => s !== state)
-        : [...prev, state]
-    );
-  };
-
-  const handleSaveStates = () => {
-    if (!selectedMember) return;
-    
-    setMembers(prev => prev.map(m =>
-      m.id === selectedMember.id
-        ? { ...m, targetStates: targetStates }
-        : m
-    ));
-    
-    toast.success(`States updated for ${selectedMember.name}`);
-    setStatesDialogOpen(false);
+    handleViewDetails(member);
   };
 
   const handleCanTakeCallsToggle = (memberId: string, canTakeCalls: boolean) => {
@@ -798,101 +778,11 @@ export const MembersTab: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* States Management Modal */}
-      <Dialog open={statesDialogOpen} onOpenChange={setStatesDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Manage Target States - {selectedMember?.name}
-            </DialogTitle>
-          </DialogHeader>
-          <Card>
-            <CardHeader>
-              <CardDescription>
-                Select which US states this agent is licensed to handle. They'll only receive calls from contacts in their selected states.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">Available States</Label>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setTargetStates(US_STATES)}
-                    >
-                      Select All
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setTargetStates([])}
-                    >
-                      Clear All
-                    </Button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto border rounded-md p-4">
-                  {US_STATES.map((state) => (
-                    <div key={state} className="flex items-center space-x-3">
-                      <Checkbox
-                        id={`state-${state}`}
-                        checked={targetStates.includes(state)}
-                        onCheckedChange={() => handleStateToggle(state)}
-                      />
-                      <Label 
-                        htmlFor={`state-${state}`}
-                        className="text-sm font-normal cursor-pointer flex-1"
-                      >
-                        {state}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Selected States</p>
-                    <p className="text-xs text-muted-foreground">
-                      {targetStates.length === 0 
-                        ? "No states selected - agent won't receive any calls"
-                        : `${targetStates.length} state(s) selected`
-                      }
-                    </p>
-                  </div>
-                  {targetStates.length > 0 && (
-                    <div className="flex gap-2">
-                      {targetStates.slice(0, 3).map((state) => (
-                        <Badge key={state} variant="default" className="text-xs">
-                          {state}
-                        </Badge>
-                      ))}
-                      {targetStates.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{targetStates.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setStatesDialogOpen(false)} className="flex-1">
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveStates} className="flex-1">
-                  Save Target States
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </DialogContent>
-      </Dialog>
+      <TransferUserModal
+        open={showTransferModal}
+        onOpenChange={setShowTransferModal}
+        member={selectedMember}
+      />
     </div>
   );
 };

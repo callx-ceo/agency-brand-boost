@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,9 +10,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, Copy, Link } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, Copy, Link, CheckCircle2, DollarSign, MapPin } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
+
+interface VerticalBid {
+  vertical: string;
+  bidAmount: number;
+  isValid?: boolean;
+}
 
 interface TeamMember {
   id: string;
@@ -24,7 +31,47 @@ interface TeamMember {
   loggedIn: boolean;
   joinDate: string;
   lastActive: string;
+  verticals?: string[];
+  bids?: VerticalBid[];
+  targetStates?: string[];
 }
+
+const AVAILABLE_VERTICALS = [
+  "Final Expense",
+  "Medicare", 
+  "Auto Insurance",
+  "Home Insurance",
+  "Health Insurance",
+  "Life Insurance",
+  "Debt Settlement",
+  "Home Services",
+  "Legal"
+];
+
+const MINIMUM_BIDS: Record<string, number> = {
+  "Final Expense": 8.00,
+  "Medicare": 12.00,
+  "Auto Insurance": 6.00,
+  "Home Insurance": 7.00,
+  "Health Insurance": 10.00,
+  "Life Insurance": 9.00,
+  "Debt Settlement": 15.00,
+  "Home Services": 5.00,
+  "Legal": 20.00
+};
+
+const US_STATES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+  "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
+  "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
+  "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+  "New Hampshire", "New Jersey", "New Mexico", "New York",
+  "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+  "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
+  "West Virginia", "Wisconsin", "Wyoming"
+];
 
 const TeamMembersTab = () => {
   const { startImpersonation } = useImpersonation();
@@ -39,7 +86,10 @@ const TeamMembersTab = () => {
       callStatus: "offline",
       loggedIn: true,
       joinDate: "2024-01-15",
-      lastActive: "2024-05-24"
+      lastActive: "2024-05-24",
+      verticals: [],
+      bids: [],
+      targetStates: []
     },
     {
       id: "2",
@@ -50,7 +100,13 @@ const TeamMembersTab = () => {
       callStatus: "on-call",
       loggedIn: true,
       joinDate: "2024-02-20",
-      lastActive: "2024-05-23"
+      lastActive: "2024-05-23",
+      verticals: ["Medicare", "Final Expense"],
+      bids: [
+        { vertical: "Medicare", bidAmount: 15.00, isValid: true },
+        { vertical: "Final Expense", bidAmount: 10.00, isValid: true }
+      ],
+      targetStates: ["California", "Texas", "Florida"]
     },
     {
       id: "3",
@@ -61,7 +117,13 @@ const TeamMembersTab = () => {
       callStatus: "on-call",
       loggedIn: true,
       joinDate: "2024-03-10",
-      lastActive: "2024-05-24"
+      lastActive: "2024-05-24",
+      verticals: ["Auto Insurance", "Home Insurance"],
+      bids: [
+        { vertical: "Auto Insurance", bidAmount: 8.00, isValid: true },
+        { vertical: "Home Insurance", bidAmount: 9.00, isValid: true }
+      ],
+      targetStates: ["New York", "New Jersey"]
     },
     {
       id: "4",
@@ -72,7 +134,10 @@ const TeamMembersTab = () => {
       callStatus: "offline",
       loggedIn: false,
       joinDate: "2024-05-20",
-      lastActive: "-"
+      lastActive: "-",
+      verticals: [],
+      bids: [],
+      targetStates: []
     },
     {
       id: "5",
@@ -83,7 +148,12 @@ const TeamMembersTab = () => {
       callStatus: "offline",
       loggedIn: true,
       joinDate: "2024-04-05",
-      lastActive: "2024-05-24"
+      lastActive: "2024-05-24",
+      verticals: ["Health Insurance"],
+      bids: [
+        { vertical: "Health Insurance", bidAmount: 12.00, isValid: true }
+      ],
+      targetStates: ["Illinois", "Michigan"]
     },
     {
       id: "6",
@@ -94,7 +164,12 @@ const TeamMembersTab = () => {
       callStatus: "offline",
       loggedIn: false,
       joinDate: "2024-03-25",
-      lastActive: "2024-05-23"
+      lastActive: "2024-05-23",
+      verticals: ["Life Insurance"],
+      bids: [
+        { vertical: "Life Insurance", bidAmount: 11.00, isValid: true }
+      ],
+      targetStates: ["Washington", "Oregon"]
     },
     {
       id: "7",
@@ -105,7 +180,10 @@ const TeamMembersTab = () => {
       callStatus: "offline",
       loggedIn: true,
       joinDate: "2024-02-14",
-      lastActive: "2024-05-20"
+      lastActive: "2024-05-20",
+      verticals: [],
+      bids: [],
+      targetStates: []
     },
     {
       id: "8",
@@ -116,7 +194,12 @@ const TeamMembersTab = () => {
       callStatus: "on-call",
       loggedIn: true,
       joinDate: "2024-04-18",
-      lastActive: "2024-05-24"
+      lastActive: "2024-05-24",
+      verticals: ["Debt Settlement"],
+      bids: [
+        { vertical: "Debt Settlement", bidAmount: 18.00, isValid: true }
+      ],
+      targetStates: ["Arizona", "Nevada"]
     },
     {
       id: "9",
@@ -127,7 +210,10 @@ const TeamMembersTab = () => {
       callStatus: "offline",
       loggedIn: false,
       joinDate: "2024-01-30",
-      lastActive: "2024-05-15"
+      lastActive: "2024-05-15",
+      verticals: [],
+      bids: [],
+      targetStates: []
     },
     {
       id: "10",
@@ -138,7 +224,10 @@ const TeamMembersTab = () => {
       callStatus: "offline",
       loggedIn: false,
       joinDate: "2024-05-22",
-      lastActive: "-"
+      lastActive: "-",
+      verticals: [],
+      bids: [],
+      targetStates: []
     }
   ]);
 
@@ -152,6 +241,15 @@ const TeamMembersTab = () => {
     email: "",
     role: "agent" as "admin" | "manager" | "agent"
   });
+
+  // Modals for verticals, bids, and states
+  const [verticalsDialogOpen, setVerticalsDialogOpen] = useState(false);
+  const [bidsDialogOpen, setBidsDialogOpen] = useState(false);
+  const [statesDialogOpen, setStatesDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [selectedVerticals, setSelectedVerticals] = useState<string[]>([]);
+  const [bidSettings, setBidSettings] = useState<VerticalBid[]>([]);
+  const [targetStates, setTargetStates] = useState<string[]>([]);
 
   // Get count for each filter
   const getFilterCount = useCallback((filter: string) => {
@@ -347,6 +445,107 @@ const TeamMembersTab = () => {
     const signupLink = "https://app.yourplatform.com/signup/agency/sampleagency";
     navigator.clipboard.writeText(signupLink);
     toast.success("Signup link copied to clipboard!");
+  };
+
+  // Verticals management
+  const handleOpenVerticals = (member: TeamMember) => {
+    setSelectedMember(member);
+    setSelectedVerticals(member.verticals || []);
+    setVerticalsDialogOpen(true);
+  };
+
+  const handleVerticalToggle = (vertical: string) => {
+    setSelectedVerticals(prev =>
+      prev.includes(vertical)
+        ? prev.filter(v => v !== vertical)
+        : [...prev, vertical]
+    );
+  };
+
+  const handleSaveVerticals = () => {
+    if (!selectedMember) return;
+    
+    setTeamMembers(prev => prev.map(m =>
+      m.id === selectedMember.id
+        ? { ...m, verticals: selectedVerticals }
+        : m
+    ));
+    
+    toast.success(`Verticals updated for ${selectedMember.name}`);
+    setVerticalsDialogOpen(false);
+  };
+
+  // Bids management
+  const handleOpenBids = (member: TeamMember) => {
+    setSelectedMember(member);
+    setBidSettings(member.bids || []);
+    setSelectedVerticals(member.verticals || []);
+    setBidsDialogOpen(true);
+  };
+
+  const handleBidChange = (vertical: string, value: string) => {
+    const numValue = parseFloat(value) || 0;
+    const minBid = MINIMUM_BIDS[vertical] || 0;
+    
+    setBidSettings(prev => {
+      const existing = prev.find(b => b.vertical === vertical);
+      if (existing) {
+        return prev.map(b =>
+          b.vertical === vertical
+            ? { ...b, bidAmount: numValue, isValid: numValue >= minBid }
+            : b
+        );
+      } else {
+        return [...prev, { vertical, bidAmount: numValue, isValid: numValue >= minBid }];
+      }
+    });
+  };
+
+  const handleSaveBids = () => {
+    if (!selectedMember) return;
+
+    const invalidBids = bidSettings.filter(b => !b.isValid);
+    if (invalidBids.length > 0) {
+      toast.error("Please ensure all bids meet minimum requirements");
+      return;
+    }
+    
+    setTeamMembers(prev => prev.map(m =>
+      m.id === selectedMember.id
+        ? { ...m, bids: bidSettings }
+        : m
+    ));
+    
+    toast.success(`Bids updated for ${selectedMember.name}`);
+    setBidsDialogOpen(false);
+  };
+
+  // States management
+  const handleOpenStates = (member: TeamMember) => {
+    setSelectedMember(member);
+    setTargetStates(member.targetStates || []);
+    setStatesDialogOpen(true);
+  };
+
+  const handleStateToggle = (state: string) => {
+    setTargetStates(prev =>
+      prev.includes(state)
+        ? prev.filter(s => s !== state)
+        : [...prev, state]
+    );
+  };
+
+  const handleSaveStates = () => {
+    if (!selectedMember) return;
+    
+    setTeamMembers(prev => prev.map(m =>
+      m.id === selectedMember.id
+        ? { ...m, targetStates: targetStates }
+        : m
+    ));
+    
+    toast.success(`States updated for ${selectedMember.name}`);
+    setStatesDialogOpen(false);
   };
 
   const renderPaginationItems = () => {
@@ -806,7 +1005,7 @@ const TeamMembersTab = () => {
                           <TableCell>{member.joinDate}</TableCell>
                           <TableCell>{member.lastActive}</TableCell>
                           <TableCell>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
                               {member.status === "pending" && (
                                 <Button
                                   variant="outline"
@@ -825,6 +1024,34 @@ const TeamMembersTab = () => {
                                 >
                                   <User className="w-4 h-4" />
                                 </Button>
+                              )}
+                              {(member.role === "agent" || member.role === "manager") && (
+                                <>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => handleOpenVerticals(member)}
+                                    title="Manage Verticals"
+                                  >
+                                    <CheckCircle2 className="w-4 h-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => handleOpenBids(member)}
+                                    title="Manage Bids"
+                                  >
+                                    <DollarSign className="w-4 h-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => handleOpenStates(member)}
+                                    title="Manage States"
+                                  >
+                                    <MapPin className="w-4 h-4" />
+                                  </Button>
+                                </>
                               )}
                               <Button variant="outline" size="sm">
                                 <Edit className="w-4 h-4" />
@@ -924,6 +1151,300 @@ const TeamMembersTab = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Verticals Management Modal */}
+      <Dialog open={verticalsDialogOpen} onOpenChange={setVerticalsDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5" />
+              Manage Verticals - {selectedMember?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <Card>
+            <CardHeader>
+              <CardDescription>
+                Select which verticals this agent can handle calls for. They'll only receive calls from campaigns matching their selected verticals.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <Label className="text-sm font-medium">Available Verticals</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {AVAILABLE_VERTICALS.map((vertical) => (
+                    <div key={vertical} className="flex items-center space-x-3">
+                      <Checkbox
+                        id={`vertical-${vertical}`}
+                        checked={selectedVerticals.includes(vertical)}
+                        onCheckedChange={() => handleVerticalToggle(vertical)}
+                      />
+                      <Label 
+                        htmlFor={`vertical-${vertical}`}
+                        className="text-sm font-normal cursor-pointer flex-1"
+                      >
+                        {vertical}
+                      </Label>
+                      {selectedVerticals.includes(vertical) && (
+                        <Badge variant="secondary" className="text-xs">
+                          Active
+                        </Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Selected Verticals</p>
+                    <p className="text-xs text-muted-foreground">
+                      {selectedVerticals.length === 0 
+                        ? "No verticals selected - agent won't receive any calls"
+                        : `${selectedVerticals.length} vertical(s) selected`
+                      }
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {selectedVerticals.slice(0, 3).map((vertical) => (
+                      <Badge key={vertical} variant="default" className="text-xs">
+                        {vertical}
+                      </Badge>
+                    ))}
+                    {selectedVerticals.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{selectedVerticals.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setVerticalsDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveVerticals} className="flex-1">
+                  Save Vertical Preferences
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bids Management Modal */}
+      <Dialog open={bidsDialogOpen} onOpenChange={setBidsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Manage Bid Prices - {selectedMember?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <Card>
+            <CardHeader>
+              <CardDescription>
+                Set bid amounts for each vertical. Higher bids increase call priority but also cost more per call.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {selectedVerticals.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-sm">No verticals assigned to this agent.</p>
+                  <p className="text-xs mt-1">Assign verticals first to set bid prices.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {selectedVerticals.map((vertical) => {
+                    const currentBid = bidSettings.find(b => b.vertical === vertical);
+                    const minBid = MINIMUM_BIDS[vertical] || 0;
+                    const isValid = currentBid ? currentBid.bidAmount >= minBid : false;
+                    const suggestedBid = minBid * 1.2;
+
+                    return (
+                      <Card key={vertical}>
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm font-medium">{vertical}</CardTitle>
+                            <Badge variant="outline" className="text-xs">
+                              Min: ${minBid.toFixed(2)}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <Label htmlFor={`bid-${vertical}`} className="text-xs">
+                              Your Bid Amount
+                            </Label>
+                            <div className="flex gap-2 items-center">
+                              <div className="relative flex-1">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                                  $
+                                </span>
+                                <Input
+                                  id={`bid-${vertical}`}
+                                  type="number"
+                                  step="0.01"
+                                  min={minBid}
+                                  value={currentBid?.bidAmount || minBid}
+                                  onChange={(e) => handleBidChange(vertical, e.target.value)}
+                                  className={`pl-7 ${!isValid ? 'border-destructive' : ''}`}
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleBidChange(vertical, minBid.toString())}
+                              >
+                                Set Min
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleBidChange(vertical, suggestedBid.toFixed(2))}
+                              >
+                                Suggested
+                              </Button>
+                            </div>
+                            {!isValid && currentBid && (
+                              <p className="text-xs text-destructive">
+                                Must be at least ${minBid.toFixed(2)}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                              Suggested bid: ${suggestedBid.toFixed(2)} (20% above minimum)
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+
+              {selectedVerticals.length > 0 && (
+                <div className="pt-4 border-t space-y-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">Estimated Weekly Spend</span>
+                    <span className="text-lg font-semibold">
+                      ${bidSettings.reduce((sum, bid) => sum + (bid.bidAmount * 50), 0).toFixed(2)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Based on ~50 calls per vertical per week
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setBidsDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveBids} className="flex-1" disabled={selectedVerticals.length === 0}>
+                  Save Bid Settings
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
+
+      {/* States Management Modal */}
+      <Dialog open={statesDialogOpen} onOpenChange={setStatesDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Manage Target States - {selectedMember?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <Card>
+            <CardHeader>
+              <CardDescription>
+                Select which US states this agent is licensed to handle. They'll only receive calls from contacts in their selected states.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">Available States</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTargetStates(US_STATES)}
+                    >
+                      Select All
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTargetStates([])}
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto border rounded-md p-4">
+                  {US_STATES.map((state) => (
+                    <div key={state} className="flex items-center space-x-3">
+                      <Checkbox
+                        id={`state-${state}`}
+                        checked={targetStates.includes(state)}
+                        onCheckedChange={() => handleStateToggle(state)}
+                      />
+                      <Label 
+                        htmlFor={`state-${state}`}
+                        className="text-sm font-normal cursor-pointer flex-1"
+                      >
+                        {state}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Selected States</p>
+                    <p className="text-xs text-muted-foreground">
+                      {targetStates.length === 0 
+                        ? "No states selected - agent won't receive any calls"
+                        : `${targetStates.length} state(s) selected`
+                      }
+                    </p>
+                  </div>
+                  {targetStates.length > 0 && (
+                    <div className="flex gap-2">
+                      {targetStates.slice(0, 3).map((state) => (
+                        <Badge key={state} variant="default" className="text-xs">
+                          {state}
+                        </Badge>
+                      ))}
+                      {targetStates.length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{targetStates.length - 3}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setStatesDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveStates} className="flex-1">
+                  Save Target States
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

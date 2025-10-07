@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, Copy, Link, CheckCircle2, DollarSign, MapPin } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
@@ -34,6 +35,8 @@ interface TeamMember {
   verticals?: string[];
   bids?: VerticalBid[];
   targetStates?: string[];
+  presence?: "available" | "away" | "offline";
+  canTakeCalls?: boolean;
 }
 
 const AVAILABLE_VERTICALS = [
@@ -89,7 +92,9 @@ const TeamMembersTab = () => {
       lastActive: "2024-05-24",
       verticals: [],
       bids: [],
-      targetStates: []
+      targetStates: [],
+      presence: "offline",
+      canTakeCalls: false
     },
     {
       id: "2",
@@ -106,7 +111,9 @@ const TeamMembersTab = () => {
         { vertical: "Medicare", bidAmount: 15.00, isValid: true },
         { vertical: "Final Expense", bidAmount: 10.00, isValid: true }
       ],
-      targetStates: ["California", "Texas", "Florida"]
+      targetStates: ["California", "Texas", "Florida"],
+      presence: "away",
+      canTakeCalls: true
     },
     {
       id: "3",
@@ -123,7 +130,9 @@ const TeamMembersTab = () => {
         { vertical: "Auto Insurance", bidAmount: 8.00, isValid: true },
         { vertical: "Home Insurance", bidAmount: 9.00, isValid: true }
       ],
-      targetStates: ["New York", "New Jersey"]
+      targetStates: ["New York", "New Jersey"],
+      presence: "available",
+      canTakeCalls: true
     },
     {
       id: "4",
@@ -137,7 +146,9 @@ const TeamMembersTab = () => {
       lastActive: "-",
       verticals: [],
       bids: [],
-      targetStates: []
+      targetStates: [],
+      presence: "offline",
+      canTakeCalls: false
     },
     {
       id: "5",
@@ -153,7 +164,9 @@ const TeamMembersTab = () => {
       bids: [
         { vertical: "Health Insurance", bidAmount: 12.00, isValid: true }
       ],
-      targetStates: ["Illinois", "Michigan"]
+      targetStates: ["Illinois", "Michigan"],
+      presence: "offline",
+      canTakeCalls: false
     },
     {
       id: "6",
@@ -169,7 +182,9 @@ const TeamMembersTab = () => {
       bids: [
         { vertical: "Life Insurance", bidAmount: 11.00, isValid: true }
       ],
-      targetStates: ["Washington", "Oregon"]
+      targetStates: ["Washington", "Oregon"],
+      presence: "offline",
+      canTakeCalls: false
     },
     {
       id: "7",
@@ -183,7 +198,9 @@ const TeamMembersTab = () => {
       lastActive: "2024-05-20",
       verticals: [],
       bids: [],
-      targetStates: []
+      targetStates: [],
+      presence: "offline",
+      canTakeCalls: false
     },
     {
       id: "8",
@@ -199,7 +216,9 @@ const TeamMembersTab = () => {
       bids: [
         { vertical: "Debt Settlement", bidAmount: 18.00, isValid: true }
       ],
-      targetStates: ["Arizona", "Nevada"]
+      targetStates: ["Arizona", "Nevada"],
+      presence: "available",
+      canTakeCalls: true
     },
     {
       id: "9",
@@ -213,7 +232,9 @@ const TeamMembersTab = () => {
       lastActive: "2024-05-15",
       verticals: [],
       bids: [],
-      targetStates: []
+      targetStates: [],
+      presence: "offline",
+      canTakeCalls: false
     },
     {
       id: "10",
@@ -227,7 +248,9 @@ const TeamMembersTab = () => {
       lastActive: "-",
       verticals: [],
       bids: [],
-      targetStates: []
+      targetStates: [],
+      presence: "offline",
+      canTakeCalls: false
     }
   ]);
 
@@ -546,6 +569,27 @@ const TeamMembersTab = () => {
     
     toast.success(`States updated for ${selectedMember.name}`);
     setStatesDialogOpen(false);
+  };
+
+  const handleToggleCanTakeCalls = (memberId: string) => {
+    setTeamMembers(prev => prev.map(m =>
+      m.id === memberId
+        ? { ...m, canTakeCalls: !m.canTakeCalls }
+        : m
+    ));
+  };
+
+  const getPresenceBadge = (presence?: string) => {
+    switch (presence) {
+      case "available":
+        return <Badge className="bg-green-100 text-green-700">Available</Badge>;
+      case "away":
+        return <Badge className="bg-yellow-100 text-yellow-700">Away</Badge>;
+      case "offline":
+        return <Badge className="bg-gray-100 text-gray-700">Offline</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
+    }
   };
 
   const renderPaginationItems = () => {
@@ -899,21 +943,24 @@ const TeamMembersTab = () => {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
                         <TableHead>Role</TableHead>
+                        <TableHead>Verticals</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead>Call Status</TableHead>
-                        <TableHead>Logged In</TableHead>
-                        <TableHead>Join Date</TableHead>
-                        <TableHead>Last Active</TableHead>
+                        <TableHead>Presence</TableHead>
+                        <TableHead>Can Take Calls</TableHead>
+                        <TableHead>Last Seen</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {displayedMembers.map((member) => (
                         <TableRow key={member.id}>
-                          <TableCell className="font-medium">{member.name}</TableCell>
-                          <TableCell>{member.email}</TableCell>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{member.name}</div>
+                              <div className="text-sm text-muted-foreground">{member.email}</div>
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Badge className={`${getRoleBadgeColor(member.role)} flex items-center gap-1 w-fit`}>
@@ -951,6 +998,24 @@ const TeamMembersTab = () => {
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
+                          </TableCell>
+                          <TableCell>
+                            {member.verticals && member.verticals.length > 0 ? (
+                              <div className="flex gap-1 flex-wrap">
+                                {member.verticals.slice(0, 2).map((vertical) => (
+                                  <Badge key={vertical} variant="secondary" className="text-xs">
+                                    {vertical}
+                                  </Badge>
+                                ))}
+                                {member.verticals.length > 2 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    +{member.verticals.length - 2}
+                                  </Badge>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-sm text-muted-foreground">No verticals assigned</span>
+                            )}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
@@ -993,17 +1058,22 @@ const TeamMembersTab = () => {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge className={member.callStatus === "on-call" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}>
-                              {member.callStatus === "on-call" ? "On Call" : "Offline"}
-                            </Badge>
+                            {getPresenceBadge(member.presence)}
                           </TableCell>
                           <TableCell>
-                            <Badge className={member.loggedIn ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
-                              {member.loggedIn ? "Logged In" : "Not Logged In"}
-                            </Badge>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={member.canTakeCalls || false}
+                                onChange={() => handleToggleCanTakeCalls(member.id)}
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
                           </TableCell>
-                          <TableCell>{member.joinDate}</TableCell>
-                          <TableCell>{member.lastActive}</TableCell>
+                          <TableCell>
+                            <div className="text-sm">{member.lastActive}</div>
+                          </TableCell>
                           <TableCell>
                             <div className="flex gap-2 flex-wrap">
                               {member.status === "pending" && (

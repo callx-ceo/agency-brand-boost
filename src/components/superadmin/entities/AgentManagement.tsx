@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Users, Search, UserCheck, Eye } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
@@ -150,8 +150,7 @@ const mockAgents = [
 
 const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
-  const [presenceFilter, setPresenceFilter] = useState<'all' | 'available' | 'away' | 'in-call' | 'offline'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'online' | 'in-call' | 'waiting' | 'offline' | 'active' | 'pending' | 'suspended'>('all');
   const [filteredAgents, setFilteredAgents] = useState(mockAgents);
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const { startImpersonation } = useImpersonation();
@@ -208,17 +207,23 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
     );
   };
 
-  const filterAgentsByStatus = (status: string) => {
+  const filterAgentsByStatus = () => {
     let filtered = mockAgents;
     
-    // Filter by account status
-    if (status !== "all") {
-      filtered = filtered.filter(agent => agent.status === status);
-    }
-    
-    // Filter by presence
-    if (presenceFilter !== "all") {
-      filtered = filtered.filter(agent => agent.presence === presenceFilter);
+    // Filter by status (combines presence and account status)
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(agent => {
+        // Presence-based statuses
+        if (statusFilter === "online") return agent.presence === "available";
+        if (statusFilter === "in-call") return agent.presence === "in-call";
+        if (statusFilter === "waiting") return agent.presence === "away";
+        if (statusFilter === "offline") return agent.presence === "offline";
+        // Account status-based
+        if (statusFilter === "active") return agent.status === "active";
+        if (statusFilter === "pending") return agent.status === "pending";
+        if (statusFilter === "suspended") return agent.status === "suspended";
+        return true;
+      });
     }
     
     // Filter by search term
@@ -232,27 +237,25 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
     return filtered;
   };
 
-  const getPresenceFilterCount = (presence: string) => {
+  const getStatusFilterCount = (status: string) => {
     return mockAgents.filter(agent => {
-      if (presence === 'all') return true;
-      return agent.presence === presence;
+      if (status === 'all') return true;
+      if (status === 'online') return agent.presence === 'available';
+      if (status === 'in-call') return agent.presence === 'in-call';
+      if (status === 'waiting') return agent.presence === 'away';
+      if (status === 'offline') return agent.presence === 'offline';
+      if (status === 'active') return agent.status === 'active';
+      if (status === 'pending') return agent.status === 'pending';
+      if (status === 'suspended') return agent.status === 'suspended';
+      return false;
     }).length;
-  };
-
-  const getTabCounts = () => {
-    return {
-      all: mockAgents.length,
-      active: mockAgents.filter(a => a.status === "active").length,
-      pending: mockAgents.filter(a => a.status === "pending").length,
-      suspended: mockAgents.filter(a => a.status === "suspended").length,
-    };
   };
 
   const handleViewAgent = (agent: any) => {
     setSelectedAgent(agent);
   };
 
-  const tabCounts = getTabCounts();
+  
 
   // Show detail view if an agent is selected
   if (selectedAgent) {
@@ -374,81 +377,78 @@ const AgentManagement = ({ onBackToDashboard }: AgentManagementProps) => {
         </Button>
       </div>
 
-      {/* Presence Status Filters */}
+      {/* Status Filters */}
       <div className="space-y-3">
-        <p className="text-sm font-medium text-muted-foreground">Filter by Presence</p>
+        <p className="text-sm font-medium text-muted-foreground">Filter by Status</p>
         <div className="flex flex-wrap gap-2">
           <Button
-            variant={presenceFilter === "all" ? "default" : "outline"}
+            variant={statusFilter === "all" ? "default" : "outline"}
             size="sm"
-            onClick={() => setPresenceFilter("all")}
-            className="flex items-center gap-2"
+            onClick={() => setStatusFilter("all")}
           >
-            All ({getPresenceFilterCount("all")})
+            All ({getStatusFilterCount("all")})
           </Button>
           <Button
-            variant={presenceFilter === "available" ? "default" : "outline"}
+            variant={statusFilter === "online" ? "default" : "outline"}
             size="sm"
-            onClick={() => setPresenceFilter("available")}
+            onClick={() => setStatusFilter("online")}
             className="flex items-center gap-2"
           >
             <div className="w-2 h-2 bg-green-500 rounded-full" />
-            Available ({getPresenceFilterCount("available")})
+            Online ({getStatusFilterCount("online")})
           </Button>
           <Button
-            variant={presenceFilter === "in-call" ? "default" : "outline"}
+            variant={statusFilter === "in-call" ? "default" : "outline"}
             size="sm"
-            onClick={() => setPresenceFilter("in-call")}
+            onClick={() => setStatusFilter("in-call")}
             className="flex items-center gap-2"
           >
             <div className="w-2 h-2 bg-blue-500 rounded-full" />
-            In Call ({getPresenceFilterCount("in-call")})
+            In Call ({getStatusFilterCount("in-call")})
           </Button>
           <Button
-            variant={presenceFilter === "away" ? "default" : "outline"}
+            variant={statusFilter === "waiting" ? "default" : "outline"}
             size="sm"
-            onClick={() => setPresenceFilter("away")}
+            onClick={() => setStatusFilter("waiting")}
             className="flex items-center gap-2"
           >
             <div className="w-2 h-2 bg-yellow-500 rounded-full" />
-            Away ({getPresenceFilterCount("away")})
+            Waiting ({getStatusFilterCount("waiting")})
           </Button>
           <Button
-            variant={presenceFilter === "offline" ? "default" : "outline"}
+            variant={statusFilter === "offline" ? "default" : "outline"}
             size="sm"
-            onClick={() => setPresenceFilter("offline")}
+            onClick={() => setStatusFilter("offline")}
             className="flex items-center gap-2"
           >
             <div className="w-2 h-2 bg-gray-400 rounded-full" />
-            Offline ({getPresenceFilterCount("offline")})
+            Offline ({getStatusFilterCount("offline")})
+          </Button>
+          <Button
+            variant={statusFilter === "active" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("active")}
+          >
+            Active ({getStatusFilterCount("active")})
+          </Button>
+          <Button
+            variant={statusFilter === "pending" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("pending")}
+          >
+            Pending ({getStatusFilterCount("pending")})
+          </Button>
+          <Button
+            variant={statusFilter === "suspended" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("suspended")}
+          >
+            Suspended ({getStatusFilterCount("suspended")})
           </Button>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All ({tabCounts.all})</TabsTrigger>
-          <TabsTrigger value="active">Active ({tabCounts.active})</TabsTrigger>
-          <TabsTrigger value="pending">Pending ({tabCounts.pending})</TabsTrigger>
-          <TabsTrigger value="suspended">Suspended ({tabCounts.suspended})</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="all">
-          {renderAgentsTable(filterAgentsByStatus("all"))}
-        </TabsContent>
-        
-        <TabsContent value="active">
-          {renderAgentsTable(filterAgentsByStatus("active"))}
-        </TabsContent>
-        
-        <TabsContent value="pending">
-          {renderAgentsTable(filterAgentsByStatus("pending"))}
-        </TabsContent>
-        
-        <TabsContent value="suspended">
-          {renderAgentsTable(filterAgentsByStatus("suspended"))}
-        </TabsContent>
-      </Tabs>
+      {renderAgentsTable(filterAgentsByStatus())}
     </div>
   );
 };

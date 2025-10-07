@@ -16,9 +16,9 @@ interface AgencySettingsProps {
 export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboard }) => {
   const [activeTab, setActiveTab] = useState("members");
 
-  // Mock data for badges
+  // Mock data for badges - in production, these would come from API
   const tabCounts = {
-    members: 12,
+    members: 200, // Updated to reflect 200 agents
     pendingInvites: 3,
     transfers: 2
   };

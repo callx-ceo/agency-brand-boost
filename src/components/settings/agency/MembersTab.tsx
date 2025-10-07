@@ -180,6 +180,9 @@ const mockMembers: AgencyMember[] = generateMockMembers();
 
 export const MembersTab: React.FC = () => {
   const [members, setMembers] = useState<AgencyMember[]>(mockMembers);
+  
+  // Log member count for debugging
+  console.log(`MembersTab loaded with ${members.length} members`);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'away' | 'in-call' | 'offline' | 'active' | 'suspended'>('all');
   const [showInviteModal, setShowInviteModal] = useState(false);

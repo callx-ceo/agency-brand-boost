@@ -4,8 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MoreVertical, Search, UserPlus, Crown, Shield, User, Eye, ArrowLeftRight, UserMinus } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { MoreVertical, Search, UserPlus, Crown, Shield, User, Eye, ArrowLeftRight, UserMinus, CheckCircle2, DollarSign, MapPin } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +17,19 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import { InviteUserModal } from './InviteUserModal';
 import { RoleChangeConfirmDialog } from './RoleChangeConfirmDialog';
 import { TransferUserModal } from './TransferUserModal';
 
 type UserRole = 'Owner' | 'Admin' | 'Agent';
 type UserStatus = 'active' | 'suspended';
+
+interface VerticalBid {
+  vertical: string;
+  bidAmount: number;
+  isValid?: boolean;
+}
 
 interface AgencyMember {
   id: string;
@@ -30,7 +41,46 @@ interface AgencyMember {
   lastSeen: string;
   presence?: 'available' | 'away' | 'in-call' | 'offline';
   verticals?: string[];
+  bids?: VerticalBid[];
+  targetStates?: string[];
 }
+
+const AVAILABLE_VERTICALS = [
+  "Final Expense",
+  "Medicare", 
+  "Auto Insurance",
+  "Home Insurance",
+  "Health Insurance",
+  "Life Insurance",
+  "Debt Settlement",
+  "Home Services",
+  "Legal"
+];
+
+const MINIMUM_BIDS: Record<string, number> = {
+  "Final Expense": 8.00,
+  "Medicare": 12.00,
+  "Auto Insurance": 6.00,
+  "Home Insurance": 7.00,
+  "Health Insurance": 10.00,
+  "Life Insurance": 9.00,
+  "Debt Settlement": 15.00,
+  "Home Services": 5.00,
+  "Legal": 20.00
+};
+
+const US_STATES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+  "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
+  "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
+  "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+  "New Hampshire", "New Jersey", "New Mexico", "New York",
+  "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+  "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
+  "West Virginia", "Wisconsin", "Wyoming"
+];
 
 const mockMembers: AgencyMember[] = [
   {
@@ -79,6 +129,7 @@ const mockMembers: AgencyMember[] = [
 ];
 
 export const MembersTab: React.FC = () => {
+  const [members, setMembers] = useState<AgencyMember[]>(mockMembers);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'away' | 'in-call' | 'offline' | 'active' | 'suspended'>('all');
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -87,7 +138,15 @@ export const MembersTab: React.FC = () => {
   const [selectedMember, setSelectedMember] = useState<AgencyMember | null>(null);
   const [pendingRoleChange, setPendingRoleChange] = useState<{ member: AgencyMember; newRole: UserRole } | null>(null);
 
-  const filteredMembers = mockMembers.filter(member => {
+  // Modals for verticals, bids, and states
+  const [verticalsDialogOpen, setVerticalsDialogOpen] = useState(false);
+  const [bidsDialogOpen, setBidsDialogOpen] = useState(false);
+  const [statesDialogOpen, setStatesDialogOpen] = useState(false);
+  const [selectedVerticals, setSelectedVerticals] = useState<string[]>([]);
+  const [bidSettings, setBidSettings] = useState<VerticalBid[]>([]);
+  const [targetStates, setTargetStates] = useState<string[]>([]);
+
+  const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -171,6 +230,107 @@ export const MembersTab: React.FC = () => {
   const handleTransferUser = (member: AgencyMember) => {
     setSelectedMember(member);
     setShowTransferModal(true);
+  };
+
+  // Verticals management
+  const handleOpenVerticals = (member: AgencyMember) => {
+    setSelectedMember(member);
+    setSelectedVerticals(member.verticals || []);
+    setVerticalsDialogOpen(true);
+  };
+
+  const handleVerticalToggle = (vertical: string) => {
+    setSelectedVerticals(prev =>
+      prev.includes(vertical)
+        ? prev.filter(v => v !== vertical)
+        : [...prev, vertical]
+    );
+  };
+
+  const handleSaveVerticals = () => {
+    if (!selectedMember) return;
+    
+    setMembers(prev => prev.map(m =>
+      m.id === selectedMember.id
+        ? { ...m, verticals: selectedVerticals }
+        : m
+    ));
+    
+    toast.success(`Verticals updated for ${selectedMember.name}`);
+    setVerticalsDialogOpen(false);
+  };
+
+  // Bids management
+  const handleOpenBids = (member: AgencyMember) => {
+    setSelectedMember(member);
+    setBidSettings(member.bids || []);
+    setSelectedVerticals(member.verticals || []);
+    setBidsDialogOpen(true);
+  };
+
+  const handleBidChange = (vertical: string, value: string) => {
+    const numValue = parseFloat(value) || 0;
+    const minBid = MINIMUM_BIDS[vertical] || 0;
+    
+    setBidSettings(prev => {
+      const existing = prev.find(b => b.vertical === vertical);
+      if (existing) {
+        return prev.map(b =>
+          b.vertical === vertical
+            ? { ...b, bidAmount: numValue, isValid: numValue >= minBid }
+            : b
+        );
+      } else {
+        return [...prev, { vertical, bidAmount: numValue, isValid: numValue >= minBid }];
+      }
+    });
+  };
+
+  const handleSaveBids = () => {
+    if (!selectedMember) return;
+
+    const invalidBids = bidSettings.filter(b => !b.isValid);
+    if (invalidBids.length > 0) {
+      toast.error("Please ensure all bids meet minimum requirements");
+      return;
+    }
+    
+    setMembers(prev => prev.map(m =>
+      m.id === selectedMember.id
+        ? { ...m, bids: bidSettings }
+        : m
+    ));
+    
+    toast.success(`Bids updated for ${selectedMember.name}`);
+    setBidsDialogOpen(false);
+  };
+
+  // States management
+  const handleOpenStates = (member: AgencyMember) => {
+    setSelectedMember(member);
+    setTargetStates(member.targetStates || []);
+    setStatesDialogOpen(true);
+  };
+
+  const handleStateToggle = (state: string) => {
+    setTargetStates(prev =>
+      prev.includes(state)
+        ? prev.filter(s => s !== state)
+        : [...prev, state]
+    );
+  };
+
+  const handleSaveStates = () => {
+    if (!selectedMember) return;
+    
+    setMembers(prev => prev.map(m =>
+      m.id === selectedMember.id
+        ? { ...m, targetStates: targetStates }
+        : m
+    ));
+    
+    toast.success(`States updated for ${selectedMember.name}`);
+    setStatesDialogOpen(false);
   };
 
   const handleCanTakeCallsToggle = (memberId: string, canTakeCalls: boolean) => {
@@ -324,12 +484,29 @@ export const MembersTab: React.FC = () => {
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
+                      {(member.role === 'Agent' || member.role === 'Admin') && (
+                        <>
+                          <DropdownMenuItem onClick={() => handleOpenVerticals(member)}>
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            Manage Verticals
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleOpenBids(member)}>
+                            <DollarSign className="h-4 w-4 mr-2" />
+                            Manage Bids
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleOpenStates(member)}>
+                            <MapPin className="h-4 w-4 mr-2" />
+                            Manage States
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
                       <DropdownMenuItem onClick={() => handleTransferUser(member)}>
                         <ArrowLeftRight className="h-4 w-4 mr-2" />
                         Transfer
@@ -380,6 +557,300 @@ export const MembersTab: React.FC = () => {
         onOpenChange={setShowTransferModal}
         member={selectedMember}
       />
+
+      {/* Verticals Management Modal */}
+      <Dialog open={verticalsDialogOpen} onOpenChange={setVerticalsDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5" />
+              Manage Verticals - {selectedMember?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <Card>
+            <CardHeader>
+              <CardDescription>
+                Select which verticals this agent can handle calls for. They'll only receive calls from campaigns matching their selected verticals.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <Label className="text-sm font-medium">Available Verticals</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {AVAILABLE_VERTICALS.map((vertical) => (
+                    <div key={vertical} className="flex items-center space-x-3">
+                      <Checkbox
+                        id={`vertical-${vertical}`}
+                        checked={selectedVerticals.includes(vertical)}
+                        onCheckedChange={() => handleVerticalToggle(vertical)}
+                      />
+                      <Label 
+                        htmlFor={`vertical-${vertical}`}
+                        className="text-sm font-normal cursor-pointer flex-1"
+                      >
+                        {vertical}
+                      </Label>
+                      {selectedVerticals.includes(vertical) && (
+                        <Badge variant="secondary" className="text-xs">
+                          Active
+                        </Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Selected Verticals</p>
+                    <p className="text-xs text-muted-foreground">
+                      {selectedVerticals.length === 0 
+                        ? "No verticals selected - agent won't receive any calls"
+                        : `${selectedVerticals.length} vertical(s) selected`
+                      }
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {selectedVerticals.slice(0, 3).map((vertical) => (
+                      <Badge key={vertical} variant="default" className="text-xs">
+                        {vertical}
+                      </Badge>
+                    ))}
+                    {selectedVerticals.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{selectedVerticals.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setVerticalsDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveVerticals} className="flex-1">
+                  Save Vertical Preferences
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bids Management Modal */}
+      <Dialog open={bidsDialogOpen} onOpenChange={setBidsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Manage Bid Prices - {selectedMember?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <Card>
+            <CardHeader>
+              <CardDescription>
+                Set bid amounts for each vertical. Higher bids increase call priority but also cost more per call.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {selectedVerticals.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-sm">No verticals assigned to this agent.</p>
+                  <p className="text-xs mt-1">Assign verticals first to set bid prices.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {selectedVerticals.map((vertical) => {
+                    const currentBid = bidSettings.find(b => b.vertical === vertical);
+                    const minBid = MINIMUM_BIDS[vertical] || 0;
+                    const isValid = currentBid ? currentBid.bidAmount >= minBid : false;
+                    const suggestedBid = minBid * 1.2;
+
+                    return (
+                      <Card key={vertical}>
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm font-medium">{vertical}</CardTitle>
+                            <Badge variant="outline" className="text-xs">
+                              Min: ${minBid.toFixed(2)}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <Label htmlFor={`bid-${vertical}`} className="text-xs">
+                              Your Bid Amount
+                            </Label>
+                            <div className="flex gap-2 items-center">
+                              <div className="relative flex-1">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                                  $
+                                </span>
+                                <Input
+                                  id={`bid-${vertical}`}
+                                  type="number"
+                                  step="0.01"
+                                  min={minBid}
+                                  value={currentBid?.bidAmount || minBid}
+                                  onChange={(e) => handleBidChange(vertical, e.target.value)}
+                                  className={`pl-7 ${!isValid ? 'border-destructive' : ''}`}
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleBidChange(vertical, minBid.toString())}
+                              >
+                                Set Min
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleBidChange(vertical, suggestedBid.toFixed(2))}
+                              >
+                                Suggested
+                              </Button>
+                            </div>
+                            {!isValid && currentBid && (
+                              <p className="text-xs text-destructive">
+                                Must be at least ${minBid.toFixed(2)}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                              Suggested bid: ${suggestedBid.toFixed(2)} (20% above minimum)
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+
+              {selectedVerticals.length > 0 && (
+                <div className="pt-4 border-t space-y-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">Estimated Weekly Spend</span>
+                    <span className="text-lg font-semibold">
+                      ${bidSettings.reduce((sum, bid) => sum + (bid.bidAmount * 50), 0).toFixed(2)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Based on ~50 calls per vertical per week
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setBidsDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveBids} className="flex-1" disabled={selectedVerticals.length === 0}>
+                  Save Bid Settings
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
+
+      {/* States Management Modal */}
+      <Dialog open={statesDialogOpen} onOpenChange={setStatesDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Manage Target States - {selectedMember?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <Card>
+            <CardHeader>
+              <CardDescription>
+                Select which US states this agent is licensed to handle. They'll only receive calls from contacts in their selected states.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">Available States</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTargetStates(US_STATES)}
+                    >
+                      Select All
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTargetStates([])}
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto border rounded-md p-4">
+                  {US_STATES.map((state) => (
+                    <div key={state} className="flex items-center space-x-3">
+                      <Checkbox
+                        id={`state-${state}`}
+                        checked={targetStates.includes(state)}
+                        onCheckedChange={() => handleStateToggle(state)}
+                      />
+                      <Label 
+                        htmlFor={`state-${state}`}
+                        className="text-sm font-normal cursor-pointer flex-1"
+                      >
+                        {state}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Selected States</p>
+                    <p className="text-xs text-muted-foreground">
+                      {targetStates.length === 0 
+                        ? "No states selected - agent won't receive any calls"
+                        : `${targetStates.length} state(s) selected`
+                      }
+                    </p>
+                  </div>
+                  {targetStates.length > 0 && (
+                    <div className="flex gap-2">
+                      {targetStates.slice(0, 3).map((state) => (
+                        <Badge key={state} variant="default" className="text-xs">
+                          {state}
+                        </Badge>
+                      ))}
+                      {targetStates.length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{targetStates.length - 3}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setStatesDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveStates} className="flex-1">
+                  Save Target States
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -5,7 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Search, DollarSign, Users, TrendingUp, Gift, ChevronLeft, CheckCircle, XCircle } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { Search, DollarSign, Users, TrendingUp, Gift, ChevronLeft, CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReferralManagementProps {
   onBackToDashboard: () => void;
@@ -27,6 +31,8 @@ interface ReferralData {
 const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [dateFrom, setDateFrom] = useState<Date>();
+  const [dateTo, setDateTo] = useState<Date>();
 
   // Mock data - replace with Supabase queries
   const mockStats = {
@@ -93,10 +99,17 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
       ref.referred_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ref.referrer_agency.toLowerCase().includes(searchTerm.toLowerCase());
     
-    if (activeTab === "all") return matchesSearch;
-    if (activeTab === "pending") return matchesSearch && ref.status === "pending";
-    if (activeTab === "rewarded") return matchesSearch && ref.status === "rewarded";
-    return matchesSearch;
+    const signupDate = new Date(ref.signup_date);
+    const matchesDateRange = 
+      (!dateFrom || signupDate >= dateFrom) &&
+      (!dateTo || signupDate <= dateTo);
+    
+    const matchesFilters = matchesSearch && matchesDateRange;
+    
+    if (activeTab === "all") return matchesFilters;
+    if (activeTab === "pending") return matchesFilters && ref.status === "pending";
+    if (activeTab === "rewarded") return matchesFilters && ref.status === "rewarded";
+    return matchesFilters;
   });
 
   return (
@@ -171,6 +184,30 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
               <CardDescription>View and manage all platform referrals</CardDescription>
             </div>
             <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("justify-start text-left font-normal", !dateFrom && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateFrom ? format(dateFrom, "PPP") : "From date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                </PopoverContent>
+              </Popover>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("justify-start text-left font-normal", !dateTo && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateTo ? format(dateTo, "PPP") : "To date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
+                </PopoverContent>
+              </Popover>
+              
               <div className="relative w-72">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input

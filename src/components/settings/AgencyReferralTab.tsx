@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Users, TrendingUp, Gift } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AgencyReferralData {
   id: string;
@@ -19,6 +25,9 @@ interface AgencyReferralData {
 
 export const AgencyReferralTab = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFrom, setDateFrom] = useState<Date>();
+  const [dateTo, setDateTo] = useState<Date>();
 
   // Mock data - replace with Supabase queries filtering by agency
   const mockAgencyStats = {
@@ -64,6 +73,19 @@ export const AgencyReferralTab = () => {
     };
     return <Badge variant={variants[status] || "default"}>{status}</Badge>;
   };
+
+  const filteredReferrals = mockAgencyReferrals.filter((ref) => {
+    const matchesSearch = 
+      ref.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ref.referred_name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const signupDate = new Date(ref.signup_date);
+    const matchesDateRange = 
+      (!dateFrom || signupDate >= dateFrom) &&
+      (!dateTo || signupDate <= dateTo);
+    
+    return matchesSearch && matchesDateRange;
+  });
 
   return (
     <div className="space-y-6">
@@ -127,8 +149,47 @@ export const AgencyReferralTab = () => {
       {/* Referrals Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Agency Referrals</CardTitle>
-          <CardDescription>Referrals made by your team members</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Agency Referrals</CardTitle>
+              <CardDescription>Referrals made by your team members</CardDescription>
+            </div>
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("justify-start text-left font-normal", !dateFrom && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateFrom ? format(dateFrom, "PPP") : "From date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                </PopoverContent>
+              </Popover>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("justify-start text-left font-normal", !dateTo && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateTo ? format(dateTo, "PPP") : "To date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
+                </PopoverContent>
+              </Popover>
+              
+              <div className="relative w-72">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search referrals..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -153,14 +214,14 @@ export const AgencyReferralTab = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAgencyReferrals.length === 0 ? (
+                  {filteredReferrals.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        No referrals yet
+                        No referrals found
                       </TableCell>
                     </TableRow>
                   ) : (
-                    mockAgencyReferrals.map((referral) => (
+                    filteredReferrals.map((referral) => (
                       <TableRow key={referral.id}>
                         <TableCell className="font-medium">{referral.agent_name}</TableCell>
                         <TableCell className="font-medium">{referral.referred_name}</TableCell>
@@ -197,14 +258,14 @@ export const AgencyReferralTab = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAgencyReferrals.filter(r => r.status === "pending").length === 0 ? (
+                  {filteredReferrals.filter(r => r.status === "pending").length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                         No pending referrals
                       </TableCell>
                     </TableRow>
                   ) : (
-                    mockAgencyReferrals
+                    filteredReferrals
                       .filter(r => r.status === "pending")
                       .map((referral) => (
                         <TableRow key={referral.id}>
@@ -235,14 +296,14 @@ export const AgencyReferralTab = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAgencyReferrals.filter(r => r.status === "rewarded").length === 0 ? (
+                  {filteredReferrals.filter(r => r.status === "rewarded").length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                         No completed referrals yet
                       </TableCell>
                     </TableRow>
                   ) : (
-                    mockAgencyReferrals
+                    filteredReferrals
                       .filter(r => r.status === "rewarded")
                       .map((referral) => (
                         <TableRow key={referral.id}>

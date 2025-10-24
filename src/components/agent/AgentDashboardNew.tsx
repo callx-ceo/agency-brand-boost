@@ -11,7 +11,8 @@ import {
   FileText, 
   Settings, 
   HelpCircle,
-  Power
+  Power,
+  Gift
 } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import ImpersonationBanner from "@/components/ImpersonationBanner";
@@ -20,6 +21,7 @@ import AgentApplicationsView from "./AgentApplicationsView";
 import AgentHistoryView from "./AgentHistoryView";
 import AgentSettingsView from "./AgentSettingsView";
 import AgentInsights from "./AgentInsights";
+import { ReferralDashboard } from "./ReferralDashboard";
 
 const AgentDashboardNew = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -41,6 +43,7 @@ const AgentDashboardNew = () => {
     { id: "history", icon: History, label: "History", active: false },
     { id: "contacts", icon: Users, label: "Contacts", active: false },
     { id: "applications", icon: FileText, label: "Applications", active: false },
+    { id: "referrals", icon: Gift, label: "Referrals", active: false },
     { id: "settings", icon: Settings, label: "Settings", active: false },
     { id: "support", icon: HelpCircle, label: "Support", active: false }
   ];
@@ -230,6 +233,7 @@ const AgentDashboardNew = () => {
           {activeNav === "contacts" && <AgentContactsView />}
           {activeNav === "applications" && <AgentApplicationsView />}
           {activeNav === "history" && <AgentHistoryView />}
+          {activeNav === "referrals" && <ReferralDashboard />}
           {activeNav === "settings" && <AgentSettingsView />}
           
           {activeNav === "support" && (

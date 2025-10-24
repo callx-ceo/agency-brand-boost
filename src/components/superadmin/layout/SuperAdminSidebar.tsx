@@ -24,7 +24,8 @@ import {
   Target,
   UserPlus,
   Package,
-  ClipboardList
+  ClipboardList,
+  Gift
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -135,6 +136,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
   // Billing & Finance sections
   const billingSections = [
     { id: "billing-management", label: "Billing Management", icon: <DollarSign className="w-5 h-5" /> },
+    { id: "referral-management", label: "Referral Management", icon: <Gift className="w-5 h-5" /> },
   ];
 
   // System & Administration sections

@@ -11,6 +11,7 @@ import AgencyOffersManagement from "../components/agency/AgencyOffersManagement"
 import { AgencySettings } from "../components/settings/AgencySettings";
 import BillingTab from "../components/settings/BillingTab";
 import AgentDashboard from "../components/agent/AgentDashboard";
+import { AgencyReferralTab } from "../components/settings/AgencyReferralTab";
 import { Toaster } from "sonner";
 
 const Agency = () => {
@@ -88,6 +89,16 @@ const Agency = () => {
               <p className="text-gray-600">Manage billing, payments, and financial settings</p>
             </div>
             <BillingTab />
+          </div>
+        );
+      case "referrals":
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Referral Program</h1>
+              <p className="text-gray-600">Track referrals made by your agents</p>
+            </div>
+            <AgencyReferralTab />
           </div>
         );
       default:

@@ -33,6 +33,7 @@ import MinimumBidManagement from "../entities/MinimumBidManagement";
 import CallSettingsManagement from "../entities/CallSettingsManagement";
 import { AgentVerticalManagement } from "../entities/AgentVerticalManagement";
 import BillingManagement from "../billing/BillingManagement";
+import ReferralManagement from "../entities/ReferralManagement";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -193,6 +194,9 @@ const SuperAdminViewRenderer = ({
     
     case 'billing-management':
       return <BillingManagement />;
+    
+    case 'referral-management':
+      return <ReferralManagement onBackToDashboard={handleBackToDashboard} />;
     
     default:
       return (

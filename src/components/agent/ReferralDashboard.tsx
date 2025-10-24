@@ -18,6 +18,7 @@ interface ReferralStats {
 interface Referral {
   id: string;
   referred_agent_id: string;
+  referred_agent_name: string;
   status: string;
   signup_date: string;
   first_payment_date: string | null;
@@ -69,6 +70,7 @@ export const ReferralDashboard = () => {
         {
           id: "1",
           referred_agent_id: "agent1",
+          referred_agent_name: "John Smith",
           status: "rewarded",
           signup_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
           first_payment_date: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
@@ -77,6 +79,7 @@ export const ReferralDashboard = () => {
         {
           id: "2",
           referred_agent_id: "agent2",
+          referred_agent_name: "Sarah Johnson",
           status: "pending",
           signup_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
           first_payment_date: null,
@@ -234,6 +237,7 @@ export const ReferralDashboard = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>Agent Name</TableHead>
                       <TableHead>Signup Date</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>First Payment</TableHead>
@@ -243,6 +247,9 @@ export const ReferralDashboard = () => {
                   <TableBody>
                     {referrals.map((referral) => (
                       <TableRow key={referral.id}>
+                        <TableCell className="font-medium">
+                          {referral.referred_agent_name}
+                        </TableCell>
                         <TableCell>
                           {new Date(referral.signup_date).toLocaleDateString()}
                         </TableCell>

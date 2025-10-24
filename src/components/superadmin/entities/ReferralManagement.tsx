@@ -7,9 +7,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { Search, DollarSign, Users, TrendingUp, Gift, ChevronLeft, CalendarIcon } from "lucide-react";
+import { Search, DollarSign, Users, TrendingUp, Gift, ChevronLeft, CalendarIcon, Edit, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ReferralManagementProps {
   onBackToDashboard: () => void;
@@ -33,6 +37,9 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
   const [activeTab, setActiveTab] = useState("all");
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
+  const [editingReferral, setEditingReferral] = useState<ReferralData | null>(null);
+  const [newRewardAmount, setNewRewardAmount] = useState("");
+  const [newRewardStatus, setNewRewardStatus] = useState("");
 
   // Mock data - replace with Supabase queries
   const mockStats = {
@@ -91,6 +98,32 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
       credited: "success",
     };
     return <Badge variant={variants[status] || "default"}>{status}</Badge>;
+  };
+
+  const handleEditClick = (referral: ReferralData) => {
+    setEditingReferral(referral);
+    setNewRewardAmount(referral.reward_amount.toString());
+    setNewRewardStatus(referral.reward_status);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingReferral) return;
+    
+    // TODO: Replace with Supabase mutation
+    console.log("Updating referral:", {
+      id: editingReferral.id,
+      reward_amount: parseFloat(newRewardAmount),
+      reward_status: newRewardStatus,
+    });
+    
+    toast.success("Referral updated successfully");
+    setEditingReferral(null);
+  };
+
+  const handleQuickStatusChange = (referralId: string, newStatus: string) => {
+    // TODO: Replace with Supabase mutation
+    console.log("Updating status:", { id: referralId, status: newStatus });
+    toast.success(`Status updated to ${newStatus}`);
   };
 
   const filteredReferrals = mockReferrals.filter((ref) => {
@@ -241,12 +274,13 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
                     <TableHead>Payment Date</TableHead>
                     <TableHead>Reward</TableHead>
                     <TableHead>Reward Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                         No referrals found
                       </TableCell>
                     </TableRow>
@@ -270,6 +304,26 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
                           ${referral.reward_amount.toFixed(2)}
                         </TableCell>
                         <TableCell>{getStatusBadge(referral.reward_status)}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditClick(referral)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            {referral.reward_status === "pending" && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleQuickStatusChange(referral.id, "approved")}
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
                       </TableRow>
                     ))
                   )}
@@ -279,6 +333,67 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Edit Referral Dialog */}
+      <Dialog open={!!editingReferral} onOpenChange={(open) => !open && setEditingReferral(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Referral</DialogTitle>
+            <DialogDescription>
+              Update the reward amount or status for this referral
+            </DialogDescription>
+          </DialogHeader>
+          
+          {editingReferral && (
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Referrer</Label>
+                <p className="text-sm text-muted-foreground">{editingReferral.referrer_name}</p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Referred Agent</Label>
+                <p className="text-sm text-muted-foreground">{editingReferral.referred_name}</p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="reward-amount">Reward Amount ($)</Label>
+                <Input
+                  id="reward-amount"
+                  type="number"
+                  step="0.01"
+                  value={newRewardAmount}
+                  onChange={(e) => setNewRewardAmount(e.target.value)}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="reward-status">Reward Status</Label>
+                <Select value={newRewardStatus} onValueChange={setNewRewardStatus}>
+                  <SelectTrigger id="reward-status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="credited">Credited</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingReferral(null)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

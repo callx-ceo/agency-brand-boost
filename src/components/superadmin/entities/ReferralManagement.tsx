@@ -40,6 +40,8 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
   const [editingReferral, setEditingReferral] = useState<ReferralData | null>(null);
   const [newRewardAmount, setNewRewardAmount] = useState("");
   const [newRewardStatus, setNewRewardStatus] = useState("");
+  const [defaultRewardAmount, setDefaultRewardAmount] = useState("100.00");
+  const [isEditingDefault, setIsEditingDefault] = useState(false);
 
   // Mock data - replace with Supabase queries
   const mockStats = {
@@ -126,6 +128,13 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
     toast.success(`Status updated to ${newStatus}`);
   };
 
+  const handleSaveDefaultReward = () => {
+    // TODO: Replace with Supabase mutation to update system settings
+    console.log("Updating default reward amount:", defaultRewardAmount);
+    toast.success(`Default reward amount updated to $${parseFloat(defaultRewardAmount).toFixed(2)}`);
+    setIsEditingDefault(false);
+  };
+
   const filteredReferrals = mockReferrals.filter((ref) => {
     const matchesSearch = 
       ref.referrer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -160,6 +169,49 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
           </div>
         </div>
       </div>
+
+      {/* Default Reward Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Default Reward Settings</CardTitle>
+          <CardDescription>Configure the default reward amount for new referrals</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-end gap-4">
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="default-reward">Default Reward Amount ($)</Label>
+              <Input
+                id="default-reward"
+                type="number"
+                step="0.01"
+                value={defaultRewardAmount}
+                onChange={(e) => setDefaultRewardAmount(e.target.value)}
+                disabled={!isEditingDefault}
+              />
+            </div>
+            <div className="flex gap-2">
+              {isEditingDefault ? (
+                <>
+                  <Button onClick={handleSaveDefaultReward}>
+                    Save
+                  </Button>
+                  <Button variant="outline" onClick={() => {
+                    setIsEditingDefault(false);
+                    setDefaultRewardAmount("100.00");
+                  }}>
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setIsEditingDefault(true)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">

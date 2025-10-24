@@ -19,6 +19,7 @@ interface Referral {
   id: string;
   referred_agent_id: string;
   referred_agent_name: string;
+  agency_name?: string;
   status: string;
   signup_date: string;
   first_payment_date: string | null;
@@ -71,6 +72,7 @@ export const ReferralDashboard = () => {
           id: "1",
           referred_agent_id: "agent1",
           referred_agent_name: "John Smith",
+          agency_name: "Acme Insurance Group",
           status: "rewarded",
           signup_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
           first_payment_date: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
@@ -80,6 +82,7 @@ export const ReferralDashboard = () => {
           id: "2",
           referred_agent_id: "agent2",
           referred_agent_name: "Sarah Johnson",
+          agency_name: undefined,
           status: "pending",
           signup_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
           first_payment_date: null,
@@ -238,6 +241,7 @@ export const ReferralDashboard = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Agent Name</TableHead>
+                      <TableHead>Agency</TableHead>
                       <TableHead>Signup Date</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>First Payment</TableHead>
@@ -249,6 +253,9 @@ export const ReferralDashboard = () => {
                       <TableRow key={referral.id}>
                         <TableCell className="font-medium">
                           {referral.referred_agent_name}
+                        </TableCell>
+                        <TableCell>
+                          {referral.agency_name || "-"}
                         </TableCell>
                         <TableCell>
                           {new Date(referral.signup_date).toLocaleDateString()}

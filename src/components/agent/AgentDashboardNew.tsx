@@ -117,7 +117,7 @@ const AgentDashboardNew = () => {
             </button>
             <div className="text-xs text-slate-400 pt-2 border-t border-slate-700">
               <div className="flex justify-between items-center">
-                <span>Balance</span>
+                <span>Credits</span>
                 <span className={`font-medium ${agentData.credits < 100 ? 'text-orange-400' : 'text-slate-300'}`}>
                   ${agentData.credits.toFixed(2)}
                 </span>

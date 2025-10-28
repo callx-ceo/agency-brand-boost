@@ -34,7 +34,8 @@ const AgentDashboardNew = () => {
     name: isImpersonating ? impersonatedAgent?.name || "Sean Frank" : "Sean Frank",
     calls: 0,
     applications: 0,
-    closeRate: 0
+    closeRate: 0,
+    credits: 250.00 // Available credits balance
   };
 
   const navigationItems = [
@@ -140,6 +141,10 @@ const AgentDashboardNew = () => {
 
             {/* Stats */}
             <div className="flex items-center gap-8">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">${agentData.credits.toFixed(2)}</div>
+                <div className="text-sm text-gray-500">Credits Available</div>
+              </div>
               <div className="text-center">
                 <div className="text-2xl font-bold">{timeOnline}</div>
                 <div className="text-sm text-gray-500">Time Online Today</div>

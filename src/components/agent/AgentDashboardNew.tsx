@@ -142,10 +142,6 @@ const AgentDashboardNew = () => {
             {/* Stats */}
             <div className="flex items-center gap-8">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">${agentData.credits.toFixed(2)}</div>
-                <div className="text-sm text-gray-500">Credits Available</div>
-              </div>
-              <div className="text-center">
                 <div className="text-2xl font-bold">{timeOnline}</div>
                 <div className="text-sm text-gray-500">Time Online Today</div>
               </div>
@@ -164,6 +160,12 @@ const AgentDashboardNew = () => {
               <div className="text-center">
                 <div className="text-lg font-medium">{agentData.name}</div>
                 <div className="text-sm text-gray-500">Agent</div>
+              </div>
+              <div className="text-right ml-4 border-l pl-4 border-gray-200">
+                <div className="text-xs text-gray-400 mb-1">Balance</div>
+                <div className={`text-sm font-medium ${agentData.credits < 100 ? 'text-orange-600' : 'text-gray-600'}`}>
+                  ${agentData.credits.toFixed(2)}
+                </div>
               </div>
             </div>
           </div>

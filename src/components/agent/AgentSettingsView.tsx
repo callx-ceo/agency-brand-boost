@@ -49,7 +49,6 @@ const AgentSettingsView = () => {
     emailNotifications: true,
     smsNotifications: false,
     callReminders: true,
-    leadAssignments: true,
     performanceEmailsEnabled: true,
     emailFrequency: "per_call" as "per_call" | "daily_digest" | "weekly_digest"
   });
@@ -231,16 +230,81 @@ const AgentSettingsView = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">Email Notifications</div>
-                  <div className="text-sm text-muted-foreground">Receive updates via email</div>
+              {/* Email Notifications */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">Email Notifications</div>
+                    <div className="text-sm text-muted-foreground">Receive updates via email</div>
+                  </div>
+                  <Switch
+                    checked={notifications.emailNotifications}
+                    onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
+                  />
                 </div>
-                <Switch
-                  checked={notifications.emailNotifications}
-                  onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
-                />
+
+                {/* Nested Email Notification Types */}
+                {notifications.emailNotifications && (
+                  <div className="ml-6 pl-4 border-l-2 border-border space-y-4">
+                    <div className="flex items-start gap-2">
+                      <BarChart3 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="font-medium">Performance Email Reports</div>
+                            <div className="text-sm text-muted-foreground">
+                              Receive call scores, feedback, and recommended actions
+                            </div>
+                          </div>
+                          <Switch
+                            checked={notifications.performanceEmailsEnabled}
+                            onCheckedChange={(checked) => setNotifications({...notifications, performanceEmailsEnabled: checked})}
+                          />
+                        </div>
+
+                        {notifications.performanceEmailsEnabled && (
+                          <div className="ml-2 space-y-3">
+                            <Label className="text-sm font-medium">Email Frequency</Label>
+                            <RadioGroup
+                              value={notifications.emailFrequency}
+                              onValueChange={(value) => setNotifications({...notifications, emailFrequency: value as "per_call" | "daily_digest" | "weekly_digest"})}
+                              className="space-y-3"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="per_call" id="per_call" />
+                                <Label htmlFor="per_call" className="font-normal cursor-pointer">
+                                  After every call (recommended for learning)
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="daily_digest" id="daily_digest" />
+                                <Label htmlFor="daily_digest" className="font-normal cursor-pointer">
+                                  Daily digest - One summary per day
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="weekly_digest" id="weekly_digest" />
+                                <Label htmlFor="weekly_digest" className="font-normal cursor-pointer">
+                                  Weekly digest - Summary at week's end
+                                </Label>
+                              </div>
+                            </RadioGroup>
+
+                            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                              <p className="text-sm text-blue-700 dark:text-blue-300">
+                                <strong>Tip:</strong> Immediate feedback helps you learn faster and adjust your approach in real-time. 
+                                Agents who review performance after each call improve 3x faster.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* SMS Notifications */}
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">SMS Notifications</div>
@@ -251,6 +315,8 @@ const AgentSettingsView = () => {
                   onCheckedChange={(checked) => setNotifications({...notifications, smsNotifications: checked})}
                 />
               </div>
+
+              {/* Call Reminders */}
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">Call Reminders</div>
@@ -260,74 +326,6 @@ const AgentSettingsView = () => {
                   checked={notifications.callReminders}
                   onCheckedChange={(checked) => setNotifications({...notifications, callReminders: checked})}
                 />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">Lead Assignments</div>
-                  <div className="text-sm text-muted-foreground">Notify when new leads are assigned</div>
-                </div>
-                <Switch
-                  checked={notifications.leadAssignments}
-                  onCheckedChange={(checked) => setNotifications({...notifications, leadAssignments: checked})}
-                />
-              </div>
-
-              {/* Performance Email Reports Section */}
-              <div className="pt-4 border-t space-y-4">
-                <div className="flex items-start gap-2">
-                  <BarChart3 className="w-5 h-5 text-primary mt-0.5" />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium">Performance Email Reports</div>
-                        <div className="text-sm text-muted-foreground">
-                          Receive call scores, feedback, and recommended actions
-                        </div>
-                      </div>
-                      <Switch
-                        checked={notifications.performanceEmailsEnabled}
-                        onCheckedChange={(checked) => setNotifications({...notifications, performanceEmailsEnabled: checked})}
-                      />
-                    </div>
-
-                    {notifications.performanceEmailsEnabled && (
-                      <div className="mt-4 ml-4 pl-4 border-l-2 border-border space-y-3">
-                        <Label className="text-sm font-medium">Email Frequency</Label>
-                        <RadioGroup
-                          value={notifications.emailFrequency}
-                          onValueChange={(value) => setNotifications({...notifications, emailFrequency: value as "per_call" | "daily_digest" | "weekly_digest"})}
-                          className="space-y-3"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="per_call" id="per_call" />
-                            <Label htmlFor="per_call" className="font-normal cursor-pointer">
-                              After every call (recommended for learning)
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="daily_digest" id="daily_digest" />
-                            <Label htmlFor="daily_digest" className="font-normal cursor-pointer">
-                              Daily digest - One summary per day
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="weekly_digest" id="weekly_digest" />
-                            <Label htmlFor="weekly_digest" className="font-normal cursor-pointer">
-                              Weekly digest - Summary at week's end
-                            </Label>
-                          </div>
-                        </RadioGroup>
-
-                        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
-                          <p className="text-sm text-blue-700 dark:text-blue-300">
-                            <strong>Tip:</strong> Immediate feedback helps you learn faster and adjust your approach in real-time. 
-                            Agents who review performance after each call improve 3x faster.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
 
               <Button onClick={handleSaveNotifications} className="flex items-center gap-2">

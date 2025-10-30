@@ -1,7 +1,4 @@
-project_id = "your-project-id"
-
-[functions.generate-agent-insights]
-verify_jwt = false
+project_id = "exvuxrrvxawlqtxsusud"
 
 [functions.send-agent-emails]
 verify_jwt = false
@@ -10,4 +7,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.process-referral-reward]
+verify_jwt = false
+
+[functions.generate-agent-insights]
 verify_jwt = false

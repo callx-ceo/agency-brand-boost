@@ -1,0 +1,244 @@
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Mail, Loader2 } from "lucide-react";
+
+/**
+ * EmailTestComponent - Used for testing email functionality
+ * This component allows manual testing of call score and recommended action emails
+ */
+const EmailTestComponent = () => {
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendTestCallScoreEmail = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter an email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-agent-emails`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            to: email,
+            type: "call_score",
+            data: {
+              agentName: "Aaron Javier",
+              callDate: new Date().toLocaleDateString(),
+              overallScore: 87,
+              criteria: [
+                {
+                  name: "Script Adherence",
+                  score: 92,
+                  feedback: "Excellent job following the script while maintaining natural conversation flow.",
+                },
+                {
+                  name: "Objection Handling",
+                  score: 85,
+                  feedback: "Good responses to objections. Consider using more empathy statements.",
+                },
+                {
+                  name: "Closing Technique",
+                  score: 84,
+                  feedback: "Strong closing. Try asking for the sale more directly earlier in the conversation.",
+                },
+              ],
+              strengths: [
+                "Natural and friendly tone throughout the call",
+                "Asked great discovery questions",
+                "Built strong rapport with the customer",
+              ],
+              improvements: [
+                "Work on handling price objections with more confidence",
+                "Reduce filler words ('um', 'like') for more professional delivery",
+              ],
+              nextSteps: [
+                "Review the objection handling training module",
+                "Practice the ABC closing technique",
+                "Listen to top performer call recordings",
+              ],
+            },
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast({
+          title: "Email Sent!",
+          description: "Call score email has been sent successfully.",
+        });
+      } else {
+        throw new Error("Failed to send email");
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send email. Check console for details.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const sendTestRecommendedActionsEmail = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter an email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-agent-emails`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            to: email,
+            type: "recommended_actions",
+            data: {
+              agentName: "Aaron Javier",
+              performanceSummary:
+                "Your performance this week shows strong progress! Your close rate increased by 12% and you handled 23% more calls. Focus on the areas below to maintain this momentum.",
+              actions: [
+                {
+                  title: "Practice handling price objections",
+                  priority: "high",
+                  category: "Sales Skills",
+                  description:
+                    "Your conversion rate drops when discussing pricing. Review the pricing confidence module and practice with your manager this week.",
+                },
+                {
+                  title: "Improve opening statements",
+                  priority: "medium",
+                  category: "Communication",
+                  description:
+                    "First impressions matter! Work on making your opening 15 seconds more engaging to capture attention immediately.",
+                },
+                {
+                  title: "Study competitor products",
+                  priority: "medium",
+                  category: "Product Knowledge",
+                  description:
+                    "Understanding competitor offerings will help you position your products better. Spend 30 minutes reviewing the comparison guide.",
+                },
+                {
+                  title: "Celebrate your wins!",
+                  priority: "low",
+                  category: "Mindset",
+                  description:
+                    "You've made great progress! Take time to acknowledge your achievements and maintain positive momentum.",
+                },
+              ],
+            },
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast({
+          title: "Email Sent!",
+          description: "Recommended actions email has been sent successfully.",
+        });
+      } else {
+        throw new Error("Failed to send email");
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send email. Check console for details.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Mail className="w-5 h-5" />
+          Test Email System
+        </CardTitle>
+        <CardDescription>
+          Send test emails to verify your email notification setup
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="test-email">Recipient Email</Label>
+          <Input
+            id="test-email"
+            type="email"
+            placeholder="agent@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="flex gap-3 flex-wrap">
+          <Button
+            onClick={sendTestCallScoreEmail}
+            disabled={isLoading}
+            className="flex-1 min-w-[200px]"
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Mail className="w-4 h-4 mr-2" />
+            )}
+            Send Test Call Score
+          </Button>
+
+          <Button
+            onClick={sendTestRecommendedActionsEmail}
+            disabled={isLoading}
+            variant="outline"
+            className="flex-1 min-w-[200px]"
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Mail className="w-4 h-4 mr-2" />
+            )}
+            Send Test Actions Email
+          </Button>
+        </div>
+
+        <div className="text-xs text-muted-foreground mt-4 p-3 bg-muted rounded-md">
+          <strong>Note:</strong> Make sure you've added your RESEND_API_KEY in the
+          Lovable Cloud secrets and verified your sending domain at resend.com.
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default EmailTestComponent;

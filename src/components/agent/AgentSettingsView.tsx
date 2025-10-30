@@ -15,6 +15,8 @@ import { AgentLanguagePicker } from "../settings/AgentLanguageSettings";
 import { AgentVerticalBidSettings } from "../settings/AgentVerticalBidSettings";
 import { AgentTargetStatesSettings } from "../settings/AgentTargetStatesSettings";
 import AgentBillingView from "./AgentBillingView";
+import AgentEmailSettings from "./AgentEmailSettings";
+import EmailTestComponent from "./EmailTestComponent";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -91,12 +93,13 @@ const AgentSettingsView = () => {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="profile">Profile Data</TabsTrigger>
           <TabsTrigger value="verticals">Verticals</TabsTrigger>
           <TabsTrigger value="states">Target States</TabsTrigger>
           <TabsTrigger value="bids">Bid Settings</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="emails">Email Reports</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="transfer">Transfer</TabsTrigger>
@@ -269,6 +272,11 @@ const AgentSettingsView = () => {
               </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="emails" className="space-y-6">
+          <AgentEmailSettings />
+          <EmailTestComponent />
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">

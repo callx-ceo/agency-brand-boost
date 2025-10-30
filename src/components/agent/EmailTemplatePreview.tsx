@@ -1,6 +1,9 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Maximize2 } from "lucide-react";
 
 interface EmailTemplatePreviewProps {
   type: "call_score" | "recommended_actions" | "performance_report";
@@ -209,8 +212,8 @@ const PerformanceReportPreview = ({ customization }: { customization?: any }) =>
 };
 
 export const EmailTemplatePreview: React.FC<EmailTemplatePreviewProps> = ({ type, customization }) => {
-  return (
-    <Card className="p-6 max-h-[600px] overflow-y-auto">
+  const PreviewContent = () => (
+    <>
       {type === "call_score" ? (
         <CallScorePreview customization={customization} />
       ) : type === "performance_report" ? (
@@ -218,7 +221,31 @@ export const EmailTemplatePreview: React.FC<EmailTemplatePreviewProps> = ({ type
       ) : (
         <RecommendedActionsPreview customization={customization} />
       )}
-    </Card>
+    </>
+  );
+
+  return (
+    <div className="relative">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="absolute top-2 right-2 z-10"
+          >
+            <Maximize2 className="w-4 h-4 mr-2" />
+            Full Preview
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <PreviewContent />
+        </DialogContent>
+      </Dialog>
+      
+      <Card className="p-6 max-h-[600px] overflow-y-auto">
+        <PreviewContent />
+      </Card>
+    </div>
   );
 };
 

@@ -1,10 +1,11 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, AlertCircle, DollarSign, Phone, Users, Settings } from "lucide-react";
 import { toast } from "sonner";
+import AgentEmailSettings from "@/components/agent/AgentEmailSettings";
 
 type NotificationType = "all" | "system" | "billing" | "calls" | "agents";
 
@@ -146,100 +147,124 @@ const NotificationsTab = () => {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-bold">Notifications</h2>
-          <p className="text-gray-600">Stay updated on important events and system changes</p>
-        </div>
-        {unreadCount > 0 && (
-          <Button onClick={markAllAsRead} variant="outline">
-            Mark All as Read ({unreadCount})
-          </Button>
-        )}
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">Notifications</h2>
+        <p className="text-muted-foreground">Manage your notification preferences and view recent notifications</p>
       </div>
 
-      {/* Filter Buttons */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {filters.map((filter) => (
-          <Button
-            key={filter.key}
-            variant={activeFilter === filter.key ? "default" : "outline"}
-            onClick={() => setActiveFilter(filter.key)}
-            className="flex items-center gap-2"
-          >
-            {filter.icon}
-            {filter.label}
-            {filter.key === "all" && unreadCount > 0 && (
-              <Badge variant="destructive" className="ml-1">
+      <Tabs defaultValue="email" className="w-full">
+        <TabsList>
+          <TabsTrigger value="email">Email Notifications</TabsTrigger>
+          <TabsTrigger value="history">
+            Notification History
+            {unreadCount > 0 && (
+              <Badge variant="destructive" className="ml-2">
                 {unreadCount}
               </Badge>
             )}
-          </Button>
-        ))}
-      </div>
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Notifications List */}
-      <div className="space-y-4">
-        {filteredNotifications.length === 0 ? (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Bell className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
-              <p className="text-gray-500">
-                {activeFilter === "all" 
-                  ? "You're all caught up! No new notifications to display."
-                  : `No ${activeFilter} notifications at this time.`
-                }
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredNotifications.map((notification) => (
-            <Card
-              key={notification.id}
-              className={`cursor-pointer transition-colors ${
-                !notification.read 
-                  ? "bg-blue-50 border-blue-200" 
-                  : "bg-white"
-              }`}
-              onClick={() => !notification.read && markAsRead(notification.id)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className={`w-2 h-2 rounded-full ${getPriorityColor(notification.priority)}`} />
-                      <h3 className={`font-medium ${!notification.read ? "font-semibold" : ""}`}>
-                        {notification.title}
-                      </h3>
-                      {!notification.read && (
-                        <Badge variant="secondary" className="text-xs">
-                          New
-                        </Badge>
+        <TabsContent value="email" className="space-y-4">
+          <AgentEmailSettings />
+        </TabsContent>
+
+        <TabsContent value="history" className="space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm text-muted-foreground">
+              View and manage your notification history
+            </p>
+            {unreadCount > 0 && (
+              <Button onClick={markAllAsRead} variant="outline">
+                Mark All as Read ({unreadCount})
+              </Button>
+            )}
+          </div>
+
+          {/* Filter Buttons */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {filters.map((filter) => (
+              <Button
+                key={filter.key}
+                variant={activeFilter === filter.key ? "default" : "outline"}
+                onClick={() => setActiveFilter(filter.key)}
+                className="flex items-center gap-2"
+              >
+                {filter.icon}
+                {filter.label}
+                {filter.key === "all" && unreadCount > 0 && (
+                  <Badge variant="destructive" className="ml-1">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            ))}
+          </div>
+
+          {/* Notifications List */}
+          <div className="space-y-4">
+            {filteredNotifications.length === 0 ? (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <Bell className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
+                  <p className="text-gray-500">
+                    {activeFilter === "all" 
+                      ? "You're all caught up! No new notifications to display."
+                      : `No ${activeFilter} notifications at this time.`
+                    }
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredNotifications.map((notification) => (
+                <Card
+                  key={notification.id}
+                  className={`cursor-pointer transition-colors ${
+                    !notification.read 
+                      ? "bg-blue-50 border-blue-200" 
+                      : "bg-white"
+                  }`}
+                  onClick={() => !notification.read && markAsRead(notification.id)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className={`w-2 h-2 rounded-full ${getPriorityColor(notification.priority)}`} />
+                          <h3 className={`font-medium ${!notification.read ? "font-semibold" : ""}`}>
+                            {notification.title}
+                          </h3>
+                          {!notification.read && (
+                            <Badge variant="secondary" className="text-xs">
+                              New
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-gray-600 mb-3">{notification.message}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-500">
+                            {getRelativeTime(notification.createdAt)}
+                          </span>
+                          {notification.actionUrl && (
+                            <Button variant="link" size="sm" className="p-0 h-auto">
+                              View Details
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      {notification.priority === "critical" && (
+                        <AlertCircle className="w-5 h-5 text-red-500 ml-2 flex-shrink-0" />
                       )}
                     </div>
-                    <p className="text-gray-600 mb-3">{notification.message}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">
-                        {getRelativeTime(notification.createdAt)}
-                      </span>
-                      {notification.actionUrl && (
-                        <Button variant="link" size="sm" className="p-0 h-auto">
-                          View Details
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                  {notification.priority === "critical" && (
-                    <AlertCircle className="w-5 h-5 text-red-500 ml-2 flex-shrink-0" />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

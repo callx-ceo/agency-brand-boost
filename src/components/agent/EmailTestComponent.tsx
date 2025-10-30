@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * EmailTestComponent - Used for testing email functionality
@@ -27,65 +28,57 @@ const EmailTestComponent = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-agent-emails`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      const { data, error } = await supabase.functions.invoke("send-agent-emails", {
+        body: {
+          to: email,
+          type: "call_score",
+          data: {
+            agentName: "Aaron Javier",
+            callDate: new Date().toLocaleDateString(),
+            overallScore: 87,
+            criteria: [
+              {
+                name: "Script Adherence",
+                score: 92,
+                feedback: "Excellent job following the script while maintaining natural conversation flow.",
+              },
+              {
+                name: "Objection Handling",
+                score: 85,
+                feedback: "Good responses to objections. Consider using more empathy statements.",
+              },
+              {
+                name: "Closing Technique",
+                score: 84,
+                feedback: "Strong closing. Try asking for the sale more directly earlier in the conversation.",
+              },
+            ],
+            strengths: [
+              "Natural and friendly tone throughout the call",
+              "Asked great discovery questions",
+              "Built strong rapport with the customer",
+            ],
+            improvements: [
+              "Work on handling price objections with more confidence",
+              "Reduce filler words ('um', 'like') for more professional delivery",
+            ],
+            nextSteps: [
+              "Review the objection handling training module",
+              "Practice the ABC closing technique",
+              "Listen to top performer call recordings",
+            ],
           },
-          body: JSON.stringify({
-            to: email,
-            type: "call_score",
-            data: {
-              agentName: "Aaron Javier",
-              callDate: new Date().toLocaleDateString(),
-              overallScore: 87,
-              criteria: [
-                {
-                  name: "Script Adherence",
-                  score: 92,
-                  feedback: "Excellent job following the script while maintaining natural conversation flow.",
-                },
-                {
-                  name: "Objection Handling",
-                  score: 85,
-                  feedback: "Good responses to objections. Consider using more empathy statements.",
-                },
-                {
-                  name: "Closing Technique",
-                  score: 84,
-                  feedback: "Strong closing. Try asking for the sale more directly earlier in the conversation.",
-                },
-              ],
-              strengths: [
-                "Natural and friendly tone throughout the call",
-                "Asked great discovery questions",
-                "Built strong rapport with the customer",
-              ],
-              improvements: [
-                "Work on handling price objections with more confidence",
-                "Reduce filler words ('um', 'like') for more professional delivery",
-              ],
-              nextSteps: [
-                "Review the objection handling training module",
-                "Practice the ABC closing technique",
-                "Listen to top performer call recordings",
-              ],
-            },
-          }),
-        }
-      );
+        },
+      });
 
-      if (response.ok) {
-        toast({
-          title: "Email Sent!",
-          description: "Call score email has been sent successfully.",
-        });
-      } else {
-        throw new Error("Failed to send email");
+      if (error) {
+        throw error;
       }
+
+      toast({
+        title: "Email Sent!",
+        description: "Call score email has been sent successfully.",
+      });
     } catch (error) {
       console.error("Error sending email:", error);
       toast({
@@ -110,64 +103,56 @@ const EmailTestComponent = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-agent-emails`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      const { data, error } = await supabase.functions.invoke("send-agent-emails", {
+        body: {
+          to: email,
+          type: "recommended_actions",
+          data: {
+            agentName: "Aaron Javier",
+            performanceSummary:
+              "Your performance this week shows strong progress! Your close rate increased by 12% and you handled 23% more calls. Focus on the areas below to maintain this momentum.",
+            actions: [
+              {
+                title: "Practice handling price objections",
+                priority: "high",
+                category: "Sales Skills",
+                description:
+                  "Your conversion rate drops when discussing pricing. Review the pricing confidence module and practice with your manager this week.",
+              },
+              {
+                title: "Improve opening statements",
+                priority: "medium",
+                category: "Communication",
+                description:
+                  "First impressions matter! Work on making your opening 15 seconds more engaging to capture attention immediately.",
+              },
+              {
+                title: "Study competitor products",
+                priority: "medium",
+                category: "Product Knowledge",
+                description:
+                  "Understanding competitor offerings will help you position your products better. Spend 30 minutes reviewing the comparison guide.",
+              },
+              {
+                title: "Celebrate your wins!",
+                priority: "low",
+                category: "Mindset",
+                description:
+                  "You've made great progress! Take time to acknowledge your achievements and maintain positive momentum.",
+              },
+            ],
           },
-          body: JSON.stringify({
-            to: email,
-            type: "recommended_actions",
-            data: {
-              agentName: "Aaron Javier",
-              performanceSummary:
-                "Your performance this week shows strong progress! Your close rate increased by 12% and you handled 23% more calls. Focus on the areas below to maintain this momentum.",
-              actions: [
-                {
-                  title: "Practice handling price objections",
-                  priority: "high",
-                  category: "Sales Skills",
-                  description:
-                    "Your conversion rate drops when discussing pricing. Review the pricing confidence module and practice with your manager this week.",
-                },
-                {
-                  title: "Improve opening statements",
-                  priority: "medium",
-                  category: "Communication",
-                  description:
-                    "First impressions matter! Work on making your opening 15 seconds more engaging to capture attention immediately.",
-                },
-                {
-                  title: "Study competitor products",
-                  priority: "medium",
-                  category: "Product Knowledge",
-                  description:
-                    "Understanding competitor offerings will help you position your products better. Spend 30 minutes reviewing the comparison guide.",
-                },
-                {
-                  title: "Celebrate your wins!",
-                  priority: "low",
-                  category: "Mindset",
-                  description:
-                    "You've made great progress! Take time to acknowledge your achievements and maintain positive momentum.",
-                },
-              ],
-            },
-          }),
-        }
-      );
+        },
+      });
 
-      if (response.ok) {
-        toast({
-          title: "Email Sent!",
-          description: "Recommended actions email has been sent successfully.",
-        });
-      } else {
-        throw new Error("Failed to send email");
+      if (error) {
+        throw error;
       }
+
+      toast({
+        title: "Email Sent!",
+        description: "Recommended actions email has been sent successfully.",
+      });
     } catch (error) {
       console.error("Error sending email:", error);
       toast({

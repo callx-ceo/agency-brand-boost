@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      agency_notification_preferences: {
+        Row: {
+          agency_id: string
+          created_at: string | null
+          email_enabled: boolean | null
+          email_frequency: string | null
+          id: string
+          in_app_enabled: boolean | null
+          performance_emails_enabled: boolean | null
+          sms_enabled: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string | null
+          email_enabled?: boolean | null
+          email_frequency?: string | null
+          id?: string
+          in_app_enabled?: boolean | null
+          performance_emails_enabled?: boolean | null
+          sms_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string | null
+          email_enabled?: boolean | null
+          email_frequency?: string | null
+          id?: string
+          in_app_enabled?: boolean | null
+          performance_emails_enabled?: boolean | null
+          sms_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       agency_notification_settings: {
         Row: {
           agency_id: string
@@ -78,6 +114,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      agent_notification_preferences: {
+        Row: {
+          agent_id: string
+          created_at: string | null
+          email_enabled: boolean | null
+          email_frequency: string | null
+          id: string
+          in_app_enabled: boolean | null
+          performance_emails_enabled: boolean | null
+          sms_enabled: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string | null
+          email_enabled?: boolean | null
+          email_frequency?: string | null
+          id?: string
+          in_app_enabled?: boolean | null
+          performance_emails_enabled?: boolean | null
+          sms_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string | null
+          email_enabled?: boolean | null
+          email_frequency?: string | null
+          id?: string
+          in_app_enabled?: boolean | null
+          performance_emails_enabled?: boolean | null
+          sms_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       notification_templates: {
         Row: {

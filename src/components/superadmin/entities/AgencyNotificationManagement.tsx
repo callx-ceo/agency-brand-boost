@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Bell, Mail, MessageSquare, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,12 +6,15 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface AgencyNotificationManagementProps {
   onBackToDashboard: () => void;
 }
 
 const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationManagementProps) => {
+  const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState({
     email: false,
     sms: false,
@@ -20,8 +23,65 @@ const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationM
     emailFrequency: 'per-call'
   });
 
-  const handleNotificationChange = (key: string, value: boolean | string) => {
-    setNotifications(prev => ({ ...prev, [key]: value }));
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('agency_notification_preferences')
+        .select('*')
+        .eq('agency_id', user.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') throw error;
+
+      if (data) {
+        setNotifications({
+          email: data.email_enabled,
+          sms: data.sms_enabled,
+          inApp: data.in_app_enabled,
+          performanceEmailsEnabled: data.performance_emails_enabled,
+          emailFrequency: data.email_frequency
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+      toast.error('Failed to load notification settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNotificationChange = async (key: string, value: boolean | string) => {
+    const newNotifications = { ...notifications, [key]: value };
+    setNotifications(newNotifications);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('agency_notification_preferences')
+        .upsert({
+          agency_id: user.id,
+          email_enabled: newNotifications.email,
+          sms_enabled: newNotifications.sms,
+          in_app_enabled: newNotifications.inApp,
+          performance_emails_enabled: newNotifications.performanceEmailsEnabled,
+          email_frequency: newNotifications.emailFrequency
+        });
+
+      if (error) throw error;
+      toast.success('Agency default updated - will apply to all agents');
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      toast.error('Failed to update settings');
+    }
   };
 
   return (
@@ -43,10 +103,14 @@ const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationM
             Notification Preferences
           </CardTitle>
           <CardDescription>
-            Manage how you and your agents receive notifications about activities
+            Set default notification preferences for all agents in your agency. Agents can override these in their personal settings.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {loading ? (
+            <div className="text-center py-8">Loading settings...</div>
+          ) : (
+            <>
           {/* Email Notifications */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -159,6 +223,8 @@ const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationM
               onCheckedChange={(checked) => handleNotificationChange('inApp', checked)}
             />
           </div>
+          </>
+          )}
         </CardContent>
       </Card>
     </div>

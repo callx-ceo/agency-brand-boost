@@ -25,7 +25,8 @@ import {
   UserPlus,
   Package,
   ClipboardList,
-  Gift
+  Gift,
+  Mail
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -150,6 +151,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "user-management", label: "User & Role Management", icon: <UserCheck className="w-5 h-5" /> },
     { id: "goals-management", label: "Goals Management", icon: <TrendingUp className="w-5 h-5" /> },
     { id: "prompt-management", label: "AI Prompt Management", icon: <Settings className="w-5 h-5" /> },
+    { id: "email-template-management", label: "Email Templates", icon: <Mail className="w-5 h-5" /> },
     { 
       id: "cost-api-management", 
       label: "Cost & API Management", 

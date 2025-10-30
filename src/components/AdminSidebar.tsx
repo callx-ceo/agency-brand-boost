@@ -16,7 +16,9 @@ import {
   History,
   UserCheck,
   Briefcase,
-  Headphones
+  Headphones,
+  Mail,
+  Palette
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -54,6 +56,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       items: [
         { id: "general", label: "General", icon: Settings },
         { id: "team", label: "Team Members", icon: Users },
+        { id: "branding", label: "Branding & Emails", icon: Palette },
         { id: "campaigns", label: "Campaigns", icon: Target },
         { id: "scripts", label: "Scripts & AI", icon: Phone },
         { id: "publishers", label: "Publishers", icon: UserPlus },

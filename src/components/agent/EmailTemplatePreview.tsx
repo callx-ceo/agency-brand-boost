@@ -76,7 +76,8 @@ const PerCallPreview: React.FC<{ customization?: EmailTemplatePreviewProps['cust
         </div>
       </div>
       <div style={{ backgroundColor: '#f9fafb', padding: '20px', textAlign: 'center', fontSize: '14px', color: '#6b7280' }}>
-        <p>This is an automated email. Please do not reply.</p>
+        <p style={{ margin: '0 0 8px 0' }}>This is an automated email. Please do not reply.</p>
+        <p style={{ margin: 0, fontSize: '12px', color: '#9ca3af' }}>Powered by <strong>CallX</strong></p>
       </div>
     </div>
   );
@@ -151,7 +152,8 @@ const DailyDigestPreview: React.FC<{ customization?: EmailTemplatePreviewProps['
         </div>
       </div>
       <div style={{ backgroundColor: '#f9fafb', padding: '20px', textAlign: 'center', fontSize: '14px', color: '#6b7280' }}>
-        <p>This is an automated email. Please do not reply.</p>
+        <p style={{ margin: '0 0 8px 0' }}>This is an automated email. Please do not reply.</p>
+        <p style={{ margin: 0, fontSize: '12px', color: '#9ca3af' }}>Powered by <strong>CallX</strong></p>
       </div>
     </div>
   );
@@ -236,7 +238,8 @@ const WeeklyDigestPreview: React.FC<{ customization?: EmailTemplatePreviewProps[
         </div>
       </div>
       <div style={{ backgroundColor: '#f9fafb', padding: '20px', textAlign: 'center', fontSize: '14px', color: '#6b7280' }}>
-        <p>This is an automated email. Please do not reply.</p>
+        <p style={{ margin: '0 0 8px 0' }}>This is an automated email. Please do not reply.</p>
+        <p style={{ margin: 0, fontSize: '12px', color: '#9ca3af' }}>Powered by <strong>CallX</strong></p>
       </div>
     </div>
   );

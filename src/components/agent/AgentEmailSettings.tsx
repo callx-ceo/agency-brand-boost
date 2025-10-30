@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Mail, Bell, Target, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { EmailTemplateSelector } from "./EmailTemplatePreview";
+import EmailTestComponent from "./EmailTestComponent";
 
 const AgentEmailSettings = () => {
   const { toast } = useToast();
@@ -177,6 +179,20 @@ const AgentEmailSettings = () => {
           Save Preferences
         </Button>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Email Template Customization</CardTitle>
+          <CardDescription>
+            Preview and customize your email templates
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EmailTemplateSelector />
+        </CardContent>
+      </Card>
+
+      <EmailTestComponent />
     </div>
   );
 };

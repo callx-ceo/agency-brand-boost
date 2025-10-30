@@ -143,12 +143,6 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
   ];
 
   // System & Administration sections
-  // Notification Management sections - NEW SECTION
-  const notificationSections = [
-    { id: "notification-templates", label: "Notification Templates", icon: <Mail className="w-5 h-5" /> },
-    { id: "notification-branding-overview", label: "Agency Branding Overview", icon: <Palette className="w-5 h-5" /> },
-  ];
-
   const systemSections = [
     { 
       id: "system-health", 
@@ -160,6 +154,8 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "goals-management", label: "Goals Management", icon: <TrendingUp className="w-5 h-5" /> },
     { id: "prompt-management", label: "AI Prompt Management", icon: <Settings className="w-5 h-5" /> },
     { id: "email-template-management", label: "Email Templates", icon: <Mail className="w-5 h-5" /> },
+    { id: "notification-templates", label: "Notification Templates", icon: <Bell className="w-5 h-5" /> },
+    { id: "notification-branding-overview", label: "Agency Branding Overview", icon: <Palette className="w-5 h-5" /> },
     { 
       id: "cost-api-management", 
       label: "Cost & API Management", 
@@ -310,18 +306,6 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
           </h3>
           <ul>
             {billingSections.map(renderMenuItem)}
-          </ul>
-        </div>
-
-        <Separator className="my-4" />
-
-        {/* Notification Management - NEW SECTION */}
-        <div className="mb-4">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
-            Notification Management
-          </h3>
-          <ul>
-            {notificationSections.map(renderMenuItem)}
           </ul>
         </div>
 

@@ -35,6 +35,9 @@ const EmailTestComponent = () => {
           data: {
             agentName: "Aaron Javier",
             callDate: new Date().toLocaleDateString(),
+            callerId: "+1 (555) 123-4567",
+            transactionId: "TXN-2024-10-30-8472",
+            recordingUrl: "https://example.com/recordings/call-8472.mp3",
             overallScore: 87,
             criteria: [
               {
@@ -66,6 +69,11 @@ const EmailTestComponent = () => {
               "Review the objection handling training module",
               "Practice the ABC closing technique",
               "Listen to top performer call recordings",
+            ],
+            followUpInsights: [
+              "Based on your conversation pattern, the customer showed high interest when you mentioned the premium features. Consider leading with benefits rather than features in future calls.",
+              "Your response time to objections averaged 2.3 seconds - this is excellent! Quick, confident responses build trust.",
+              "The customer mentioned 'budget concerns' 3 times. Next time, address pricing early and frame it as an investment rather than a cost.",
             ],
           },
         },

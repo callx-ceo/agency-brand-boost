@@ -17,6 +17,9 @@ interface EmailRequest {
 interface CallScoreData {
   agentName: string;
   callDate: string;
+  callerId: string;
+  transactionId: string;
+  recordingUrl?: string;
   overallScore: number;
   criteria: Array<{
     name: string;
@@ -26,6 +29,7 @@ interface CallScoreData {
   strengths: string[];
   improvements: string[];
   nextSteps: string[];
+  followUpInsights?: string[];
 }
 
 interface RecommendedActionsData {
@@ -41,6 +45,8 @@ interface RecommendedActionsData {
 
 const generateCallScoreEmail = (data: CallScoreData) => {
   const scoreColor = data.overallScore >= 80 ? "#10b981" : data.overallScore >= 60 ? "#f59e0b" : "#ef4444";
+  const instagramShareText = encodeURIComponent(`Just scored ${data.overallScore}/100 on my latest call! 📊 Always improving! 💪`);
+  const instagramShareUrl = `https://www.instagram.com/create/story/?text=${instagramShareText}`;
   
   return `
     <!DOCTYPE html>
@@ -52,12 +58,23 @@ const generateCallScoreEmail = (data: CallScoreData) => {
           .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
           .score-badge { font-size: 48px; font-weight: bold; margin: 10px 0; color: ${scoreColor}; }
           .content { background: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+          .call-details { background: #f0f9ff; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #0ea5e9; }
+          .detail-row { padding: 8px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #e0f2fe; }
+          .detail-label { font-weight: 600; color: #0c4a6e; }
+          .detail-value { color: #475569; }
+          .action-buttons { text-align: center; margin: 25px 0; }
+          .button { display: inline-block; padding: 12px 24px; margin: 8px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: opacity 0.2s; }
+          .button:hover { opacity: 0.8; }
+          .button-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+          .button-instagram { background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; }
+          .button-play { background: #10b981; color: white; }
           .criteria-item { background: #f9fafb; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #667eea; }
           .criteria-score { float: right; font-weight: bold; color: ${scoreColor}; }
           .section { margin: 25px 0; }
           .section-title { font-size: 18px; font-weight: bold; color: #1f2937; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 8px; }
           .list-item { padding: 8px 0; padding-left: 20px; position: relative; }
           .list-item:before { content: "•"; position: absolute; left: 0; color: #667eea; font-weight: bold; }
+          .insight-card { background: #fef3c7; padding: 15px; border-radius: 6px; margin: 10px 0; border-left: 4px solid #f59e0b; }
           .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
         </style>
       </head>
@@ -72,6 +89,28 @@ const generateCallScoreEmail = (data: CallScoreData) => {
           <div class="content">
             <p>Hi ${data.agentName},</p>
             <p>Here's your detailed performance analysis for your recent call:</p>
+            
+            <div class="call-details">
+              <div class="detail-row">
+                <span class="detail-label">📞 Caller ID:</span>
+                <span class="detail-value">${data.callerId}</span>
+              </div>
+              <div class="detail-row" style="border-bottom: none;">
+                <span class="detail-label">🔖 Transaction ID:</span>
+                <span class="detail-value">${data.transactionId}</span>
+              </div>
+            </div>
+            
+            <div class="action-buttons">
+              ${data.recordingUrl ? `
+                <a href="${data.recordingUrl}" class="button button-play">
+                  🎧 Listen to Call Recording
+                </a>
+              ` : ''}
+              <a href="${instagramShareUrl}" class="button button-instagram">
+                📸 Share Score on Instagram
+              </a>
+            </div>
             
             <div class="section">
               <div class="section-title">📈 Scoring Breakdown</div>
@@ -102,6 +141,17 @@ const generateCallScoreEmail = (data: CallScoreData) => {
               <div class="section">
                 <div class="section-title">🎯 Next Steps</div>
                 ${data.nextSteps.map(n => `<div class="list-item">${n}</div>`).join('')}
+              </div>
+            ` : ''}
+            
+            ${data.followUpInsights && data.followUpInsights.length > 0 ? `
+              <div class="section">
+                <div class="section-title">💭 Follow-Up Insights & Recommendations</div>
+                ${data.followUpInsights.map(insight => `
+                  <div class="insight-card">
+                    ${insight}
+                  </div>
+                `).join('')}
               </div>
             ` : ''}
             

@@ -3,19 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Mail, Bell, Target, BarChart3 } from "lucide-react";
+import { Mail, Bell, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { EmailTemplateSelector } from "./EmailTemplatePreview";
-import EmailTestComponent from "./EmailTestComponent";
 
 const AgentEmailSettings = () => {
   const { toast } = useToast();
   const [settings, setSettings] = useState({
-    callScoreEmails: true,
-    callScoreFrequency: "per_call", // "per_call" | "daily_digest" | "weekly_digest"
-    recommendedActionsEmails: true,
-    recommendedActionsFrequency: "daily", // "daily" | "weekly"
+    performanceEmailsEnabled: true,
+    emailFrequency: "per_call", // "per_call" | "daily_digest" | "weekly_digest"
   });
 
   const handleToggle = (key: keyof typeof settings, value: boolean | string) => {
@@ -47,35 +43,35 @@ const AgentEmailSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-blue-500" />
-            Call Score Reports
+            Performance Email Reports
           </CardTitle>
           <CardDescription>
-            Receive detailed scoring and feedback after calls
+            Receive call scores, feedback, and recommended actions to improve your performance
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="call-score-emails" className="text-base">
-                Enable Call Score Emails
+              <Label htmlFor="performance-emails" className="text-base">
+                Enable Performance Emails
               </Label>
               <p className="text-sm text-muted-foreground">
-                Get AI-powered scoring and improvement suggestions
+                Get AI-powered scoring, improvement suggestions, and personalized action plans
               </p>
             </div>
             <Switch
-              id="call-score-emails"
-              checked={settings.callScoreEmails}
-              onCheckedChange={(checked) => handleToggle("callScoreEmails", checked)}
+              id="performance-emails"
+              checked={settings.performanceEmailsEnabled}
+              onCheckedChange={(checked) => handleToggle("performanceEmailsEnabled", checked)}
             />
           </div>
 
-          {settings.callScoreEmails && (
+          {settings.performanceEmailsEnabled && (
             <div className="ml-4 pl-4 border-l-2 border-border space-y-3">
               <Label className="text-sm font-medium">Email Frequency</Label>
               <RadioGroup
-                value={settings.callScoreFrequency}
-                onValueChange={(value) => handleToggle("callScoreFrequency", value)}
+                value={settings.emailFrequency}
+                onValueChange={(value) => handleToggle("emailFrequency", value)}
                 className="space-y-3"
               >
                 <div className="flex items-center space-x-2">
@@ -94,59 +90,6 @@ const AgentEmailSettings = () => {
                   <RadioGroupItem value="weekly_digest" id="weekly_digest" />
                   <Label htmlFor="weekly_digest" className="font-normal cursor-pointer">
                     Weekly digest - Summary at week's end
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-green-500" />
-            Recommended Actions
-          </CardTitle>
-          <CardDescription>
-            Get personalized action plans to improve your performance
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="actions-emails" className="text-base">
-                Enable Action Recommendations
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Receive AI-generated suggestions tailored to your performance
-              </p>
-            </div>
-            <Switch
-              id="actions-emails"
-              checked={settings.recommendedActionsEmails}
-              onCheckedChange={(checked) => handleToggle("recommendedActionsEmails", checked)}
-            />
-          </div>
-
-          {settings.recommendedActionsEmails && (
-            <div className="ml-4 pl-4 border-l-2 border-border space-y-3">
-              <Label className="text-sm font-medium">Email Frequency</Label>
-              <RadioGroup
-                value={settings.recommendedActionsFrequency}
-                onValueChange={(value) => handleToggle("recommendedActionsFrequency", value)}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="daily" id="daily" />
-                  <Label htmlFor="daily" className="font-normal cursor-pointer">
-                    Daily - Fresh insights every day
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="weekly" id="weekly" />
-                  <Label htmlFor="weekly" className="font-normal cursor-pointer">
-                    Weekly - Comprehensive weekly review
                   </Label>
                 </div>
               </RadioGroup>
@@ -179,20 +122,6 @@ const AgentEmailSettings = () => {
           Save Preferences
         </Button>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Email Template Customization</CardTitle>
-          <CardDescription>
-            Preview and customize your email templates
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <EmailTemplateSelector />
-        </CardContent>
-      </Card>
-
-      <EmailTestComponent />
     </div>
   );
 };

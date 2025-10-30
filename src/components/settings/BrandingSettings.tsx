@@ -8,6 +8,7 @@ import ColorPicker from "../ui/ColorPicker";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BrandPreview from "./BrandPreview";
+import { EmailTemplateSelector } from "../agent/EmailTemplatePreview";
 
 const BrandingSettings = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ const BrandingSettings = () => {
     primaryColor: "#3B82F6",
     secondaryColor: "#10B981",
     fontFamily: "System UI",
+    emailPrimaryColor: "#3B82F6",
   });
 
   const [activeTab, setActiveTab] = useState("settings");
@@ -100,6 +102,7 @@ const BrandingSettings = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6">
           <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="emails">Email Templates</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
         </TabsList>
         
@@ -240,6 +243,45 @@ const BrandingSettings = () => {
 
             <div className="pt-4 border-t">
               <Button onClick={handleSave}>Save Branding Settings</Button>
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="emails">
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium mb-2">Email Template Configuration</h3>
+              <p className="text-sm text-muted-foreground">
+                Customize the appearance and branding of automated performance emails sent to your agents
+              </p>
+            </div>
+            
+            <div>
+              <Label htmlFor="email-primary-color">Email Brand Color</Label>
+              <div className="flex items-center gap-3 mt-1">
+                <ColorPicker
+                  color={formData.emailPrimaryColor}
+                  onChange={(color) => setFormData({ ...formData, emailPrimaryColor: color })}
+                />
+                <Input
+                  id="email-primary-color"
+                  value={formData.emailPrimaryColor}
+                  onChange={(e) => setFormData({ ...formData, emailPrimaryColor: e.target.value })}
+                  className="font-mono"
+                />
+              </div>
+              <p className="text-sm text-gray-500 mt-1">
+                Primary color used in email headers, buttons, and accents
+              </p>
+            </div>
+
+            <div className="border-t pt-6">
+              <h4 className="text-md font-medium mb-4">Email Template Previews</h4>
+              <EmailTemplateSelector />
+            </div>
+
+            <div className="pt-4 border-t">
+              <Button onClick={handleSave}>Save Email Template Settings</Button>
             </div>
           </div>
         </TabsContent>

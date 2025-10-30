@@ -7,7 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Bell, Phone, Headphones, Save, Lock, Eye, EyeOff, ArrowRightLeft } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { User, Bell, Phone, Headphones, Save, Lock, Eye, EyeOff, ArrowRightLeft, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { AgentTransferRequestModal } from "./AgentTransferRequestModal";
 import { AgentVerticalSettings } from "../settings/AgentVerticalSettings";
@@ -48,7 +49,9 @@ const AgentSettingsView = () => {
     emailNotifications: true,
     smsNotifications: false,
     callReminders: true,
-    leadAssignments: true
+    leadAssignments: true,
+    performanceEmailsEnabled: true,
+    emailFrequency: "per_call" as "per_call" | "daily_digest" | "weekly_digest"
   });
 
   const [callSettings, setCallSettings] = useState({
@@ -217,73 +220,122 @@ const AgentSettingsView = () => {
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-6">
-          <Tabs defaultValue="preferences" className="w-full">
-            <TabsList>
-              <TabsTrigger value="preferences">Notification Preferences</TabsTrigger>
-              <TabsTrigger value="email-reports">Email Reports</TabsTrigger>
-            </TabsList>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="w-5 h-5" />
+                Notification Preferences
+              </CardTitle>
+              <CardDescription>
+                Configure your notification settings and email preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Email Notifications</div>
+                  <div className="text-sm text-muted-foreground">Receive updates via email</div>
+                </div>
+                <Switch
+                  checked={notifications.emailNotifications}
+                  onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">SMS Notifications</div>
+                  <div className="text-sm text-muted-foreground">Receive text message alerts</div>
+                </div>
+                <Switch
+                  checked={notifications.smsNotifications}
+                  onCheckedChange={(checked) => setNotifications({...notifications, smsNotifications: checked})}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Call Reminders</div>
+                  <div className="text-sm text-muted-foreground">Get notified about scheduled calls</div>
+                </div>
+                <Switch
+                  checked={notifications.callReminders}
+                  onCheckedChange={(checked) => setNotifications({...notifications, callReminders: checked})}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Lead Assignments</div>
+                  <div className="text-sm text-muted-foreground">Notify when new leads are assigned</div>
+                </div>
+                <Switch
+                  checked={notifications.leadAssignments}
+                  onCheckedChange={(checked) => setNotifications({...notifications, leadAssignments: checked})}
+                />
+              </div>
 
-            <TabsContent value="preferences" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Bell className="w-5 h-5" />
-                    Notification Preferences
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">Email Notifications</div>
-                      <div className="text-sm text-muted-foreground">Receive updates via email</div>
+              {/* Performance Email Reports Section */}
+              <div className="pt-4 border-t space-y-4">
+                <div className="flex items-start gap-2">
+                  <BarChart3 className="w-5 h-5 text-primary mt-0.5" />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">Performance Email Reports</div>
+                        <div className="text-sm text-muted-foreground">
+                          Receive call scores, feedback, and recommended actions
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notifications.performanceEmailsEnabled}
+                        onCheckedChange={(checked) => setNotifications({...notifications, performanceEmailsEnabled: checked})}
+                      />
                     </div>
-                    <Switch
-                      checked={notifications.emailNotifications}
-                      onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">SMS Notifications</div>
-                      <div className="text-sm text-muted-foreground">Receive text message alerts</div>
-                    </div>
-                    <Switch
-                      checked={notifications.smsNotifications}
-                      onCheckedChange={(checked) => setNotifications({...notifications, smsNotifications: checked})}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">Call Reminders</div>
-                      <div className="text-sm text-muted-foreground">Get notified about scheduled calls</div>
-                    </div>
-                    <Switch
-                      checked={notifications.callReminders}
-                      onCheckedChange={(checked) => setNotifications({...notifications, callReminders: checked})}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">Lead Assignments</div>
-                      <div className="text-sm text-muted-foreground">Notify when new leads are assigned</div>
-                    </div>
-                    <Switch
-                      checked={notifications.leadAssignments}
-                      onCheckedChange={(checked) => setNotifications({...notifications, leadAssignments: checked})}
-                    />
-                  </div>
-                  <Button onClick={handleSaveNotifications} className="flex items-center gap-2">
-                    <Save className="w-4 h-4" />
-                    Save Preferences
-                  </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
 
-            <TabsContent value="email-reports" className="space-y-6">
-              <AgentEmailSettings />
-            </TabsContent>
-          </Tabs>
+                    {notifications.performanceEmailsEnabled && (
+                      <div className="mt-4 ml-4 pl-4 border-l-2 border-border space-y-3">
+                        <Label className="text-sm font-medium">Email Frequency</Label>
+                        <RadioGroup
+                          value={notifications.emailFrequency}
+                          onValueChange={(value) => setNotifications({...notifications, emailFrequency: value as "per_call" | "daily_digest" | "weekly_digest"})}
+                          className="space-y-3"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="per_call" id="per_call" />
+                            <Label htmlFor="per_call" className="font-normal cursor-pointer">
+                              After every call (recommended for learning)
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="daily_digest" id="daily_digest" />
+                            <Label htmlFor="daily_digest" className="font-normal cursor-pointer">
+                              Daily digest - One summary per day
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="weekly_digest" id="weekly_digest" />
+                            <Label htmlFor="weekly_digest" className="font-normal cursor-pointer">
+                              Weekly digest - Summary at week's end
+                            </Label>
+                          </div>
+                        </RadioGroup>
+
+                        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
+                          <p className="text-sm text-blue-700 dark:text-blue-300">
+                            <strong>Tip:</strong> Immediate feedback helps you learn faster and adjust your approach in real-time. 
+                            Agents who review performance after each call improve 3x faster.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <Button onClick={handleSaveNotifications} className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                Save Preferences
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">

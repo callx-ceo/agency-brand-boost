@@ -10,8 +10,8 @@ const corsHeaders = {
 
 interface EmailRequest {
   to: string;
-  type: "call_score" | "recommended_actions";
-  data: CallScoreData | RecommendedActionsData;
+  type: "call_score" | "recommended_actions" | "performance_report";
+  data: CallScoreData | RecommendedActionsData | PerformanceReportData;
 }
 
 interface CallScoreData {
@@ -35,6 +35,31 @@ interface CallScoreData {
 interface RecommendedActionsData {
   agentName: string;
   actions: Array<{
+    title: string;
+    priority: string;
+    category: string;
+    description: string;
+  }>;
+  performanceSummary: string;
+}
+
+interface PerformanceReportData {
+  agentName: string;
+  callDate: string;
+  callerId: string;
+  transactionId: string;
+  recordingUrl?: string;
+  overallScore: number;
+  criteria: Array<{
+    name: string;
+    score: number;
+    feedback: string;
+  }>;
+  strengths: string[];
+  improvements: string[];
+  nextSteps: string[];
+  followUpInsights?: string[];
+  recommendedActions: Array<{
     title: string;
     priority: string;
     category: string;
@@ -167,6 +192,172 @@ const generateCallScoreEmail = (data: CallScoreData) => {
   `;
 };
 
+const generatePerformanceReportEmail = (data: PerformanceReportData) => {
+  const scoreColor = data.overallScore >= 80 ? "#10b981" : data.overallScore >= 60 ? "#f59e0b" : "#ef4444";
+  const instagramShareText = encodeURIComponent(`Just scored ${data.overallScore}/100 on my latest call! 📊 Always improving! 💪`);
+  const instagramShareUrl = `https://www.instagram.com/create/story/?text=${instagramShareText}`;
+  
+  const getPriorityColor = (priority: string) => {
+    switch (priority.toLowerCase()) {
+      case 'high': return '#ef4444';
+      case 'medium': return '#f59e0b';
+      case 'low': return '#10b981';
+      default: return '#6b7280';
+    }
+  };
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .score-badge { font-size: 48px; font-weight: bold; margin: 10px 0; color: ${scoreColor}; }
+          .content { background: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+          .call-details { background: #f0f9ff; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #0ea5e9; }
+          .detail-row { padding: 8px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #e0f2fe; }
+          .detail-label { font-weight: 600; color: #0c4a6e; }
+          .detail-value { color: #475569; }
+          .action-buttons { text-align: center; margin: 25px 0; }
+          .button { display: inline-block; padding: 12px 24px; margin: 8px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: opacity 0.2s; }
+          .button:hover { opacity: 0.8; }
+          .button-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+          .button-instagram { background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; }
+          .button-play { background: #10b981; color: white; }
+          .summary { background: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #10b981; }
+          .criteria-item { background: #f9fafb; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #667eea; }
+          .criteria-score { float: right; font-weight: bold; color: ${scoreColor}; }
+          .section { margin: 25px 0; }
+          .section-title { font-size: 18px; font-weight: bold; color: #1f2937; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 8px; }
+          .list-item { padding: 8px 0; padding-left: 20px; position: relative; }
+          .list-item:before { content: "•"; position: absolute; left: 0; color: #667eea; font-weight: bold; }
+          .insight-card { background: #fef3c7; padding: 15px; border-radius: 6px; margin: 10px 0; border-left: 4px solid #f59e0b; }
+          .action-card { background: #f9fafb; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #10b981; }
+          .priority-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white; }
+          .category-tag { display: inline-block; background: #e0e7ff; color: #4f46e5; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-left: 8px; }
+          .action-title { font-size: 16px; font-weight: bold; color: #1f2937; margin: 10px 0; }
+          .action-description { color: #6b7280; margin-top: 8px; }
+          .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>📊 Complete Performance Report</h1>
+            <p>Call Date: ${data.callDate}</p>
+            <div class="score-badge">${data.overallScore}/100</div>
+          </div>
+          
+          <div class="content">
+            <p>Hi ${data.agentName},</p>
+            <p>Here's your comprehensive performance analysis with personalized recommendations:</p>
+            
+            <div class="call-details">
+              <div class="detail-row">
+                <span class="detail-label">📞 Caller ID:</span>
+                <span class="detail-value">${data.callerId}</span>
+              </div>
+              <div class="detail-row" style="border-bottom: none;">
+                <span class="detail-label">🔖 Transaction ID:</span>
+                <span class="detail-value">${data.transactionId}</span>
+              </div>
+            </div>
+            
+            <div class="action-buttons">
+              ${data.recordingUrl ? `
+                <a href="${data.recordingUrl}" class="button button-play">
+                  🎧 Listen to Call Recording
+                </a>
+              ` : ''}
+              <a href="${instagramShareUrl}" class="button button-instagram">
+                📸 Share Score on Instagram
+              </a>
+            </div>
+            
+            <div class="summary">
+              <strong>📊 Performance Summary:</strong>
+              <p style="margin: 8px 0 0 0;">${data.performanceSummary}</p>
+            </div>
+            
+            <div class="section">
+              <div class="section-title">📈 Scoring Breakdown</div>
+              ${data.criteria.map(c => `
+                <div class="criteria-item">
+                  <span class="criteria-score">${c.score}/100</span>
+                  <strong>${c.name}</strong>
+                  <p style="margin: 8px 0 0 0; color: #6b7280;">${c.feedback}</p>
+                </div>
+              `).join('')}
+            </div>
+            
+            ${data.strengths.length > 0 ? `
+              <div class="section">
+                <div class="section-title">✨ Strengths</div>
+                ${data.strengths.map(s => `<div class="list-item">${s}</div>`).join('')}
+              </div>
+            ` : ''}
+            
+            ${data.improvements.length > 0 ? `
+              <div class="section">
+                <div class="section-title">💡 Areas for Improvement</div>
+                ${data.improvements.map(i => `<div class="list-item">${i}</div>`).join('')}
+              </div>
+            ` : ''}
+            
+            ${data.followUpInsights && data.followUpInsights.length > 0 ? `
+              <div class="section">
+                <div class="section-title">💭 Follow-Up Insights</div>
+                ${data.followUpInsights.map(insight => `
+                  <div class="insight-card">
+                    ${insight}
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+            
+            ${data.recommendedActions.length > 0 ? `
+              <div class="section">
+                <div class="section-title">🎯 Recommended Actions</div>
+                ${data.recommendedActions.map(action => `
+                  <div class="action-card">
+                    <div>
+                      <span class="priority-badge" style="background-color: ${getPriorityColor(action.priority)}">
+                        ${action.priority.toUpperCase()} PRIORITY
+                      </span>
+                      <span class="category-tag">${action.category}</span>
+                    </div>
+                    <div class="action-title">${action.title}</div>
+                    <div class="action-description">${action.description}</div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+            
+            ${data.nextSteps.length > 0 ? `
+              <div class="section">
+                <div class="section-title">📋 Next Steps</div>
+                ${data.nextSteps.map(n => `<div class="list-item">${n}</div>`).join('')}
+              </div>
+            ` : ''}
+            
+            <p style="margin-top: 30px; padding: 15px; background: #eff6ff; border-radius: 6px;">
+              💡 <strong>Pro Tip:</strong> Focus on high-priority actions first for maximum impact on your performance!
+            </p>
+            
+            <p style="margin-top: 20px;">Keep up the great work! Every call is an opportunity to improve.</p>
+          </div>
+          
+          <div class="footer">
+            <p>This is an automated performance report. Keep improving! 🚀</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+};
+
 const generateRecommendedActionsEmail = (data: RecommendedActionsData) => {
   const getPriorityColor = (priority: string) => {
     switch (priority.toLowerCase()) {
@@ -259,6 +450,9 @@ const handler = async (req: Request): Promise<Response> => {
     } else if (type === "recommended_actions") {
       html = generateRecommendedActionsEmail(data as RecommendedActionsData);
       subject = "🎯 Your Personalized Action Plan";
+    } else if (type === "performance_report") {
+      html = generatePerformanceReportEmail(data as PerformanceReportData);
+      subject = `📊 Complete Performance Report - Score: ${(data as PerformanceReportData).overallScore}/100`;
     } else {
       throw new Error("Invalid email type");
     }

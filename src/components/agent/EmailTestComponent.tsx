@@ -99,6 +99,110 @@ const EmailTestComponent = () => {
     }
   };
 
+  const sendTestPerformanceReportEmail = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter an email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-agent-emails", {
+        body: {
+          to: email,
+          type: "performance_report",
+          data: {
+            agentName: "Aaron Javier",
+            callDate: new Date().toLocaleDateString(),
+            callerId: "+1 (555) 123-4567",
+            transactionId: "TXN-2024-10-30-8472",
+            recordingUrl: "https://example.com/recordings/call-8472.mp3",
+            overallScore: 87,
+            performanceSummary: "Your performance this week shows strong progress! Your close rate increased by 12% and you handled 23% more calls. Focus on the areas below to maintain this momentum.",
+            criteria: [
+              {
+                name: "Script Adherence",
+                score: 92,
+                feedback: "Excellent job following the script while maintaining natural conversation flow.",
+              },
+              {
+                name: "Objection Handling",
+                score: 85,
+                feedback: "Good responses to objections. Consider using more empathy statements.",
+              },
+              {
+                name: "Closing Technique",
+                score: 84,
+                feedback: "Strong closing. Try asking for the sale more directly earlier in the conversation.",
+              },
+            ],
+            strengths: [
+              "Natural and friendly tone throughout the call",
+              "Asked great discovery questions",
+              "Built strong rapport with the customer",
+            ],
+            improvements: [
+              "Work on handling price objections with more confidence",
+              "Reduce filler words ('um', 'like') for more professional delivery",
+            ],
+            followUpInsights: [
+              "Based on your conversation pattern, the customer showed high interest when you mentioned the premium features. Consider leading with benefits rather than features in future calls.",
+              "Your response time to objections averaged 2.3 seconds - this is excellent! Quick, confident responses build trust.",
+              "The customer mentioned 'budget concerns' 3 times. Next time, address pricing early and frame it as an investment rather than a cost.",
+            ],
+            recommendedActions: [
+              {
+                title: "Practice handling price objections",
+                priority: "high",
+                category: "Sales Skills",
+                description: "Your conversion rate drops when discussing pricing. Review the pricing confidence module and practice with your manager this week.",
+              },
+              {
+                title: "Improve opening statements",
+                priority: "medium",
+                category: "Communication",
+                description: "First impressions matter! Work on making your opening 15 seconds more engaging to capture attention immediately.",
+              },
+              {
+                title: "Study competitor products",
+                priority: "medium",
+                category: "Product Knowledge",
+                description: "Understanding competitor offerings will help you position your products better. Spend 30 minutes reviewing the comparison guide.",
+              },
+            ],
+            nextSteps: [
+              "Review the objection handling training module",
+              "Practice the ABC closing technique",
+              "Listen to top performer call recordings",
+            ],
+          },
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Email Sent!",
+        description: "Complete performance report email has been sent successfully.",
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send email. Check console for details.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const sendTestRecommendedActionsEmail = async () => {
     if (!email) {
       toast({
@@ -198,8 +302,22 @@ const EmailTestComponent = () => {
 
         <div className="flex gap-3 flex-wrap">
           <Button
+            onClick={sendTestPerformanceReportEmail}
+            disabled={isLoading}
+            className="flex-1 min-w-[200px]"
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Mail className="w-4 h-4 mr-2" />
+            )}
+            Send Complete Report
+          </Button>
+
+          <Button
             onClick={sendTestCallScoreEmail}
             disabled={isLoading}
+            variant="outline"
             className="flex-1 min-w-[200px]"
           >
             {isLoading ? (

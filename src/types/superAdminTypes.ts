@@ -48,4 +48,6 @@ export type SuperAdminViewType =
   | 'referral-management'
   | 'email-template-management'
   | 'agency-notification-management'
-  | 'agent-notification-management';
+  | 'agent-notification-management'
+  | 'notification-templates'
+  | 'notification-branding-overview';

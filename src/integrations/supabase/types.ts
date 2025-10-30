@@ -14,7 +14,116 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agency_branding: {
+        Row: {
+          agency_id: string
+          footer_text: string | null
+          id: string
+          logo_url: string | null
+          primary_color: string | null
+          secondary_color: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          agency_id: string
+          footer_text?: string | null
+          id?: string
+          logo_url?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          agency_id?: string
+          footer_text?: string | null
+          id?: string
+          logo_url?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      agency_notification_settings: {
+        Row: {
+          agency_id: string
+          created_at: string | null
+          enabled: boolean | null
+          id: string
+          template_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_notification_settings_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "notification_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_templates: {
+        Row: {
+          active: boolean | null
+          body_html: string
+          body_sms: string | null
+          created_at: string | null
+          created_by: string | null
+          customizable: boolean | null
+          id: string
+          name: string
+          notification_type: string
+          subject: string | null
+          trigger_event: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          body_html: string
+          body_sms?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          customizable?: boolean | null
+          id?: string
+          name: string
+          notification_type: string
+          subject?: string | null
+          trigger_event: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          body_html?: string
+          body_sms?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          customizable?: boolean | null
+          id?: string
+          name?: string
+          notification_type?: string
+          subject?: string | null
+          trigger_event?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

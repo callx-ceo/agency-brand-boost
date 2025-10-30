@@ -37,6 +37,8 @@ import ReferralManagement from "../entities/ReferralManagement";
 import EmailTemplateManagement from "../entities/EmailTemplateManagement";
 import AgencyNotificationManagement from "../entities/AgencyNotificationManagement";
 import AgentNotificationManagement from "../entities/AgentNotificationManagement";
+import NotificationTemplateManagement from "../entities/NotificationTemplateManagement";
+import NotificationBrandingOverview from "../entities/NotificationBrandingOverview";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -209,6 +211,12 @@ const SuperAdminViewRenderer = ({
     
     case 'agent-notification-management':
       return <AgentNotificationManagement onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'notification-templates':
+      return <NotificationTemplateManagement onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'notification-branding-overview':
+      return <NotificationBrandingOverview onBackToDashboard={handleBackToDashboard} />;
     
     default:
       return (

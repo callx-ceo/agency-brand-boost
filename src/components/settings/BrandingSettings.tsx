@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BrandPreview from "./BrandPreview";
 import { EmailTemplateSelector } from "../agent/EmailTemplatePreview";
+import NotificationBrandingSettings from "./NotificationBrandingSettings";
 
 const BrandingSettings = () => {
   const [formData, setFormData] = useState({
@@ -103,6 +104,7 @@ const BrandingSettings = () => {
         <TabsList className="mb-6">
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="emails">Email Templates</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
         </TabsList>
         
@@ -284,6 +286,10 @@ const BrandingSettings = () => {
               <Button onClick={handleSave}>Save Email Template Settings</Button>
             </div>
           </div>
+        </TabsContent>
+        
+        <TabsContent value="notifications">
+          <NotificationBrandingSettings />
         </TabsContent>
         
         <TabsContent value="preview">

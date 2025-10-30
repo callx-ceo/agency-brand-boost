@@ -26,7 +26,7 @@ const NotificationBrandingSettings = () => {
     logoPreview: "",
     primaryColor: "#3B82F6",
     secondaryColor: "#10B981",
-    footerText: "",
+    footerText: "Powered by CallX",
   });
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const NotificationBrandingSettings = () => {
           logoPreview: data.logo_url || "",
           primaryColor: data.primary_color || "#3B82F6",
           secondaryColor: data.secondary_color || "#10B981",
-          footerText: data.footer_text || "",
+          footerText: "Powered by CallX",
         });
       }
     } catch (error) {
@@ -146,7 +146,7 @@ const NotificationBrandingSettings = () => {
           logo_url: logoUrl,
           primary_color: formData.primaryColor,
           secondary_color: formData.secondaryColor,
-          footer_text: formData.footerText,
+          footer_text: "Powered by CallX",
         });
 
       if (error) throw error;
@@ -296,17 +296,14 @@ const NotificationBrandingSettings = () => {
 
             <div>
               <Label htmlFor="footer-text">Footer Text</Label>
-              <Textarea
+              <Input
                 id="footer-text"
-                value={formData.footerText}
-                onChange={(e) => setFormData({ ...formData, footerText: e.target.value })}
-                placeholder="e.g., Powered by Your Agency Name"
-                maxLength={100}
-                rows={2}
-                className="mt-2"
+                value="Powered by CallX"
+                disabled
+                className="mt-2 bg-muted cursor-not-allowed"
               />
               <p className="text-sm text-muted-foreground mt-1">
-                Maximum 100 characters. Will appear at the bottom of email notifications.
+                This footer text is fixed and will appear at the bottom of all email notifications.
               </p>
             </div>
 

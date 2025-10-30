@@ -221,7 +221,6 @@ const AgentSettingsView = () => {
             <TabsList>
               <TabsTrigger value="preferences">Notification Preferences</TabsTrigger>
               <TabsTrigger value="email-reports">Email Reports</TabsTrigger>
-              <TabsTrigger value="test-email">Test Email</TabsTrigger>
             </TabsList>
 
             <TabsContent value="preferences" className="space-y-6">
@@ -283,10 +282,6 @@ const AgentSettingsView = () => {
 
             <TabsContent value="email-reports" className="space-y-6">
               <AgentEmailSettings />
-            </TabsContent>
-
-            <TabsContent value="test-email" className="space-y-6">
-              <EmailTestComponent />
             </TabsContent>
           </Tabs>
         </TabsContent>

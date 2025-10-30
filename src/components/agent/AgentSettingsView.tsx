@@ -93,13 +93,12 @@ const AgentSettingsView = () => {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="profile">Profile Data</TabsTrigger>
           <TabsTrigger value="verticals">Verticals</TabsTrigger>
           <TabsTrigger value="states">Target States</TabsTrigger>
           <TabsTrigger value="bids">Bid Settings</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="emails">Email Reports</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="transfer">Transfer</TabsTrigger>
@@ -218,65 +217,78 @@ const AgentSettingsView = () => {
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="w-5 h-5" />
-                Notification Preferences
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">Email Notifications</div>
-                  <div className="text-sm text-muted-foreground">Receive updates via email</div>
-                </div>
-                <Switch
-                  checked={notifications.emailNotifications}
-                  onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">SMS Notifications</div>
-                  <div className="text-sm text-muted-foreground">Receive text message alerts</div>
-                </div>
-                <Switch
-                  checked={notifications.smsNotifications}
-                  onCheckedChange={(checked) => setNotifications({...notifications, smsNotifications: checked})}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">Call Reminders</div>
-                  <div className="text-sm text-muted-foreground">Get notified about scheduled calls</div>
-                </div>
-                <Switch
-                  checked={notifications.callReminders}
-                  onCheckedChange={(checked) => setNotifications({...notifications, callReminders: checked})}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">Lead Assignments</div>
-                  <div className="text-sm text-muted-foreground">Notify when new leads are assigned</div>
-                </div>
-                <Switch
-                  checked={notifications.leadAssignments}
-                  onCheckedChange={(checked) => setNotifications({...notifications, leadAssignments: checked})}
-                />
-              </div>
-              <Button onClick={handleSaveNotifications} className="flex items-center gap-2">
-                <Save className="w-4 h-4" />
-                Save Preferences
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <Tabs defaultValue="preferences" className="w-full">
+            <TabsList>
+              <TabsTrigger value="preferences">Notification Preferences</TabsTrigger>
+              <TabsTrigger value="email-reports">Email Reports</TabsTrigger>
+              <TabsTrigger value="test-email">Test Email</TabsTrigger>
+            </TabsList>
 
-        <TabsContent value="emails" className="space-y-6">
-          <AgentEmailSettings />
-          <EmailTestComponent />
+            <TabsContent value="preferences" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bell className="w-5 h-5" />
+                    Notification Preferences
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">Email Notifications</div>
+                      <div className="text-sm text-muted-foreground">Receive updates via email</div>
+                    </div>
+                    <Switch
+                      checked={notifications.emailNotifications}
+                      onCheckedChange={(checked) => setNotifications({...notifications, emailNotifications: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">SMS Notifications</div>
+                      <div className="text-sm text-muted-foreground">Receive text message alerts</div>
+                    </div>
+                    <Switch
+                      checked={notifications.smsNotifications}
+                      onCheckedChange={(checked) => setNotifications({...notifications, smsNotifications: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">Call Reminders</div>
+                      <div className="text-sm text-muted-foreground">Get notified about scheduled calls</div>
+                    </div>
+                    <Switch
+                      checked={notifications.callReminders}
+                      onCheckedChange={(checked) => setNotifications({...notifications, callReminders: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">Lead Assignments</div>
+                      <div className="text-sm text-muted-foreground">Notify when new leads are assigned</div>
+                    </div>
+                    <Switch
+                      checked={notifications.leadAssignments}
+                      onCheckedChange={(checked) => setNotifications({...notifications, leadAssignments: checked})}
+                    />
+                  </div>
+                  <Button onClick={handleSaveNotifications} className="flex items-center gap-2">
+                    <Save className="w-4 h-4" />
+                    Save Preferences
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="email-reports" className="space-y-6">
+              <AgentEmailSettings />
+            </TabsContent>
+
+            <TabsContent value="test-email" className="space-y-6">
+              <EmailTestComponent />
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">

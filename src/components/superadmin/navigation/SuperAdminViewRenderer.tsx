@@ -35,7 +35,6 @@ import { AgentVerticalManagement } from "../entities/AgentVerticalManagement";
 import BillingManagement from "../billing/BillingManagement";
 import ReferralManagement from "../entities/ReferralManagement";
 import EmailTemplateManagement from "../entities/EmailTemplateManagement";
-import NotificationSettings from "../entities/NotificationSettings";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -202,9 +201,6 @@ const SuperAdminViewRenderer = ({
     
     case 'email-template-management':
       return <EmailTemplateManagement onBackToDashboard={handleBackToDashboard} />;
-    
-    case 'notification-settings':
-      return <NotificationSettings onBackToDashboard={handleBackToDashboard} />;
     
     default:
       return (

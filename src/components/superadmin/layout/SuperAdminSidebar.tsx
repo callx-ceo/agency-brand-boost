@@ -94,7 +94,6 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       icon: <Users className="w-5 h-5" />,
       badge: mockAlerts.suspendedAgents > 0 ? mockAlerts.suspendedAgents : undefined
     },
-    { id: "agent-notification-management", label: "Agent Notifications", icon: <Bell className="w-5 h-5" /> },
     { id: "advertisers", label: "Advertisers", icon: <Megaphone className="w-5 h-5" /> },
     { id: "publishers", label: "Publishers", icon: <Globe className="w-5 h-5" /> },
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
@@ -103,7 +102,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "languages", label: "Languages", icon: <Globe className="w-5 h-5" /> },
   ];
 
-  // Agency Management sections - NEW SECTION
+  // Agency Management sections
   const agencyManagementSections = [
     { 
       id: "agency-applications", 
@@ -111,7 +110,6 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       icon: <ClipboardList className="w-5 h-5" />,
       badge: mockAlerts.pendingApplications > 0 ? mockAlerts.pendingApplications : undefined
     },
-    { id: "agency-notification-management", label: "Agency Notifications", icon: <Bell className="w-5 h-5" /> },
     { id: "products", label: "Products", icon: <Package className="w-5 h-5" /> },
     { id: "carriers", label: "Carriers", icon: <Building2 className="w-5 h-5" /> },
   ];

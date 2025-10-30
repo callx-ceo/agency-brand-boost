@@ -193,7 +193,7 @@ const NotificationTemplateManagement = ({ onBackToDashboard }: NotificationTempl
       .replace(/{{new_balance}}/g, '150.00')
       .replace(/{{date}}/g, new Date().toLocaleDateString())
       .replace(/{{primary_color}}/g, '#3B82F6')
-      .replace(/{{footer}}/g, '<p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">© 2024 CallX. All rights reserved.</p>');
+      .replace(/{{footer}}/g, '<p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">© 2025 CallX. All rights reserved.</p>');
 
     return selectedTemplate.notification_type === 'email' ? (
       <div dangerouslySetInnerHTML={{ __html: content }} />

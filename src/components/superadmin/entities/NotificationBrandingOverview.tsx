@@ -77,7 +77,7 @@ const NotificationBrandingOverview = ({ onBackToDashboard }: NotificationBrandin
             ${selectedBranding.footer_text || 'Powered by CallX'}
           </p>
           <p style="margin: 10px 0 0; color: #9ca3af; font-size: 12px;">
-            © ${new Date().getFullYear()} All rights reserved.
+            © ${new Date().getFullYear()} CallX. All rights reserved.
           </p>
         </div>
       </div>

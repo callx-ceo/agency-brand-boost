@@ -153,7 +153,6 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "user-management", label: "User & Role Management", icon: <UserCheck className="w-5 h-5" /> },
     { id: "goals-management", label: "Goals Management", icon: <TrendingUp className="w-5 h-5" /> },
     { id: "prompt-management", label: "AI Prompt Management", icon: <Settings className="w-5 h-5" /> },
-    { id: "email-template-management", label: "Email Templates", icon: <Mail className="w-5 h-5" /> },
     { id: "notification-templates", label: "Notification Templates", icon: <Bell className="w-5 h-5" /> },
     { id: "notification-branding-overview", label: "Agency Branding Overview", icon: <Palette className="w-5 h-5" /> },
     { 

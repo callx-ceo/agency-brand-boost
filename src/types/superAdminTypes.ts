@@ -46,7 +46,6 @@ export type SuperAdminViewType =
   | 'call-settings-management'
   | 'billing-management'
   | 'referral-management'
-  | 'email-template-management'
   | 'agency-notification-management'
   | 'agent-notification-management'
   | 'notification-templates'

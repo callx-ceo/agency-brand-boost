@@ -447,16 +447,47 @@ const NotificationTemplateManagement = ({ onBackToDashboard }: NotificationTempl
 
       {/* Preview Dialog */}
       <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Template Preview</DialogTitle>
+            <DialogTitle>Email Preview</DialogTitle>
             <DialogDescription>
-              Preview with sample data
+              Preview with sample data - this is how the email will appear to recipients
             </DialogDescription>
           </DialogHeader>
-          <div className="border rounded-lg p-4">
-            {renderPreview()}
-          </div>
+          
+          {selectedTemplate?.notification_type === 'email' ? (
+            <div className="bg-muted/30 p-6 rounded-lg">
+              {/* Email Client Simulation */}
+              <div className="bg-card border rounded-lg shadow-sm max-w-2xl mx-auto">
+                {/* Email Header Bar */}
+                <div className="border-b bg-muted/50 px-4 py-3 rounded-t-lg">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium">Subject:</span>
+                    <span className="text-muted-foreground">
+                      {selectedTemplate.subject?.replace(/{{agent_name}}/g, 'John Doe') || 'No Subject'}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Email Body */}
+                <div className="bg-background p-6">
+                  {renderPreview()}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-muted/30 p-6 rounded-lg">
+              <div className="bg-card border rounded-lg shadow-sm max-w-md mx-auto p-4">
+                <div className="flex items-center gap-2 mb-3 text-sm text-muted-foreground">
+                  <MessageSquare className="h-4 w-4" />
+                  <span>SMS Preview</span>
+                </div>
+                {renderPreview()}
+              </div>
+            </div>
+          )}
+          
           <DialogFooter>
             <Button variant="outline" onClick={() => setPreviewDialogOpen(false)}>
               Close

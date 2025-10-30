@@ -17,7 +17,7 @@ const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationM
     sms: false,
     inApp: true,
     performanceEmailsEnabled: false,
-    emailFrequency: 'daily'
+    emailFrequency: 'per-call'
   });
 
   const handleNotificationChange = (key: string, value: boolean | string) => {
@@ -32,7 +32,7 @@ const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationM
         </Button>
         <div>
           <h1 className="text-3xl font-bold">Agency Notification Management</h1>
-          <p className="text-muted-foreground">Configure notification preferences for agencies</p>
+          <p className="text-muted-foreground">Configure notification preferences for your agency and agents</p>
         </div>
       </div>
 
@@ -43,7 +43,7 @@ const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationM
             Notification Preferences
           </CardTitle>
           <CardDescription>
-            Manage how agencies receive notifications about their operations
+            Manage how you and your agents receive notifications about activities
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -96,6 +96,12 @@ const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationM
                       className="space-y-2"
                     >
                       <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="per-call" id="per-call" />
+                        <Label htmlFor="per-call" className="font-normal cursor-pointer">
+                          After Each Call
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
                         <RadioGroupItem value="daily" id="daily" />
                         <Label htmlFor="daily" className="font-normal cursor-pointer">
                           Daily Summary
@@ -105,12 +111,6 @@ const AgencyNotificationManagement = ({ onBackToDashboard }: AgencyNotificationM
                         <RadioGroupItem value="weekly" id="weekly" />
                         <Label htmlFor="weekly" className="font-normal cursor-pointer">
                           Weekly Summary
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="monthly" id="monthly" />
-                        <Label htmlFor="monthly" className="font-normal cursor-pointer">
-                          Monthly Summary
                         </Label>
                       </div>
                     </RadioGroup>

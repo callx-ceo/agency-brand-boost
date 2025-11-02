@@ -8,12 +8,68 @@ export interface CampaignOffer {
   conversionGoal?: string;
 }
 
+export interface IVRFilter {
+  id: string;
+  name: string;
+}
+
+export interface DestinationOffer {
+  id: string;
+  offerName: string;
+  advertiserName: string;
+  weight: number;
+  ivrEnabled: boolean;
+  ivrFilter: string;
+  destinationPayout: number;
+  connectDuration: string;
+  publisherPayout: number;
+  epc: number;
+  isPaused: boolean;
+  isSuspended: boolean;
+}
+
+export interface IVRTreeKey {
+  id: string;
+  key: string;
+  action: string;
+  ivrFilter: string;
+  playPromptFirst: boolean;
+  promptText?: string;
+}
+
 export interface CampaignFormData {
   // Basic Info
   name: string;
+  description?: string;
   vertical: string;
   language: string;
   targetStates: string[];
+  
+  // Campaign Type & Config
+  campaignType?: "bundle" | "single";
+  category?: string;
+  ivrFilters?: IVRFilter[];
+  destinationOffers?: DestinationOffer[];
+  callDistribution?: "weighted" | "yield" | "round-robin";
+  callDistributionValue?: number; // 0-100 for slider
+  
+  // Campaign Settings
+  payout?: number;
+  expirationDate?: "ongoing" | "expires";
+  expirationValue?: string;
+  repeatCalls?: boolean;
+  recordCalls?: boolean;
+  greetingRecording?: boolean;
+  leadSettings?: boolean;
+  offHoursMessage?: boolean;
+  visibilitySettings?: "all_publishers" | "approved_publishers" | "invitation_only";
+  
+  // IVR Tree
+  ivrStartAction?: string;
+  ivrGreeting?: string;
+  ivrKeys?: IVRTreeKey[];
+  
+  // Legacy fields for compatibility
   visibility?: "private" | "marketplace"; // Only for superadmin
   
   // Single Offer (Agency as Advertiser)

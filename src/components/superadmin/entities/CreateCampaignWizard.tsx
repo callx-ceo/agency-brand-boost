@@ -1,19 +1,14 @@
 
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { CampaignBasicInfoStep } from "./wizard/CampaignBasicInfoStep";
-import { CampaignBidFloorStep } from "./wizard/CampaignBidFloorStep";
-import CampaignOverflowStep from "./wizard/CampaignOverflowStep";
-import { CampaignRoutingStep } from "./wizard/CampaignRoutingStep";
-import { CampaignSummaryStep } from "./wizard/CampaignSummaryStep";
+import { CampaignTypeConfigStep } from "./wizard/CampaignTypeConfigStep";
+import { CampaignSettingsStep } from "./wizard/CampaignSettingsStep";
+import { InboundIVRTreeStep } from "./wizard/InboundIVRTreeStep";
 import { useCampaignWizard } from "./hooks/useCampaignWizard";
 import { CampaignFormData } from "./types/campaignTypes";
-
-const CampaignOfferStep = lazy(() => import("./wizard/CampaignOfferStep"));
-const CampaignAgentVisibilityStep = lazy(() => import("./wizard/CampaignAgentVisibilityStep"));
 
 interface CreateCampaignWizardProps {
   onClose: () => void;
@@ -24,7 +19,7 @@ interface CreateCampaignWizardProps {
 
 const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUserId }: CreateCampaignWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 7;
+  const totalSteps = 3;
   
   const {
     formData,
@@ -35,13 +30,9 @@ const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUse
   } = useCampaignWizard({ userRole, currentUserId });
 
   const steps = [
-    { number: 1, title: "Basic Info", component: CampaignBasicInfoStep },
-    { number: 2, title: "Offer", component: CampaignOfferStep },
-    { number: 3, title: "Agent Visibility", component: CampaignAgentVisibilityStep },
-    { number: 4, title: "Bid Floor", component: CampaignBidFloorStep },
-    { number: 5, title: "Routing", component: CampaignRoutingStep },
-    { number: 6, title: "Overflow", component: CampaignOverflowStep },
-    { number: 7, title: "Review", component: CampaignSummaryStep }
+    { number: 1, title: "Campaign Type & Config", component: CampaignTypeConfigStep },
+    { number: 2, title: "Campaign Settings", component: CampaignSettingsStep },
+    { number: 3, title: "Inbound IVR Tree", component: InboundIVRTreeStep }
   ];
 
   const handleNext = async () => {
@@ -109,13 +100,10 @@ const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUse
         </CardHeader>
 
         <CardContent className="p-6 overflow-y-auto max-h-[60vh]">
-        <Suspense fallback={<div className="text-center py-8">Loading...</div>}>
           <StepComponent
             formData={formData}
             updateFormData={updateFormData}
-            userRole={userRole}
           />
-        </Suspense>
         </CardContent>
 
         <div className="border-t p-6 flex justify-between">

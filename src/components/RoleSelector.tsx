@@ -69,7 +69,7 @@ const RoleSelector = () => {
       title: "Publisher",
       description: "Content publishing, lead generation, and performance tracking",
       icon: <Users className="w-8 h-8 text-blue-600" />,
-      status: "coming-soon" as const,
+      status: "active" as const,
       path: "/publisher"
     },
     {

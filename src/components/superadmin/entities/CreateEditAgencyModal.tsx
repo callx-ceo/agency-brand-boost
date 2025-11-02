@@ -20,9 +20,21 @@ interface CreateEditAgencyModalProps {
 
 const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: CreateEditAgencyModalProps) => {
   const [formData, setFormData] = useState({
-    name: agency?.name || "",
+    companyName: agency?.company_name || "",
+    legalName: agency?.legal_name || "",
     description: agency?.description || "",
     agencyModel: agency?.agency_model || "marketplace_buyers",
+    addressStreet: agency?.address_street || "",
+    addressCity: agency?.address_city || "",
+    addressState: agency?.address_state || "",
+    addressZip: agency?.address_zip || "",
+    phone: agency?.phone || "",
+    billingEmail: agency?.billing_email || "",
+    primaryContactName: agency?.primary_contact_name || "",
+    primaryContactEmail: agency?.primary_contact_email || "",
+    primaryContactPhone: agency?.primary_contact_phone || "",
+    ownerEmail: "",
+    ownerPassword: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,16 +75,81 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
         const { error } = await supabase
           .from("agency_branding")
           .update({
+            company_name: formData.companyName,
+            legal_name: formData.legalName,
             agency_model: formData.agencyModel,
             agency_description: formData.description,
+            address_street: formData.addressStreet,
+            address_city: formData.addressCity,
+            address_state: formData.addressState,
+            address_zip: formData.addressZip,
+            phone: formData.phone,
+            billing_email: formData.billingEmail,
+            primary_contact_name: formData.primaryContactName,
+            primary_contact_email: formData.primaryContactEmail,
+            primary_contact_phone: formData.primaryContactPhone,
           })
           .eq("agency_id", agency.id);
 
         if (error) throw error;
         toast.success("Agency updated successfully");
       } else {
-        // Create new agency - in a real app, this would create the agency user account first
-        toast.info("Agency creation flow would be implemented here");
+        // Create new agency with owner account
+        if (!formData.ownerEmail || !formData.ownerPassword) {
+          toast.error("Owner email and password are required");
+          return;
+        }
+
+        // Create the owner user account
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: formData.ownerEmail,
+          password: formData.ownerPassword,
+          options: {
+            data: {
+              full_name: formData.primaryContactName,
+            },
+          },
+        });
+
+        if (authError) throw authError;
+        if (!authData.user) throw new Error("Failed to create user account");
+
+        // Create agency branding record
+        const { data: agencyData, error: agencyError } = await supabase
+          .from("agency_branding")
+          .insert({
+            agency_id: authData.user.id,
+            company_name: formData.companyName,
+            legal_name: formData.legalName,
+            agency_model: formData.agencyModel,
+            agency_description: formData.description,
+            address_street: formData.addressStreet,
+            address_city: formData.addressCity,
+            address_state: formData.addressState,
+            address_zip: formData.addressZip,
+            phone: formData.phone,
+            billing_email: formData.billingEmail,
+            primary_contact_name: formData.primaryContactName,
+            primary_contact_email: formData.primaryContactEmail,
+            primary_contact_phone: formData.primaryContactPhone,
+          })
+          .select()
+          .single();
+
+        if (agencyError) throw agencyError;
+
+        // Assign owner role
+        const { error: roleError } = await supabase
+          .from("user_roles")
+          .insert({
+            user_id: authData.user.id,
+            agency_id: authData.user.id,
+            role: "owner",
+          });
+
+        if (roleError) throw roleError;
+
+        toast.success("Agency and owner account created successfully");
       }
 
       onSuccess?.();
@@ -99,19 +176,182 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Agency Name</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Enter agency name"
-                required
-              />
+            {/* Company Information */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold">Company Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">Company Name *</Label>
+                  <Input
+                    id="companyName"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    placeholder="Enter company name"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="legalName">Legal Name</Label>
+                  <Input
+                    id="legalName"
+                    value={formData.legalName}
+                    onChange={(e) => setFormData({ ...formData, legalName: e.target.value })}
+                    placeholder="Legal business name"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="(555) 123-4567"
+                  required
+                />
+              </div>
             </div>
 
+            {/* Address */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold">Address</h3>
+              <div className="space-y-2">
+                <Label htmlFor="addressStreet">Street Address *</Label>
+                <Input
+                  id="addressStreet"
+                  value={formData.addressStreet}
+                  onChange={(e) => setFormData({ ...formData, addressStreet: e.target.value })}
+                  placeholder="123 Main St"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="addressCity">City *</Label>
+                  <Input
+                    id="addressCity"
+                    value={formData.addressCity}
+                    onChange={(e) => setFormData({ ...formData, addressCity: e.target.value })}
+                    placeholder="City"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="addressState">State *</Label>
+                  <Input
+                    id="addressState"
+                    value={formData.addressState}
+                    onChange={(e) => setFormData({ ...formData, addressState: e.target.value })}
+                    placeholder="CA"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="addressZip">ZIP Code *</Label>
+                  <Input
+                    id="addressZip"
+                    value={formData.addressZip}
+                    onChange={(e) => setFormData({ ...formData, addressZip: e.target.value })}
+                    placeholder="12345"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Primary Contact */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold">Primary Contact</h3>
+              <div className="space-y-2">
+                <Label htmlFor="primaryContactName">Full Name *</Label>
+                <Input
+                  id="primaryContactName"
+                  value={formData.primaryContactName}
+                  onChange={(e) => setFormData({ ...formData, primaryContactName: e.target.value })}
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="primaryContactEmail">Email *</Label>
+                  <Input
+                    id="primaryContactEmail"
+                    type="email"
+                    value={formData.primaryContactEmail}
+                    onChange={(e) => setFormData({ ...formData, primaryContactEmail: e.target.value })}
+                    placeholder="john@company.com"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="primaryContactPhone">Phone *</Label>
+                  <Input
+                    id="primaryContactPhone"
+                    type="tel"
+                    value={formData.primaryContactPhone}
+                    onChange={(e) => setFormData({ ...formData, primaryContactPhone: e.target.value })}
+                    placeholder="(555) 123-4567"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Billing Contact */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold">Billing Contact</h3>
+              <div className="space-y-2">
+                <Label htmlFor="billingEmail">Billing Email</Label>
+                <Input
+                  id="billingEmail"
+                  type="email"
+                  value={formData.billingEmail}
+                  onChange={(e) => setFormData({ ...formData, billingEmail: e.target.value })}
+                  placeholder="billing@company.com"
+                />
+              </div>
+            </div>
+
+            {/* Owner Account Setup (only for new agencies) */}
+            {!agency && (
+              <div className="space-y-3 pt-4 border-t">
+                <h3 className="text-lg font-semibold">Owner Account Setup</h3>
+                <p className="text-sm text-muted-foreground">
+                  Create the login credentials for the agency owner
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="ownerEmail">Owner Email *</Label>
+                    <Input
+                      id="ownerEmail"
+                      type="email"
+                      value={formData.ownerEmail}
+                      onChange={(e) => setFormData({ ...formData, ownerEmail: e.target.value })}
+                      placeholder="owner@company.com"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ownerPassword">Password *</Label>
+                    <Input
+                      id="ownerPassword"
+                      type="password"
+                      value={formData.ownerPassword}
+                      onChange={(e) => setFormData({ ...formData, ownerPassword: e.target.value })}
+                      placeholder="Minimum 6 characters"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
+              <Label htmlFor="description">Notes (Optional)</Label>
               <Textarea
                 id="description"
                 value={formData.description}

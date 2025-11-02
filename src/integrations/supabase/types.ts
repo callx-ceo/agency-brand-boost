@@ -16,38 +16,71 @@ export type Database = {
     Tables: {
       agency_branding: {
         Row: {
+          address_city: string | null
+          address_state: string | null
+          address_street: string | null
+          address_zip: string | null
           agency_description: string | null
           agency_id: string
           agency_model: Database["public"]["Enums"]["agency_model"] | null
+          billing_email: string | null
+          company_name: string | null
           created_at: string | null
           footer_text: string | null
           id: string
+          legal_name: string | null
           logo_url: string | null
+          phone: string | null
           primary_color: string | null
+          primary_contact_email: string | null
+          primary_contact_name: string | null
+          primary_contact_phone: string | null
           secondary_color: string | null
           updated_at: string | null
         }
         Insert: {
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
           agency_description?: string | null
           agency_id: string
           agency_model?: Database["public"]["Enums"]["agency_model"] | null
+          billing_email?: string | null
+          company_name?: string | null
           created_at?: string | null
           footer_text?: string | null
           id?: string
+          legal_name?: string | null
           logo_url?: string | null
+          phone?: string | null
           primary_color?: string | null
+          primary_contact_email?: string | null
+          primary_contact_name?: string | null
+          primary_contact_phone?: string | null
           secondary_color?: string | null
           updated_at?: string | null
         }
         Update: {
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
           agency_description?: string | null
           agency_id?: string
           agency_model?: Database["public"]["Enums"]["agency_model"] | null
+          billing_email?: string | null
+          company_name?: string | null
           created_at?: string | null
           footer_text?: string | null
           id?: string
+          legal_name?: string | null
           logo_url?: string | null
+          phone?: string | null
           primary_color?: string | null
+          primary_contact_email?: string | null
+          primary_contact_name?: string | null
+          primary_contact_phone?: string | null
           secondary_color?: string | null
           updated_at?: string | null
         }
@@ -205,15 +238,57 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          agency_id: string
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_agency_role: {
+        Args: {
+          _agency_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       agency_model: "marketplace_buyers" | "bring_your_own_media" | "hybrid"
+      app_role: "owner" | "admin" | "agent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -342,6 +417,7 @@ export const Constants = {
   public: {
     Enums: {
       agency_model: ["marketplace_buyers", "bring_your_own_media", "hybrid"],
+      app_role: ["owner", "admin", "agent"],
     },
   },
 } as const

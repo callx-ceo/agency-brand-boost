@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { UserPlus } from "lucide-react";
 import { Campaign } from "@/types/campaignTypes";
 import CampaignDetailHeader from "./campaign/CampaignDetailHeader";
 import DateRangeSelector from "./campaign/DateRangeSelector";
@@ -8,6 +10,7 @@ import CampaignDetailsTab from "./campaign/CampaignDetailsTab";
 import PromoNumbersTab from "./campaign/PromoNumbersTab";
 import ManagePublishersTab from "./campaign/ManagePublishersTab";
 import ManageAdvertisersTab from "./campaign/ManageAdvertisersTab";
+import PublisherInviteModal from "@/components/publisher/PublisherInviteModal";
 
 interface CampaignDetailViewProps {
   campaign: Campaign;
@@ -18,14 +21,21 @@ interface CampaignDetailViewProps {
 const CampaignDetailView = ({ campaign, onBack, onCampaignUpdate }: CampaignDetailViewProps) => {
   const [activeTab, setActiveTab] = useState("campaign-statistics");
   const [dateRange, setDateRange] = useState("Today");
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <CampaignDetailHeader campaignName={campaign.name} onBack={onBack} />
 
-      {/* Date Range Selector */}
-      <DateRangeSelector dateRange={dateRange} onDateRangeChange={setDateRange} />
+      {/* Date Range Selector and Invite Button */}
+      <div className="flex items-center justify-between">
+        <DateRangeSelector dateRange={dateRange} onDateRangeChange={setDateRange} />
+        <Button onClick={() => setShowInviteModal(true)} className="gap-2">
+          <UserPlus className="h-4 w-4" />
+          Invite Publisher
+        </Button>
+      </div>
 
       {/* Tabs Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -67,6 +77,13 @@ const CampaignDetailView = ({ campaign, onBack, onCampaignUpdate }: CampaignDeta
           <ManageAdvertisersTab />
         </TabsContent>
       </Tabs>
+
+      <PublisherInviteModal
+        open={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        campaignId={campaign.id}
+        campaignName={campaign.name}
+      />
     </div>
   );
 };

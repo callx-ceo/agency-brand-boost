@@ -5,6 +5,7 @@ export interface CampaignFormData {
   vertical: string;
   language: string;
   targetStates: string[];
+  visibility?: "private" | "marketplace"; // Only for superadmin
   
   // Bid Floor Settings
   bidFloorEnabled?: boolean;
@@ -33,6 +34,10 @@ export interface CampaignFormData {
   fallbackUrl?: string;
   fallbackMessage?: string;
   whisperMessage?: string;
+  
+  // Overflow Management
+  overflowBehavior?: "internal_redirect" | "offer_marketplace" | "drop_queue";
+  overflowDestination?: string; // URL or phone number for internal redirect
   
   // Settings
   maxConcurrency: number;

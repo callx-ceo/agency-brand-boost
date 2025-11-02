@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { CampaignBasicInfoStep } from "./wizard/CampaignBasicInfoStep";
+import CampaignVisibilityStep from "./wizard/CampaignVisibilityStep";
 import { CampaignBidFloorStep } from "./wizard/CampaignBidFloorStep";
+import CampaignOverflowStep from "./wizard/CampaignOverflowStep";
 import { CampaignRoutingStep } from "./wizard/CampaignRoutingStep";
 import { CampaignSummaryStep } from "./wizard/CampaignSummaryStep";
 import { useCampaignWizard } from "./hooks/useCampaignWizard";
@@ -20,7 +22,7 @@ interface CreateCampaignWizardProps {
 
 const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUserId }: CreateCampaignWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 4;
+  const totalSteps = 6;
   
   const {
     formData,
@@ -32,9 +34,11 @@ const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUse
 
   const steps = [
     { number: 1, title: "Basic Information", component: CampaignBasicInfoStep },
-    { number: 2, title: "Bid Floor Settings", component: CampaignBidFloorStep },
-    { number: 3, title: "Routing & Settings", component: CampaignRoutingStep },
-    { number: 4, title: "Summary & Launch", component: CampaignSummaryStep }
+    { number: 2, title: "Visibility", component: CampaignVisibilityStep },
+    { number: 3, title: "Bid Floor Settings", component: CampaignBidFloorStep },
+    { number: 4, title: "Overflow Management", component: CampaignOverflowStep },
+    { number: 5, title: "Routing & Schedule", component: CampaignRoutingStep },
+    { number: 6, title: "Review & Launch", component: CampaignSummaryStep }
   ];
 
   const handleNext = async () => {
@@ -102,12 +106,12 @@ const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUse
         </CardHeader>
 
         <CardContent className="p-6 overflow-y-auto max-h-[60vh]">
-          <StepComponent
-            formData={formData}
-            updateFormData={updateFormData}
-            userRole={userRole}
-            currentUserId={currentUserId}
-          />
+        <StepComponent
+          formData={formData}
+          updateFormData={updateFormData}
+          userRole={userRole}
+          currentUserId={currentUserId}
+        />
         </CardContent>
 
         <div className="border-t p-6 flex justify-between">

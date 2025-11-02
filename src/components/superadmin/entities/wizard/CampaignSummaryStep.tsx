@@ -90,12 +90,6 @@ export const CampaignSummaryStep = ({ formData }: CampaignSummaryStepProps) => {
             <span className="font-medium">Assigned Agents:</span>
             <span className="ml-2">{formData.assignedAgents?.length || 0} agents selected</span>
           </div>
-          {formData.concurrencyCapPerAgent && (
-            <div>
-              <span className="font-medium">Max Concurrency per Agent:</span>
-              <span className="ml-2">{formData.concurrencyCapPerAgent}</span>
-            </div>
-          )}
           <div>
             <span className="font-medium">Call Recording:</span>
             <Badge className="ml-2" variant={formData.recordingEnabled ? "default" : "secondary"}>

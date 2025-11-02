@@ -27,7 +27,6 @@ export interface CampaignFormData {
   // Routing Details - Agent Visibility
   assignedAgents?: string[]; // All agency agents by default
   blockedAgents?: string[]; // Agents blocked from this campaign
-  concurrencyCapPerAgent?: number;
   schedule: {
     start: string;
     end: string;
@@ -53,7 +52,6 @@ export interface CampaignFormData {
   overflowDestination?: string; // URL or phone number for internal redirect
   
   // Settings
-  maxConcurrency: number;
   activeImmediately: boolean;
   
   // System fields

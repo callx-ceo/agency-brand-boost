@@ -163,20 +163,6 @@ export const CampaignRoutingStep = ({ formData, updateFormData }: CampaignRoutin
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="concurrency">Max Concurrency per Agent</Label>
-            <Input
-              id="concurrency"
-              type="number"
-              value={formData.concurrencyCapPerAgent || ""}
-              onChange={(e) => updateFormData({ concurrencyCapPerAgent: parseInt(e.target.value) || undefined })}
-              placeholder="3"
-              className="mt-1"
-              min="1"
-              max="10"
-            />
-          </div>
-
           <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="recording">Enable Call Recording</Label>

@@ -24,7 +24,6 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
       end: "18:00",
       days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     },
-    maxConcurrency: 3,
     activeImmediately: true,
     fallbackBehavior: "redirect_url"
   });

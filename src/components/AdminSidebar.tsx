@@ -44,6 +44,8 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       category: "Business Operations", 
       items: [
         { id: "offers", label: "Offers", icon: Briefcase },
+        { id: "campaigns", label: "Campaigns", icon: Target },
+        { id: "publishers", label: "Publishers", icon: UserPlus },
         { id: "reports", label: "Realtime Report", icon: BarChart3 },
         { id: "applications", label: "Applications", icon: FileText },
         { id: "call-history", label: "Call History", icon: History },
@@ -57,9 +59,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
         { id: "general", label: "General", icon: Settings },
         { id: "team", label: "Team Members", icon: Users },
         { id: "branding", label: "Branding & Emails", icon: Palette },
-        { id: "campaigns", label: "Campaigns", icon: Target },
         { id: "scripts", label: "Scripts & AI", icon: Phone },
-        { id: "publishers", label: "Publishers", icon: UserPlus },
         { id: "referrals", label: "Referrals", icon: Gift },
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "billing", label: "Billing", icon: CreditCard },

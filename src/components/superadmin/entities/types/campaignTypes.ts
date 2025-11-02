@@ -42,9 +42,6 @@ export interface CampaignFormData {
     };
   };
   recordingEnabled?: boolean;
-  fallbackBehavior: "redirect_url" | "return_publisher" | "custom_message";
-  fallbackUrl?: string;
-  fallbackMessage?: string;
   whisperMessage?: string;
   
   // Overflow Management

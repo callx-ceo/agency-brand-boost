@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, Clock, AlertTriangle } from "lucide-react";
+import { Users, Clock } from "lucide-react";
 import { CampaignFormData } from "../types/campaignTypes";
 
 interface CampaignRoutingStepProps {
@@ -307,68 +307,6 @@ export const CampaignRoutingStep = ({ formData, updateFormData }: CampaignRoutin
               })}
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Fallback Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
-            Fallback Behavior
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>When no agents are available:</Label>
-            <Select
-              value={formData.fallbackBehavior}
-              onValueChange={(value) => updateFormData({ fallbackBehavior: value as any })}
-            >
-              <SelectTrigger className="mt-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="redirect_url">302 Redirect to URL</SelectItem>
-                <SelectItem value="return_publisher">Return to Publisher Number</SelectItem>
-                <SelectItem value="custom_message">Play Custom Message</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {formData.fallbackBehavior === "redirect_url" && (
-            <div>
-              <Label>Fallback URL</Label>
-              <Input
-                placeholder="https://example.com/fallback"
-                value={formData.fallbackUrl || ""}
-                onChange={(e) => updateFormData({ fallbackUrl: e.target.value })}
-                className="mt-1"
-              />
-            </div>
-          )}
-
-          {formData.fallbackBehavior === "custom_message" && (
-            <div>
-              <Label>Custom Message</Label>
-              <Textarea
-                placeholder="Sorry, all our agents are currently busy. Please try again later."
-                value={formData.fallbackMessage || ""}
-                onChange={(e) => updateFormData({ fallbackMessage: e.target.value })}
-                className="mt-1"
-              />
-            </div>
-          )}
-
-          <div>
-            <Label>Whisper Message (optional)</Label>
-            <Input
-              placeholder="This call is from the Holiday Sale campaign"
-              value={formData.whisperMessage || ""}
-              onChange={(e) => updateFormData({ whisperMessage: e.target.value })}
-              className="mt-1"
-            />
-          </div>
         </CardContent>
       </Card>
     </div>

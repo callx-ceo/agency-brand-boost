@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Building2, Users, Clock, AlertTriangle } from "lucide-react";
+import { CheckCircle, Building2, Users, Clock } from "lucide-react";
 import { CampaignFormData } from "../types/campaignTypes";
 
 interface CampaignSummaryStepProps {
@@ -135,43 +135,6 @@ export const CampaignSummaryStep = ({ formData }: CampaignSummaryStepProps) => {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
-            Fallback Configuration
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <span className="font-medium">Fallback Behavior:</span>
-            <span className="ml-2">
-              {formData.fallbackBehavior === "redirect_url" && "302 Redirect to URL"}
-              {formData.fallbackBehavior === "return_publisher" && "Return to Publisher Number"}
-              {formData.fallbackBehavior === "custom_message" && "Play Custom Message"}
-            </span>
-          </div>
-          {formData.fallbackUrl && (
-            <div>
-              <span className="font-medium">Fallback URL:</span>
-              <span className="ml-2 text-blue-600">{formData.fallbackUrl}</span>
-            </div>
-          )}
-          {formData.fallbackMessage && (
-            <div>
-              <span className="font-medium">Custom Message:</span>
-              <span className="ml-2 italic">"{formData.fallbackMessage}"</span>
-            </div>
-          )}
-          {formData.whisperMessage && (
-            <div>
-              <span className="font-medium">Whisper Message:</span>
-              <span className="ml-2 italic">"{formData.whisperMessage}"</span>
             </div>
           )}
         </CardContent>

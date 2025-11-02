@@ -24,8 +24,7 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
       end: "18:00",
       days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     },
-    activeImmediately: true,
-    fallbackBehavior: "redirect_url"
+    activeImmediately: true
   });
 
   const updateFormData = (updates: Partial<CampaignFormData>) => {

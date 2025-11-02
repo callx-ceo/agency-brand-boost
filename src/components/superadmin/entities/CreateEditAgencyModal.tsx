@@ -29,12 +29,9 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
     addressState: agency?.address_state || "",
     addressZip: agency?.address_zip || "",
     phone: agency?.phone || "",
-    billingEmail: agency?.billing_email || "",
-    primaryContactName: agency?.primary_contact_name || "",
-    primaryContactEmail: agency?.primary_contact_email || "",
-    primaryContactPhone: agency?.primary_contact_phone || "",
     ownerEmail: "",
     ownerPassword: "",
+    ownerFullName: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -84,10 +81,6 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
             address_state: formData.addressState,
             address_zip: formData.addressZip,
             phone: formData.phone,
-            billing_email: formData.billingEmail,
-            primary_contact_name: formData.primaryContactName,
-            primary_contact_email: formData.primaryContactEmail,
-            primary_contact_phone: formData.primaryContactPhone,
           })
           .eq("agency_id", agency.id);
 
@@ -95,8 +88,8 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
         toast.success("Agency updated successfully");
       } else {
         // Create new agency with owner account
-        if (!formData.ownerEmail || !formData.ownerPassword) {
-          toast.error("Owner email and password are required");
+        if (!formData.ownerEmail || !formData.ownerPassword || !formData.ownerFullName) {
+          toast.error("Owner email, password, and full name are required");
           return;
         }
 
@@ -106,7 +99,7 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
           password: formData.ownerPassword,
           options: {
             data: {
-              full_name: formData.primaryContactName,
+              full_name: formData.ownerFullName,
             },
           },
         });
@@ -128,10 +121,6 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
             address_state: formData.addressState,
             address_zip: formData.addressZip,
             phone: formData.phone,
-            billing_email: formData.billingEmail,
-            primary_contact_name: formData.primaryContactName,
-            primary_contact_email: formData.primaryContactEmail,
-            primary_contact_phone: formData.primaryContactPhone,
           })
           .select()
           .single();
@@ -260,60 +249,6 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
               </div>
             </div>
 
-            {/* Primary Contact */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">Primary Contact</h3>
-              <div className="space-y-2">
-                <Label htmlFor="primaryContactName">Full Name *</Label>
-                <Input
-                  id="primaryContactName"
-                  value={formData.primaryContactName}
-                  onChange={(e) => setFormData({ ...formData, primaryContactName: e.target.value })}
-                  placeholder="John Doe"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="primaryContactEmail">Email *</Label>
-                  <Input
-                    id="primaryContactEmail"
-                    type="email"
-                    value={formData.primaryContactEmail}
-                    onChange={(e) => setFormData({ ...formData, primaryContactEmail: e.target.value })}
-                    placeholder="john@company.com"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="primaryContactPhone">Phone *</Label>
-                  <Input
-                    id="primaryContactPhone"
-                    type="tel"
-                    value={formData.primaryContactPhone}
-                    onChange={(e) => setFormData({ ...formData, primaryContactPhone: e.target.value })}
-                    placeholder="(555) 123-4567"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Billing Contact */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">Billing Contact</h3>
-              <div className="space-y-2">
-                <Label htmlFor="billingEmail">Billing Email</Label>
-                <Input
-                  id="billingEmail"
-                  type="email"
-                  value={formData.billingEmail}
-                  onChange={(e) => setFormData({ ...formData, billingEmail: e.target.value })}
-                  placeholder="billing@company.com"
-                />
-              </div>
-            </div>
-
             {/* Owner Account Setup (only for new agencies) */}
             {!agency && (
               <div className="space-y-3 pt-4 border-t">
@@ -321,6 +256,16 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
                 <p className="text-sm text-muted-foreground">
                   Create the login credentials for the agency owner
                 </p>
+                <div className="space-y-2">
+                  <Label htmlFor="ownerFullName">Owner Full Name *</Label>
+                  <Input
+                    id="ownerFullName"
+                    value={formData.ownerFullName}
+                    onChange={(e) => setFormData({ ...formData, ownerFullName: e.target.value })}
+                    placeholder="John Doe"
+                    required
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="ownerEmail">Owner Email *</Label>

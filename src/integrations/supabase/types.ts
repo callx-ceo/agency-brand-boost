@@ -285,10 +285,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      initialize_agency_owner: {
+        Args: { _agency_id: string; _user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       agency_model: "marketplace_buyers" | "bring_your_own_media" | "hybrid"
-      app_role: "owner" | "admin" | "agent"
+      app_role: "owner" | "admin" | "agent" | "superadmin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -417,7 +421,7 @@ export const Constants = {
   public: {
     Enums: {
       agency_model: ["marketplace_buyers", "bring_your_own_media", "hybrid"],
-      app_role: ["owner", "admin", "agent"],
+      app_role: ["owner", "admin", "agent", "superadmin"],
     },
   },
 } as const

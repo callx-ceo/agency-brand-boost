@@ -127,14 +127,11 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
 
         if (agencyError) throw agencyError;
 
-        // Assign owner role
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .insert({
-            user_id: authData.user.id,
-            agency_id: authData.user.id,
-            role: "owner",
-          });
+        // Assign owner role using security definer function
+        const { error: roleError } = await supabase.rpc("initialize_agency_owner", {
+          _user_id: authData.user.id,
+          _agency_id: authData.user.id,
+        });
 
         if (roleError) throw roleError;
 

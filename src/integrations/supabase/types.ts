@@ -16,7 +16,10 @@ export type Database = {
     Tables: {
       agency_branding: {
         Row: {
+          agency_description: string | null
           agency_id: string
+          agency_model: Database["public"]["Enums"]["agency_model"] | null
+          created_at: string | null
           footer_text: string | null
           id: string
           logo_url: string | null
@@ -25,7 +28,10 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          agency_description?: string | null
           agency_id: string
+          agency_model?: Database["public"]["Enums"]["agency_model"] | null
+          created_at?: string | null
           footer_text?: string | null
           id?: string
           logo_url?: string | null
@@ -34,7 +40,10 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          agency_description?: string | null
           agency_id?: string
+          agency_model?: Database["public"]["Enums"]["agency_model"] | null
+          created_at?: string | null
           footer_text?: string | null
           id?: string
           logo_url?: string | null
@@ -204,7 +213,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      agency_model: "marketplace_buyers" | "bring_your_own_media" | "hybrid"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -331,6 +340,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      agency_model: ["marketplace_buyers", "bring_your_own_media", "hybrid"],
+    },
   },
 } as const

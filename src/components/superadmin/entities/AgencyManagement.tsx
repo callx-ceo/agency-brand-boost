@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Building2, Search, Plus, Edit, Eye, Pause, Users, UserCheck } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
 import { toast } from "sonner";
+import CreateEditAgencyModal from "./CreateEditAgencyModal";
 
 interface AgencyManagementProps {
   onBackToDashboard: () => void;
@@ -28,6 +29,8 @@ const mockAgencies = [
 const AgencyManagement = ({ onBackToDashboard, onViewAgents }: AgencyManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedAgency, setSelectedAgency] = useState<any>(null);
   const { startImpersonation } = useImpersonation();
 
   const handleImpersonateAgency = (agency: any) => {
@@ -96,7 +99,14 @@ const AgencyManagement = ({ onBackToDashboard, onViewAgents }: AgencyManagementP
                 className="pl-8 w-64"
               />
             </div>
-            <Button size="sm" className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              className="flex items-center gap-2"
+              onClick={() => {
+                setSelectedAgency(null);
+                setShowCreateModal(true);
+              }}
+            >
               <Plus className="w-4 h-4" />
               Create Agency
             </Button>
@@ -136,7 +146,15 @@ const AgencyManagement = ({ onBackToDashboard, onViewAgents }: AgencyManagementP
                     <Button size="sm" variant="outline" title="View Details">
                       <Eye className="w-4 h-4" />
                     </Button>
-                    <Button size="sm" variant="outline" title="Edit Agency">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      title="Edit Agency"
+                      onClick={() => {
+                        setSelectedAgency(agency);
+                        setShowCreateModal(true);
+                      }}
+                    >
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button 
@@ -202,6 +220,16 @@ const AgencyManagement = ({ onBackToDashboard, onViewAgents }: AgencyManagementP
           {renderAgenciesTable(filterAgenciesByStatus("suspended"))}
         </TabsContent>
       </Tabs>
+
+      <CreateEditAgencyModal
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        agency={selectedAgency}
+        onSuccess={() => {
+          // Refresh agency list in a real app
+          toast.success(selectedAgency ? "Agency updated" : "Agency created");
+        }}
+      />
     </div>
   );
 };

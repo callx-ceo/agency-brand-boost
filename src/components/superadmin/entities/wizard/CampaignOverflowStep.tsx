@@ -19,7 +19,7 @@ export const CampaignOverflowStep = ({ formData, updateFormData }: CampaignOverf
         <CardHeader>
           <CardTitle>Overflow Call Management</CardTitle>
           <CardDescription>
-            Define what happens when calls exceed your concurrent capacity or routing rules
+            Define what happens when calls exceed your capacity or routing rules
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

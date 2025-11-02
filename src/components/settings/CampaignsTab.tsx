@@ -12,12 +12,12 @@ interface Campaign {
   id: string;
   name: string;
   vertical: string;
-  promoNumber: string;
   status: "active" | "paused" | "no_agents";
   callsReceived: number;
   connectedToAgent: number;
   fallbacksTriggered: number;
   createdAt: string;
+  publishersCount?: number;
 }
 
 const CampaignsTab = () => {
@@ -26,34 +26,34 @@ const CampaignsTab = () => {
       id: "1",
       name: "Holiday Sale Campaign",
       vertical: "Final Expense",
-      promoNumber: "+1 (555) 123-4567",
       status: "active",
       callsReceived: 156,
       connectedToAgent: 134,
       fallbacksTriggered: 22,
-      createdAt: "2024-01-15"
+      createdAt: "2024-01-15",
+      publishersCount: 3
     },
     {
       id: "2",
       name: "Spring Promotion",
       vertical: "Medicare",
-      promoNumber: "+1 (555) 234-5678",
       status: "paused",
       callsReceived: 89,
       connectedToAgent: 78,
       fallbacksTriggered: 11,
-      createdAt: "2024-03-01"
+      createdAt: "2024-03-01",
+      publishersCount: 2
     },
     {
       id: "3",
       name: "Summer Lead Gen",
       vertical: "Auto Insurance",
-      promoNumber: "+1 (555) 345-6789",
       status: "no_agents",
       callsReceived: 203,
       connectedToAgent: 145,
       fallbacksTriggered: 58,
-      createdAt: "2024-05-20"
+      createdAt: "2024-05-20",
+      publishersCount: 5
     }
   ]);
 
@@ -124,12 +124,12 @@ const CampaignsTab = () => {
       id: newCampaign.id || Date.now().toString(),
       name: newCampaign.name,
       vertical: newCampaign.vertical,
-      promoNumber: newCampaign.promoNumber || "",
       status: newCampaign.status || "active",
       callsReceived: newCampaign.callsReceived || 0,
       connectedToAgent: newCampaign.connectedToAgent || 0,
       fallbacksTriggered: newCampaign.fallbacksTriggered || 0,
-      createdAt: newCampaign.createdAt || new Date().toISOString().split('T')[0]
+      createdAt: newCampaign.createdAt || new Date().toISOString().split('T')[0],
+      publishersCount: 0
     };
     setCampaigns([...campaigns, campaign]);
   };
@@ -202,7 +202,7 @@ const CampaignsTab = () => {
               <TableRow>
                 <TableHead>Campaign Name</TableHead>
                 <TableHead>Vertical</TableHead>
-                <TableHead>Promo Number</TableHead>
+                <TableHead>Publishers</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Calls Received</TableHead>
                 <TableHead>Connected to Agent</TableHead>
@@ -219,7 +219,12 @@ const CampaignsTab = () => {
                       {campaign.vertical}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-mono text-sm">{campaign.promoNumber}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4 text-gray-500" />
+                      <span>{campaign.publishersCount || 0}</span>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(campaign.status)}>
                       {getStatusText(campaign.status)}

@@ -25,12 +25,12 @@ interface Campaign {
   id: string;
   name: string;
   vertical: string;
-  promoNumber: string;
   status: "active" | "paused" | "no_agents";
   callsReceived: number;
   connectedToAgent: number;
   fallbacksTriggered: number;
   createdAt: string;
+  publishersCount?: number;
 }
 
 interface CampaignDetailModalProps {
@@ -192,7 +192,6 @@ const CampaignDetailModal = ({ campaign, isOpen, onClose }: CampaignDetailModalP
             {campaign.name}
           </DialogTitle>
           <div className="flex items-center gap-4 text-sm text-gray-600">
-            <span className="font-mono">{campaign.promoNumber}</span>
             <Badge className={getVerticalColor(campaign.vertical)}>
               <Building2 className="w-3 h-3 mr-1" />
               {campaign.vertical}
@@ -200,6 +199,10 @@ const CampaignDetailModal = ({ campaign, isOpen, onClose }: CampaignDetailModalP
             <Badge className={getStatusColor(campaign.status)}>
               {getStatusText(campaign.status)}
             </Badge>
+            <span className="flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              {campaign.publishersCount || 0} Publishers
+            </span>
           </div>
         </DialogHeader>
 
@@ -228,8 +231,8 @@ const CampaignDetailModal = ({ campaign, isOpen, onClose }: CampaignDetailModalP
                     </Badge>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Promo Number</p>
-                    <p className="font-mono text-sm">{campaign.promoNumber}</p>
+                    <p className="text-sm text-gray-600">Publishers</p>
+                    <p className="text-sm font-medium">{campaign.publishersCount || 0}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Created</p>

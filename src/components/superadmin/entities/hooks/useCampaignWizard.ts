@@ -106,17 +106,9 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const generatePromoNumber = () => {
-        const areaCode = Math.floor(Math.random() * 900) + 100;
-        const exchange = Math.floor(Math.random() * 900) + 100;
-        const number = Math.floor(Math.random() * 9000) + 1000;
-        return `+1 (${areaCode}) ${exchange}-${number}`;
-      };
-      
       const newCampaign: CampaignFormData = {
         ...data,
         id: `campaign_${Date.now()}`,
-        promoNumber: generatePromoNumber(),
         status: data.activeImmediately ? "active" : "paused",
         callsReceived: 0,
         connectedToAgent: 0,

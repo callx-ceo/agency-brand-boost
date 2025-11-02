@@ -53,7 +53,6 @@ export interface CampaignFormData {
   
   // System fields
   id?: string;
-  promoNumber?: string;
   status?: "active" | "paused" | "no_agents";
   callsReceived?: number;
   connectedToAgent?: number;

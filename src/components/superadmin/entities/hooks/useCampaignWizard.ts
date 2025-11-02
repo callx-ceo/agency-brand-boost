@@ -36,10 +36,6 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
   const validateStep = async (step: number, data: CampaignFormData): Promise<boolean> => {
     switch (step) {
       case 1:
-        // Visibility step - no validation needed
-        break;
-        
-      case 2:
         // Basic Info step
         if (!data.name.trim()) {
           toast.error("Campaign name is required");
@@ -55,7 +51,7 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         }
         break;
         
-      case 3:
+      case 2:
         // Offer step
         if (!data.offer) {
           toast.error("Please configure the campaign offer");
@@ -67,11 +63,11 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         }
         break;
         
-      case 4:
+      case 3:
         // Agent Visibility step - no validation needed (all agents by default)
         break;
         
-      case 5:
+      case 4:
         // Bid Floor step
         if (data.bidFloorEnabled && (data.minimumBidFloor === undefined || data.minimumBidFloor < 0)) {
           toast.error("Please set a valid minimum bid floor");
@@ -83,7 +79,7 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         }
         break;
         
-      case 6:
+      case 5:
         // Routing step
         if (data.schedule.operationType === "specificDays") {
           const hasOpenDays = Object.values(data.schedule.daySchedules || {}).some(day => !day.closed);
@@ -94,11 +90,11 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         }
         break;
         
-      case 7:
+      case 6:
         // Overflow step - no validation needed
         break;
         
-      case 8:
+      case 7:
         // Summary step - no additional validation needed
         break;
     }

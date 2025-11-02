@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { CampaignBasicInfoStep } from "./wizard/CampaignBasicInfoStep";
-import CampaignVisibilityStep from "./wizard/CampaignVisibilityStep";
 import { CampaignBidFloorStep } from "./wizard/CampaignBidFloorStep";
 import CampaignOverflowStep from "./wizard/CampaignOverflowStep";
 import { CampaignRoutingStep } from "./wizard/CampaignRoutingStep";
@@ -25,7 +24,7 @@ interface CreateCampaignWizardProps {
 
 const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUserId }: CreateCampaignWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 8;
+  const totalSteps = 7;
   
   const {
     formData,
@@ -36,14 +35,13 @@ const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUse
   } = useCampaignWizard({ userRole, currentUserId });
 
   const steps = [
-    { number: 1, title: "Visibility", component: CampaignVisibilityStep },
-    { number: 2, title: "Basic Info", component: CampaignBasicInfoStep },
-    { number: 3, title: "Offer", component: CampaignOfferStep },
-    { number: 4, title: "Agent Visibility", component: CampaignAgentVisibilityStep },
-    { number: 5, title: "Bid Floor", component: CampaignBidFloorStep },
-    { number: 6, title: "Routing", component: CampaignRoutingStep },
-    { number: 7, title: "Overflow", component: CampaignOverflowStep },
-    { number: 8, title: "Review", component: CampaignSummaryStep }
+    { number: 1, title: "Basic Info", component: CampaignBasicInfoStep },
+    { number: 2, title: "Offer", component: CampaignOfferStep },
+    { number: 3, title: "Agent Visibility", component: CampaignAgentVisibilityStep },
+    { number: 4, title: "Bid Floor", component: CampaignBidFloorStep },
+    { number: 5, title: "Routing", component: CampaignRoutingStep },
+    { number: 6, title: "Overflow", component: CampaignOverflowStep },
+    { number: 7, title: "Review", component: CampaignSummaryStep }
   ];
 
   const handleNext = async () => {

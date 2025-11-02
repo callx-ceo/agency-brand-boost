@@ -1,4 +1,13 @@
 
+export interface CampaignOffer {
+  id?: string;
+  payout: number;
+  payoutType: "per_call" | "per_minute" | "per_conversion";
+  qualificationCriteria?: string;
+  minimumCallDuration?: number; // in seconds
+  conversionGoal?: string;
+}
+
 export interface CampaignFormData {
   // Basic Info
   name: string;
@@ -7,13 +16,17 @@ export interface CampaignFormData {
   targetStates: string[];
   visibility?: "private" | "marketplace"; // Only for superadmin
   
+  // Single Offer (Agency as Advertiser)
+  offer?: CampaignOffer;
+  
   // Bid Floor Settings
   bidFloorEnabled?: boolean;
   minimumBidFloor?: number;
   bidFloorCurrency?: "USD" | "EUR" | "GBP";
   
-  // Routing Details
-  assignedAgents?: string[];
+  // Routing Details - Agent Visibility
+  assignedAgents?: string[]; // All agency agents by default
+  blockedAgents?: string[]; // Agents blocked from this campaign
   concurrencyCapPerAgent?: number;
   schedule: {
     start: string;
@@ -51,6 +64,7 @@ export interface CampaignFormData {
   connectedToAgent?: number;
   fallbacksTriggered?: number;
   createdAt?: string;
+  agencyId?: string;
 }
 
 export const CAMPAIGN_VERTICALS = [

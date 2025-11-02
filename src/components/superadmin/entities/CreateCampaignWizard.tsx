@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -13,6 +13,9 @@ import { CampaignSummaryStep } from "./wizard/CampaignSummaryStep";
 import { useCampaignWizard } from "./hooks/useCampaignWizard";
 import { CampaignFormData } from "./types/campaignTypes";
 
+const CampaignOfferStep = lazy(() => import("./wizard/CampaignOfferStep"));
+const CampaignAgentVisibilityStep = lazy(() => import("./wizard/CampaignAgentVisibilityStep"));
+
 interface CreateCampaignWizardProps {
   onClose: () => void;
   onCampaignCreated: (campaign: CampaignFormData) => void;
@@ -22,7 +25,7 @@ interface CreateCampaignWizardProps {
 
 const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUserId }: CreateCampaignWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 6;
+  const totalSteps = 8;
   
   const {
     formData,
@@ -33,12 +36,14 @@ const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUse
   } = useCampaignWizard({ userRole, currentUserId });
 
   const steps = [
-    { number: 1, title: "Basic Information", component: CampaignBasicInfoStep },
-    { number: 2, title: "Visibility", component: CampaignVisibilityStep },
-    { number: 3, title: "Bid Floor Settings", component: CampaignBidFloorStep },
-    { number: 4, title: "Overflow Management", component: CampaignOverflowStep },
-    { number: 5, title: "Routing & Schedule", component: CampaignRoutingStep },
-    { number: 6, title: "Review & Launch", component: CampaignSummaryStep }
+    { number: 1, title: "Visibility", component: CampaignVisibilityStep },
+    { number: 2, title: "Basic Info", component: CampaignBasicInfoStep },
+    { number: 3, title: "Offer", component: CampaignOfferStep },
+    { number: 4, title: "Agent Visibility", component: CampaignAgentVisibilityStep },
+    { number: 5, title: "Bid Floor", component: CampaignBidFloorStep },
+    { number: 6, title: "Routing", component: CampaignRoutingStep },
+    { number: 7, title: "Overflow", component: CampaignOverflowStep },
+    { number: 8, title: "Review", component: CampaignSummaryStep }
   ];
 
   const handleNext = async () => {
@@ -106,12 +111,13 @@ const CreateCampaignWizard = ({ onClose, onCampaignCreated, userRole, currentUse
         </CardHeader>
 
         <CardContent className="p-6 overflow-y-auto max-h-[60vh]">
-        <StepComponent
-          formData={formData}
-          updateFormData={updateFormData}
-          userRole={userRole}
-          currentUserId={currentUserId}
-        />
+        <Suspense fallback={<div className="text-center py-8">Loading...</div>}>
+          <StepComponent
+            formData={formData}
+            updateFormData={updateFormData}
+            userRole={userRole}
+          />
+        </Suspense>
         </CardContent>
 
         <div className="border-t p-6 flex justify-between">

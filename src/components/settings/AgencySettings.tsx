@@ -3,18 +3,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, ArrowLeftRight, Settings } from 'lucide-react';
+import { Users, UserPlus, ArrowLeftRight, Settings, Building2 } from 'lucide-react';
 import { MembersTab } from './agency/MembersTab';
 import { InvitesTab } from './agency/InvitesTab';
 import { TransfersTab } from './agency/TransfersTab';
 import { UserRoleManagement } from './agency/UserRoleManagement';
+import { AgencyModelSettings } from './AgencyModelSettings';
 
 interface AgencySettingsProps {
   onBackToDashboard?: () => void;
 }
 
 export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboard }) => {
-  const [activeTab, setActiveTab] = useState("members");
+  const [activeTab, setActiveTab] = useState("model");
 
   // Mock data for badges - in production, these would come from API
   const tabCounts = {
@@ -50,7 +51,11 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="model" className="flex items-center space-x-2">
+                <Building2 className="h-4 w-4" />
+                <span>Agency Model</span>
+              </TabsTrigger>
               <TabsTrigger value="members" className="flex items-center space-x-2">
                 <Users className="h-4 w-4" />
                 <span>Members</span>
@@ -80,6 +85,10 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
                 )}
               </TabsTrigger>
             </TabsList>
+
+          <TabsContent value="model" className="mt-6">
+            <AgencyModelSettings />
+          </TabsContent>
 
           <TabsContent value="members" className="mt-6">
             <MembersTab />

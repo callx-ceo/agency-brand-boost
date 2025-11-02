@@ -36,6 +36,11 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
   const validateStep = async (step: number, data: CampaignFormData): Promise<boolean> => {
     switch (step) {
       case 1:
+        // Visibility step - no validation needed
+        break;
+        
+      case 2:
+        // Basic Info step
         if (!data.name.trim()) {
           toast.error("Campaign name is required");
           return false;
@@ -50,7 +55,24 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         }
         break;
         
-      case 2:
+      case 3:
+        // Offer step
+        if (!data.offer) {
+          toast.error("Please configure the campaign offer");
+          return false;
+        }
+        if (!data.offer.payout || data.offer.payout <= 0) {
+          toast.error("Please set a valid payout amount");
+          return false;
+        }
+        break;
+        
+      case 4:
+        // Agent Visibility step - no validation needed (all agents by default)
+        break;
+        
+      case 5:
+        // Bid Floor step
         if (data.bidFloorEnabled && (data.minimumBidFloor === undefined || data.minimumBidFloor < 0)) {
           toast.error("Please set a valid minimum bid floor");
           return false;
@@ -61,11 +83,8 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         }
         break;
         
-      case 3:
-        if (!data.assignedAgents || data.assignedAgents.length === 0) {
-          toast.error("Please assign at least one agent");
-          return false;
-        }
+      case 6:
+        // Routing step
         if (data.schedule.operationType === "specificDays") {
           const hasOpenDays = Object.values(data.schedule.daySchedules || {}).some(day => !day.closed);
           if (!hasOpenDays) {
@@ -75,7 +94,11 @@ export const useCampaignWizard = ({ userRole, currentUserId }: UseCampaignWizard
         }
         break;
         
-      case 4:
+      case 7:
+        // Overflow step - no validation needed
+        break;
+        
+      case 8:
         // Summary step - no additional validation needed
         break;
     }

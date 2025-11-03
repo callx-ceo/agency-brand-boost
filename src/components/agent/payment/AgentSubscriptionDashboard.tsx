@@ -17,6 +17,16 @@ import {
   Settings,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import CallCreditsHistory from "./CallCreditsHistory";
 import PaymentMethodsManager from "./PaymentMethodsManager";
 import SubscriptionInvoices from "./SubscriptionInvoices";
@@ -24,6 +34,8 @@ import SubscriptionInvoices from "./SubscriptionInvoices";
 const AgentSubscriptionDashboard = () => {
   const { toast } = useToast();
   const [autoRefillEnabled, setAutoRefillEnabled] = useState(false);
+  const [showPauseDialog, setShowPauseDialog] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   // Mock data - would come from Supabase
   const subscription = {
@@ -54,6 +66,27 @@ const AgentSubscriptionDashboard = () => {
         ? `Your balance will auto-refill with $${subscription.autoRefillAmount} when it drops below $${subscription.autoRefillThreshold}.`
         : "You'll need to manually add funds when your balance is low.",
     });
+  };
+
+  const handlePauseSubscription = async () => {
+    // Update subscription_status in agent_payment_settings to 'paused'
+    // This will stop new call routing but keep data intact
+    toast({
+      title: "Subscription Paused",
+      description: "Your subscription is paused. No new calls will be routed until you reactivate.",
+    });
+    setShowPauseDialog(false);
+  };
+
+  const handleCancelSubscription = async () => {
+    // Update subscription_status in agent_payment_settings to 'cancelled'
+    // Schedule cancellation for end of billing cycle
+    toast({
+      title: "Subscription Cancelled",
+      description: "Your subscription will be cancelled at the end of the current billing period.",
+      variant: "destructive",
+    });
+    setShowCancelDialog(false);
   };
 
   return (
@@ -209,10 +242,18 @@ const AgentSubscriptionDashboard = () => {
           <CardTitle className="text-destructive">Subscription Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Button variant="outline" className="w-full justify-start">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start"
+            onClick={() => setShowPauseDialog(true)}
+          >
             Pause Subscription
           </Button>
-          <Button variant="outline" className="w-full justify-start text-destructive hover:text-destructive">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start text-destructive hover:text-destructive"
+            onClick={() => setShowCancelDialog(true)}
+          >
             Cancel Subscription
           </Button>
           <p className="text-xs text-muted-foreground">
@@ -220,6 +261,63 @@ const AgentSubscriptionDashboard = () => {
           </p>
         </CardContent>
       </Card>
+
+      {/* Pause Subscription Dialog */}
+      <AlertDialog open={showPauseDialog} onOpenChange={setShowPauseDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Pause Your Subscription?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>When you pause your subscription:</p>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                <li>No new calls will be routed to you</li>
+                <li>You won't be charged the platform fee</li>
+                <li>Your call credits balance will remain unchanged</li>
+                <li>All your data and settings will be preserved</li>
+                <li>You can reactivate anytime from this dashboard</li>
+              </ul>
+              <p className="font-medium mt-4">Your subscription will pause immediately.</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Active</AlertDialogCancel>
+            <AlertDialogAction onClick={handlePauseSubscription}>
+              Pause Subscription
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Cancel Subscription Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Your Subscription?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>When you cancel your subscription:</p>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                <li>Your subscription will remain active until {subscription.renewalDate.toLocaleDateString()}</li>
+                <li>No refunds will be issued for the current billing period</li>
+                <li>After the billing period ends, no new calls will be routed</li>
+                <li>Your call credits balance will be forfeited</li>
+                <li>You can download your data before the cancellation date</li>
+              </ul>
+              <p className="font-medium text-destructive mt-4">
+                This action cannot be undone. You'll need to set up a new subscription to reactivate.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleCancelSubscription}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Cancel Subscription
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

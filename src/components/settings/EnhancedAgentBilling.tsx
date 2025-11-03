@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { DollarSign, Loader2 } from "lucide-react";
@@ -145,18 +146,25 @@ const EnhancedAgentBilling = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">Agent</span>
-                      <Switch 
-                        checked={agent.paymentMode === "agency_paid"}
-                        onCheckedChange={(checked) => 
-                          handlePaymentModeChange(
-                            agent.agentId, 
-                            checked ? "agency_paid" : "agent_paid"
-                          )
-                        }
+                      <RadioGroup
+                        value={agent.paymentMode}
+                        onValueChange={(value) => handlePaymentModeChange(agent.agentId, value as PaymentMode)}
                         disabled={updatingAgent === agent.agentId}
-                      />
-                      <span className="text-sm text-muted-foreground">Agency</span>
+                        className="flex items-center gap-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="agent_paid" id={`agent-paid-${agent.agentId}`} />
+                          <Label htmlFor={`agent-paid-${agent.agentId}`} className="text-sm font-normal cursor-pointer">
+                            Agent Paid
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="agency_paid" id={`agency-paid-${agent.agentId}`} />
+                          <Label htmlFor={`agency-paid-${agent.agentId}`} className="text-sm font-normal cursor-pointer">
+                            Agency Paid
+                          </Label>
+                        </div>
+                      </RadioGroup>
                       {updatingAgent === agent.agentId && (
                         <Loader2 className="h-4 w-4 animate-spin ml-2" />
                       )}

@@ -6,6 +6,16 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { DollarSign, Loader2 } from "lucide-react";
 
@@ -62,9 +72,34 @@ const EnhancedAgentBilling = () => {
   const [agents, setAgents] = useState<AgentBillingData[]>(mockAgents);
   const [searchTerm, setSearchTerm] = useState("");
   const [updatingAgent, setUpdatingAgent] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    agentId: string;
+    agentName: string;
+    newMode: PaymentMode;
+  }>({
+    isOpen: false,
+    agentId: "",
+    agentName: "",
+    newMode: "agency_paid"
+  });
 
-  const handlePaymentModeChange = (agentId: string, newMode: PaymentMode) => {
+  const handlePaymentModeRequest = (agentId: string, newMode: PaymentMode) => {
+    const agent = agents.find(a => a.agentId === agentId);
+    if (!agent) return;
+
+    setConfirmDialog({
+      isOpen: true,
+      agentId,
+      agentName: agent.agentName,
+      newMode
+    });
+  };
+
+  const handleConfirmPaymentModeChange = () => {
+    const { agentId, newMode } = confirmDialog;
     setUpdatingAgent(agentId);
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
     
     // Simulate API call
     setTimeout(() => {
@@ -77,6 +112,10 @@ const EnhancedAgentBilling = () => {
       toast.success(`Payment mode updated to ${newMode === 'agency_paid' ? 'Agency Paid' : 'Agent Paid'}`);
       setUpdatingAgent(null);
     }, 500);
+  };
+
+  const handleCancelPaymentModeChange = () => {
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
   };
 
   const getBillingBadge = (paymentMode: PaymentMode) => {
@@ -93,7 +132,29 @@ const EnhancedAgentBilling = () => {
   );
 
   return (
-    <div className="space-y-4">
+    <>
+      <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelPaymentModeChange()}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Payment Mode Change</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to change the payment mode for <strong>{confirmDialog.agentName}</strong> to{" "}
+              <strong>{confirmDialog.newMode === "agency_paid" ? "Agency Paid" : "Agent Paid"}</strong>?
+              {confirmDialog.newMode === "agent_paid" && (
+                <span className="block mt-2 text-warning">
+                  The agent will be responsible for paying their own call credits.
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelPaymentModeChange}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmPaymentModeChange}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-lg font-semibold">Agent Payment Settings</h3>
@@ -148,7 +209,7 @@ const EnhancedAgentBilling = () => {
                     <div className="flex items-center gap-2">
                       <RadioGroup
                         value={agent.paymentMode}
-                        onValueChange={(value) => handlePaymentModeChange(agent.agentId, value as PaymentMode)}
+                        onValueChange={(value) => handlePaymentModeRequest(agent.agentId, value as PaymentMode)}
                         disabled={updatingAgent === agent.agentId}
                         className="flex items-center gap-4"
                       >
@@ -176,7 +237,8 @@ const EnhancedAgentBilling = () => {
           </TableBody>
         </Table>
       </Card>
-    </div>
+      </div>
+    </>
   );
 };
 

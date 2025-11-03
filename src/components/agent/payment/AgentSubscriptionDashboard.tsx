@@ -42,6 +42,7 @@ import CallCreditsHistory from "./CallCreditsHistory";
 import PaymentMethodsManager from "./PaymentMethodsManager";
 import SubscriptionInvoices from "./SubscriptionInvoices";
 import AgentPaymentOnboarding from "./AgentPaymentOnboarding";
+import AddFundsModal from "./AddFundsModal";
 
 const AgentSubscriptionDashboard = () => {
   const { toast } = useToast();
@@ -50,6 +51,7 @@ const AgentSubscriptionDashboard = () => {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [showEditAutoRefillDialog, setShowEditAutoRefillDialog] = useState(false);
+  const [showAddFundsModal, setShowAddFundsModal] = useState(false);
   const [editThreshold, setEditThreshold] = useState("25");
   const [editAmount, setEditAmount] = useState("100");
 
@@ -75,10 +77,7 @@ const AgentSubscriptionDashboard = () => {
   const proratedAmount = (subscription.platformFee / 30) * daysRemaining;
 
   const handleAddFunds = () => {
-    toast({
-      title: "Add Funds",
-      description: "Opening payment modal...",
-    });
+    setShowAddFundsModal(true);
   };
 
   const handleToggleAutoRefill = (enabled: boolean) => {
@@ -505,6 +504,13 @@ const AgentSubscriptionDashboard = () => {
         platformFee={subscription.platformFee}
         proratedAmount={proratedAmount}
         billingCycleEnd={subscription.renewalDate}
+      />
+
+      {/* Add Funds Modal */}
+      <AddFundsModal
+        isOpen={showAddFundsModal}
+        onClose={() => setShowAddFundsModal(false)}
+        currentBalance={subscription.callCreditsBalance}
       />
     </div>
   );

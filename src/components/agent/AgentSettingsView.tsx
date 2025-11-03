@@ -15,10 +15,9 @@ import { AgentVerticalSettings } from "../settings/AgentVerticalSettings";
 import { AgentLanguagePicker } from "../settings/AgentLanguageSettings";
 import { AgentVerticalBidSettings } from "../settings/AgentVerticalBidSettings";
 import { AgentTargetStatesSettings } from "../settings/AgentTargetStatesSettings";
-import AgentBillingView from "./AgentBillingView";
 import AgentEmailSettings from "./AgentEmailSettings";
 import EmailTestComponent from "./EmailTestComponent";
-import AgentSubscriptionDashboard from "./payment/AgentSubscriptionDashboard";
+import BillingTab from "../settings/BillingTab";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -103,7 +102,6 @@ const AgentSettingsView = () => {
           <TabsTrigger value="bids">Bid Settings</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="subscription">Subscription & Credits</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="transfer">Transfer</TabsTrigger>
         </TabsList>
@@ -439,12 +437,8 @@ const AgentSettingsView = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="subscription" className="space-y-6">
-          <AgentSubscriptionDashboard />
-        </TabsContent>
-
         <TabsContent value="billing" className="space-y-6">
-          <AgentBillingView />
+          <BillingTab />
         </TabsContent>
 
         <TabsContent value="transfer" className="space-y-6">

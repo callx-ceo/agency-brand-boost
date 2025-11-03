@@ -4,7 +4,6 @@ import BillingDashboard from "../settings/BillingDashboard";
 import InvoiceList from "../settings/InvoiceList";
 import PaymentMethods from "../settings/PaymentMethods";
 import TransactionHistory from "../settings/TransactionHistory";
-import CostBreakdownDashboard from "../settings/CostBreakdownDashboard";
 import RateConfiguration from "../settings/RateConfiguration";
 import ReportingTab from "../settings/ReportingTab";
 import AgentSubscriptionDashboard from "./payment/AgentSubscriptionDashboard";
@@ -15,7 +14,6 @@ const AgentBillingTab = () => {
       <TabsList className="mb-6 flex-wrap">
         <TabsTrigger value="dashboard">Overview</TabsTrigger>
         <TabsTrigger value="subscription">Subscription & Credits</TabsTrigger>
-        <TabsTrigger value="cost-breakdown">Cost Breakdown</TabsTrigger>
         <TabsTrigger value="reporting">Reporting</TabsTrigger>
         <TabsTrigger value="invoices">Invoices</TabsTrigger>
         <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
@@ -29,10 +27,6 @@ const AgentBillingTab = () => {
       
       <TabsContent value="subscription">
         <AgentSubscriptionDashboard />
-      </TabsContent>
-      
-      <TabsContent value="cost-breakdown">
-        <CostBreakdownDashboard />
       </TabsContent>
       
       <TabsContent value="reporting">

@@ -193,6 +193,177 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_payment_methods: {
+        Row: {
+          agent_id: string
+          card_brand: string | null
+          card_last4: string | null
+          created_at: string | null
+          exp_month: number | null
+          exp_year: number | null
+          id: string
+          is_default: boolean | null
+          stripe_payment_method_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          agent_id: string
+          card_brand?: string | null
+          card_last4?: string | null
+          created_at?: string | null
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean | null
+          stripe_payment_method_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          agent_id?: string
+          card_brand?: string | null
+          card_last4?: string | null
+          created_at?: string | null
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean | null
+          stripe_payment_method_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      agent_payment_settings: {
+        Row: {
+          agent_id: string
+          auto_refill_amount: number | null
+          auto_refill_enabled: boolean | null
+          auto_refill_threshold: number | null
+          billing_cycle_end: string | null
+          billing_cycle_start: string | null
+          call_credits_balance: number
+          created_at: string | null
+          id: string
+          payment_mode: Database["public"]["Enums"]["payment_mode"]
+          platform_fee: number
+          subscription_status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          agent_id: string
+          auto_refill_amount?: number | null
+          auto_refill_enabled?: boolean | null
+          auto_refill_threshold?: number | null
+          billing_cycle_end?: string | null
+          billing_cycle_start?: string | null
+          call_credits_balance?: number
+          created_at?: string | null
+          id?: string
+          payment_mode?: Database["public"]["Enums"]["payment_mode"]
+          platform_fee?: number
+          subscription_status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          agent_id?: string
+          auto_refill_amount?: number | null
+          auto_refill_enabled?: boolean | null
+          auto_refill_threshold?: number | null
+          billing_cycle_end?: string | null
+          billing_cycle_start?: string | null
+          call_credits_balance?: number
+          created_at?: string | null
+          id?: string
+          payment_mode?: Database["public"]["Enums"]["payment_mode"]
+          platform_fee?: number
+          subscription_status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      agent_subscription_invoices: {
+        Row: {
+          agent_id: string
+          amount: number
+          billing_period_end: string | null
+          billing_period_start: string | null
+          call_credits: number | null
+          created_at: string | null
+          due_date: string | null
+          id: string
+          invoice_number: string
+          paid_at: string | null
+          platform_fee: number | null
+          status: string | null
+          stripe_invoice_id: string | null
+        }
+        Insert: {
+          agent_id: string
+          amount: number
+          billing_period_end?: string | null
+          billing_period_start?: string | null
+          call_credits?: number | null
+          created_at?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_number: string
+          paid_at?: string | null
+          platform_fee?: number | null
+          status?: string | null
+          stripe_invoice_id?: string | null
+        }
+        Update: {
+          agent_id?: string
+          amount?: number
+          billing_period_end?: string | null
+          billing_period_start?: string | null
+          call_credits?: number | null
+          created_at?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          paid_at?: string | null
+          platform_fee?: number | null
+          status?: string | null
+          stripe_invoice_id?: string | null
+        }
+        Relationships: []
+      }
+      call_credits_transactions: {
+        Row: {
+          agent_id: string
+          amount: number
+          balance_after: number
+          created_at: string | null
+          description: string | null
+          id: string
+          related_call_id: string | null
+          stripe_charge_id: string | null
+          transaction_type: string
+        }
+        Insert: {
+          agent_id: string
+          amount: number
+          balance_after: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          related_call_id?: string | null
+          stripe_charge_id?: string | null
+          transaction_type: string
+        }
+        Update: {
+          agent_id?: string
+          amount?: number
+          balance_after?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          related_call_id?: string | null
+          stripe_charge_id?: string | null
+          transaction_type?: string
+        }
+        Relationships: []
+      }
       notification_templates: {
         Row: {
           active: boolean | null
@@ -293,6 +464,7 @@ export type Database = {
     Enums: {
       agency_model: "marketplace_buyers" | "bring_your_own_media" | "hybrid"
       app_role: "owner" | "admin" | "agent" | "superadmin"
+      payment_mode: "agency_paid" | "agent_paid"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -422,6 +594,7 @@ export const Constants = {
     Enums: {
       agency_model: ["marketplace_buyers", "bring_your_own_media", "hybrid"],
       app_role: ["owner", "admin", "agent", "superadmin"],
+      payment_mode: ["agency_paid", "agent_paid"],
     },
   },
 } as const

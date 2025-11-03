@@ -264,16 +264,10 @@ const AgentSubscriptionDashboard = () => {
               <span className="text-muted-foreground mb-1">available</span>
             </div>
             <Progress value={creditsPercentage} className="h-3" />
-            <div className="flex gap-3">
-              <Button onClick={handleAddFunds} className="flex-1">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Funds
-              </Button>
-              <Button variant="outline" className="flex-1">
-                <Settings className="h-4 w-4 mr-2" />
-                Configure
-              </Button>
-            </div>
+            <Button onClick={handleAddFunds} className="w-full">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Funds
+            </Button>
           </CardContent>
         </Card>
 

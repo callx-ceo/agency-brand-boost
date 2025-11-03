@@ -18,6 +18,7 @@ import { AgentTargetStatesSettings } from "../settings/AgentTargetStatesSettings
 import AgentBillingView from "./AgentBillingView";
 import AgentEmailSettings from "./AgentEmailSettings";
 import EmailTestComponent from "./EmailTestComponent";
+import AgentSubscriptionDashboard from "./payment/AgentSubscriptionDashboard";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -95,13 +96,14 @@ const AgentSettingsView = () => {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-8">
-          <TabsTrigger value="profile">Profile Data</TabsTrigger>
+        <TabsList className="flex flex-wrap h-auto">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="verticals">Verticals</TabsTrigger>
           <TabsTrigger value="states">Target States</TabsTrigger>
           <TabsTrigger value="bids">Bid Settings</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="subscription">Subscription & Credits</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="transfer">Transfer</TabsTrigger>
         </TabsList>
@@ -435,6 +437,10 @@ const AgentSettingsView = () => {
               </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="subscription" className="space-y-6">
+          <AgentSubscriptionDashboard />
         </TabsContent>
 
         <TabsContent value="billing" className="space-y-6">

@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const mockPaymentMethods = [
   {
@@ -32,20 +33,20 @@ const PaymentMethods = () => {
             <CardContent className="pt-6">
               <div className="flex justify-between items-start">
                 <div className="flex gap-4">
-                  <div className="bg-gray-100 h-12 w-16 rounded flex items-center justify-center capitalize">
+                  <div className="bg-muted h-12 w-16 rounded flex items-center justify-center capitalize">
                     {method.card.brand}
                   </div>
                   <div>
                     <div className="font-medium capitalize">
                       {method.card.brand} **** {method.card.last4}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                       Expires {method.card.exp_month}/{method.card.exp_year}
                     </div>
                     {method.isDefault && (
-                      <div className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded mt-1 inline-block">
+                      <Badge variant="default" className="mt-1">
                         Default
-                      </div>
+                      </Badge>
                     )}
                   </div>
                 </div>
@@ -53,7 +54,7 @@ const PaymentMethods = () => {
                   {!method.isDefault && (
                     <Button size="sm" variant="outline">Set Default</Button>
                   )}
-                  <Button size="sm" variant="outline" className="text-red-500 hover:text-red-600">
+                  <Button size="sm" variant="outline" className="text-destructive hover:text-destructive">
                     Remove
                   </Button>
                 </div>

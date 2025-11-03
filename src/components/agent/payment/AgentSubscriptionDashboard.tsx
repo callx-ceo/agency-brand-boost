@@ -30,14 +30,17 @@ import {
 import CallCreditsHistory from "./CallCreditsHistory";
 import PaymentMethodsManager from "./PaymentMethodsManager";
 import SubscriptionInvoices from "./SubscriptionInvoices";
+import AgentPaymentOnboarding from "./AgentPaymentOnboarding";
 
 const AgentSubscriptionDashboard = () => {
   const { toast } = useToast();
   const [autoRefillEnabled, setAutoRefillEnabled] = useState(false);
   const [showPauseDialog, setShowPauseDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
 
-  // Mock data - would come from Supabase
+  // Mock data - would come from Supabase agent_payment_settings
+  const paymentMode: "agency_paid" | "agent_paid" = "agency_paid" as "agency_paid" | "agent_paid";
   const subscription = {
     status: "active",
     planName: "Agent Paid Plan",
@@ -50,6 +53,12 @@ const AgentSubscriptionDashboard = () => {
 
   const creditsPercentage = (subscription.callCreditsBalance / 100) * 100;
   const isLowBalance = subscription.callCreditsBalance < subscription.autoRefillThreshold;
+
+  // Calculate prorated amount for upgrade
+  const daysRemaining = Math.ceil(
+    (subscription.renewalDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  );
+  const proratedAmount = (subscription.platformFee / 30) * daysRemaining;
 
   const handleAddFunds = () => {
     toast({
@@ -98,9 +107,70 @@ const AgentSubscriptionDashboard = () => {
           <p className="text-muted-foreground">Manage your billing and call credits</p>
         </div>
         <Badge variant={subscription.status === "active" ? "default" : "secondary"} className="text-sm">
-          {subscription.status === "active" ? "Active" : "Inactive"}
+          {paymentMode === "agency_paid" ? "Agency Funded" : subscription.status === "active" ? "Active" : "Inactive"}
         </Badge>
       </div>
+
+      {/* Agency Paid - Upgrade Prompt */}
+      {paymentMode === "agency_paid" && (
+        <Card className="border-primary bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-6 w-6 text-primary" />
+              Upgrade to Agent Paid
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+              Your agency currently funds your subscription. Upgrade to Agent Paid to manage your own subscription, 
+              billing, and call credits directly.
+            </p>
+            
+            <div className="grid gap-3 my-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5" />
+                <div>
+                  <p className="font-medium">Control Your Own Billing</p>
+                  <p className="text-sm text-muted-foreground">Manage subscription and call credits independently</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5" />
+                <div>
+                  <p className="font-medium">Flexible Payment Options</p>
+                  <p className="text-sm text-muted-foreground">Add funds anytime or enable auto-refill</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5" />
+                <div>
+                  <p className="font-medium">Prorated Platform Fee</p>
+                  <p className="text-sm text-muted-foreground">
+                    Only ${proratedAmount.toFixed(2)} for the remaining {daysRemaining} days of this billing cycle
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Button 
+              onClick={() => setShowOnboardingModal(true)} 
+              className="w-full"
+              size="lg"
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              Start Agent Paid Subscription
+            </Button>
+            
+            <p className="text-xs text-muted-foreground text-center">
+              You'll receive $100 in call credits as part of your initial setup
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Agent Paid - Full Dashboard */}
+      {paymentMode === "agent_paid" && (
+        <>
 
       {/* Low Balance Alert */}
       {isLowBalance && (
@@ -318,6 +388,17 @@ const AgentSubscriptionDashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      </>
+      )}
+
+      {/* Payment Onboarding Modal */}
+      <AgentPaymentOnboarding
+        isOpen={showOnboardingModal}
+        onClose={() => setShowOnboardingModal(false)}
+        platformFee={subscription.platformFee}
+        proratedAmount={proratedAmount}
+        billingCycleEnd={subscription.renewalDate}
+      />
     </div>
   );
 };

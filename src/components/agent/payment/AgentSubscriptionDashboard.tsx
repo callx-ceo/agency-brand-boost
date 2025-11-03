@@ -5,6 +5,16 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   CreditCard,
   DollarSign,
@@ -15,6 +25,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Settings,
+  Edit,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -38,10 +49,13 @@ const AgentSubscriptionDashboard = () => {
   const [showPauseDialog, setShowPauseDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const [showEditAutoRefillDialog, setShowEditAutoRefillDialog] = useState(false);
+  const [editThreshold, setEditThreshold] = useState("25");
+  const [editAmount, setEditAmount] = useState("100");
 
   // Mock data - would come from Supabase agent_payment_settings
   const paymentMode = "agent_paid" as "agency_paid" | "agent_paid"; // Change to "agency_paid" to see upgrade view
-  const subscription = {
+  const [subscription, setSubscription] = useState({
     status: "active",
     planName: "Agent Paid Plan",
     platformFee: 99.0,
@@ -49,7 +63,7 @@ const AgentSubscriptionDashboard = () => {
     callCreditsBalance: 73.45,
     autoRefillThreshold: 25.0,
     autoRefillAmount: 100.0,
-  };
+  });
 
   const creditsPercentage = (subscription.callCreditsBalance / 100) * 100;
   const isLowBalance = subscription.callCreditsBalance < subscription.autoRefillThreshold;
@@ -96,6 +110,49 @@ const AgentSubscriptionDashboard = () => {
       variant: "destructive",
     });
     setShowCancelDialog(false);
+  };
+
+  const handleOpenEditAutoRefill = () => {
+    setEditThreshold(subscription.autoRefillThreshold.toString());
+    setEditAmount(subscription.autoRefillAmount.toString());
+    setShowEditAutoRefillDialog(true);
+  };
+
+  const handleSaveAutoRefillSettings = () => {
+    const threshold = parseFloat(editThreshold);
+    const amount = parseFloat(editAmount);
+
+    if (isNaN(threshold) || threshold <= 0) {
+      toast({
+        title: "Invalid Threshold",
+        description: "Please enter a valid threshold amount greater than 0.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isNaN(amount) || amount <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid refill amount greater than 0.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Update subscription settings - in production this would update Supabase
+    setSubscription({
+      ...subscription,
+      autoRefillThreshold: threshold,
+      autoRefillAmount: amount,
+    });
+
+    toast({
+      title: "Auto-Refill Settings Updated",
+      description: `Your balance will auto-refill with $${amount} when it drops below $${threshold}.`,
+    });
+
+    setShowEditAutoRefillDialog(false);
   };
 
   return (
@@ -256,8 +313,12 @@ const AgentSubscriptionDashboard = () => {
 
       {/* Auto-Refill Settings */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Auto-Refill Settings</CardTitle>
+          <Button variant="ghost" size="sm" onClick={handleOpenEditAutoRefill}>
+            <Edit className="h-4 w-4 mr-2" />
+            Edit
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -390,6 +451,58 @@ const AgentSubscriptionDashboard = () => {
       </AlertDialog>
       </>
       )}
+
+      {/* Edit Auto-Refill Settings Dialog */}
+      <Dialog open={showEditAutoRefillDialog} onOpenChange={setShowEditAutoRefillDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Auto-Refill Settings</DialogTitle>
+            <DialogDescription>
+              Configure when and how much to automatically refill your call credits balance.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="threshold">Refill Threshold ($)</Label>
+              <Input
+                id="threshold"
+                type="number"
+                min="1"
+                step="0.01"
+                value={editThreshold}
+                onChange={(e) => setEditThreshold(e.target.value)}
+                placeholder="25.00"
+              />
+              <p className="text-xs text-muted-foreground">
+                Auto-refill will trigger when your balance drops below this amount
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="amount">Refill Amount ($)</Label>
+              <Input
+                id="amount"
+                type="number"
+                min="1"
+                step="0.01"
+                value={editAmount}
+                onChange={(e) => setEditAmount(e.target.value)}
+                placeholder="100.00"
+              />
+              <p className="text-xs text-muted-foreground">
+                This amount will be added to your balance when auto-refill triggers
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditAutoRefillDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveAutoRefillSettings}>
+              Save Settings
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Payment Onboarding Modal */}
       <AgentPaymentOnboarding

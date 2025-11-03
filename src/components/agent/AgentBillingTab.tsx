@@ -5,7 +5,7 @@ import InvoiceList from "../settings/InvoiceList";
 import PaymentMethods from "../settings/PaymentMethods";
 import TransactionHistory from "../settings/TransactionHistory";
 import RateConfiguration from "../settings/RateConfiguration";
-import ReportingTab from "../settings/ReportingTab";
+import AgentReports from "../dashboard/AgentReports";
 import AgentSubscriptionDashboard from "./payment/AgentSubscriptionDashboard";
 
 const AgentBillingTab = () => {
@@ -30,7 +30,7 @@ const AgentBillingTab = () => {
       </TabsContent>
       
       <TabsContent value="reporting">
-        <ReportingTab />
+        <AgentReports />
       </TabsContent>
       
       <TabsContent value="invoices">

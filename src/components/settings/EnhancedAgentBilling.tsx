@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { DollarSign, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
 
-type PaymentMode = Database["public"]["Enums"]["payment_mode"];
+type PaymentMode = "agency_paid" | "agent_paid";
 
 interface AgentBillingData {
   agentId: string;
@@ -20,90 +18,55 @@ interface AgentBillingData {
   callCreditsBalance: number;
 }
 
+// Mock data for demonstration
+const mockAgents: AgentBillingData[] = [
+  {
+    agentId: "1",
+    agentName: "John Smith",
+    agentEmail: "john.smith@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 250.00
+  },
+  {
+    agentId: "2",
+    agentName: "Sarah Johnson",
+    agentEmail: "sarah.johnson@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 125.50
+  },
+  {
+    agentId: "3",
+    agentName: "Michael Chen",
+    agentEmail: "michael.chen@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 500.00
+  },
+  {
+    agentId: "4",
+    agentName: "Emily Davis",
+    agentEmail: "emily.davis@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 75.25
+  },
+  {
+    agentId: "5",
+    agentName: "David Martinez",
+    agentEmail: "david.martinez@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 350.00
+  }
+];
+
 const EnhancedAgentBilling = () => {
-  const [agents, setAgents] = useState<AgentBillingData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [agents, setAgents] = useState<AgentBillingData[]>(mockAgents);
   const [searchTerm, setSearchTerm] = useState("");
   const [updatingAgent, setUpdatingAgent] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchAgents();
-  }, []);
-
-  const fetchAgents = async () => {
-    try {
-      setLoading(true);
-      
-      // Get current user's agency
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Get agency members
-      const { data: memberRoles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, agency_id')
-        .eq('role', 'agent');
-
-      if (rolesError) throw rolesError;
-
-      // Get agency for current user to filter members
-      const { data: currentUserRoles } = await supabase
-        .from('user_roles')
-        .select('agency_id')
-        .eq('user_id', user.id)
-        .eq('role', 'owner')
-        .single();
-
-      if (!currentUserRoles) return;
-
-      // Filter to only members of the current user's agency
-      const agencyMembers = memberRoles?.filter(
-        role => role.agency_id === currentUserRoles.agency_id
-      ) || [];
-
-      // Get payment settings for these agents
-      const agentIds = agencyMembers.map(m => m.user_id);
-      
-      const { data: paymentSettings, error: settingsError } = await supabase
-        .from('agent_payment_settings')
-        .select('agent_id, payment_mode, call_credits_balance')
-        .in('agent_id', agentIds);
-
-      if (settingsError) throw settingsError;
-
-      // Combine the data
-      const agentsData: AgentBillingData[] = agencyMembers.map(member => {
-        const settings = paymentSettings?.find(s => s.agent_id === member.user_id);
-        return {
-          agentId: member.user_id,
-          agentName: member.user_id.substring(0, 8), // Placeholder - would need profiles table
-          agentEmail: "agent@example.com", // Placeholder - would need profiles table
-          paymentMode: settings?.payment_mode || 'agency_paid',
-          callCreditsBalance: Number(settings?.call_credits_balance || 0)
-        };
-      });
-
-      setAgents(agentsData);
-    } catch (error) {
-      console.error('Error fetching agents:', error);
-      toast.error('Failed to load agent billing data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePaymentModeChange = async (agentId: string, newMode: PaymentMode) => {
-    try {
-      setUpdatingAgent(agentId);
-      
-      const { error } = await supabase
-        .from('agent_payment_settings')
-        .update({ payment_mode: newMode })
-        .eq('agent_id', agentId);
-
-      if (error) throw error;
-
-      // Update local state
+  const handlePaymentModeChange = (agentId: string, newMode: PaymentMode) => {
+    setUpdatingAgent(agentId);
+    
+    // Simulate API call
+    setTimeout(() => {
       setAgents(prev => prev.map(agent => 
         agent.agentId === agentId 
           ? { ...agent, paymentMode: newMode }
@@ -111,12 +74,8 @@ const EnhancedAgentBilling = () => {
       ));
 
       toast.success(`Payment mode updated to ${newMode === 'agency_paid' ? 'Agency Paid' : 'Agent Paid'}`);
-    } catch (error) {
-      console.error('Error updating payment mode:', error);
-      toast.error('Failed to update payment mode');
-    } finally {
       setUpdatingAgent(null);
-    }
+    }, 500);
   };
 
   const getBillingBadge = (paymentMode: PaymentMode) => {
@@ -131,14 +90,6 @@ const EnhancedAgentBilling = () => {
     agent.agentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     agent.agentEmail.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">

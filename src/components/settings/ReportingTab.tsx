@@ -117,6 +117,14 @@ const ReportingTab = () => {
 
   return (
     <div className="space-y-6">
+      {/* Agency-Level Financial Overview */}
+      <div className="mb-4">
+        <h3 className="text-2xl font-bold">Agency Financial Reporting</h3>
+        <p className="text-muted-foreground">
+          Track your agency's revenue, costs, and profitability across all agents
+        </p>
+      </div>
+
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>

@@ -3,12 +3,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, ArrowLeftRight, Settings, Building2 } from 'lucide-react';
+import { Users, UserPlus, ArrowLeftRight, Settings, Building2, DollarSign } from 'lucide-react';
 import { MembersTab } from './agency/MembersTab';
 import { InvitesTab } from './agency/InvitesTab';
 import { TransfersTab } from './agency/TransfersTab';
 import { UserRoleManagement } from './agency/UserRoleManagement';
 import { AgencyModelSettings } from './AgencyModelSettings';
+import EnhancedAgentBilling from './EnhancedAgentBilling';
 
 interface AgencySettingsProps {
   onBackToDashboard?: () => void;
@@ -51,7 +52,7 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="model" className="flex items-center space-x-2">
                 <Building2 className="h-4 w-4" />
                 <span>Agency Model</span>
@@ -65,6 +66,10 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
               </TabsTrigger>
               <TabsTrigger value="roles">
                 User Roles
+              </TabsTrigger>
+              <TabsTrigger value="billing" className="flex items-center space-x-2">
+                <DollarSign className="h-4 w-4" />
+                <span>Payment Settings</span>
               </TabsTrigger>
               <TabsTrigger value="invites" className="flex items-center space-x-2">
                 <UserPlus className="h-4 w-4" />
@@ -96,6 +101,10 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
 
           <TabsContent value="roles" className="mt-6">
             <UserRoleManagement />
+          </TabsContent>
+
+          <TabsContent value="billing" className="mt-6">
+            <EnhancedAgentBilling />
           </TabsContent>
 
           <TabsContent value="invites" className="mt-6">

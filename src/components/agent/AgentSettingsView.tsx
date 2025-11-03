@@ -17,7 +17,7 @@ import { AgentVerticalBidSettings } from "../settings/AgentVerticalBidSettings";
 import { AgentTargetStatesSettings } from "../settings/AgentTargetStatesSettings";
 import AgentEmailSettings from "./AgentEmailSettings";
 import EmailTestComponent from "./EmailTestComponent";
-import BillingTab from "../settings/BillingTab";
+import AgentBillingTab from "./AgentBillingTab";
 
 const AgentSettingsView = () => {
   const [profile, setProfile] = useState({
@@ -438,7 +438,7 @@ const AgentSettingsView = () => {
         </TabsContent>
 
         <TabsContent value="billing" className="space-y-6">
-          <BillingTab />
+          <AgentBillingTab />
         </TabsContent>
 
         <TabsContent value="transfer" className="space-y-6">

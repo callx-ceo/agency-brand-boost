@@ -7,6 +7,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -17,7 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { DollarSign, Loader2 } from "lucide-react";
+import { DollarSign, Loader2, Filter } from "lucide-react";
 
 type PaymentMode = "agency_paid" | "agent_paid";
 
@@ -71,6 +78,7 @@ const mockAgents: AgentBillingData[] = [
 const EnhancedAgentBilling = () => {
   const [agents, setAgents] = useState<AgentBillingData[]>(mockAgents);
   const [searchTerm, setSearchTerm] = useState("");
+  const [paymentModeFilter, setPaymentModeFilter] = useState<"all" | PaymentMode>("all");
   const [updatingAgent, setUpdatingAgent] = useState<string | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -126,10 +134,14 @@ const EnhancedAgentBilling = () => {
     );
   };
 
-  const filteredAgents = agents.filter(agent =>
-    agent.agentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.agentEmail.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAgents = agents.filter(agent => {
+    const matchesSearch = agent.agentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.agentEmail.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesPaymentMode = paymentModeFilter === "all" || agent.paymentMode === paymentModeFilter;
+    
+    return matchesSearch && matchesPaymentMode;
+  });
 
   return (
     <>
@@ -155,19 +167,34 @@ const EnhancedAgentBilling = () => {
       </AlertDialog>
 
       <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-4">
         <div>
           <h3 className="text-lg font-semibold">Agent Payment Settings</h3>
           <p className="text-sm text-muted-foreground">
             Configure who pays for each agent's services
           </p>
         </div>
-        <Input 
-          className="w-60" 
-          placeholder="Search agents..." 
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={paymentModeFilter} onValueChange={(value) => setPaymentModeFilter(value as "all" | PaymentMode)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by payment" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Agents</SelectItem>
+                <SelectItem value="agency_paid">Agency Paid</SelectItem>
+                <SelectItem value="agent_paid">Agent Paid</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Input 
+            className="w-60" 
+            placeholder="Search agents..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
       
       <Card>

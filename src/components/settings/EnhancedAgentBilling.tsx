@@ -24,10 +24,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { DollarSign, Loader2, Filter, Plus, Wallet } from "lucide-react";
+import { DollarSign, Loader2, Filter, Plus, Wallet, AlertCircle, TrendingUp } from "lucide-react";
 import AddFundsModal from "./AddFundsModal";
 import BulkAddFundsModal from "./BulkAddFundsModal";
+import AddAgencyCreditsModal from "./AddAgencyCreditsModal";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type PaymentMode = "agency_paid" | "agent_paid";
 type AgencyPaymentMethod = "invoicing" | "credit_card";
@@ -432,11 +434,13 @@ const mockAgents: AgentBillingData[] = [
 const EnhancedAgentBilling = () => {
   const [agents, setAgents] = useState<AgentBillingData[]>(mockAgents);
   const [agencyPaymentMethod, setAgencyPaymentMethod] = useState<AgencyPaymentMethod>("credit_card");
+  const [agencyCreditsBalance, setAgencyCreditsBalance] = useState<number>(0); // Start with 0 to show prompt
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentModeFilter, setPaymentModeFilter] = useState<"all" | PaymentMode>("all");
   const [updatingAgent, setUpdatingAgent] = useState<string | null>(null);
   const [selectedAgentIds, setSelectedAgentIds] = useState<Set<string>>(new Set());
   const [isBulkFundsModalOpen, setIsBulkFundsModalOpen] = useState(false);
+  const [isAgencyCreditsModalOpen, setIsAgencyCreditsModalOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     agentId: string;
@@ -515,12 +519,29 @@ const EnhancedAgentBilling = () => {
   };
 
   const handleBulkAddFundsSuccess = (updates: { agentId: string; newBalance: number }[]) => {
+    const totalDistributed = updates.reduce((sum, u) => {
+      const agent = agents.find(a => a.agentId === u.agentId);
+      return sum + (u.newBalance - (agent?.callCreditsBalance || 0));
+    }, 0);
+
+    // Deduct from agency balance
+    setAgencyCreditsBalance(prev => prev - totalDistributed);
+    
     setAgents(prev => prev.map(agent => {
       const update = updates.find(u => u.agentId === agent.agentId);
       return update ? { ...agent, callCreditsBalance: update.newBalance } : agent;
     }));
     setSelectedAgentIds(new Set());
   };
+
+  const handleAgencyCreditsSuccess = (newBalance: number) => {
+    setAgencyCreditsBalance(newBalance);
+  };
+
+  const agencyPaidAgents = agents.filter(a => a.paymentMode === "agency_paid");
+  const lowBalanceThreshold = agencyPaidAgents.length * 100; // $100 per agent as threshold
+  const hasLowBalance = agencyCreditsBalance < lowBalanceThreshold && agencyCreditsBalance > 0;
+  const hasNoBalance = agencyCreditsBalance === 0;
 
   const handleSelectAgent = (agentId: string, isAgencyPaid: boolean) => {
     if (!isAgencyPaid) return; // Only allow selecting agency-paid agents
@@ -586,6 +607,14 @@ const EnhancedAgentBilling = () => {
         onSuccess={handleBulkAddFundsSuccess}
       />
 
+      <AddAgencyCreditsModal
+        isOpen={isAgencyCreditsModalOpen}
+        onClose={() => setIsAgencyCreditsModalOpen(false)}
+        currentBalance={agencyCreditsBalance}
+        onSuccess={handleAgencyCreditsSuccess}
+        paymentMethod={agencyPaymentMethod}
+      />
+
       <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelPaymentModeChange()}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -608,6 +637,66 @@ const EnhancedAgentBilling = () => {
       </AlertDialog>
 
       <div className="space-y-6">
+      <Card className="border-2 border-primary/20">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">Agency Call Credits</CardTitle>
+            <Button onClick={() => setIsAgencyCreditsModalOpen(true)} size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Credits
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-3xl font-bold">
+                <DollarSign className="h-8 w-8 text-primary" />
+                <span>{agencyCreditsBalance.toFixed(2)}</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Available for {agencyPaidAgents.length} agency-paid agents
+              </p>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-lg">
+              <TrendingUp className="h-5 w-5 text-muted-foreground" />
+              <div className="text-right">
+                <div className="text-sm font-medium">Est. Coverage</div>
+                <div className="text-xs text-muted-foreground">
+                  ~{agencyPaidAgents.length > 0 ? (agencyCreditsBalance / agencyPaidAgents.length).toFixed(0) : 0} per agent
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {hasNoBalance && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>No Credits Available</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>You need to add credits to your agency account before funding agency-paid agents.</span>
+            <Button onClick={() => setIsAgencyCreditsModalOpen(true)} size="sm" variant="outline">
+              Add Credits Now
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {hasLowBalance && (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Low Balance Warning</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>Your agency credit balance is running low. Consider adding more credits.</span>
+            <Button onClick={() => setIsAgencyCreditsModalOpen(true)} size="sm" variant="outline">
+              Add Credits
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Agency Payment Method</CardTitle>

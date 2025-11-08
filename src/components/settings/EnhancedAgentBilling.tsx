@@ -24,8 +24,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { DollarSign, Loader2, Filter, Plus } from "lucide-react";
+import { DollarSign, Loader2, Filter, Plus, Wallet } from "lucide-react";
 import AddFundsModal from "./AddFundsModal";
+import BulkAddFundsModal from "./BulkAddFundsModal";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type PaymentMode = "agency_paid" | "agent_paid";
 type AgencyPaymentMethod = "invoicing" | "credit_card";
@@ -83,6 +85,8 @@ const EnhancedAgentBilling = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentModeFilter, setPaymentModeFilter] = useState<"all" | PaymentMode>("all");
   const [updatingAgent, setUpdatingAgent] = useState<string | null>(null);
+  const [selectedAgentIds, setSelectedAgentIds] = useState<Set<string>>(new Set());
+  const [isBulkFundsModalOpen, setIsBulkFundsModalOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     agentId: string;
@@ -160,6 +164,32 @@ const EnhancedAgentBilling = () => {
     ));
   };
 
+  const handleBulkAddFundsSuccess = (updates: { agentId: string; newBalance: number }[]) => {
+    setAgents(prev => prev.map(agent => {
+      const update = updates.find(u => u.agentId === agent.agentId);
+      return update ? { ...agent, callCreditsBalance: update.newBalance } : agent;
+    }));
+    setSelectedAgentIds(new Set());
+  };
+
+  const handleSelectAgent = (agentId: string, isAgencyPaid: boolean) => {
+    if (!isAgencyPaid) return; // Only allow selecting agency-paid agents
+    
+    setSelectedAgentIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(agentId)) {
+        newSet.delete(agentId);
+      } else {
+        newSet.add(agentId);
+      }
+      return newSet;
+    });
+  };
+
+  const getSelectedAgents = () => {
+    return agents.filter(agent => selectedAgentIds.has(agent.agentId));
+  };
+
   const getBillingBadge = (paymentMode: PaymentMode) => {
     return paymentMode === "agency_paid" ? (
       <Badge variant="secondary">Agency Paid</Badge>
@@ -177,6 +207,17 @@ const EnhancedAgentBilling = () => {
     return matchesSearch && matchesPaymentMode;
   });
 
+  const agencyPaidFilteredAgents = filteredAgents.filter(a => a.paymentMode === "agency_paid");
+
+  const handleSelectAll = () => {
+    const agencyPaidAgents = filteredAgents.filter(a => a.paymentMode === "agency_paid");
+    if (selectedAgentIds.size === agencyPaidAgents.length) {
+      setSelectedAgentIds(new Set());
+    } else {
+      setSelectedAgentIds(new Set(agencyPaidAgents.map(a => a.agentId)));
+    }
+  };
+
   return (
     <>
       <AddFundsModal
@@ -186,6 +227,13 @@ const EnhancedAgentBilling = () => {
         agentName={addFundsModal.agentName}
         currentBalance={addFundsModal.currentBalance}
         onSuccess={handleAddFundsSuccess}
+      />
+
+      <BulkAddFundsModal
+        isOpen={isBulkFundsModalOpen}
+        onClose={() => setIsBulkFundsModalOpen(false)}
+        selectedAgents={getSelectedAgents()}
+        onSuccess={handleBulkAddFundsSuccess}
       />
 
       <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelPaymentModeChange()}>
@@ -261,13 +309,22 @@ const EnhancedAgentBilling = () => {
       </Card>
 
       <div className="flex justify-between items-center gap-4">
-        <div>
+        <div className="flex-1">
           <h3 className="text-lg font-semibold">Agent Payment Settings</h3>
           <p className="text-sm text-muted-foreground">
             Configure who pays for each agent's services
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {selectedAgentIds.size > 0 && (
+            <Button
+              onClick={() => setIsBulkFundsModalOpen(true)}
+              className="gap-2"
+            >
+              <Wallet className="h-4 w-4" />
+              Add Funds to {selectedAgentIds.size} Agent{selectedAgentIds.size !== 1 ? 's' : ''}
+            </Button>
+          )}
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
             <Select value={paymentModeFilter} onValueChange={(value) => setPaymentModeFilter(value as "all" | PaymentMode)}>
@@ -294,6 +351,14 @@ const EnhancedAgentBilling = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[50px]">
+                {agencyPaidFilteredAgents.length > 0 && (
+                  <Checkbox
+                    checked={selectedAgentIds.size === agencyPaidFilteredAgents.length && agencyPaidFilteredAgents.length > 0}
+                    onCheckedChange={handleSelectAll}
+                  />
+                )}
+              </TableHead>
               <TableHead>Agent</TableHead>
               <TableHead>Payment Mode</TableHead>
               <TableHead>Call Credits Balance</TableHead>
@@ -304,13 +369,21 @@ const EnhancedAgentBilling = () => {
           <TableBody>
           {filteredAgents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   No agents found
                 </TableCell>
               </TableRow>
             ) : (
               filteredAgents.map((agent) => (
                 <TableRow key={agent.agentId}>
+                  <TableCell>
+                    {agent.paymentMode === "agency_paid" && (
+                      <Checkbox
+                        checked={selectedAgentIds.has(agent.agentId)}
+                        onCheckedChange={() => handleSelectAgent(agent.agentId, true)}
+                      />
+                    )}
+                  </TableCell>
                   <TableCell>
                     <div>
                       <div className="font-medium">{agent.agentName}</div>

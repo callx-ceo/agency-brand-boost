@@ -24,6 +24,7 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
     legalName: agency?.legal_name || "",
     description: agency?.description || "",
     agencyModel: agency?.agency_model || "marketplace_buyers",
+    allowedPaymentMethod: agency?.allowed_payment_method || "credit_card",
     addressStreet: agency?.address_street || "",
     addressCity: agency?.address_city || "",
     addressState: agency?.address_state || "",
@@ -75,6 +76,7 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
             company_name: formData.companyName,
             legal_name: formData.legalName,
             agency_model: formData.agencyModel,
+            allowed_payment_method: formData.allowedPaymentMethod,
             agency_description: formData.description,
             address_street: formData.addressStreet,
             address_city: formData.addressCity,
@@ -115,6 +117,7 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
             company_name: formData.companyName,
             legal_name: formData.legalName,
             agency_model: formData.agencyModel,
+            allowed_payment_method: formData.allowedPaymentMethod,
             agency_description: formData.description,
             address_street: formData.addressStreet,
             address_city: formData.addressCity,
@@ -301,6 +304,51 @@ const CreateEditAgencyModal = ({ open, onOpenChange, agency, onSuccess }: Create
                 placeholder="Additional notes about this agency"
                 rows={3}
               />
+            </div>
+
+            {/* Payment Method Configuration */}
+            <div className="space-y-3 pt-4 border-t">
+              <h3 className="text-lg font-semibold">Payment Configuration</h3>
+              <div className="space-y-2">
+                <Label>Allowed Payment Method</Label>
+                <RadioGroup
+                  value={formData.allowedPaymentMethod}
+                  onValueChange={(value) => setFormData({ ...formData, allowedPaymentMethod: value })}
+                >
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="credit_card"
+                      className="flex items-center space-x-3 border-2 rounded-lg p-3 cursor-pointer hover:bg-accent transition-colors [&:has([data-state=checked])]:border-primary"
+                    >
+                      <RadioGroupItem value="credit_card" id="credit_card" />
+                      <div className="flex-1">
+                        <div className="font-medium">Credit Card Only</div>
+                        <div className="text-sm text-muted-foreground">Agency must use credit card for payments</div>
+                      </div>
+                    </Label>
+                    <Label
+                      htmlFor="invoice"
+                      className="flex items-center space-x-3 border-2 rounded-lg p-3 cursor-pointer hover:bg-accent transition-colors [&:has([data-state=checked])]:border-primary"
+                    >
+                      <RadioGroupItem value="invoice" id="invoice" />
+                      <div className="flex-1">
+                        <div className="font-medium">Invoice Only</div>
+                        <div className="text-sm text-muted-foreground">Agency receives invoices for payment</div>
+                      </div>
+                    </Label>
+                    <Label
+                      htmlFor="both"
+                      className="flex items-center space-x-3 border-2 rounded-lg p-3 cursor-pointer hover:bg-accent transition-colors [&:has([data-state=checked])]:border-primary"
+                    >
+                      <RadioGroupItem value="both" id="both" />
+                      <div className="flex-1">
+                        <div className="font-medium">Both Methods</div>
+                        <div className="text-sm text-muted-foreground">Agency can choose credit card or invoice</div>
+                      </div>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
             </div>
 
             <div className="space-y-3">

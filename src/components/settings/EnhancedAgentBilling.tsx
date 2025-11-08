@@ -32,7 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type PaymentMode = "agency_paid" | "agent_paid";
-type AgencyPaymentMethod = "invoicing" | "credit_card";
+type AgencyPaymentMethod = "invoice" | "credit_card" | "both";
 
 interface AgentBillingData {
   agentId: string;
@@ -632,7 +632,7 @@ const EnhancedAgentBilling = () => {
         onClose={() => setIsAgencyCreditsModalOpen(false)}
         currentBalance={agencyCreditsBalance}
         onSuccess={handleAgencyCreditsSuccess}
-        paymentMethod={agencyPaymentMethod}
+        allowedPaymentMethod={agencyPaymentMethod}
         existingPaymentMethods={agencyPaymentMethods}
         onPaymentMethodAdded={handlePaymentMethodAdded}
       />
@@ -751,13 +751,13 @@ const EnhancedAgentBilling = () => {
               </p>
             </Label>
             <Label
-              htmlFor="invoicing"
+              htmlFor="invoice"
               className="flex flex-col items-start space-y-3 border-2 rounded-lg p-4 cursor-pointer hover:bg-accent transition-colors [&:has([data-state=checked])]:border-primary"
             >
-              <RadioGroupItem value="invoicing" id="invoicing" className="sr-only" />
+              <RadioGroupItem value="invoice" id="invoice" className="sr-only" />
               <div className="flex items-center gap-2">
                 <div className="font-semibold">Invoicing</div>
-                {agencyPaymentMethod === "invoicing" && (
+                {agencyPaymentMethod === "invoice" && (
                   <Badge variant="default">Active</Badge>
                 )}
               </div>

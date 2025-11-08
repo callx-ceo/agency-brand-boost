@@ -23,6 +23,7 @@ export type Database = {
           agency_description: string | null
           agency_id: string
           agency_model: Database["public"]["Enums"]["agency_model"] | null
+          allowed_payment_method: string
           billing_email: string | null
           company_name: string | null
           created_at: string | null
@@ -46,6 +47,7 @@ export type Database = {
           agency_description?: string | null
           agency_id: string
           agency_model?: Database["public"]["Enums"]["agency_model"] | null
+          allowed_payment_method?: string
           billing_email?: string | null
           company_name?: string | null
           created_at?: string | null
@@ -69,6 +71,7 @@ export type Database = {
           agency_description?: string | null
           agency_id?: string
           agency_model?: Database["public"]["Enums"]["agency_model"] | null
+          allowed_payment_method?: string
           billing_email?: string | null
           company_name?: string | null
           created_at?: string | null

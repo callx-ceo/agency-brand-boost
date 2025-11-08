@@ -40,7 +40,7 @@ interface AddAgencyCreditsModalProps {
   onClose: () => void;
   currentBalance: number;
   onSuccess: (newBalance: number) => void;
-  paymentMethod: "credit_card" | "invoicing";
+  allowedPaymentMethod: "credit_card" | "invoice" | "both";
   existingPaymentMethods?: PaymentMethod[];
   onPaymentMethodAdded?: (method: PaymentMethod) => void;
 }
@@ -50,7 +50,7 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
   onClose,
   currentBalance,
   onSuccess,
-  paymentMethod,
+  allowedPaymentMethod,
   existingPaymentMethods = [],
   onPaymentMethodAdded,
 }) => {
@@ -63,6 +63,9 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
     existingPaymentMethods.find(pm => pm.isDefault)?.id || existingPaymentMethods[0]?.id || ""
   );
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedPaymentType, setSelectedPaymentType] = useState<"credit_card" | "invoice">(
+    allowedPaymentMethod === "both" ? "credit_card" : (allowedPaymentMethod as "credit_card" | "invoice")
+  );
 
   const presetAmounts = ["1000", "5000", "10000", "25000", "50000"];
 
@@ -80,7 +83,7 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
     }
 
     // For credit card payments, show confirmation dialog
-    if (paymentMethod === "credit_card") {
+    if (selectedPaymentType === "credit_card") {
       if (paymentMethods.length === 0) {
         toast.error("Please add a payment method first");
         return;
@@ -106,7 +109,7 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
       const newBalance = currentBalance + creditsAmount;
       onSuccess(newBalance);
       
-      if (paymentMethod === "invoicing") {
+      if (selectedPaymentType === "invoice") {
         toast.success(`Invoice created for $${creditsAmount.toFixed(2)}. Credits will be available once payment is received.`);
       } else {
         const pm = paymentMethods.find(p => p.id === selectedPaymentMethodId);
@@ -210,22 +213,35 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
                 <span>{currentBalance.toFixed(2)}</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {paymentMethod === "credit_card" ? (
-                <>
-                  <CreditCard className="h-4 w-4" />
-                  <span>Credit Card</span>
-                </>
-              ) : (
-                <>
-                  <Building2 className="h-4 w-4" />
-                  <span>Invoicing</span>
-                </>
-              )}
-            </div>
           </div>
 
-          {paymentMethod === "credit_card" && (
+          {allowedPaymentMethod === "both" && (
+            <div className="space-y-3">
+              <Label>Payment Method</Label>
+              <RadioGroup value={selectedPaymentType} onValueChange={(value: "credit_card" | "invoice") => setSelectedPaymentType(value)}>
+                <div className="grid grid-cols-2 gap-3">
+                  <Label
+                    htmlFor="pay-credit"
+                    className="flex items-center space-x-3 border-2 rounded-lg p-3 cursor-pointer hover:bg-accent transition-colors [&:has([data-state=checked])]:border-primary"
+                  >
+                    <RadioGroupItem value="credit_card" id="pay-credit" />
+                    <CreditCard className="h-4 w-4" />
+                    <span className="font-medium">Credit Card</span>
+                  </Label>
+                  <Label
+                    htmlFor="pay-invoice"
+                    className="flex items-center space-x-3 border-2 rounded-lg p-3 cursor-pointer hover:bg-accent transition-colors [&:has([data-state=checked])]:border-primary"
+                  >
+                    <RadioGroupItem value="invoice" id="pay-invoice" />
+                    <Building2 className="h-4 w-4" />
+                    <span className="font-medium">Invoice</span>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          )}
+
+          {(allowedPaymentMethod === "credit_card" || (allowedPaymentMethod === "both" && selectedPaymentType === "credit_card")) && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label>Payment Method</Label>
@@ -331,7 +347,7 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
             </div>
           )}
 
-          {paymentMethod === "invoicing" && (
+          {(allowedPaymentMethod === "invoice" || (allowedPaymentMethod === "both" && selectedPaymentType === "invoice")) && (
             <div className="p-3 bg-muted rounded-lg text-sm text-muted-foreground">
               <strong>Note:</strong> An invoice will be generated and sent to your billing email. Credits will be available once payment is received.
             </div>
@@ -344,13 +360,13 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
           </Button>
           <Button 
             onClick={handleAddCredits} 
-            disabled={isLoading || !amount || parseFloat(amount) <= 0 || (paymentMethod === "credit_card" && paymentMethods.length === 0)}
+            disabled={isLoading || !amount || parseFloat(amount) <= 0 || (selectedPaymentType === "credit_card" && paymentMethods.length === 0)}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {paymentMethod === "credit_card" && (
+            {selectedPaymentType === "credit_card" && (
               <ShieldCheck className="mr-2 h-4 w-4" />
             )}
-            {paymentMethod === "invoicing" ? "Generate Invoice" : "Continue to Payment"}
+            {selectedPaymentType === "invoice" ? "Generate Invoice" : "Continue to Payment"}
           </Button>
         </DialogFooter>
         </>

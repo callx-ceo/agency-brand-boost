@@ -76,6 +76,356 @@ const mockAgents: AgentBillingData[] = [
     agentEmail: "david.martinez@agency.com",
     paymentMode: "agency_paid",
     callCreditsBalance: 350.00
+  },
+  {
+    agentId: "6",
+    agentName: "Robert Taylor",
+    agentEmail: "robert.taylor@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 420.00
+  },
+  {
+    agentId: "7",
+    agentName: "Jennifer Wilson",
+    agentEmail: "jennifer.wilson@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 380.50
+  },
+  {
+    agentId: "8",
+    agentName: "William Brown",
+    agentEmail: "william.brown@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 95.75
+  },
+  {
+    agentId: "9",
+    agentName: "Jessica Moore",
+    agentEmail: "jessica.moore@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 290.00
+  },
+  {
+    agentId: "10",
+    agentName: "James Anderson",
+    agentEmail: "james.anderson@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 315.25
+  },
+  {
+    agentId: "11",
+    agentName: "Linda Thomas",
+    agentEmail: "linda.thomas@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 445.00
+  },
+  {
+    agentId: "12",
+    agentName: "Christopher Jackson",
+    agentEmail: "christopher.jackson@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 110.50
+  },
+  {
+    agentId: "13",
+    agentName: "Patricia White",
+    agentEmail: "patricia.white@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 365.00
+  },
+  {
+    agentId: "14",
+    agentName: "Daniel Harris",
+    agentEmail: "daniel.harris@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 275.75
+  },
+  {
+    agentId: "15",
+    agentName: "Barbara Martin",
+    agentEmail: "barbara.martin@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 490.00
+  },
+  {
+    agentId: "16",
+    agentName: "Matthew Thompson",
+    agentEmail: "matthew.thompson@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 88.25
+  },
+  {
+    agentId: "17",
+    agentName: "Elizabeth Garcia",
+    agentEmail: "elizabeth.garcia@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 325.50
+  },
+  {
+    agentId: "18",
+    agentName: "Joseph Martinez",
+    agentEmail: "joseph.martinez@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 405.00
+  },
+  {
+    agentId: "19",
+    agentName: "Susan Robinson",
+    agentEmail: "susan.robinson@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 355.75
+  },
+  {
+    agentId: "20",
+    agentName: "Charles Clark",
+    agentEmail: "charles.clark@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 102.50
+  },
+  {
+    agentId: "21",
+    agentName: "Margaret Rodriguez",
+    agentEmail: "margaret.rodriguez@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 430.00
+  },
+  {
+    agentId: "22",
+    agentName: "Thomas Lewis",
+    agentEmail: "thomas.lewis@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 295.25
+  },
+  {
+    agentId: "23",
+    agentName: "Dorothy Lee",
+    agentEmail: "dorothy.lee@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 385.50
+  },
+  {
+    agentId: "24",
+    agentName: "Richard Walker",
+    agentEmail: "richard.walker@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 115.00
+  },
+  {
+    agentId: "25",
+    agentName: "Nancy Hall",
+    agentEmail: "nancy.hall@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 340.75
+  },
+  {
+    agentId: "26",
+    agentName: "Paul Allen",
+    agentEmail: "paul.allen@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 460.00
+  },
+  {
+    agentId: "27",
+    agentName: "Karen Young",
+    agentEmail: "karen.young@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 310.25
+  },
+  {
+    agentId: "28",
+    agentName: "Mark Hernandez",
+    agentEmail: "mark.hernandez@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 92.50
+  },
+  {
+    agentId: "29",
+    agentName: "Betty King",
+    agentEmail: "betty.king@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 395.00
+  },
+  {
+    agentId: "30",
+    agentName: "Steven Wright",
+    agentEmail: "steven.wright@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 425.75
+  },
+  {
+    agentId: "31",
+    agentName: "Helen Lopez",
+    agentEmail: "helen.lopez@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 370.50
+  },
+  {
+    agentId: "32",
+    agentName: "Kevin Hill",
+    agentEmail: "kevin.hill@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 105.25
+  },
+  {
+    agentId: "33",
+    agentName: "Sandra Scott",
+    agentEmail: "sandra.scott@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 335.00
+  },
+  {
+    agentId: "34",
+    agentName: "Brian Green",
+    agentEmail: "brian.green@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 455.75
+  },
+  {
+    agentId: "35",
+    agentName: "Donna Adams",
+    agentEmail: "donna.adams@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 305.50
+  },
+  {
+    agentId: "36",
+    agentName: "George Baker",
+    agentEmail: "george.baker@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 98.00
+  },
+  {
+    agentId: "37",
+    agentName: "Carol Gonzalez",
+    agentEmail: "carol.gonzalez@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 415.25
+  },
+  {
+    agentId: "38",
+    agentName: "Edward Nelson",
+    agentEmail: "edward.nelson@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 390.00
+  },
+  {
+    agentId: "39",
+    agentName: "Ruth Carter",
+    agentEmail: "ruth.carter@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 345.75
+  },
+  {
+    agentId: "40",
+    agentName: "Jason Mitchell",
+    agentEmail: "jason.mitchell@agency.com",
+    paymentMode: "agent_paid",
+    callCreditsBalance: 108.50
+  },
+  {
+    agentId: "41",
+    agentName: "Sharon Perez",
+    agentEmail: "sharon.perez@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 475.00
+  },
+  {
+    agentId: "42",
+    agentName: "Ryan Roberts",
+    agentEmail: "ryan.roberts@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 320.25
+  },
+  {
+    agentId: "43",
+    agentName: "Michelle Turner",
+    agentEmail: "michelle.turner@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 360.50
+  },
+  {
+    agentId: "44",
+    agentName: "Gary Phillips",
+    agentEmail: "gary.phillips@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 440.00
+  },
+  {
+    agentId: "45",
+    agentName: "Laura Campbell",
+    agentEmail: "laura.campbell@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 285.75
+  },
+  {
+    agentId: "46",
+    agentName: "Timothy Parker",
+    agentEmail: "timothy.parker@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 410.50
+  },
+  {
+    agentId: "47",
+    agentName: "Kimberly Evans",
+    agentEmail: "kimberly.evans@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 375.00
+  },
+  {
+    agentId: "48",
+    agentName: "Jeffrey Edwards",
+    agentEmail: "jeffrey.edwards@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 330.25
+  },
+  {
+    agentId: "49",
+    agentName: "Deborah Collins",
+    agentEmail: "deborah.collins@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 465.50
+  },
+  {
+    agentId: "50",
+    agentName: "Ronald Stewart",
+    agentEmail: "ronald.stewart@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 300.00
+  },
+  {
+    agentId: "51",
+    agentName: "Cynthia Sanchez",
+    agentEmail: "cynthia.sanchez@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 435.75
+  },
+  {
+    agentId: "52",
+    agentName: "Jacob Morris",
+    agentEmail: "jacob.morris@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 350.50
+  },
+  {
+    agentId: "53",
+    agentName: "Amy Rogers",
+    agentEmail: "amy.rogers@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 480.00
+  },
+  {
+    agentId: "54",
+    agentName: "Raymond Reed",
+    agentEmail: "raymond.reed@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 315.25
+  },
+  {
+    agentId: "55",
+    agentName: "Angela Cook",
+    agentEmail: "angela.cook@agency.com",
+    paymentMode: "agency_paid",
+    callCreditsBalance: 395.50
   }
 ];
 

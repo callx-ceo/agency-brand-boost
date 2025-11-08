@@ -10,9 +10,30 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DollarSign, Loader2, CreditCard, Building2 } from "lucide-react";
+import { DollarSign, Loader2, CreditCard, Building2, Plus, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import PaymentMethodCard from "./PaymentMethodCard";
+import AddPaymentMethodForm from "./AddPaymentMethodForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+interface PaymentMethod {
+  id: string;
+  brand: string;
+  last4: string;
+  exp_month: number;
+  exp_year: number;
+  isDefault: boolean;
+}
 
 interface AddAgencyCreditsModalProps {
   isOpen: boolean;
@@ -20,6 +41,8 @@ interface AddAgencyCreditsModalProps {
   currentBalance: number;
   onSuccess: (newBalance: number) => void;
   paymentMethod: "credit_card" | "invoicing";
+  existingPaymentMethods?: PaymentMethod[];
+  onPaymentMethodAdded?: (method: PaymentMethod) => void;
 }
 
 const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
@@ -28,10 +51,18 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
   currentBalance,
   onSuccess,
   paymentMethod,
+  existingPaymentMethods = [],
+  onPaymentMethodAdded,
 }) => {
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState<string>("");
+  const [showAddPaymentForm, setShowAddPaymentForm] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(existingPaymentMethods);
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string>(
+    existingPaymentMethods.find(pm => pm.isDefault)?.id || existingPaymentMethods[0]?.id || ""
+  );
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const presetAmounts = ["1000", "5000", "10000", "25000", "50000"];
 
@@ -48,6 +79,26 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
       return;
     }
 
+    // For credit card payments, show confirmation dialog
+    if (paymentMethod === "credit_card") {
+      if (paymentMethods.length === 0) {
+        toast.error("Please add a payment method first");
+        return;
+      }
+      if (!selectedPaymentMethodId) {
+        toast.error("Please select a payment method");
+        return;
+      }
+      setShowConfirmation(true);
+      return;
+    }
+
+    // For invoicing, process immediately
+    processPayment();
+  };
+
+  const processPayment = async () => {
+    const creditsAmount = parseFloat(amount);
     setIsLoading(true);
     
     // Simulate API call - In production, this would process payment/create invoice
@@ -58,33 +109,99 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
       if (paymentMethod === "invoicing") {
         toast.success(`Invoice created for $${creditsAmount.toFixed(2)}. Credits will be available once payment is received.`);
       } else {
-        toast.success(`Added $${creditsAmount.toFixed(2)} to agency credits`);
+        const pm = paymentMethods.find(p => p.id === selectedPaymentMethodId);
+        toast.success(`Charged $${creditsAmount.toFixed(2)} to ${pm?.brand} •••• ${pm?.last4}`);
       }
       
       setAmount("");
       setSelectedAmount("");
+      setShowConfirmation(false);
       setIsLoading(false);
       onClose();
     }, 800);
   };
 
-  const handleClose = () => {
-    setAmount("");
-    setSelectedAmount("");
-    onClose();
+  const handlePaymentMethodAdded = (newPaymentMethod: PaymentMethod) => {
+    setPaymentMethods([...paymentMethods, newPaymentMethod]);
+    setSelectedPaymentMethodId(newPaymentMethod.id);
+    setShowAddPaymentForm(false);
+    if (onPaymentMethodAdded) {
+      onPaymentMethodAdded(newPaymentMethod);
+    }
   };
 
+  const handleClose = () => {
+    if (!isLoading) {
+      setAmount("");
+      setSelectedAmount("");
+      setShowAddPaymentForm(false);
+      setShowConfirmation(false);
+      onClose();
+    }
+  };
+
+  const selectedPaymentMethod = paymentMethods.find(pm => pm.id === selectedPaymentMethodId);
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <>
+      <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Payment</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <div>
+                You are about to charge <strong>${parseFloat(amount || "0").toFixed(2)}</strong> to:
+              </div>
+              {selectedPaymentMethod && (
+                <div className="p-3 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    <span className="font-medium capitalize">
+                      {selectedPaymentMethod.brand} •••• {selectedPaymentMethod.last4}
+                    </span>
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    Expires {selectedPaymentMethod.exp_month.toString().padStart(2, '0')}/{selectedPaymentMethod.exp_year}
+                  </div>
+                </div>
+              )}
+              <div className="text-sm">
+                This charge will be processed immediately and credits will be added to your agency account.
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={processPayment} disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Confirm & Charge
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add Agency Credits</DialogTitle>
+          <DialogTitle>
+            {showAddPaymentForm ? "Add Payment Method" : "Add Agency Credits"}
+          </DialogTitle>
           <DialogDescription>
-            Add call credits to your agency account for funding agency-paid agents
+            {showAddPaymentForm 
+              ? "Enter your credit card information to add a payment method"
+              : "Add call credits to your agency account for funding agency-paid agents"
+            }
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-6 py-4">
+        {showAddPaymentForm ? (
+          <AddPaymentMethodForm
+            onSuccess={handlePaymentMethodAdded}
+            onCancel={() => setShowAddPaymentForm(false)}
+          />
+        ) : (
+          <>
+            <div className="space-y-6 py-4">
           <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
             <div>
               <Label className="text-sm text-muted-foreground">Current Balance</Label>
@@ -107,6 +224,63 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
               )}
             </div>
           </div>
+
+          {paymentMethod === "credit_card" && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Payment Method</Label>
+                {paymentMethods.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAddPaymentForm(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add New
+                  </Button>
+                )}
+              </div>
+
+              {paymentMethods.length === 0 ? (
+                <div className="p-6 border-2 border-dashed rounded-lg text-center space-y-3">
+                  <CreditCard className="h-12 w-12 mx-auto text-muted-foreground" />
+                  <div>
+                    <div className="font-medium">No Payment Method</div>
+                    <div className="text-sm text-muted-foreground">
+                      Add a credit card to process payments
+                    </div>
+                  </div>
+                  <Button onClick={() => setShowAddPaymentForm(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Credit Card
+                  </Button>
+                </div>
+              ) : (
+                <RadioGroup value={selectedPaymentMethodId} onValueChange={setSelectedPaymentMethodId}>
+                  <div className="space-y-2">
+                    {paymentMethods.map((pm) => (
+                      <Label
+                        key={pm.id}
+                        htmlFor={pm.id}
+                        className="flex items-center space-x-3 cursor-pointer"
+                      >
+                        <RadioGroupItem value={pm.id} id={pm.id} />
+                        <div className="flex-1">
+                          <PaymentMethodCard
+                            brand={pm.brand}
+                            last4={pm.last4}
+                            expMonth={pm.exp_month}
+                            expYear={pm.exp_year}
+                            isDefault={pm.isDefault}
+                          />
+                        </div>
+                      </Label>
+                    ))}
+                  </div>
+                </RadioGroup>
+              )}
+            </div>
+          )}
 
           <div className="space-y-3">
             <Label>Quick Select Amount</Label>
@@ -168,13 +342,22 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
           <Button variant="outline" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>
-          <Button onClick={handleAddCredits} disabled={isLoading || !amount || parseFloat(amount) <= 0}>
+          <Button 
+            onClick={handleAddCredits} 
+            disabled={isLoading || !amount || parseFloat(amount) <= 0 || (paymentMethod === "credit_card" && paymentMethods.length === 0)}
+          >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {paymentMethod === "invoicing" ? "Generate Invoice" : "Add Credits"}
+            {paymentMethod === "credit_card" && (
+              <ShieldCheck className="mr-2 h-4 w-4" />
+            )}
+            {paymentMethod === "invoicing" ? "Generate Invoice" : "Continue to Payment"}
           </Button>
         </DialogFooter>
+        </>
+        )}
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 

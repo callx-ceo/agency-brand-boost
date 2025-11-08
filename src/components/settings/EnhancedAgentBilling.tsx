@@ -441,6 +441,17 @@ const EnhancedAgentBilling = () => {
   const [selectedAgentIds, setSelectedAgentIds] = useState<Set<string>>(new Set());
   const [isBulkFundsModalOpen, setIsBulkFundsModalOpen] = useState(false);
   const [isAgencyCreditsModalOpen, setIsAgencyCreditsModalOpen] = useState(false);
+  const [agencyPaymentMethods, setAgencyPaymentMethods] = useState<any[]>([
+    // Mock payment method - in production this would come from database
+    {
+      id: "pm_mock123",
+      brand: "visa",
+      last4: "4242",
+      exp_month: 12,
+      exp_year: 2025,
+      isDefault: true,
+    }
+  ]);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     agentId: string;
@@ -538,6 +549,10 @@ const EnhancedAgentBilling = () => {
     setAgencyCreditsBalance(newBalance);
   };
 
+  const handlePaymentMethodAdded = (method: any) => {
+    setAgencyPaymentMethods([...agencyPaymentMethods, method]);
+  };
+
   const agencyPaidAgents = agents.filter(a => a.paymentMode === "agency_paid");
   const lowBalanceThreshold = agencyPaidAgents.length * 100; // $100 per agent as threshold
   const hasLowBalance = agencyCreditsBalance < lowBalanceThreshold && agencyCreditsBalance > 0;
@@ -613,6 +628,8 @@ const EnhancedAgentBilling = () => {
         currentBalance={agencyCreditsBalance}
         onSuccess={handleAgencyCreditsSuccess}
         paymentMethod={agencyPaymentMethod}
+        existingPaymentMethods={agencyPaymentMethods}
+        onPaymentMethodAdded={handlePaymentMethodAdded}
       />
 
       <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelPaymentModeChange()}>

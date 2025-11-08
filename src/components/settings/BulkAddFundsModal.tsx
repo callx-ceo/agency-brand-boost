@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { DollarSign, Loader2, Users, Wallet, AlertCircle } from "lucide-react";
+import { DollarSign, Loader2, Users, Wallet, AlertCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ interface BulkAddFundsModalProps {
   selectedAgents: AgentBillingData[];
   agencyCreditsBalance: number;
   onSuccess: (updates: { agentId: string; newBalance: number }[]) => void;
+  onAddAgencyCredits: () => void;
 }
 
 type DistributionMode = "equal" | "custom";
@@ -39,6 +40,7 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
   selectedAgents,
   agencyCreditsBalance,
   onSuccess,
+  onAddAgencyCredits,
 }) => {
   const [distributionMode, setDistributionMode] = useState<DistributionMode>("equal");
   const [totalAmount, setTotalAmount] = useState<string>("");
@@ -157,10 +159,19 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
             </div>
             <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/20 rounded-lg">
               <Wallet className="h-5 w-5 text-primary" />
-              <div>
+              <div className="flex-1">
                 <div className="text-xs text-muted-foreground">Available Funds</div>
                 <div className="font-medium">${agencyCreditsBalance.toFixed(2)}</div>
               </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onAddAgencyCredits}
+                className="h-auto py-1 px-2 text-xs"
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Add
+              </Button>
             </div>
           </div>
 
@@ -253,13 +264,24 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
           )}
 
           {hasInsufficientFunds && getTotalDistribution() > 0 && (
-            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-2">
-              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
-              <div className="text-sm">
-                <div className="font-medium text-destructive">Insufficient Funds</div>
-                <div className="text-muted-foreground">
-                  You're trying to distribute ${getTotalDistribution().toFixed(2)} but only have ${agencyCreditsBalance.toFixed(2)} available.
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                <div className="flex-1 text-sm">
+                  <div className="font-medium text-destructive">Insufficient Funds</div>
+                  <div className="text-muted-foreground">
+                    You're trying to distribute ${getTotalDistribution().toFixed(2)} but only have ${agencyCreditsBalance.toFixed(2)} available.
+                  </div>
                 </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={onAddAgencyCredits}
+                  className="flex-shrink-0"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Funds
+                </Button>
               </div>
             </div>
           )}

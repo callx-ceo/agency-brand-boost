@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { DollarSign, Loader2, Users } from "lucide-react";
+import { DollarSign, Loader2, Users, Wallet, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,7 @@ interface BulkAddFundsModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedAgents: AgentBillingData[];
+  agencyCreditsBalance: number;
   onSuccess: (updates: { agentId: string; newBalance: number }[]) => void;
 }
 
@@ -36,6 +37,7 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
   isOpen,
   onClose,
   selectedAgents,
+  agencyCreditsBalance,
   onSuccess,
 }) => {
   const [distributionMode, setDistributionMode] = useState<DistributionMode>("equal");
@@ -50,6 +52,11 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
       const total = parseFloat(totalAmount);
       if (isNaN(total) || total <= 0) {
         toast.error("Please enter a valid total amount");
+        return;
+      }
+
+      if (total > agencyCreditsBalance) {
+        toast.error(`Insufficient funds. Available: $${agencyCreditsBalance.toFixed(2)}`);
         return;
       }
 
@@ -75,6 +82,11 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
 
       if (totalCustom <= 0) {
         toast.error("Please enter valid amounts for agents");
+        return;
+      }
+
+      if (totalCustom > agencyCreditsBalance) {
+        toast.error(`Insufficient funds. Available: $${agencyCreditsBalance.toFixed(2)}`);
         return;
       }
     }
@@ -118,6 +130,12 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
     return 0;
   };
 
+  const getRemainingBalance = () => {
+    return agencyCreditsBalance - getTotalDistribution();
+  };
+
+  const hasInsufficientFunds = getTotalDistribution() > agencyCreditsBalance;
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px]">
@@ -129,9 +147,21 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-            <Users className="h-5 w-5 text-muted-foreground" />
-            <span className="font-medium">{selectedAgents.length} agents selected</span>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+              <Users className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <div className="text-xs text-muted-foreground">Agents Selected</div>
+                <div className="font-medium">{selectedAgents.length}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+              <Wallet className="h-5 w-5 text-primary" />
+              <div>
+                <div className="text-xs text-muted-foreground">Available Funds</div>
+                <div className="font-medium">${agencyCreditsBalance.toFixed(2)}</div>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -222,12 +252,39 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
             </div>
           )}
 
-          <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Total Distribution:</span>
-              <div className="flex items-center text-lg font-bold text-primary">
-                <DollarSign className="h-5 w-5 mr-1" />
+          {hasInsufficientFunds && getTotalDistribution() > 0 && (
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-2">
+              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <div className="font-medium text-destructive">Insufficient Funds</div>
+                <div className="text-muted-foreground">
+                  You're trying to distribute ${getTotalDistribution().toFixed(2)} but only have ${agencyCreditsBalance.toFixed(2)} available.
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="p-4 bg-muted rounded-lg space-y-3">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Available Funds:</span>
+              <div className="flex items-center font-medium">
+                <DollarSign className="h-4 w-4 mr-1" />
+                <span>{agencyCreditsBalance.toFixed(2)}</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Total Distribution:</span>
+              <div className="flex items-center font-medium">
+                <DollarSign className="h-4 w-4 mr-1" />
                 <span>{getTotalDistribution().toFixed(2)}</span>
+              </div>
+            </div>
+            <div className="h-px bg-border" />
+            <div className="flex justify-between items-center">
+              <span className="font-medium">Remaining Balance:</span>
+              <div className={`flex items-center text-lg font-bold ${getRemainingBalance() < 0 ? 'text-destructive' : 'text-primary'}`}>
+                <DollarSign className="h-5 w-5 mr-1" />
+                <span>{getRemainingBalance().toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -239,7 +296,7 @@ const BulkAddFundsModal: React.FC<BulkAddFundsModalProps> = ({
           </Button>
           <Button 
             onClick={handleAddFunds} 
-            disabled={isLoading || getTotalDistribution() <= 0}
+            disabled={isLoading || getTotalDistribution() <= 0 || hasInsufficientFunds}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Distribute Funds

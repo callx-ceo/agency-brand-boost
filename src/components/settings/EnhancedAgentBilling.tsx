@@ -619,6 +619,7 @@ const EnhancedAgentBilling = () => {
         isOpen={isBulkFundsModalOpen}
         onClose={() => setIsBulkFundsModalOpen(false)}
         selectedAgents={getSelectedAgents()}
+        agencyCreditsBalance={agencyCreditsBalance}
         onSuccess={handleBulkAddFundsSuccess}
       />
 

@@ -24,7 +24,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { DollarSign, Loader2, Filter } from "lucide-react";
+import { DollarSign, Loader2, Filter, Plus } from "lucide-react";
+import AddFundsModal from "./AddFundsModal";
 
 type PaymentMode = "agency_paid" | "agent_paid";
 type AgencyPaymentMethod = "invoicing" | "credit_card";
@@ -93,6 +94,17 @@ const EnhancedAgentBilling = () => {
     agentName: "",
     newMode: "agency_paid"
   });
+  const [addFundsModal, setAddFundsModal] = useState<{
+    isOpen: boolean;
+    agentId: string;
+    agentName: string;
+    currentBalance: number;
+  }>({
+    isOpen: false,
+    agentId: "",
+    agentName: "",
+    currentBalance: 0
+  });
 
   const handlePaymentModeRequest = (agentId: string, newMode: PaymentMode) => {
     const agent = agents.find(a => a.agentId === agentId);
@@ -128,6 +140,26 @@ const EnhancedAgentBilling = () => {
     setConfirmDialog({ ...confirmDialog, isOpen: false });
   };
 
+  const handleOpenAddFunds = (agentId: string) => {
+    const agent = agents.find(a => a.agentId === agentId);
+    if (!agent) return;
+
+    setAddFundsModal({
+      isOpen: true,
+      agentId,
+      agentName: agent.agentName,
+      currentBalance: agent.callCreditsBalance
+    });
+  };
+
+  const handleAddFundsSuccess = (agentId: string, newBalance: number) => {
+    setAgents(prev => prev.map(agent => 
+      agent.agentId === agentId 
+        ? { ...agent, callCreditsBalance: newBalance }
+        : agent
+    ));
+  };
+
   const getBillingBadge = (paymentMode: PaymentMode) => {
     return paymentMode === "agency_paid" ? (
       <Badge variant="secondary">Agency Paid</Badge>
@@ -147,6 +179,15 @@ const EnhancedAgentBilling = () => {
 
   return (
     <>
+      <AddFundsModal
+        isOpen={addFundsModal.isOpen}
+        onClose={() => setAddFundsModal({ ...addFundsModal, isOpen: false })}
+        agentId={addFundsModal.agentId}
+        agentName={addFundsModal.agentName}
+        currentBalance={addFundsModal.currentBalance}
+        onSuccess={handleAddFundsSuccess}
+      />
+
       <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelPaymentModeChange()}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -256,13 +297,14 @@ const EnhancedAgentBilling = () => {
               <TableHead>Agent</TableHead>
               <TableHead>Payment Mode</TableHead>
               <TableHead>Call Credits Balance</TableHead>
+              <TableHead>Payment Mode Settings</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredAgents.length === 0 ? (
+          {filteredAgents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground">
+                <TableCell colSpan={5} className="text-center text-muted-foreground">
                   No agents found
                 </TableCell>
               </TableRow>
@@ -279,9 +321,22 @@ const EnhancedAgentBilling = () => {
                     {getBillingBadge(agent.paymentMode)}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-1 text-muted-foreground" />
-                      <span className="font-medium">{agent.callCreditsBalance.toFixed(2)}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <DollarSign className="h-4 w-4 mr-1 text-muted-foreground" />
+                        <span className="font-medium">{agent.callCreditsBalance.toFixed(2)}</span>
+                      </div>
+                      {agent.paymentMode === "agency_paid" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleOpenAddFunds(agent.agentId)}
+                          className="ml-2"
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add Funds
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>

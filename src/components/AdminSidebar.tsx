@@ -41,11 +41,16 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       ]
     },
     { 
-      category: "Business Operations", 
+      category: "Campaign Management", 
       items: [
         { id: "offers", label: "Offers", icon: Briefcase },
         { id: "campaigns", label: "Campaigns", icon: Target },
         { id: "publishers", label: "Publishers", icon: UserPlus },
+      ]
+    },
+    { 
+      category: "Reports & Analytics", 
+      items: [
         { id: "reports", label: "Realtime Report", icon: BarChart3 },
         { id: "applications", label: "Applications", icon: FileText },
         { id: "call-history", label: "Call History", icon: History },
@@ -54,16 +59,21 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       ]
     },
     { 
-      category: "Settings", 
+      category: "General Settings", 
       items: [
         { id: "general", label: "General", icon: Settings },
-        { id: "team", label: "Team Members", icon: Users },
         { id: "branding", label: "Branding & Emails", icon: Palette },
         { id: "scripts", label: "Scripts & AI", icon: Phone },
-        { id: "referrals", label: "Referrals", icon: Gift },
         { id: "notifications", label: "Notifications", icon: Bell },
+      ]
+    },
+    { 
+      category: "Team & Finance", 
+      items: [
+        { id: "team", label: "Team Members", icon: Users },
         { id: "billing", label: "Billing", icon: CreditCard },
         { id: "upgrade", label: "Upgrade Plans", icon: CreditCard },
+        { id: "referrals", label: "Referrals", icon: Gift },
       ]
     }
   ];

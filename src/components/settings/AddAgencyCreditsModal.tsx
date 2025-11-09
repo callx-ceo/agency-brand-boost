@@ -109,7 +109,7 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
       onSuccess(creditsAmount); // Pass the added amount, not the new balance
       
       if (selectedPaymentType === "invoice") {
-        toast.success(`Invoice created for $${creditsAmount.toFixed(2)}. Credits will be available once payment is received.`);
+        toast.success(`Invoice generated for $${creditsAmount.toFixed(2)}. Credits are now available and payment is due per invoice terms.`);
       } else {
         const pm = paymentMethods.find(p => p.id === selectedPaymentMethodId);
         toast.success(`Charged $${creditsAmount.toFixed(2)} to ${pm?.brand} •••• ${pm?.last4}`);
@@ -347,8 +347,13 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
           )}
 
           {(allowedPaymentMethod === "invoice" || (allowedPaymentMethod === "both" && selectedPaymentType === "invoice")) && (
-            <div className="p-3 bg-muted rounded-lg text-sm text-muted-foreground">
-              <strong>Note:</strong> An invoice will be generated and sent to your billing email. Credits will be available once payment is received.
+            <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg text-sm">
+              <div className="font-medium mb-1">Invoice Payment Terms</div>
+              <p className="text-muted-foreground">
+                An invoice will be generated for $<span className="font-semibold">{parseFloat(amount || "0").toFixed(2)}</span>. 
+                Credits are <strong>available immediately</strong> for distribution to agents. 
+                Payment is due according to your invoice terms (typically Net 30).
+              </p>
             </div>
           )}
         </div>

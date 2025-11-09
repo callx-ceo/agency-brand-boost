@@ -991,7 +991,7 @@ const EnhancedAgentBilling = () => {
                 )}
               </div>
               <p className="text-sm text-muted-foreground">
-                Receive monthly invoices for all agency-paid agents
+                Add credits on account. Receive invoices with payment terms (Net 30). Credits available immediately.
               </p>
             </Label>
           </RadioGroup>

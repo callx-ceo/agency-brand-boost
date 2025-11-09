@@ -10,6 +10,8 @@ import { TransfersTab } from './agency/TransfersTab';
 import { UserRoleManagement } from './agency/UserRoleManagement';
 import { AgencyModelSettings } from './AgencyModelSettings';
 import EnhancedAgentBilling from './EnhancedAgentBilling';
+import { ImpersonationProvider } from '@/contexts/ImpersonationContext';
+import ImpersonationBanner from '@/components/ImpersonationBanner';
 
 interface AgencySettingsProps {
   onBackToDashboard?: () => void;
@@ -26,25 +28,27 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Settings className="h-6 w-6 text-primary" />
+    <ImpersonationProvider>
+      <div className="space-y-6">
+        <ImpersonationBanner />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Settings className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Agency Settings</h1>
+              <p className="text-muted-foreground">
+                Manage your agency members, invitations, and transfers
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold">Agency Settings</h1>
-            <p className="text-muted-foreground">
-              Manage your agency members, invitations, and transfers
-            </p>
-          </div>
+          {onBackToDashboard && (
+            <Button variant="outline" onClick={onBackToDashboard}>
+              Back to Dashboard
+            </Button>
+          )}
         </div>
-        {onBackToDashboard && (
-          <Button variant="outline" onClick={onBackToDashboard}>
-            Back to Dashboard
-          </Button>
-        )}
-      </div>
 
       <Card>
         <CardHeader>
@@ -117,6 +121,7 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
           </Tabs>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </ImpersonationProvider>
   );
 };

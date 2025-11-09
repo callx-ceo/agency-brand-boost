@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MoreVertical, Search, UserPlus, Crown, Shield, User, Eye, ArrowLeftRight, UserMinus, CheckCircle2, DollarSign, MapPin } from 'lucide-react';
+import { MoreVertical, Search, UserPlus, Crown, Shield, User, Eye, ArrowLeftRight, UserMinus, CheckCircle2, DollarSign, MapPin, UserCog } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,7 @@ import { InviteUserModal } from './InviteUserModal';
 import { RoleChangeConfirmDialog } from './RoleChangeConfirmDialog';
 import { TransferUserModal } from './TransferUserModal';
 import { AgencyMemberDetailView } from './AgencyMemberDetailView';
+import { useImpersonation } from '@/contexts/ImpersonationContext';
 
 type UserRole = 'Owner' | 'Admin' | 'Agent';
 type UserStatus = 'active' | 'suspended';
@@ -179,6 +180,7 @@ const generateMockMembers = (): AgencyMember[] => {
 const mockMembers: AgencyMember[] = generateMockMembers();
 
 export const MembersTab: React.FC = () => {
+  const { startImpersonation } = useImpersonation();
   const [members, setMembers] = useState<AgencyMember[]>(mockMembers);
   
   // Log member count for debugging
@@ -283,6 +285,15 @@ export const MembersTab: React.FC = () => {
   const handleTransferUser = (member: AgencyMember) => {
     setSelectedMember(member);
     setShowTransferModal(true);
+  };
+
+  const handleImpersonate = (member: AgencyMember) => {
+    startImpersonation({
+      id: member.id,
+      name: member.name,
+      email: member.email
+    });
+    toast.success(`Now impersonating ${member.name}`);
   };
 
   const handleViewDetails = (member: AgencyMember) => {
@@ -559,6 +570,10 @@ export const MembersTab: React.FC = () => {
                       </Button>
                     </DropdownMenuTrigger>
                      <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleImpersonate(member)}>
+                        <UserCog className="h-4 w-4 mr-2" />
+                        Impersonate
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleViewDetails(member)}>
                         <Eye className="h-4 w-4 mr-2" />
                         View Details

@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -61,7 +71,32 @@ export const AgencyBillingDetailModal = ({
   onClose,
   onViewAgents,
 }: AgencyBillingDetailModalProps) => {
+  const { toast } = useToast();
+  const [isEditSettingsOpen, setIsEditSettingsOpen] = useState(false);
+  const [editedAgency, setEditedAgency] = useState({
+    billingModel: "",
+    paymentMethod: "",
+    creditLimit: "",
+  });
+
   if (!agency) return null;
+
+  const handleOpenEditSettings = () => {
+    setEditedAgency({
+      billingModel: agency.billingModel,
+      paymentMethod: agency.paymentMethod,
+      creditLimit: "50000",
+    });
+    setIsEditSettingsOpen(true);
+  };
+
+  const handleSaveSettings = () => {
+    toast({
+      title: "Settings Updated",
+      description: "Agency billing settings have been updated successfully.",
+    });
+    setIsEditSettingsOpen(false);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -134,7 +169,7 @@ export const AgencyBillingDetailModal = ({
                 </span>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleOpenEditSettings}>
               <Edit className="w-4 h-4 mr-2" />
               Edit Settings
             </Button>
@@ -469,6 +504,79 @@ export const AgencyBillingDetailModal = ({
             </Table>
           </TabsContent>
         </Tabs>
+
+        {/* Edit Settings Dialog */}
+        <Dialog open={isEditSettingsOpen} onOpenChange={setIsEditSettingsOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Agency Billing Settings</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="billingModel">Billing Model</Label>
+                <Select
+                  value={editedAgency.billingModel}
+                  onValueChange={(value) =>
+                    setEditedAgency({ ...editedAgency, billingModel: value })
+                  }
+                >
+                  <SelectTrigger id="billingModel">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="prepaid">Prepaid</SelectItem>
+                    <SelectItem value="postpaid">Postpaid</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod">Payment Method</Label>
+                <Select
+                  value={editedAgency.paymentMethod}
+                  onValueChange={(value) =>
+                    setEditedAgency({ ...editedAgency, paymentMethod: value })
+                  }
+                >
+                  <SelectTrigger id="paymentMethod">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="credit_card">Credit Card</SelectItem>
+                    <SelectItem value="ach">ACH Transfer</SelectItem>
+                    <SelectItem value="invoice">Invoice</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="creditLimit">Credit Limit ($)</Label>
+                <Input
+                  id="creditLimit"
+                  type="number"
+                  value={editedAgency.creditLimit}
+                  onChange={(e) =>
+                    setEditedAgency({ ...editedAgency, creditLimit: e.target.value })
+                  }
+                  placeholder="50000"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setIsEditSettingsOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button className="flex-1" onClick={handleSaveSettings}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );

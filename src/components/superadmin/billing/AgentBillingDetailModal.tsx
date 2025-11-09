@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -59,7 +70,34 @@ export const AgentBillingDetailModal = ({
   isOpen,
   onClose,
 }: AgentBillingDetailModalProps) => {
+  const { toast } = useToast();
+  const [isEditSettingsOpen, setIsEditSettingsOpen] = useState(false);
+  const [editedAgent, setEditedAgent] = useState({
+    billingModel: "",
+    paymentMethod: "",
+    aiCoachingEnabled: false,
+    aiScoringEnabled: false,
+  });
+
   if (!agent) return null;
+
+  const handleOpenEditSettings = () => {
+    setEditedAgent({
+      billingModel: agent.billingModel,
+      paymentMethod: agent.paymentMethod,
+      aiCoachingEnabled: agent.services.aiCoaching.cost > 0,
+      aiScoringEnabled: agent.services.aiScoring.cost > 0,
+    });
+    setIsEditSettingsOpen(true);
+  };
+
+  const handleSaveSettings = () => {
+    toast({
+      title: "Settings Updated",
+      description: "Agent billing settings have been updated successfully.",
+    });
+    setIsEditSettingsOpen(false);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -122,7 +160,7 @@ export const AgentBillingDetailModal = ({
                 </span>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleOpenEditSettings}>
               <Edit className="w-4 h-4 mr-2" />
               Edit Settings
             </Button>
@@ -441,6 +479,101 @@ export const AgentBillingDetailModal = ({
             </Table>
           </TabsContent>
         </Tabs>
+
+        {/* Edit Settings Dialog */}
+        <Dialog open={isEditSettingsOpen} onOpenChange={setIsEditSettingsOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Agent Billing Settings</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="billingModel">Billing Model</Label>
+                <Select
+                  value={editedAgent.billingModel}
+                  onValueChange={(value) =>
+                    setEditedAgent({ ...editedAgent, billingModel: value })
+                  }
+                >
+                  <SelectTrigger id="billingModel">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="agency_pays">Agency Paid</SelectItem>
+                    <SelectItem value="agent_pays">Agent Paid</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {editedAgent.billingModel === "agent_pays" && (
+                <div className="space-y-2">
+                  <Label htmlFor="paymentMethod">Payment Method</Label>
+                  <Select
+                    value={editedAgent.paymentMethod}
+                    onValueChange={(value) =>
+                      setEditedAgent({ ...editedAgent, paymentMethod: value })
+                    }
+                  >
+                    <SelectTrigger id="paymentMethod">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="credit_card">Credit Card</SelectItem>
+                      <SelectItem value="ach">ACH Transfer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <Label htmlFor="aiCoaching">AI Coaching</Label>
+                    <p className="text-sm text-muted-foreground">
+                      $250/month
+                    </p>
+                  </div>
+                  <Switch
+                    id="aiCoaching"
+                    checked={editedAgent.aiCoachingEnabled}
+                    onCheckedChange={(checked) =>
+                      setEditedAgent({ ...editedAgent, aiCoachingEnabled: checked })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <Label htmlFor="aiScoring">AI Scoring</Label>
+                    <p className="text-sm text-muted-foreground">
+                      $250/month
+                    </p>
+                  </div>
+                  <Switch
+                    id="aiScoring"
+                    checked={editedAgent.aiScoringEnabled}
+                    onCheckedChange={(checked) =>
+                      setEditedAgent({ ...editedAgent, aiScoringEnabled: checked })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setIsEditSettingsOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button className="flex-1" onClick={handleSaveSettings}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );

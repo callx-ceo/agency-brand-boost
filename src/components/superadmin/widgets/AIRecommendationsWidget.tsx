@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, RefreshCw, TrendingUp, AlertTriangle, CheckCircle2, ChevronRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface AIRecommendation {
   id: string;
@@ -22,69 +20,51 @@ const AIRecommendationsWidget = () => {
 
   const generateRecommendations = async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-agent-insights', {
-        body: {
-          type: 'superadmin_recommendations',
-          context: {
-            role: 'superadmin',
-            totalRevenue: 145670,
-            activeAgencies: 12,
-            systemUptime: 99.8,
-            complianceScore: 94
-          }
-        }
-      });
+    
+    // Simulate AI processing time
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-      if (error) throw error;
+    const mockRecommendations: AIRecommendation[] = [
+      {
+        id: "1",
+        title: "Optimize Agency Credit Limits",
+        description: "3 agencies approaching their credit limits. Consider increasing limits for consistent performers.",
+        priority: "high",
+        category: "Finance",
+        impact: "Prevent service disruption",
+        actionRequired: true
+      },
+      {
+        id: "2",
+        title: "Scale Infrastructure",
+        description: "System capacity at 87%. Plan infrastructure scaling for anticipated 15% growth.",
+        priority: "medium",
+        category: "Operations",
+        impact: "Ensure performance",
+        actionRequired: false
+      },
+      {
+        id: "3",
+        title: "Review Compliance Policies",
+        description: "2 new regulatory requirements detected. Update compliance framework by end of quarter.",
+        priority: "high",
+        category: "Compliance",
+        impact: "Maintain certification",
+        actionRequired: true
+      },
+      {
+        id: "4",
+        title: "Agent Performance Optimization",
+        description: "Top 10% agents using new AI features. Roll out training to increase adoption by 40%.",
+        priority: "medium",
+        category: "Training",
+        impact: "Boost productivity",
+        actionRequired: false
+      }
+    ];
 
-      // Parse AI response or use mock data
-      const mockRecommendations: AIRecommendation[] = [
-        {
-          id: "1",
-          title: "Optimize Agency Credit Limits",
-          description: "3 agencies approaching their credit limits. Consider increasing limits for consistent performers.",
-          priority: "high",
-          category: "Finance",
-          impact: "Prevent service disruption",
-          actionRequired: true
-        },
-        {
-          id: "2",
-          title: "Scale Infrastructure",
-          description: "System capacity at 87%. Plan infrastructure scaling for anticipated 15% growth.",
-          priority: "medium",
-          category: "Operations",
-          impact: "Ensure performance",
-          actionRequired: false
-        },
-        {
-          id: "3",
-          title: "Review Compliance Policies",
-          description: "2 new regulatory requirements detected. Update compliance framework by end of quarter.",
-          priority: "high",
-          category: "Compliance",
-          impact: "Maintain certification",
-          actionRequired: true
-        },
-        {
-          id: "4",
-          title: "Agent Performance Optimization",
-          description: "Top 10% agents using new AI features. Roll out training to increase adoption by 40%.",
-          priority: "medium",
-          category: "Training",
-          impact: "Boost productivity",
-          actionRequired: false
-        }
-      ];
-
-      setRecommendations(mockRecommendations);
-    } catch (error) {
-      console.error('Error generating recommendations:', error);
-      toast.error("Failed to generate recommendations");
-    } finally {
-      setLoading(false);
-    }
+    setRecommendations(mockRecommendations);
+    setLoading(false);
   };
 
   useEffect(() => {

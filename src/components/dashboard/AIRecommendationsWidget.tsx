@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, RefreshCw, TrendingUp, AlertTriangle, CheckCircle2, ChevronRight, Users, Phone, DollarSign } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface AIRecommendation {
   id: string;
@@ -22,78 +20,60 @@ const AIRecommendationsWidget = () => {
 
   const generateRecommendations = async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-agent-insights', {
-        body: {
-          type: 'agency_recommendations',
-          context: {
-            role: 'agency',
-            qualifiedCalls: 362,
-            activeAgents: 11,
-            walletBalance: 412.57,
-            conversionRate: 76.3
-          }
-        }
-      });
+    
+    // Simulate AI processing time
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-      if (error) throw error;
+    const mockRecommendations: AIRecommendation[] = [
+      {
+        id: "1",
+        title: "Optimize Agent Schedules",
+        description: "Peak call volume detected 2-4 PM. Increase agent availability by 30% during this window.",
+        priority: "high",
+        category: "Operations",
+        impact: "Reduce missed calls by 25%",
+        actionRequired: true
+      },
+      {
+        id: "2",
+        title: "Wallet Top-Up Alert",
+        description: "Current balance ($412.57) will last ~3 days at current spend rate. Consider adding funds.",
+        priority: "medium",
+        category: "Finance",
+        impact: "Prevent service interruption",
+        actionRequired: false
+      },
+      {
+        id: "3",
+        title: "Agent Training Opportunity",
+        description: "3 agents with conversion rates below 60%. Schedule training session on objection handling.",
+        priority: "medium",
+        category: "Training",
+        impact: "Boost team performance by 15%",
+        actionRequired: true
+      },
+      {
+        id: "4",
+        title: "Campaign Performance Review",
+        description: "Medicare campaign outperforming by 40%. Consider reallocating budget from underperforming campaigns.",
+        priority: "low",
+        category: "Strategy",
+        impact: "Maximize ROI",
+        actionRequired: false
+      },
+      {
+        id: "5",
+        title: "Quality Assurance Alert",
+        description: "Call quality scores dropped 8% this week. Review recent calls for common issues.",
+        priority: "high",
+        category: "Quality",
+        impact: "Maintain service standards",
+        actionRequired: true
+      }
+    ];
 
-      // Parse AI response or use mock data
-      const mockRecommendations: AIRecommendation[] = [
-        {
-          id: "1",
-          title: "Optimize Agent Schedules",
-          description: "Peak call volume detected 2-4 PM. Increase agent availability by 30% during this window.",
-          priority: "high",
-          category: "Operations",
-          impact: "Reduce missed calls by 25%",
-          actionRequired: true
-        },
-        {
-          id: "2",
-          title: "Wallet Top-Up Alert",
-          description: "Current balance ($412.57) will last ~3 days at current spend rate. Consider adding funds.",
-          priority: "medium",
-          category: "Finance",
-          impact: "Prevent service interruption",
-          actionRequired: false
-        },
-        {
-          id: "3",
-          title: "Agent Training Opportunity",
-          description: "3 agents with conversion rates below 60%. Schedule training session on objection handling.",
-          priority: "medium",
-          category: "Training",
-          impact: "Boost team performance by 15%",
-          actionRequired: true
-        },
-        {
-          id: "4",
-          title: "Campaign Performance Review",
-          description: "Medicare campaign outperforming by 40%. Consider reallocating budget from underperforming campaigns.",
-          priority: "low",
-          category: "Strategy",
-          impact: "Maximize ROI",
-          actionRequired: false
-        },
-        {
-          id: "5",
-          title: "Quality Assurance Alert",
-          description: "Call quality scores dropped 8% this week. Review recent calls for common issues.",
-          priority: "high",
-          category: "Quality",
-          impact: "Maintain service standards",
-          actionRequired: true
-        }
-      ];
-
-      setRecommendations(mockRecommendations);
-    } catch (error) {
-      console.error('Error generating recommendations:', error);
-      toast.error("Failed to generate recommendations");
-    } finally {
-      setLoading(false);
-    }
+    setRecommendations(mockRecommendations);
+    setLoading(false);
   };
 
   useEffect(() => {

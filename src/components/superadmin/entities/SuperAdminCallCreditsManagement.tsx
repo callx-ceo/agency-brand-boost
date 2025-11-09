@@ -1156,7 +1156,7 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
                   </div>
                   <CardTitle className="text-2xl">{selectedAgency?.agencyName}</CardTitle>
                   <p className="text-muted-foreground mt-1">
-                    {selectedAgency?.agentCount} agents
+                    {agencyAgents.length} agents
                   </p>
                 </div>
                 <div className="text-right">

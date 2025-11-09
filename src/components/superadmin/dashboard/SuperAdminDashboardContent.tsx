@@ -9,6 +9,7 @@ import { ExecutiveKPIConfig } from "./ExecutiveKPISelector";
 import { SuperAdminWidget } from "./SuperAdminWidgetSelector";
 import { mockExecutiveDashboardData, getKPIValue } from "../data/mockExecutiveData";
 import AIRecommendationsWidget from "../widgets/AIRecommendationsWidget";
+import CallInsightsWidget from "@/components/shared/CallInsightsWidget";
 
 interface SuperAdminDashboardContentProps {
   activeView: SuperAdminViewType;
@@ -49,6 +50,8 @@ const SuperAdminDashboardContent = ({
         selectedKPIs={selectedKPIs}
         getKPIValue={getKPIValue}
       />
+
+      <CallInsightsWidget role="superadmin" />
 
       <AIRecommendationsWidget />
 

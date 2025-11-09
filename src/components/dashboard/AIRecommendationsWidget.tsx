@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, RefreshCw, TrendingUp, AlertTriangle, CheckCircle2, ChevronRight, Users, Phone, DollarSign } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sparkles, RefreshCw, TrendingUp, AlertTriangle, CheckCircle2, ChevronRight, Users, Phone, DollarSign, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface AIRecommendation {
   id: string;
@@ -17,6 +19,8 @@ interface AIRecommendation {
 const AIRecommendationsWidget = () => {
   const [recommendations, setRecommendations] = useState<AIRecommendation[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRecommendation, setSelectedRecommendation] = useState<AIRecommendation | null>(null);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
 
   const generateRecommendations = async () => {
     setLoading(true);
@@ -80,6 +84,17 @@ const AIRecommendationsWidget = () => {
     generateRecommendations();
   }, []);
 
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRecommendations(prev => prev.filter(rec => rec.id !== id));
+    toast.success("Recommendation dismissed");
+  };
+
+  const handleClick = (rec: AIRecommendation) => {
+    setSelectedRecommendation(rec);
+    setShowDetailDialog(true);
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high": return "bg-red-100 text-red-800 border-red-200";
@@ -138,9 +153,18 @@ const AIRecommendationsWidget = () => {
           recommendations.map((rec) => (
             <div
               key={rec.id}
-              className="p-3 border rounded-lg hover:shadow-md transition-shadow cursor-pointer group"
+              onClick={() => handleClick(rec)}
+              className="p-3 border rounded-lg hover:shadow-md transition-shadow cursor-pointer group relative"
             >
-              <div className="flex items-start justify-between gap-2 mb-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => handleDelete(rec.id, e)}
+                className="absolute top-2 right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+              <div className="flex items-start justify-between gap-2 mb-2 pr-6">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-medium text-sm">{rec.title}</h4>
@@ -169,6 +193,69 @@ const AIRecommendationsWidget = () => {
           ))
         )}
       </CardContent>
+
+      {/* Detail Dialog */}
+      <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {selectedRecommendation && getPriorityIcon(selectedRecommendation.priority)}
+              {selectedRecommendation?.title}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedRecommendation?.category} • {selectedRecommendation?.impact}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-sm mb-2">Details</h4>
+              <p className="text-sm text-muted-foreground">{selectedRecommendation?.description}</p>
+            </div>
+            
+            <div>
+              <h4 className="font-medium text-sm mb-2">Recommended Actions</h4>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-600" />
+                  <span>Review team performance metrics</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-600" />
+                  <span>Implement suggested changes</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-600" />
+                  <span>Track impact over next 7 days</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex items-center gap-2 pt-4">
+              <Badge variant="outline" className={getPriorityColor(selectedRecommendation?.priority || "low")}>
+                {selectedRecommendation?.priority} priority
+              </Badge>
+              {selectedRecommendation?.actionRequired && (
+                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                  Action Required
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <Button className="flex-1">Implement</Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  if (selectedRecommendation) handleDelete(selectedRecommendation.id, {} as React.MouseEvent);
+                  setShowDetailDialog(false);
+                }}
+              >
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

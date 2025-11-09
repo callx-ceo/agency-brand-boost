@@ -8,6 +8,7 @@ import ViewRenderer from "./dashboard/ViewRenderer";
 import KPICardSelector, { KPIConfig } from "./dashboard/KPICardSelector";
 import DashboardWidgetSelector, { DashboardWidget } from "./dashboard/DashboardWidgetSelector";
 import AIRecommendationsWidget from "./dashboard/AIRecommendationsWidget";
+import CallInsightsWidget from "./shared/CallInsightsWidget";
 
 // Mock data for the dashboard - expanded with new KPIs
 const mockDashboardData = {
@@ -189,6 +190,8 @@ const AgencyDashboard = () => {
         selectedKPIs={selectedKPIs}
         getKPIValue={getKPIValue}
       />
+
+      <CallInsightsWidget role="agency" />
 
       <AIRecommendationsWidget />
 

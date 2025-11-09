@@ -22,6 +22,7 @@ import AgentHistoryView from "./AgentHistoryView";
 import AgentSettingsView from "./AgentSettingsView";
 import AgentInsights from "./AgentInsights";
 import { ReferralDashboard } from "./ReferralDashboard";
+import CallInsightsWidget from "@/components/shared/CallInsightsWidget";
 
 const AgentDashboardNew = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -207,6 +208,9 @@ const AgentDashboardNew = () => {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Call Insights - Prioritized at the top */}
+              <CallInsightsWidget role="agent" />
 
               {/* Today's Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

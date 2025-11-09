@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
+
 import {
   Settings,
   Mail,
@@ -34,6 +37,10 @@ interface PlatformSettingsProps {
 }
 
 const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<string | null>(null);
+
   const [generalSettings, setGeneralSettings] = useState({
     platformName: "CallX Platform",
     platformUrl: "https://callx.platform.com",
@@ -48,7 +55,7 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
     smtpHost: "smtp.sendgrid.net",
     smtpPort: "587",
     smtpUser: "apikey",
-    smtpPassword: "••••••••••••",
+    smtpPassword: "",
     fromEmail: "noreply@callx.com",
     fromName: "CallX Platform",
     enableSSL: true,
@@ -56,16 +63,16 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
 
   const [smsSettings, setSmsSettings] = useState({
     provider: "twilio",
-    twilioAccountSid: "AC••••••••••••••",
-    twilioAuthToken: "••••••••••••",
-    twilioPhoneNumber: "+1234567890",
-    enableSMS: true,
+    twilioAccountSid: "",
+    twilioAuthToken: "",
+    twilioPhoneNumber: "",
+    enableSMS: false,
   });
 
   const [paymentSettings, setPaymentSettings] = useState({
-    stripePublishableKey: "pk_live_••••••••••••",
-    stripeSecretKey: "sk_live_••••••••••••",
-    enableStripe: true,
+    stripePublishableKey: "",
+    stripeSecretKey: "",
+    enableStripe: false,
     enableInvoicing: true,
     paymentTermsDays: "30",
   });
@@ -106,48 +113,144 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
 
   const [notificationSettings, setNotificationSettings] = useState({
     enableEmailNotifications: true,
-    enableSMSNotifications: true,
+    enableSMSNotifications: false,
     enableInAppNotifications: true,
     enablePushNotifications: false,
     notificationBatchSize: "50",
     notificationRetryAttempts: "3",
   });
 
+  // Load settings from database
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('platform_settings')
+        .select('*');
+
+      if (error) throw error;
+
+      if (data) {
+        data.forEach((setting) => {
+          switch (setting.setting_key) {
+            case 'general':
+              setGeneralSettings(setting.setting_value as any);
+              break;
+            case 'email':
+              setEmailSettings(setting.setting_value as any);
+              break;
+            case 'sms':
+              setSmsSettings(setting.setting_value as any);
+              break;
+            case 'payment':
+              setPaymentSettings(setting.setting_value as any);
+              break;
+            case 'security':
+              setSecuritySettings(setting.setting_value as any);
+              break;
+            case 'api':
+              setApiSettings(setting.setting_value as any);
+              break;
+            case 'features':
+              setFeatureFlags(setting.setting_value as any);
+              break;
+            case 'maintenance':
+              setMaintenanceSettings(setting.setting_value as any);
+              break;
+            case 'notifications':
+              setNotificationSettings(setting.setting_value as any);
+              break;
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load platform settings",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveSetting = async (key: string, value: any, successMessage: string) => {
+    try {
+      setSaving(key);
+      const { error } = await supabase
+        .from('platform_settings')
+        .update({ setting_value: value })
+        .eq('setting_key', key);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: successMessage,
+      });
+    } catch (error) {
+      console.error(`Error saving ${key} settings:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to save ${key} settings`,
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(null);
+    }
+  };
+
   const handleSaveGeneral = () => {
-    toast.success("General settings saved successfully");
+    saveSetting('general', generalSettings, 'General settings saved successfully');
   };
 
   const handleSaveEmail = () => {
-    toast.success("Email configuration saved successfully");
+    saveSetting('email', emailSettings, 'Email configuration saved successfully');
   };
 
   const handleSaveSMS = () => {
-    toast.success("SMS configuration saved successfully");
+    saveSetting('sms', smsSettings, 'SMS configuration saved successfully');
   };
 
   const handleSavePayment = () => {
-    toast.success("Payment settings saved successfully");
+    saveSetting('payment', paymentSettings, 'Payment settings saved successfully');
   };
 
   const handleSaveSecurity = () => {
-    toast.success("Security settings saved successfully");
+    saveSetting('security', securitySettings, 'Security settings saved successfully');
   };
 
   const handleSaveAPI = () => {
-    toast.success("API settings saved successfully");
+    saveSetting('api', apiSettings, 'API settings saved successfully');
   };
 
   const handleSaveFeatures = () => {
-    toast.success("Feature flags updated successfully");
+    saveSetting('features', featureFlags, 'Feature flags updated successfully');
   };
 
   const handleSaveMaintenance = () => {
-    toast.success("Maintenance settings saved successfully");
+    saveSetting('maintenance', maintenanceSettings, 'Maintenance settings saved successfully');
   };
 
   const handleSaveNotifications = () => {
-    toast.success("Notification settings saved successfully");
+    saveSetting('notifications', notificationSettings, 'Notification settings saved successfully');
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading platform settings...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -320,7 +423,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 </div>
               </div>
 
-              <Button onClick={handleSaveGeneral}>Save General Settings</Button>
+              <Button onClick={handleSaveGeneral} disabled={saving === 'general'}>
+                {saving === 'general' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save General Settings
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -422,7 +528,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 />
               </div>
 
-              <Button onClick={handleSaveEmail}>Save Email Settings</Button>
+              <Button onClick={handleSaveEmail} disabled={saving === 'email'}>
+                {saving === 'email' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save Email Settings
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -507,7 +616,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 />
               </div>
 
-              <Button onClick={handleSaveSMS}>Save SMS Settings</Button>
+              <Button onClick={handleSaveSMS} disabled={saving === 'sms'}>
+                {saving === 'sms' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save SMS Settings
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -593,7 +705,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 />
               </div>
 
-              <Button onClick={handleSavePayment}>Save Payment Settings</Button>
+              <Button onClick={handleSavePayment} disabled={saving === 'payment'}>
+                {saving === 'payment' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save Payment Settings
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -732,7 +847,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 </div>
               </div>
 
-              <Button onClick={handleSaveSecurity}>Save Security Settings</Button>
+              <Button onClick={handleSaveSecurity} disabled={saving === 'security'}>
+                {saving === 'security' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save Security Settings
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -818,7 +936,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 </div>
               </div>
 
-              <Button onClick={handleSaveAPI}>Save API Settings</Button>
+              <Button onClick={handleSaveAPI} disabled={saving === 'api'}>
+                {saving === 'api' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save API Settings
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -929,7 +1050,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 />
               </div>
 
-              <Button onClick={handleSaveFeatures}>Save Feature Flags</Button>
+              <Button onClick={handleSaveFeatures} disabled={saving === 'features'}>
+                {saving === 'features' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save Feature Flags
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -993,7 +1117,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 />
               </div>
 
-              <Button onClick={handleSaveMaintenance}>Save Maintenance Settings</Button>
+              <Button onClick={handleSaveMaintenance} disabled={saving === 'maintenance'}>
+                {saving === 'maintenance' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save Maintenance Settings
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -1117,7 +1244,10 @@ const PlatformSettings = ({ onBackToDashboard }: PlatformSettingsProps) => {
                 </div>
               </div>
 
-              <Button onClick={handleSaveNotifications}>Save Notification Settings</Button>
+              <Button onClick={handleSaveNotifications} disabled={saving === 'notifications'}>
+                {saving === 'notifications' && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save Notification Settings
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>

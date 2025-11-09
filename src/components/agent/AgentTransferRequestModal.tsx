@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRightLeft, Building, Search, Info } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ArrowRightLeft, Building, Search, Info, AlertCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Agency {
   id: string;
@@ -67,7 +69,41 @@ export const AgentTransferRequestModal: React.FC<AgentTransferRequestModalProps>
   const [searchTerm, setSearchTerm] = useState('');
   const [transferReason, setTransferReason] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [accountBalance, setAccountBalance] = useState<number | null>(null);
+  const [isCheckingBalance, setIsCheckingBalance] = useState(false);
   const { toast } = useToast();
+
+  // Check agent's account balance when modal opens
+  useEffect(() => {
+    const checkBalance = async () => {
+      if (!open) return;
+      
+      setIsCheckingBalance(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data, error } = await supabase
+          .from('agent_payment_settings')
+          .select('call_credits_balance')
+          .eq('agent_id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error fetching balance:', error);
+          return;
+        }
+
+        setAccountBalance(data?.call_credits_balance ?? null);
+      } catch (error) {
+        console.error('Error checking balance:', error);
+      } finally {
+        setIsCheckingBalance(false);
+      }
+    };
+
+    checkBalance();
+  }, [open]);
 
   const filteredAgencies = mockAgencies.filter(agency =>
     agency.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -78,6 +114,16 @@ export const AgentTransferRequestModal: React.FC<AgentTransferRequestModalProps>
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check balance requirement
+    if (accountBalance !== null && accountBalance !== 0) {
+      toast({
+        title: "Outstanding balance",
+        description: "Your account balance must be $0 before you can transfer agencies. Please settle your account first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!selectedAgency) {
       toast({
         title: "Agency required",
@@ -149,6 +195,31 @@ export const AgentTransferRequestModal: React.FC<AgentTransferRequestModalProps>
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
+            {/* Balance Warning */}
+            {isCheckingBalance ? (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertTitle>Checking account balance...</AlertTitle>
+              </Alert>
+            ) : accountBalance !== null && accountBalance !== 0 ? (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Outstanding Balance</AlertTitle>
+                <AlertDescription>
+                  Your current account balance is ${Math.abs(accountBalance).toFixed(2)}. 
+                  You must settle your account to $0.00 before requesting a transfer.
+                </AlertDescription>
+              </Alert>
+            ) : accountBalance === 0 ? (
+              <Alert className="bg-green-50 border-green-200">
+                <Info className="h-4 w-4 text-green-600" />
+                <AlertTitle className="text-green-800">Account Balance Cleared</AlertTitle>
+                <AlertDescription className="text-green-700">
+                  Your account balance is $0.00. You're eligible to request a transfer.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+
             {/* Information Alert */}
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start space-x-2">
@@ -156,6 +227,7 @@ export const AgentTransferRequestModal: React.FC<AgentTransferRequestModalProps>
                 <div className="space-y-1">
                   <p className="font-semibold text-blue-800">Transfer Request Process</p>
                   <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• Your account balance must be $0 to transfer</li>
                     <li>• Your current agency owner will be notified</li>
                     <li>• The destination agency must approve your request</li>
                     <li>• You'll keep your current role and permissions</li>
@@ -259,7 +331,13 @@ export const AgentTransferRequestModal: React.FC<AgentTransferRequestModalProps>
             </Button>
             <Button 
               type="submit" 
-              disabled={isLoading || !selectedAgency || !transferReason.trim()}
+              disabled={
+                isLoading || 
+                isCheckingBalance ||
+                !selectedAgency || 
+                !transferReason.trim() ||
+                (accountBalance !== null && accountBalance !== 0)
+              }
             >
               {isLoading ? 'Submitting Request...' : 'Submit Transfer Request'}
             </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRightLeft, Building, User, Search } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ArrowRightLeft, Building, User, Search, AlertCircle, Info } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 type UserRole = 'Owner' | 'Admin' | 'Agent';
 
@@ -77,7 +79,45 @@ export const TransferUserModal: React.FC<TransferUserModalProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [transferReason, setTransferReason] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [accountBalance, setAccountBalance] = useState<number | null>(null);
+  const [isCheckingBalance, setIsCheckingBalance] = useState(false);
   const { toast } = useToast();
+
+  // Check member's account balance when modal opens or member changes
+  useEffect(() => {
+    const checkBalance = async () => {
+      if (!open || !member || member.role !== 'Agent') {
+        setAccountBalance(null);
+        return;
+      }
+      
+      setIsCheckingBalance(true);
+      try {
+        // In a real implementation, you'd use the member's actual user_id
+        // For now, we'll simulate the check
+        // const { data, error } = await supabase
+        //   .from('agent_payment_settings')
+        //   .select('call_credits_balance')
+        //   .eq('agent_id', member.id)
+        //   .maybeSingle();
+
+        // Simulating balance check - replace with actual query
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Mock data - in production this would be real data from the database
+        const mockBalance = Math.random() > 0.5 ? 0 : Math.random() * 100;
+        setAccountBalance(mockBalance);
+        
+      } catch (error) {
+        console.error('Error checking balance:', error);
+        setAccountBalance(null);
+      } finally {
+        setIsCheckingBalance(false);
+      }
+    };
+
+    checkBalance();
+  }, [open, member]);
 
   const filteredAgencies = mockAgencies.filter(agency =>
     agency.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -87,6 +127,16 @@ export const TransferUserModal: React.FC<TransferUserModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check balance requirement for agents
+    if (member?.role === 'Agent' && accountBalance !== null && accountBalance !== 0) {
+      toast({
+        title: "Outstanding balance",
+        description: `${member.name} has an outstanding balance of $${Math.abs(accountBalance).toFixed(2)}. The agent's account must be settled to $0.00 before transfer.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!selectedAgency) {
       toast({
         title: "Agency required",
@@ -169,6 +219,35 @@ export const TransferUserModal: React.FC<TransferUserModalProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Balance Check for Agents */}
+            {member.role === 'Agent' && (
+              <>
+                {isCheckingBalance ? (
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertTitle>Checking account balance...</AlertTitle>
+                  </Alert>
+                ) : accountBalance !== null && accountBalance !== 0 ? (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Outstanding Balance Detected</AlertTitle>
+                    <AlertDescription>
+                      This agent has an outstanding balance of ${Math.abs(accountBalance).toFixed(2)}. 
+                      The account must be settled to $0.00 before transferring to another agency.
+                    </AlertDescription>
+                  </Alert>
+                ) : accountBalance === 0 ? (
+                  <Alert className="bg-green-50 border-green-200">
+                    <Info className="h-4 w-4 text-green-600" />
+                    <AlertTitle className="text-green-800">Account Balance Cleared</AlertTitle>
+                    <AlertDescription className="text-green-700">
+                      This agent's account balance is $0.00 and eligible for transfer.
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
+              </>
+            )}
 
             {/* Agency Search */}
             <div className="space-y-2">
@@ -257,6 +336,9 @@ export const TransferUserModal: React.FC<TransferUserModalProps> = ({
                 <div className="space-y-1">
                   <p className="font-semibold text-blue-800">Transfer Process</p>
                   <ul className="text-sm text-blue-700 space-y-1">
+                    {member.role === 'Agent' && (
+                      <li>• Agent account balance must be $0 to transfer</li>
+                    )}
                     <li>• The destination agency owner will be notified</li>
                     <li>• They must approve the transfer before it's processed</li>
                     <li>• The user will maintain their current role and permissions</li>
@@ -278,7 +360,12 @@ export const TransferUserModal: React.FC<TransferUserModalProps> = ({
             </Button>
             <Button 
               type="submit" 
-              disabled={isLoading || !selectedAgency}
+              disabled={
+                isLoading || 
+                isCheckingBalance ||
+                !selectedAgency ||
+                (member.role === 'Agent' && accountBalance !== null && accountBalance !== 0)
+              }
             >
               {isLoading ? 'Creating Request...' : 'Create Transfer Request'}
             </Button>

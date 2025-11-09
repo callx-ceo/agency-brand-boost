@@ -822,6 +822,12 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
     const agency = agencies.find((a) => a.agencyId === agencyId);
     if (!agency) return;
 
+    // Credit card agencies don't have credit limits
+    if (agency.allowedPaymentMethod === "credit_card") {
+      toast.info("Credit card agencies have unlimited credit");
+      return;
+    }
+
     setCreditLimitDialog({
       isOpen: true,
       agencyId,
@@ -1073,31 +1079,43 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono">
-                          ${agency.creditLimit.toLocaleString()}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleOpenCreditLimitDialog(agency.agencyId)}
-                        >
-                          <Settings2 className="w-3 h-3" />
-                        </Button>
-                      </div>
+                      {agency.allowedPaymentMethod === "credit_card" ? (
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          Unlimited
+                        </Badge>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono">
+                            ${agency.creditLimit.toLocaleString()}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleOpenCreditLimitDialog(agency.agencyId)}
+                          >
+                            <Settings2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono">
-                          ${agency.creditUsed.toLocaleString()}
-                        </span>
-                        {agency.creditUsed >= agency.creditLimit * 0.9 && (
-                          <AlertCircle className="w-4 h-4 text-destructive" />
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {((agency.creditUsed / agency.creditLimit) * 100).toFixed(1)}% used
-                      </div>
+                      {agency.allowedPaymentMethod === "credit_card" ? (
+                        <span className="text-muted-foreground text-sm">N/A</span>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono">
+                              ${agency.creditUsed.toLocaleString()}
+                            </span>
+                            {agency.creditUsed >= agency.creditLimit * 0.9 && (
+                              <AlertCircle className="w-4 h-4 text-destructive" />
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {((agency.creditUsed / agency.creditLimit) * 100).toFixed(1)}% used
+                          </div>
+                        </>
+                      )}
                     </TableCell>
                     <TableCell>{agency.agentCount}</TableCell>
                     <TableCell className="font-mono">

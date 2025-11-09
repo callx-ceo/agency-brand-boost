@@ -456,6 +456,8 @@ const EnhancedAgentBilling = () => {
       isDefault: true,
     }
   ]);
+  const [showPaymentMethodChangeDialog, setShowPaymentMethodChangeDialog] = useState(false);
+  const [pendingPaymentMethod, setPendingPaymentMethod] = useState<AgencyPaymentMethod | null>(null);
 
   // Fetch agency credit information from database
   useEffect(() => {
@@ -665,6 +667,50 @@ const EnhancedAgentBilling = () => {
     setAgencyPaymentMethods([...agencyPaymentMethods, method]);
   };
 
+  const handlePaymentMethodChange = (value: AgencyPaymentMethod) => {
+    // If there are existing credits, show confirmation dialog
+    if (agencyCreditsBalance > 0) {
+      setPendingPaymentMethod(value as AgencyPaymentMethod);
+      setShowPaymentMethodChangeDialog(true);
+    } else {
+      confirmPaymentMethodChange(value as AgencyPaymentMethod);
+    }
+  };
+
+  const confirmPaymentMethodChange = async (value: AgencyPaymentMethod) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Update payment method in database
+      const { error } = await supabase
+        .from('agency_branding')
+        .update({ allowed_payment_method: value })
+        .eq('agency_id', user.id);
+
+      if (error) throw error;
+
+      setAgencyPaymentMethod(value);
+      toast.success(`Payment method updated to ${value === 'invoice' ? 'Invoicing' : value === 'credit_card' ? 'Credit Card' : 'Both'}`);
+    } catch (error) {
+      console.error('Error updating payment method:', error);
+      toast.error('Failed to update payment method');
+    }
+  };
+
+  const handleConfirmPaymentMethodChange = () => {
+    if (pendingPaymentMethod) {
+      confirmPaymentMethodChange(pendingPaymentMethod);
+      setShowPaymentMethodChangeDialog(false);
+      setPendingPaymentMethod(null);
+    }
+  };
+
+  const handleCancelPaymentMethodChange = () => {
+    setShowPaymentMethodChangeDialog(false);
+    setPendingPaymentMethod(null);
+  };
+
   const agencyPaidAgents = agents.filter(a => a.paymentMode === "agency_paid");
   const lowBalanceThreshold = agencyPaidAgents.length * 100; // $100 per agent as threshold
   const hasLowBalance = agencyCreditsBalance < lowBalanceThreshold && agencyCreditsBalance > 0;
@@ -749,6 +795,41 @@ const EnhancedAgentBilling = () => {
         existingPaymentMethods={agencyPaymentMethods}
         onPaymentMethodAdded={handlePaymentMethodAdded}
       />
+
+      <AlertDialog open={showPaymentMethodChangeDialog} onOpenChange={setShowPaymentMethodChangeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change Payment Method</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>
+                You are about to change your payment method to{" "}
+                <strong>
+                  {pendingPaymentMethod === 'invoice' ? 'Invoicing' : pendingPaymentMethod === 'credit_card' ? 'Credit Card' : 'Both'}
+                </strong>.
+              </p>
+              <div className="p-3 bg-muted rounded-lg space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <AlertCircle className="h-4 w-4 text-primary" />
+                  <span>Your Existing Credits</span>
+                </div>
+                <div className="text-sm text-muted-foreground pl-6">
+                  Your current credit balance of <strong>${agencyCreditsBalance.toFixed(2)}</strong> will remain available.
+                  All credits already allocated to agents will stay intact.
+                </div>
+              </div>
+              <p className="text-sm">
+                This change only affects how <strong>new credits</strong> are added to your account going forward.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelPaymentMethodChange}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmPaymentMethodChange}>
+              Confirm Change
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelPaymentModeChange()}>
         <AlertDialogContent>
@@ -866,13 +947,21 @@ const EnhancedAgentBilling = () => {
             Choose how your agency pays for agency-paid agents
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {agencyCreditsBalance > 0 && (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Existing Credits Protected</AlertTitle>
+              <AlertDescription>
+                Your current balance of <strong>${agencyCreditsBalance.toFixed(2)}</strong> will remain available regardless of payment method changes. 
+                This setting only affects how new credits are added.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <RadioGroup
             value={agencyPaymentMethod}
-            onValueChange={(value) => {
-              setAgencyPaymentMethod(value as AgencyPaymentMethod);
-              toast.success(`Payment method updated to ${value === 'invoicing' ? 'Invoicing' : 'Credit Card'}`);
-            }}
+            onValueChange={handlePaymentMethodChange}
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             <Label

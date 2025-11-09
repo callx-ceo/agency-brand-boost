@@ -39,7 +39,7 @@ interface AddAgencyCreditsModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentBalance: number;
-  onSuccess: (newBalance: number) => void;
+  onSuccess: (addedAmount: number) => void;
   allowedPaymentMethod: "credit_card" | "invoice" | "both";
   existingPaymentMethods?: PaymentMethod[];
   onPaymentMethodAdded?: (method: PaymentMethod) => void;
@@ -106,8 +106,7 @@ const AddAgencyCreditsModal: React.FC<AddAgencyCreditsModalProps> = ({
     
     // Simulate API call - In production, this would process payment/create invoice
     setTimeout(() => {
-      const newBalance = currentBalance + creditsAmount;
-      onSuccess(newBalance);
+      onSuccess(creditsAmount); // Pass the added amount, not the new balance
       
       if (selectedPaymentType === "invoice") {
         toast.success(`Invoice created for $${creditsAmount.toFixed(2)}. Credits will be available once payment is received.`);

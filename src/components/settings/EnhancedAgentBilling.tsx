@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Select,
   SelectContent,
@@ -434,13 +435,16 @@ const mockAgents: AgentBillingData[] = [
 const EnhancedAgentBilling = () => {
   const [agents, setAgents] = useState<AgentBillingData[]>(mockAgents);
   const [agencyPaymentMethod, setAgencyPaymentMethod] = useState<AgencyPaymentMethod>("credit_card");
-  const [agencyCreditsBalance, setAgencyCreditsBalance] = useState<number>(42850.75); // Synced with Billing Dashboard
+  const [agencyCreditsBalance, setAgencyCreditsBalance] = useState<number>(0);
+  const [agencyCreditLimit, setAgencyCreditLimit] = useState<number>(0);
+  const [agencyCreditUsed, setAgencyCreditUsed] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentModeFilter, setPaymentModeFilter] = useState<"all" | PaymentMode>("all");
   const [updatingAgent, setUpdatingAgent] = useState<string | null>(null);
   const [selectedAgentIds, setSelectedAgentIds] = useState<Set<string>>(new Set());
   const [isBulkFundsModalOpen, setIsBulkFundsModalOpen] = useState(false);
   const [isAgencyCreditsModalOpen, setIsAgencyCreditsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [agencyPaymentMethods, setAgencyPaymentMethods] = useState<any[]>([
     // Mock payment method - in production this would come from database
     {
@@ -452,6 +456,45 @@ const EnhancedAgentBilling = () => {
       isDefault: true,
     }
   ]);
+
+  // Fetch agency credit information from database
+  useEffect(() => {
+    const fetchAgencyCredits = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: agencyData, error } = await supabase
+          .from('agency_branding')
+          .select('credit_limit, credit_used, allowed_payment_method, agency_id')
+          .eq('agency_id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (agencyData) {
+          setAgencyCreditLimit(Number(agencyData.credit_limit) || 0);
+          setAgencyCreditUsed(Number(agencyData.credit_used) || 0);
+          setAgencyCreditsBalance(Number(agencyData.credit_limit) - Number(agencyData.credit_used));
+          
+          // Map database payment method to component state
+          const paymentMethodMap: Record<string, AgencyPaymentMethod> = {
+            'credit_card': 'credit_card',
+            'invoice': 'invoice',
+            'both': 'both'
+          };
+          setAgencyPaymentMethod(paymentMethodMap[agencyData.allowed_payment_method] || 'credit_card');
+        }
+      } catch (error) {
+        console.error('Error fetching agency credits:', error);
+        toast.error('Failed to load agency credit information');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgencyCredits();
+  }, []);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     agentId: string;
@@ -521,32 +564,101 @@ const EnhancedAgentBilling = () => {
     });
   };
 
-  const handleAddFundsSuccess = (agentId: string, newBalance: number) => {
-    setAgents(prev => prev.map(agent => 
-      agent.agentId === agentId 
-        ? { ...agent, callCreditsBalance: newBalance }
-        : agent
-    ));
+  const handleAddFundsSuccess = async (agentId: string, newBalance: number) => {
+    const agent = agents.find(a => a.agentId === agentId);
+    if (!agent) return;
+
+    const addedAmount = newBalance - agent.callCreditsBalance;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Update agency credit used
+      const newCreditUsed = agencyCreditUsed + addedAmount;
+      const { error } = await supabase
+        .from('agency_branding')
+        .update({ credit_used: newCreditUsed })
+        .eq('agency_id', user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setAgencyCreditUsed(newCreditUsed);
+      setAgencyCreditsBalance(agencyCreditLimit - newCreditUsed);
+      
+      setAgents(prev => prev.map(a => 
+        a.agentId === agentId 
+          ? { ...a, callCreditsBalance: newBalance }
+          : a
+      ));
+      
+      toast.success(`Successfully added $${addedAmount.toFixed(2)} to agent account`);
+    } catch (error) {
+      console.error('Error adding funds:', error);
+      toast.error('Failed to add funds');
+    }
   };
 
-  const handleBulkAddFundsSuccess = (updates: { agentId: string; newBalance: number }[]) => {
+  const handleBulkAddFundsSuccess = async (updates: { agentId: string; newBalance: number }[]) => {
     const totalDistributed = updates.reduce((sum, u) => {
       const agent = agents.find(a => a.agentId === u.agentId);
       return sum + (u.newBalance - (agent?.callCreditsBalance || 0));
     }, 0);
 
-    // Deduct from agency balance
-    setAgencyCreditsBalance(prev => prev - totalDistributed);
-    
-    setAgents(prev => prev.map(agent => {
-      const update = updates.find(u => u.agentId === agent.agentId);
-      return update ? { ...agent, callCreditsBalance: update.newBalance } : agent;
-    }));
-    setSelectedAgentIds(new Set());
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Update agency credit used in database
+      const newCreditUsed = agencyCreditUsed + totalDistributed;
+      const { error } = await supabase
+        .from('agency_branding')
+        .update({ credit_used: newCreditUsed })
+        .eq('agency_id', user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setAgencyCreditUsed(newCreditUsed);
+      setAgencyCreditsBalance(agencyCreditLimit - newCreditUsed);
+      
+      setAgents(prev => prev.map(agent => {
+        const update = updates.find(u => u.agentId === agent.agentId);
+        return update ? { ...agent, callCreditsBalance: update.newBalance } : agent;
+      }));
+      setSelectedAgentIds(new Set());
+      
+      toast.success(`Successfully distributed $${totalDistributed.toFixed(2)} to agents`);
+    } catch (error) {
+      console.error('Error distributing funds:', error);
+      toast.error('Failed to distribute funds');
+    }
   };
 
-  const handleAgencyCreditsSuccess = (newBalance: number) => {
-    setAgencyCreditsBalance(newBalance);
+  const handleAgencyCreditsSuccess = async (addedAmount: number) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Update credit limit in database (when agency adds credits to their account)
+      const newCreditLimit = agencyCreditLimit + addedAmount;
+      const { error } = await supabase
+        .from('agency_branding')
+        .update({ credit_limit: newCreditLimit })
+        .eq('agency_id', user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setAgencyCreditLimit(newCreditLimit);
+      setAgencyCreditsBalance(newCreditLimit - agencyCreditUsed);
+      
+      toast.success(`Successfully added $${addedAmount.toFixed(2)} to agency credits`);
+    } catch (error) {
+      console.error('Error adding agency credits:', error);
+      toast.error('Failed to add agency credits');
+    }
   };
 
   const handlePaymentMethodAdded = (method: any) => {
@@ -612,6 +724,7 @@ const EnhancedAgentBilling = () => {
         agentId={addFundsModal.agentId}
         agentName={addFundsModal.agentName}
         currentBalance={addFundsModal.currentBalance}
+        agencyBalance={agencyCreditsBalance}
         onSuccess={handleAddFundsSuccess}
       />
 
@@ -659,39 +772,66 @@ const EnhancedAgentBilling = () => {
       </AlertDialog>
 
       <div className="space-y-6">
-      <Card className="border-2 border-primary/20">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Agency Call Credits</CardTitle>
-            <Button onClick={() => setIsAgencyCreditsModalOpen(true)} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Credits
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2 text-3xl font-bold">
-                <DollarSign className="h-8 w-8 text-primary" />
-                <span>{agencyCreditsBalance.toFixed(2)}</span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                Available for {agencyPaidAgents.length} agency-paid agents
-              </p>
+      {loading ? (
+        <Card>
+          <CardContent className="py-8">
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Loading agency credits...</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-lg">
-              <TrendingUp className="h-5 w-5 text-muted-foreground" />
-              <div className="text-right">
-                <div className="text-sm font-medium">Est. Coverage</div>
-                <div className="text-xs text-muted-foreground">
-                  ~{agencyPaidAgents.length > 0 ? (agencyCreditsBalance / agencyPaidAgents.length).toFixed(0) : 0} per agent
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <Card className="border-2 border-primary/20">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Agency Call Credits</CardTitle>
+                <Button onClick={() => setIsAgencyCreditsModalOpen(true)} size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Credits
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-3xl font-bold">
+                      <DollarSign className="h-8 w-8 text-primary" />
+                      <span>{agencyCreditsBalance.toFixed(2)}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Available for {agencyPaidAgents.length} agency-paid agents
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-lg">
+                    <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                    <div className="text-right">
+                      <div className="text-sm font-medium">Est. Coverage</div>
+                      <div className="text-xs text-muted-foreground">
+                        ~{agencyPaidAgents.length > 0 ? (agencyCreditsBalance / agencyPaidAgents.length).toFixed(0) : 0} per agent
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-3 border-t">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Credit Limit:</span>
+                      <span className="ml-2 font-semibold">${agencyCreditLimit.toFixed(2)}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Used:</span>
+                      <span className="ml-2 font-semibold">${agencyCreditUsed.toFixed(2)}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </>
+      )}
 
       {hasNoBalance && (
         <Alert variant="destructive">

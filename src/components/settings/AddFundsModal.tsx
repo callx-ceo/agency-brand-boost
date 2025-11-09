@@ -10,8 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DollarSign, Loader2 } from "lucide-react";
+import { DollarSign, Loader2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AddFundsModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ interface AddFundsModalProps {
   agentId: string;
   agentName: string;
   currentBalance: number;
+  agencyBalance?: number;
   onSuccess: (agentId: string, newBalance: number) => void;
 }
 
@@ -28,6 +30,7 @@ const AddFundsModal: React.FC<AddFundsModalProps> = ({
   agentId,
   agentName,
   currentBalance,
+  agencyBalance,
   onSuccess,
 }) => {
   const [amount, setAmount] = useState<string>("");
@@ -38,6 +41,12 @@ const AddFundsModal: React.FC<AddFundsModalProps> = ({
     
     if (isNaN(fundsAmount) || fundsAmount <= 0) {
       toast.error("Please enter a valid amount");
+      return;
+    }
+
+    // Check if agency has sufficient funds
+    if (agencyBalance !== undefined && fundsAmount > agencyBalance) {
+      toast.error(`Insufficient agency funds. Available: $${agencyBalance.toFixed(2)}`);
       return;
     }
 
@@ -53,6 +62,8 @@ const AddFundsModal: React.FC<AddFundsModalProps> = ({
       onClose();
     }, 500);
   };
+
+  const hasInsufficientFunds = agencyBalance !== undefined && parseFloat(amount || "0") > agencyBalance;
 
   const handleClose = () => {
     setAmount("");
@@ -70,8 +81,18 @@ const AddFundsModal: React.FC<AddFundsModalProps> = ({
         </DialogHeader>
         
         <div className="space-y-4 py-4">
+          {agencyBalance !== undefined && (
+            <div className="p-3 bg-muted rounded-lg">
+              <Label className="text-sm text-muted-foreground">Agency Available Funds</Label>
+              <div className="flex items-center text-lg font-semibold mt-1">
+                <DollarSign className="h-5 w-5 mr-1 text-primary" />
+                <span>{agencyBalance.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
-            <Label>Current Balance</Label>
+            <Label>Agent Current Balance</Label>
             <div className="flex items-center text-lg font-semibold">
               <DollarSign className="h-5 w-5 mr-1 text-muted-foreground" />
               <span>{currentBalance.toFixed(2)}</span>
@@ -96,11 +117,20 @@ const AddFundsModal: React.FC<AddFundsModalProps> = ({
             </div>
           </div>
 
-          {amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0 && (
-            <div className="space-y-2 p-3 bg-muted rounded-lg">
-              <Label>New Balance</Label>
-              <div className="flex items-center text-lg font-semibold">
-                <DollarSign className="h-5 w-5 mr-1 text-muted-foreground" />
+          {hasInsufficientFunds && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Insufficient agency funds. You're trying to add ${parseFloat(amount).toFixed(2)} but only have ${agencyBalance?.toFixed(2)} available.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0 && !hasInsufficientFunds && (
+            <div className="space-y-2 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+              <Label>Agent New Balance</Label>
+              <div className="flex items-center text-lg font-semibold text-primary">
+                <DollarSign className="h-5 w-5 mr-1" />
                 <span>{(currentBalance + parseFloat(amount)).toFixed(2)}</span>
               </div>
             </div>
@@ -111,7 +141,7 @@ const AddFundsModal: React.FC<AddFundsModalProps> = ({
           <Button variant="outline" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>
-          <Button onClick={handleAddFunds} disabled={isLoading || !amount || parseFloat(amount) <= 0}>
+          <Button onClick={handleAddFunds} disabled={isLoading || !amount || parseFloat(amount) <= 0 || hasInsufficientFunds}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Funds
           </Button>

@@ -29,10 +29,31 @@ import {
   ArrowLeft,
   Search,
   CreditCard,
+  Settings2,
+  FileText,
+  RefreshCw,
 } from "lucide-react";
 import AddFundsModal from "@/components/settings/AddFundsModal";
 import BulkAddFundsModal from "@/components/settings/BulkAddFundsModal";
 import AddAgencyCreditsModal from "@/components/settings/AddAgencyCreditsModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type PaymentMode = "agency_paid" | "agent_paid";
 type AgencyPaymentMethod = "invoice" | "credit_card" | "both";
@@ -523,8 +544,8 @@ interface SuperAdminCallCreditsManagementProps {
 }
 
 const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCreditsManagementProps) => {
-  const [agencies] = useState<AgencyData[]>(mockAgencies);
-  const [agents] = useState<AgentData[]>(mockAgents);
+  const [agencies, setAgencies] = useState<AgencyData[]>(mockAgencies);
+  const [agents, setAgents] = useState<AgentData[]>(mockAgents);
   const [selectedAgencyId, setSelectedAgencyId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentModeFilter, setPaymentModeFilter] = useState<"all" | PaymentMode>("all");
@@ -541,6 +562,19 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
     agentId: "",
     agentName: "",
     currentBalance: 0,
+  });
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    type: "payment_mode" | "agency_payment_method" | "agent_payment_method";
+    agentId?: string;
+    agentName?: string;
+    agencyId?: string;
+    agencyName?: string;
+    newValue: string;
+  }>({
+    isOpen: false,
+    type: "payment_mode",
+    newValue: "",
   });
 
   const selectedAgency = selectedAgencyId
@@ -604,6 +638,62 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
       return;
     }
     setIsBulkFundsModalOpen(true);
+  };
+
+  const handleChangeAgencyPaymentMethod = (agencyId: string, newMethod: AgencyPaymentMethod) => {
+    const agency = agencies.find((a) => a.agencyId === agencyId);
+    if (!agency) return;
+
+    setConfirmDialog({
+      isOpen: true,
+      type: "agency_payment_method",
+      agencyId,
+      agencyName: agency.agencyName,
+      newValue: newMethod,
+    });
+  };
+
+  const handleChangeAgentPaymentMode = (agentId: string, newMode: PaymentMode) => {
+    const agent = agents.find((a) => a.agentId === agentId);
+    if (!agent) return;
+
+    setConfirmDialog({
+      isOpen: true,
+      type: "payment_mode",
+      agentId,
+      agentName: agent.agentName,
+      newValue: newMode,
+    });
+  };
+
+  const handleConfirmChange = () => {
+    const { type, agentId, agencyId, newValue } = confirmDialog;
+
+    if (type === "agency_payment_method" && agencyId) {
+      setAgencies((prev) =>
+        prev.map((agency) =>
+          agency.agencyId === agencyId
+            ? { ...agency, allowedPaymentMethod: newValue as AgencyPaymentMethod }
+            : agency
+        )
+      );
+      toast.success("Agency payment method updated successfully");
+    } else if (type === "payment_mode" && agentId) {
+      setAgents((prev) =>
+        prev.map((agent) =>
+          agent.agentId === agentId
+            ? { ...agent, paymentMode: newValue as PaymentMode }
+            : agent
+        )
+      );
+      toast.success("Agent payment mode updated successfully");
+    }
+
+    setConfirmDialog({
+      isOpen: false,
+      type: "payment_mode",
+      newValue: "",
+    });
   };
 
   const totalCredits = agencies.reduce(
@@ -788,7 +878,42 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
                       </div>
                     </TableCell>
                     <TableCell>
-                      {getPaymentMethodBadge(agency.allowedPaymentMethod)}
+                      <div className="flex items-center gap-2">
+                        {getPaymentMethodBadge(agency.allowedPaymentMethod)}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <Settings2 className="w-3 h-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Change Payment Method</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleChangeAgencyPaymentMethod(agency.agencyId, "credit_card")
+                              }
+                            >
+                              <CreditCard className="w-4 h-4 mr-2" />
+                              Credit Card Only
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleChangeAgencyPaymentMethod(agency.agencyId, "invoice")
+                              }
+                            >
+                              <FileText className="w-4 h-4 mr-2" />
+                              Invoice Only
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleChangeAgencyPaymentMethod(agency.agencyId, "both")}
+                            >
+                              <RefreshCw className="w-4 h-4 mr-2" />
+                              Both Methods
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableCell>
                     <TableCell>{agency.agentCount}</TableCell>
                     <TableCell className="font-mono">
@@ -931,7 +1056,38 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
                       <TableCell className="text-muted-foreground">
                         {agent.agentEmail}
                       </TableCell>
-                      <TableCell>{getPaymentModeBadge(agent.paymentMode)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {getPaymentModeBadge(agent.paymentMode)}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <Settings2 className="w-3 h-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Change Payment Mode</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleChangeAgentPaymentMode(agent.agentId, "agency_paid")
+                                }
+                              >
+                                <Building2 className="w-4 h-4 mr-2" />
+                                Agency Paid
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleChangeAgentPaymentMode(agent.agentId, "agent_paid")
+                                }
+                              >
+                                <Users className="w-4 h-4 mr-2" />
+                                Agent Paid
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <span className="font-mono">
                           ${agent.callCreditsBalance.toFixed(2)}
@@ -1015,6 +1171,53 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
           });
         }}
       />
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => {
+        if (!open) {
+          setConfirmDialog({
+            isOpen: false,
+            type: "payment_mode",
+            newValue: "",
+          });
+        }
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Change</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDialog.type === "agency_payment_method" && (
+                <>
+                  Are you sure you want to change <strong>{confirmDialog.agencyName}</strong>'s
+                  payment method to{" "}
+                  <strong>
+                    {confirmDialog.newValue === "credit_card"
+                      ? "Credit Card Only"
+                      : confirmDialog.newValue === "invoice"
+                      ? "Invoice Only"
+                      : "Both Methods"}
+                  </strong>
+                  ?
+                </>
+              )}
+              {confirmDialog.type === "payment_mode" && (
+                <>
+                  Are you sure you want to change <strong>{confirmDialog.agentName}</strong>'s
+                  payment mode to{" "}
+                  <strong>
+                    {confirmDialog.newValue === "agency_paid" ? "Agency Paid" : "Agent Paid"}
+                  </strong>
+                  ? This will affect how their call credits are managed.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmChange}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

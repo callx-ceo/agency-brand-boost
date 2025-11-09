@@ -8,6 +8,7 @@ import SuperAdminWidgetRenderer from "./SuperAdminWidgetRenderer";
 import { ExecutiveKPIConfig } from "./ExecutiveKPISelector";
 import { SuperAdminWidget } from "./SuperAdminWidgetSelector";
 import { mockExecutiveDashboardData, getKPIValue } from "../data/mockExecutiveData";
+import AIRecommendationsWidget from "../widgets/AIRecommendationsWidget";
 
 interface SuperAdminDashboardContentProps {
   activeView: SuperAdminViewType;
@@ -48,6 +49,8 @@ const SuperAdminDashboardContent = ({
         selectedKPIs={selectedKPIs}
         getKPIValue={getKPIValue}
       />
+
+      <AIRecommendationsWidget />
 
       <SuperAdminWidgetRenderer
         widgets={selectedWidgets}

@@ -50,4 +50,5 @@ export type SuperAdminViewType =
   | 'agency-notification-management'
   | 'agent-notification-management'
   | 'notification-templates'
-  | 'notification-branding-overview';
+  | 'notification-branding-overview'
+  | 'settings';

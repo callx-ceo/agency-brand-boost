@@ -39,6 +39,7 @@ import SuperAdminCallCreditsManagement from "../entities/SuperAdminCallCreditsMa
 import AgentNotificationManagement from "../entities/AgentNotificationManagement";
 import NotificationTemplateManagement from "../entities/NotificationTemplateManagement";
 import NotificationBrandingOverview from "../entities/NotificationBrandingOverview";
+import PlatformSettings from "../settings/PlatformSettings";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -217,6 +218,9 @@ const SuperAdminViewRenderer = ({
     
     case 'notification-branding-overview':
       return <NotificationBrandingOverview onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'settings':
+      return <PlatformSettings onBackToDashboard={handleBackToDashboard} />;
     
     default:
       return (

@@ -6,6 +6,23 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { UserCheck, Search, Plus, Edit, Shield } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface UserRoleManagementProps {
   onBackToDashboard: () => void;
@@ -21,6 +38,15 @@ const mockUsers = [
 
 const UserRoleManagement = ({ onBackToDashboard }: UserRoleManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
+  const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
+  const [isManagePermissionsDialogOpen, setIsManagePermissionsDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<typeof mockUsers[0] | null>(null);
+  const [newUserData, setNewUserData] = useState({
+    name: "",
+    email: "",
+    role: "agent",
+  });
 
   const getRoleBadge = (role: string) => {
     switch (role) {
@@ -47,6 +73,42 @@ const UserRoleManagement = ({ onBackToDashboard }: UserRoleManagementProps) => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleAddUser = () => {
+    setIsAddUserDialogOpen(true);
+  };
+
+  const handleEditUser = (user: typeof mockUsers[0]) => {
+    setSelectedUser(user);
+    setIsEditUserDialogOpen(true);
+  };
+
+  const handleManagePermissions = (user: typeof mockUsers[0]) => {
+    setSelectedUser(user);
+    setIsManagePermissionsDialogOpen(true);
+  };
+
+  const handleSaveNewUser = () => {
+    if (!newUserData.name || !newUserData.email) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    toast.success("User added successfully");
+    setIsAddUserDialogOpen(false);
+    setNewUserData({ name: "", email: "", role: "agent" });
+  };
+
+  const handleSaveEdit = () => {
+    toast.success("User updated successfully");
+    setIsEditUserDialogOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleSavePermissions = () => {
+    toast.success("Permissions updated successfully");
+    setIsManagePermissionsDialogOpen(false);
+    setSelectedUser(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -77,7 +139,7 @@ const UserRoleManagement = ({ onBackToDashboard }: UserRoleManagementProps) => {
                   className="pl-8 w-64"
                 />
               </div>
-              <Button size="sm" className="flex items-center gap-2">
+              <Button size="sm" className="flex items-center gap-2" onClick={handleAddUser}>
                 <Plus className="w-4 h-4" />
                 Add User
               </Button>
@@ -106,10 +168,18 @@ const UserRoleManagement = ({ onBackToDashboard }: UserRoleManagementProps) => {
                   <TableCell>{user.lastLogin}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleEditUser(user)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleManagePermissions(user)}
+                      >
                         <Shield className="w-4 h-4" />
                       </Button>
                     </div>
@@ -120,6 +190,185 @@ const UserRoleManagement = ({ onBackToDashboard }: UserRoleManagementProps) => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Add User Dialog */}
+      <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New User</DialogTitle>
+            <DialogDescription>
+              Create a new user account and assign a role
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="new-name">Name</Label>
+              <Input
+                id="new-name"
+                value={newUserData.name}
+                onChange={(e) => setNewUserData({ ...newUserData, name: e.target.value })}
+                placeholder="Enter user name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-email">Email</Label>
+              <Input
+                id="new-email"
+                type="email"
+                value={newUserData.email}
+                onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+                placeholder="Enter email address"
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-role">Role</Label>
+              <Select
+                value={newUserData.role}
+                onValueChange={(value) => setNewUserData({ ...newUserData, role: value })}
+              >
+                <SelectTrigger id="new-role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="super-admin">Super Admin</SelectItem>
+                  <SelectItem value="agency-admin">Agency Admin</SelectItem>
+                  <SelectItem value="agent">Agent</SelectItem>
+                  <SelectItem value="advertiser">Advertiser</SelectItem>
+                  <SelectItem value="publisher">Publisher</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddUserDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveNewUser}>Add User</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit User Dialog */}
+      <Dialog open={isEditUserDialogOpen} onOpenChange={setIsEditUserDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+            <DialogDescription>
+              Update user information and role
+            </DialogDescription>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-name">Name</Label>
+                <Input
+                  id="edit-name"
+                  defaultValue={selectedUser.name}
+                  placeholder="Enter user name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-email">Email</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  defaultValue={selectedUser.email}
+                  placeholder="Enter email address"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-role">Role</Label>
+                <Select defaultValue={selectedUser.role}>
+                  <SelectTrigger id="edit-role">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="super-admin">Super Admin</SelectItem>
+                    <SelectItem value="agency-admin">Agency Admin</SelectItem>
+                    <SelectItem value="agent">Agent</SelectItem>
+                    <SelectItem value="advertiser">Advertiser</SelectItem>
+                    <SelectItem value="publisher">Publisher</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit-status">Status</Label>
+                <Select defaultValue={selectedUser.status}>
+                  <SelectTrigger id="edit-status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="suspended">Suspended</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditUserDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manage Permissions Dialog */}
+      <Dialog open={isManagePermissionsDialogOpen} onOpenChange={setIsManagePermissionsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Manage Permissions</DialogTitle>
+            <DialogDescription>
+              Configure user permissions for {selectedUser?.name}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="space-y-4">
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm font-medium mb-2">Current Role</p>
+                {getRoleBadge(selectedUser.role)}
+              </div>
+              <div className="space-y-2">
+                <Label>Additional Permissions</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="perm-campaigns" className="h-4 w-4" />
+                    <Label htmlFor="perm-campaigns" className="font-normal">
+                      Manage Campaigns
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="perm-reports" className="h-4 w-4" />
+                    <Label htmlFor="perm-reports" className="font-normal">
+                      View Reports
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="perm-billing" className="h-4 w-4" />
+                    <Label htmlFor="perm-billing" className="font-normal">
+                      Access Billing
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="perm-settings" className="h-4 w-4" />
+                    <Label htmlFor="perm-settings" className="font-normal">
+                      Modify Settings
+                    </Label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsManagePermissionsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSavePermissions}>Save Permissions</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

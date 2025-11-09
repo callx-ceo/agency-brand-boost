@@ -34,59 +34,67 @@ interface AgencyUser {
   presence?: 'available' | 'away' | 'in-call' | 'offline';
 }
 
-// Mock data
-const mockUsers: AgencyUser[] = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    email: 'sarah@agency.com',
-    role: 'Owner',
-    status: 'active',
-    canTakeCalls: true,
-    lastSeen: '2 min ago',
-    presence: 'available'
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    email: 'michael@agency.com',
-    role: 'Admin',
-    status: 'active',
-    canTakeCalls: true,
-    lastSeen: '5 min ago',
-    presence: 'in-call'
-  },
-  {
-    id: '3',
-    name: 'Emily Rodriguez',
-    email: 'emily@agency.com',
-    role: 'Agent',
-    status: 'active',
-    canTakeCalls: true,
-    lastSeen: '1 hour ago',
-    presence: 'away'
-  },
-  {
-    id: '4',
-    name: 'David Park',
-    email: 'david@agency.com',
-    role: 'Agent',
-    status: 'active',
-    canTakeCalls: false,
-    lastSeen: '3 hours ago',
-    presence: 'offline'
-  },
-  {
-    id: '5',
-    name: 'Lisa Thompson',
-    email: 'lisa@agency.com',
-    role: 'Admin',
-    status: 'suspended',
-    canTakeCalls: false,
-    lastSeen: '2 days ago',
-    presence: 'offline'
+// Generate 200 mock agency members
+const generateAgencyMembers = (): AgencyUser[] => {
+  const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "David", "Barbara", "William", "Elizabeth", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Christopher", "Karen", "Charles", "Nancy", "Daniel", "Lisa", "Matthew", "Betty", "Anthony", "Margaret", "Mark", "Sandra", "Donald", "Ashley", "Steven", "Kimberly", "Andrew", "Emily", "Paul", "Donna", "Joshua", "Michelle", "Kenneth", "Carol", "Kevin", "Amanda", "Brian", "Melissa", "George", "Deborah", "Timothy", "Stephanie"];
+  const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson", "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts"];
+  const presenceOptions: Array<'available' | 'away' | 'in-call' | 'offline'> = ['available', 'away', 'in-call', 'offline'];
+  const timeUnits = ["min", "minutes", "hour", "hours", "day", "days"];
+  
+  const members: AgencyUser[] = [];
+  let ownerCount = 0;
+  let adminCount = 0;
+  let agentCount = 0;
+  
+  for (let i = 1; i <= 200; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    
+    // Role distribution: 5 owners, 25 admins, 170 agents
+    let role: UserRole;
+    if (ownerCount < 5) {
+      role = 'Owner';
+      ownerCount++;
+    } else if (adminCount < 25) {
+      role = 'Admin';
+      adminCount++;
+    } else {
+      role = 'Agent';
+      agentCount++;
+    }
+    
+    // Most users are active, few suspended
+    const status: 'active' | 'suspended' = Math.random() > 0.95 ? 'suspended' : 'active';
+    
+    // Most active users can take calls
+    const canTakeCalls = status === 'active' && Math.random() > 0.2;
+    
+    // Generate presence status (only for active users)
+    const presence = status === 'active' 
+      ? presenceOptions[Math.floor(Math.random() * presenceOptions.length)]
+      : 'offline';
+    
+    // Generate last seen time
+    const timeValue = Math.floor(Math.random() * 30) + 1;
+    const timeUnit = timeUnits[Math.floor(Math.random() * timeUnits.length)];
+    const lastSeen = `${timeValue} ${timeUnit} ago`;
+    
+    members.push({
+      id: i.toString(),
+      name: `${firstName} ${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@agency.com`,
+      role,
+      status,
+      canTakeCalls,
+      lastSeen,
+      presence
+    });
   }
-];
+  
+  return members;
+};
+
+const mockUsers: AgencyUser[] = generateAgencyMembers();
 
 interface UserRoleManagementProps {
   onBack?: () => void;

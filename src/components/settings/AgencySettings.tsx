@@ -9,7 +9,7 @@ import { InvitesTab } from './agency/InvitesTab';
 import { TransfersTab } from './agency/TransfersTab';
 import { UserRoleManagement } from './agency/UserRoleManagement';
 import { AgencyModelSettings } from './AgencyModelSettings';
-import EnhancedAgentBilling from './EnhancedAgentBilling';
+import BillingTab from './BillingTab';
 import { ImpersonationProvider } from '@/contexts/ImpersonationContext';
 import ImpersonationBanner from '@/components/ImpersonationBanner';
 
@@ -108,7 +108,7 @@ export const AgencySettings: React.FC<AgencySettingsProps> = ({ onBackToDashboar
           </TabsContent>
 
           <TabsContent value="billing" className="mt-6">
-            <EnhancedAgentBilling />
+            <BillingTab />
           </TabsContent>
 
           <TabsContent value="invites" className="mt-6">

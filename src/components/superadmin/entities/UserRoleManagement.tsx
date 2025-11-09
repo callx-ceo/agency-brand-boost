@@ -28,13 +28,39 @@ interface UserRoleManagementProps {
   onBackToDashboard: () => void;
 }
 
-const mockUsers = [
-  { id: 1, name: "Admin User", email: "admin@platform.com", role: "super-admin", lastLogin: "1 hour ago", status: "active" },
-  { id: 2, name: "Agency Manager", email: "manager@elite.com", role: "agency-admin", lastLogin: "30 min ago", status: "active" },
-  { id: 3, name: "Agent Smith", email: "smith@elite.com", role: "agent", lastLogin: "2 hours ago", status: "active" },
-  { id: 4, name: "Publisher Rep", email: "rep@leadgen.com", role: "publisher", lastLogin: "1 day ago", status: "inactive" },
-  { id: 5, name: "Advertiser Contact", email: "contact@healthfirst.com", role: "advertiser", lastLogin: "3 hours ago", status: "active" },
-];
+const generateMockUsers = () => {
+  const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "David", "Barbara", "William", "Elizabeth", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Christopher", "Karen", "Charles", "Nancy", "Daniel", "Lisa", "Matthew", "Betty", "Anthony", "Margaret", "Mark", "Sandra", "Donald", "Ashley", "Steven", "Kimberly", "Andrew", "Emily", "Paul", "Donna", "Joshua", "Michelle", "Kenneth", "Carol", "Kevin", "Amanda", "Brian", "Melissa", "George", "Deborah", "Timothy", "Stephanie"];
+  const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson", "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts"];
+  const companies = ["elite", "acme", "global", "premier", "united", "mega", "pro", "superior", "advanced", "dynamic", "innovative", "strategic", "prime", "alpha", "beta", "gamma", "delta", "omega", "vertex", "nexus"];
+  const roles = ["super-admin", "agency-admin", "agent", "advertiser", "publisher"];
+  const statuses = ["active", "active", "active", "active", "inactive", "suspended"]; // More active users
+  const timeUnits = ["min", "hours", "days", "weeks"];
+  
+  const users = [];
+  
+  for (let i = 1; i <= 200; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const company = companies[Math.floor(Math.random() * companies.length)];
+    const role = roles[Math.floor(Math.random() * roles.length)];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const timeValue = Math.floor(Math.random() * 30) + 1;
+    const timeUnit = timeUnits[Math.floor(Math.random() * timeUnits.length)];
+    
+    users.push({
+      id: i,
+      name: `${firstName} ${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@${company}.com`,
+      role: role,
+      lastLogin: `${timeValue} ${timeUnit} ago`,
+      status: status
+    });
+  }
+  
+  return users;
+};
+
+const mockUsers = generateMockUsers();
 
 const UserRoleManagement = ({ onBackToDashboard }: UserRoleManagementProps) => {
   const [searchTerm, setSearchTerm] = useState("");

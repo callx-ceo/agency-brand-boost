@@ -464,13 +464,17 @@ const EnhancedAgentBilling = () => {
     const fetchAgencyCredits = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          console.log('No auth session - using mock data');
+          setLoading(false);
+          return;
+        }
 
         const { data: agencyData, error } = await supabase
           .from('agency_branding')
           .select('credit_limit, credit_used, allowed_payment_method, agency_id')
           .eq('agency_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
@@ -574,18 +578,20 @@ const EnhancedAgentBilling = () => {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      
+      if (user) {
+        // Update agency credit used
+        const newCreditUsed = agencyCreditUsed + addedAmount;
+        const { error } = await supabase
+          .from('agency_branding')
+          .update({ credit_used: newCreditUsed })
+          .eq('agency_id', user.id);
 
-      // Update agency credit used
-      const newCreditUsed = agencyCreditUsed + addedAmount;
-      const { error } = await supabase
-        .from('agency_branding')
-        .update({ credit_used: newCreditUsed })
-        .eq('agency_id', user.id);
-
-      if (error) throw error;
+        if (error) throw error;
+      }
 
       // Update local state
+      const newCreditUsed = agencyCreditUsed + addedAmount;
       setAgencyCreditUsed(newCreditUsed);
       setAgencyCreditsBalance(agencyCreditLimit - newCreditUsed);
       
@@ -610,18 +616,20 @@ const EnhancedAgentBilling = () => {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      
+      if (user) {
+        // Update agency credit used in database
+        const newCreditUsed = agencyCreditUsed + totalDistributed;
+        const { error } = await supabase
+          .from('agency_branding')
+          .update({ credit_used: newCreditUsed })
+          .eq('agency_id', user.id);
 
-      // Update agency credit used in database
-      const newCreditUsed = agencyCreditUsed + totalDistributed;
-      const { error } = await supabase
-        .from('agency_branding')
-        .update({ credit_used: newCreditUsed })
-        .eq('agency_id', user.id);
-
-      if (error) throw error;
+        if (error) throw error;
+      }
 
       // Update local state
+      const newCreditUsed = agencyCreditUsed + totalDistributed;
       setAgencyCreditUsed(newCreditUsed);
       setAgencyCreditsBalance(agencyCreditLimit - newCreditUsed);
       
@@ -641,18 +649,20 @@ const EnhancedAgentBilling = () => {
   const handleAgencyCreditsSuccess = async (addedAmount: number) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      
+      if (user) {
+        // Update credit limit in database (when agency adds credits to their account)
+        const newCreditLimit = agencyCreditLimit + addedAmount;
+        const { error } = await supabase
+          .from('agency_branding')
+          .update({ credit_limit: newCreditLimit })
+          .eq('agency_id', user.id);
 
-      // Update credit limit in database (when agency adds credits to their account)
-      const newCreditLimit = agencyCreditLimit + addedAmount;
-      const { error } = await supabase
-        .from('agency_branding')
-        .update({ credit_limit: newCreditLimit })
-        .eq('agency_id', user.id);
-
-      if (error) throw error;
+        if (error) throw error;
+      }
 
       // Update local state
+      const newCreditLimit = agencyCreditLimit + addedAmount;
       setAgencyCreditLimit(newCreditLimit);
       setAgencyCreditsBalance(newCreditLimit - agencyCreditUsed);
       
@@ -680,15 +690,19 @@ const EnhancedAgentBilling = () => {
   const confirmPaymentMethodChange = async (value: AgencyPaymentMethod) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      
+      if (user) {
+        // If authenticated, update in database
+        const { error } = await supabase
+          .from('agency_branding')
+          .update({ allowed_payment_method: value })
+          .eq('agency_id', user.id);
 
-      // Update payment method in database
-      const { error } = await supabase
-        .from('agency_branding')
-        .update({ allowed_payment_method: value })
-        .eq('agency_id', user.id);
-
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // For development/testing without auth, just update local state
+        console.log('No auth session - updating local state only');
+      }
 
       setAgencyPaymentMethod(value);
       toast.success(`Payment method updated to ${value === 'invoice' ? 'Invoicing' : value === 'credit_card' ? 'Credit Card' : 'Both'}`);

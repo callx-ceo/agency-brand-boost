@@ -81,8 +81,8 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     { id: "reports-key-press", label: "Key Press", icon: <Hash className="w-4 h-4" /> },
   ];
 
-  // Entity Management sections
-  const entitySections = [
+  // Platform Management sections - Core platform entities
+  const platformManagementSections = [
     { 
       id: "agencies", 
       label: "Agencies", 
@@ -95,16 +95,16 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       icon: <Users className="w-5 h-5" />,
       badge: mockAlerts.suspendedAgents > 0 ? mockAlerts.suspendedAgents : undefined
     },
-    { id: "advertisers", label: "Advertisers", icon: <Megaphone className="w-5 h-5" /> },
     { id: "publishers", label: "Publishers", icon: <Globe className="w-5 h-5" /> },
+    { id: "advertisers", label: "Advertisers", icon: <Megaphone className="w-5 h-5" /> },
     { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-5 h-5" /> },
     { id: "offers", label: "Offers", icon: <DollarSign className="w-5 h-5" /> },
     { id: "verticals", label: "Verticals", icon: <Target className="w-5 h-5" /> },
     { id: "languages", label: "Languages", icon: <Globe className="w-5 h-5" /> },
   ];
 
-  // Agency Management sections
-  const agencyManagementSections = [
+  // Agency Operations sections - Agency-specific operations
+  const agencyOperationsSections = [
     { 
       id: "agency-applications", 
       label: "Agency Applications", 
@@ -113,6 +113,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     },
     { id: "products", label: "Products", icon: <Package className="w-5 h-5" /> },
     { id: "carriers", label: "Carriers", icon: <Building2 className="w-5 h-5" /> },
+    { id: "notification-branding-overview", label: "Agency Branding", icon: <Palette className="w-5 h-5" /> },
   ];
 
   // Lead & Contact Management sections
@@ -137,14 +138,21 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
     },
   ];
 
-  // Billing & Finance sections
+  // Billing & Finance sections - Financial operations
   const billingSections = [
     { id: "billing-management", label: "Billing Management", icon: <DollarSign className="w-5 h-5" /> },
-    { id: "call-credits-management", label: "Call Credits Management", icon: <Wallet className="w-5 h-5" /> },
-    { id: "referral-management", label: "Referral Management", icon: <Gift className="w-5 h-5" /> },
+    { id: "call-credits-management", label: "Call Credits", icon: <Wallet className="w-5 h-5" /> },
+    { 
+      id: "cost-api-management", 
+      label: "Cost & API Management", 
+      icon: <DollarSign className="w-5 h-5" />,
+      badge: mockAlerts.apiFailures > 0 ? mockAlerts.apiFailures : undefined
+    },
+    { id: "minimum-bid-management", label: "Minimum Bids", icon: <Target className="w-5 h-5" /> },
+    { id: "referral-management", label: "Referrals", icon: <Gift className="w-5 h-5" /> },
   ];
 
-  // System & Administration sections
+  // System & Administration sections - System configuration
   const systemSections = [
     { 
       id: "system-health", 
@@ -152,19 +160,11 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       icon: <Activity className="w-5 h-5" />,
       badge: mockAlerts.systemAlerts > 0 ? mockAlerts.systemAlerts : undefined
     },
-    { id: "user-management", label: "User & Role Management", icon: <UserCheck className="w-5 h-5" /> },
-    { id: "goals-management", label: "Goals Management", icon: <TrendingUp className="w-5 h-5" /> },
-    { id: "prompt-management", label: "AI Prompt Management", icon: <Settings className="w-5 h-5" /> },
-    { id: "notification-templates", label: "Notification Templates", icon: <Bell className="w-5 h-5" /> },
-    { id: "notification-branding-overview", label: "Agency Branding Overview", icon: <Palette className="w-5 h-5" /> },
-    { 
-      id: "cost-api-management", 
-      label: "Cost & API Management", 
-      icon: <DollarSign className="w-5 h-5" />,
-      badge: mockAlerts.apiFailures > 0 ? mockAlerts.apiFailures : undefined
-    },
-    { id: "minimum-bid-management", label: "Minimum Bid Management", icon: <Target className="w-5 h-5" /> },
-    { id: "call-settings-management", label: "Call Settings Management", icon: <PhoneCall className="w-5 h-5" /> },
+    { id: "user-management", label: "User & Roles", icon: <UserCheck className="w-5 h-5" /> },
+    { id: "goals-management", label: "Goals", icon: <TrendingUp className="w-5 h-5" /> },
+    { id: "call-settings-management", label: "Call Settings", icon: <PhoneCall className="w-5 h-5" /> },
+    { id: "prompt-management", label: "AI Prompts", icon: <Settings className="w-5 h-5" /> },
+    { id: "notification-templates", label: "Notifications", icon: <Bell className="w-5 h-5" /> },
     { id: "settings", label: "Platform Settings", icon: <Settings className="w-5 h-5" /> },
   ];
 
@@ -264,25 +264,25 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
 
         <Separator className="my-4" />
 
-        {/* Entity Management */}
+        {/* Platform Management */}
         <div className="mb-4">
           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
-            Entity Management
+            Platform Management
           </h3>
           <ul>
-            {entitySections.map(renderMenuItem)}
+            {platformManagementSections.map(renderMenuItem)}
           </ul>
         </div>
 
         <Separator className="my-4" />
 
-        {/* Agency Management - NEW SECTION */}
+        {/* Agency Operations */}
         <div className="mb-4">
           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
-            Agency Management
+            Agency Operations
           </h3>
           <ul>
-            {agencyManagementSections.map(renderMenuItem)}
+            {agencyOperationsSections.map(renderMenuItem)}
           </ul>
         </div>
 

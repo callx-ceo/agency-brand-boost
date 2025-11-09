@@ -33,6 +33,7 @@ import {
   FileText,
   RefreshCw,
 } from "lucide-react";
+import { Label } from "@/components/ui/label";
 import AddFundsModal from "@/components/settings/AddFundsModal";
 import BulkAddFundsModal from "@/components/settings/BulkAddFundsModal";
 import AddAgencyCreditsModal from "@/components/settings/AddAgencyCreditsModal";
@@ -56,7 +57,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type PaymentMode = "agency_paid" | "agent_paid";
-type AgencyPaymentMethod = "invoice" | "credit_card" | "both";
+type AgencyPaymentMethod = "invoice" | "credit_card";
 
 interface AgentData {
   agentId: string;
@@ -74,6 +75,8 @@ interface AgencyData {
   allowedPaymentMethod: AgencyPaymentMethod;
   agentCount: number;
   totalAgentCredits: number;
+  creditLimit: number;
+  creditUsed: number;
 }
 
 // Mock data
@@ -85,14 +88,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 12,
     totalAgentCredits: 4800,
+    creditLimit: 50000,
+    creditUsed: 35000,
   },
   {
     agencyId: "2",
     agencyName: "Healthcare Solutions LLC",
     creditsBalance: 8500,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 8,
     totalAgentCredits: 3200,
+    creditLimit: 30000,
+    creditUsed: 21500,
   },
   {
     agencyId: "3",
@@ -101,6 +108,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 6,
     totalAgentCredits: 1200,
+    creditLimit: 20000,
+    creditUsed: 19500,
   },
   {
     agencyId: "4",
@@ -109,14 +118,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 15,
     totalAgentCredits: 6200,
+    creditLimit: 75000,
+    creditUsed: 53000,
   },
   {
     agencyId: "5",
     agencyName: "Life Insurance Pros",
     creditsBalance: 12500,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 10,
     totalAgentCredits: 3800,
+    creditLimit: 40000,
+    creditUsed: 27500,
   },
   {
     agencyId: "6",
@@ -125,6 +138,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 14,
     totalAgentCredits: 5600,
+    creditLimit: 60000,
+    creditUsed: 41100,
   },
   {
     agencyId: "7",
@@ -133,14 +148,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 5,
     totalAgentCredits: 900,
+    creditLimit: 15000,
+    creditUsed: 14250,
   },
   {
     agencyId: "8",
     agencyName: "Guardian Financial Group",
     creditsBalance: 16200,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "credit_card",
     agentCount: 11,
     totalAgentCredits: 4200,
+    creditLimit: 45000,
+    creditUsed: 28800,
   },
   {
     agencyId: "9",
@@ -149,6 +168,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 18,
     totalAgentCredits: 7800,
+    creditLimit: 80000,
+    creditUsed: 55500,
   },
   {
     agencyId: "10",
@@ -157,14 +178,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 7,
     totalAgentCredits: 2400,
+    creditLimit: 25000,
+    creditUsed: 15200,
   },
   {
     agencyId: "11",
     agencyName: "United Health Advisors",
     creditsBalance: 19500,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 13,
     totalAgentCredits: 5200,
+    creditLimit: 55000,
+    creditUsed: 35500,
   },
   {
     agencyId: "12",
@@ -173,6 +198,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 4,
     totalAgentCredits: 600,
+    creditLimit: 10000,
+    creditUsed: 9700,
   },
   {
     agencyId: "13",
@@ -181,14 +208,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 16,
     totalAgentCredits: 6800,
+    creditLimit: 70000,
+    creditUsed: 49000,
   },
   {
     agencyId: "14",
     agencyName: "Advantage Insurance Group",
     creditsBalance: 13800,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "credit_card",
     agentCount: 9,
     totalAgentCredits: 3600,
+    creditLimit: 35000,
+    creditUsed: 21200,
   },
   {
     agencyId: "15",
@@ -197,6 +228,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 8,
     totalAgentCredits: 3000,
+    creditLimit: 30000,
+    creditUsed: 18800,
   },
   {
     agencyId: "16",
@@ -205,14 +238,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 6,
     totalAgentCredits: 1400,
+    creditLimit: 18000,
+    creditUsed: 17150,
   },
   {
     agencyId: "17",
     agencyName: "Golden Years Insurance",
     creditsBalance: 17600,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 12,
     totalAgentCredits: 4900,
+    creditLimit: 50000,
+    creditUsed: 32400,
   },
   {
     agencyId: "18",
@@ -221,6 +258,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 15,
     totalAgentCredits: 6400,
+    creditLimit: 65000,
+    creditUsed: 44800,
   },
   {
     agencyId: "19",
@@ -229,14 +268,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 10,
     totalAgentCredits: 4100,
+    creditLimit: 40000,
+    creditUsed: 25500,
   },
   {
     agencyId: "20",
     agencyName: "Trusted Shield Insurance",
     creditsBalance: 10800,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "credit_card",
     agentCount: 8,
     totalAgentCredits: 2800,
+    creditLimit: 28000,
+    creditUsed: 17200,
   },
   {
     agencyId: "21",
@@ -245,6 +288,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 13,
     totalAgentCredits: 5500,
+    creditLimit: 52000,
+    creditUsed: 33600,
   },
   {
     agencyId: "22",
@@ -253,14 +298,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 17,
     totalAgentCredits: 7200,
+    creditLimit: 75000,
+    creditUsed: 52000,
   },
   {
     agencyId: "23",
     agencyName: "Patriot Insurance Services",
     creditsBalance: 12000,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 9,
     totalAgentCredits: 3400,
+    creditLimit: 32000,
+    creditUsed: 20000,
   },
   {
     agencyId: "24",
@@ -269,6 +318,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 5,
     totalAgentCredits: 1100,
+    creditLimit: 12000,
+    creditUsed: 11050,
   },
   {
     agencyId: "25",
@@ -277,14 +328,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 11,
     totalAgentCredits: 4600,
+    creditLimit: 48000,
+    creditUsed: 31200,
   },
   {
     agencyId: "26",
     agencyName: "Midwest Insurance Alliance",
     creditsBalance: 19900,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 14,
     totalAgentCredits: 6000,
+    creditLimit: 62000,
+    creditUsed: 42100,
   },
   {
     agencyId: "27",
@@ -293,6 +348,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 10,
     totalAgentCredits: 4300,
+    creditLimit: 42000,
+    creditUsed: 26600,
   },
   {
     agencyId: "28",
@@ -301,14 +358,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 16,
     totalAgentCredits: 6900,
+    creditLimit: 72000,
+    creditUsed: 50200,
   },
   {
     agencyId: "29",
     agencyName: "Mountain View Coverage",
     creditsBalance: 8900,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "credit_card",
     agentCount: 7,
     totalAgentCredits: 2600,
+    creditLimit: 24000,
+    creditUsed: 15100,
   },
   {
     agencyId: "30",
@@ -317,6 +378,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 9,
     totalAgentCredits: 3700,
+    creditLimit: 36000,
+    creditUsed: 22800,
   },
   {
     agencyId: "31",
@@ -325,14 +388,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 4,
     totalAgentCredits: 800,
+    creditLimit: 10000,
+    creditUsed: 9300,
   },
   {
     agencyId: "32",
     agencyName: "Capital Health Advisors",
     creditsBalance: 17200,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 12,
     totalAgentCredits: 5000,
+    creditLimit: 50000,
+    creditUsed: 32800,
   },
   {
     agencyId: "33",
@@ -341,6 +408,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 17,
     totalAgentCredits: 7400,
+    creditLimit: 78000,
+    creditUsed: 55500,
   },
   {
     agencyId: "34",
@@ -349,14 +418,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 8,
     totalAgentCredits: 3200,
+    creditLimit: 30000,
+    creditUsed: 18200,
   },
   {
     agencyId: "35",
     agencyName: "Pinnacle Coverage Solutions",
     creditsBalance: 19200,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "credit_card",
     agentCount: 14,
     totalAgentCredits: 5800,
+    creditLimit: 58000,
+    creditUsed: 38800,
   },
   {
     agencyId: "36",
@@ -365,6 +438,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 10,
     totalAgentCredits: 4400,
+    creditLimit: 42000,
+    creditUsed: 27200,
   },
   {
     agencyId: "37",
@@ -373,14 +448,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 11,
     totalAgentCredits: 4700,
+    creditLimit: 46000,
+    creditUsed: 29500,
   },
   {
     agencyId: "38",
     agencyName: "Coastal Health Partners",
     creditsBalance: 9500,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 7,
     totalAgentCredits: 2500,
+    creditLimit: 26000,
+    creditUsed: 16500,
   },
   {
     agencyId: "39",
@@ -389,6 +468,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 13,
     totalAgentCredits: 5700,
+    creditLimit: 54000,
+    creditUsed: 35400,
   },
   {
     agencyId: "40",
@@ -397,14 +478,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 3,
     totalAgentCredits: 500,
+    creditLimit: 8000,
+    creditUsed: 7550,
   },
   {
     agencyId: "41",
     agencyName: "United Coverage Alliance",
     creditsBalance: 20800,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "credit_card",
     agentCount: 15,
     totalAgentCredits: 6500,
+    creditLimit: 68000,
+    creditUsed: 47200,
   },
   {
     agencyId: "42",
@@ -413,6 +498,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 18,
     totalAgentCredits: 7900,
+    creditLimit: 82000,
+    creditUsed: 58500,
   },
   {
     agencyId: "43",
@@ -421,14 +508,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 9,
     totalAgentCredits: 3500,
+    creditLimit: 34000,
+    creditUsed: 21400,
   },
   {
     agencyId: "44",
     agencyName: "Unified Benefits Group",
     creditsBalance: 15900,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 11,
     totalAgentCredits: 4800,
+    creditLimit: 44000,
+    creditUsed: 28100,
   },
   {
     agencyId: "45",
@@ -437,6 +528,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 12,
     totalAgentCredits: 5300,
+    creditLimit: 51000,
+    creditUsed: 33200,
   },
   {
     agencyId: "46",
@@ -445,14 +538,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 8,
     totalAgentCredits: 2900,
+    creditLimit: 27000,
+    creditUsed: 16800,
   },
   {
     agencyId: "47",
     agencyName: "Prestige Benefits Solutions",
     creditsBalance: 21500,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "credit_card",
     agentCount: 16,
     totalAgentCredits: 6700,
+    creditLimit: 71000,
+    creditUsed: 49500,
   },
   {
     agencyId: "48",
@@ -461,6 +558,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 9,
     totalAgentCredits: 3800,
+    creditLimit: 38000,
+    creditUsed: 24500,
   },
   {
     agencyId: "49",
@@ -469,14 +568,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 4,
     totalAgentCredits: 700,
+    creditLimit: 9000,
+    creditUsed: 8400,
   },
   {
     agencyId: "50",
     agencyName: "Crown Benefits Partners",
     creditsBalance: 19600,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "invoice",
     agentCount: 14,
     totalAgentCredits: 5900,
+    creditLimit: 60000,
+    creditUsed: 40400,
   },
   {
     agencyId: "51",
@@ -485,6 +588,8 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "invoice",
     agentCount: 19,
     totalAgentCredits: 8100,
+    creditLimit: 85000,
+    creditUsed: 60800,
   },
   {
     agencyId: "52",
@@ -493,14 +598,18 @@ const mockAgencies: AgencyData[] = [
     allowedPaymentMethod: "credit_card",
     agentCount: 8,
     totalAgentCredits: 3100,
+    creditLimit: 29000,
+    creditUsed: 17600,
   },
   {
     agencyId: "53",
     agencyName: "Noble Health Advisors",
     creditsBalance: 16000,
-    allowedPaymentMethod: "both",
+    allowedPaymentMethod: "credit_card",
     agentCount: 11,
     totalAgentCredits: 4500,
+    creditLimit: 47000,
+    creditUsed: 31000,
   },
 ];
 
@@ -565,7 +674,7 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
   });
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
-    type: "payment_mode" | "agency_payment_method" | "agent_payment_method";
+    type: "payment_mode" | "agency_payment_method" | "agent_payment_method" | "credit_limit";
     agentId?: string;
     agentName?: string;
     agencyId?: string;
@@ -575,6 +684,19 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
     isOpen: false,
     type: "payment_mode",
     newValue: "",
+  });
+  const [creditLimitDialog, setCreditLimitDialog] = useState<{
+    isOpen: boolean;
+    agencyId: string;
+    agencyName: string;
+    currentLimit: number;
+    newLimit: string;
+  }>({
+    isOpen: false,
+    agencyId: "",
+    agencyName: "",
+    currentLimit: 0,
+    newLimit: "",
   });
 
   const selectedAgency = selectedAgencyId
@@ -696,6 +818,46 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
     });
   };
 
+  const handleOpenCreditLimitDialog = (agencyId: string) => {
+    const agency = agencies.find((a) => a.agencyId === agencyId);
+    if (!agency) return;
+
+    setCreditLimitDialog({
+      isOpen: true,
+      agencyId,
+      agencyName: agency.agencyName,
+      currentLimit: agency.creditLimit,
+      newLimit: agency.creditLimit.toString(),
+    });
+  };
+
+  const handleUpdateCreditLimit = () => {
+    const { agencyId, newLimit } = creditLimitDialog;
+    const limitValue = parseFloat(newLimit);
+
+    if (isNaN(limitValue) || limitValue <= 0) {
+      toast.error("Please enter a valid credit limit");
+      return;
+    }
+
+    setAgencies((prev) =>
+      prev.map((agency) =>
+        agency.agencyId === agencyId
+          ? { ...agency, creditLimit: limitValue }
+          : agency
+      )
+    );
+
+    toast.success("Credit limit updated successfully");
+    setCreditLimitDialog({
+      isOpen: false,
+      agencyId: "",
+      agencyName: "",
+      currentLimit: 0,
+      newLimit: "",
+    });
+  };
+
   const totalCredits = agencies.reduce(
     (sum, agency) => sum + agency.creditsBalance,
     0
@@ -714,16 +876,15 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
         return (
           <Badge className="bg-blue-100 text-blue-800">
             <CreditCard className="w-3 h-3 mr-1" />
-            Card Only
+            Credit Card
           </Badge>
         );
       case "invoice":
         return (
-          <Badge className="bg-purple-100 text-purple-800">Invoice Only</Badge>
-        );
-      case "both":
-        return (
-          <Badge className="bg-green-100 text-green-800">Card or Invoice</Badge>
+          <Badge className="bg-purple-100 text-purple-800">
+            <FileText className="w-3 h-3 mr-1" />
+            Invoice
+          </Badge>
         );
       default:
         return <Badge variant="outline">{method}</Badge>;
@@ -850,6 +1011,8 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
                   <TableHead>Agency Name</TableHead>
                   <TableHead>Credits Balance</TableHead>
                   <TableHead>Payment Method</TableHead>
+                  <TableHead>Credit Limit</TableHead>
+                  <TableHead>Credit Used</TableHead>
                   <TableHead>Agents</TableHead>
                   <TableHead>Total Agent Credits</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -895,7 +1058,7 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
                               }
                             >
                               <CreditCard className="w-4 h-4 mr-2" />
-                              Credit Card Only
+                              Credit Card
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
@@ -903,16 +1066,37 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
                               }
                             >
                               <FileText className="w-4 h-4 mr-2" />
-                              Invoice Only
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleChangeAgencyPaymentMethod(agency.agencyId, "both")}
-                            >
-                              <RefreshCw className="w-4 h-4 mr-2" />
-                              Both Methods
+                              Invoice
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono">
+                          ${agency.creditLimit.toLocaleString()}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenCreditLimitDialog(agency.agencyId)}
+                        >
+                          <Settings2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono">
+                          ${agency.creditUsed.toLocaleString()}
+                        </span>
+                        {agency.creditUsed >= agency.creditLimit * 0.9 && (
+                          <AlertCircle className="w-4 h-4 text-destructive" />
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {((agency.creditUsed / agency.creditLimit) * 100).toFixed(1)}% used
                       </div>
                     </TableCell>
                     <TableCell>{agency.agentCount}</TableCell>
@@ -1192,10 +1376,8 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
                   payment method to{" "}
                   <strong>
                     {confirmDialog.newValue === "credit_card"
-                      ? "Credit Card Only"
-                      : confirmDialog.newValue === "invoice"
-                      ? "Invoice Only"
-                      : "Both Methods"}
+                      ? "Credit Card"
+                      : "Invoice"}
                   </strong>
                   ?
                 </>
@@ -1215,6 +1397,48 @@ const SuperAdminCallCreditsManagement = ({ onBackToDashboard }: SuperAdminCallCr
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmChange}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Credit Limit Dialog */}
+      <AlertDialog open={creditLimitDialog.isOpen} onOpenChange={(open) => {
+        if (!open) {
+          setCreditLimitDialog({
+            isOpen: false,
+            agencyId: "",
+            agencyName: "",
+            currentLimit: 0,
+            newLimit: "",
+          });
+        }
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update Credit Limit</AlertDialogTitle>
+            <AlertDialogDescription>
+              Set a new credit limit for <strong>{creditLimitDialog.agencyName}</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <Label htmlFor="creditLimit">Credit Limit ($)</Label>
+            <Input
+              id="creditLimit"
+              type="number"
+              value={creditLimitDialog.newLimit}
+              onChange={(e) =>
+                setCreditLimitDialog({ ...creditLimitDialog, newLimit: e.target.value })
+              }
+              placeholder="Enter credit limit"
+              className="mt-2"
+            />
+            <p className="text-sm text-muted-foreground mt-2">
+              Current limit: ${creditLimitDialog.currentLimit.toLocaleString()}
+            </p>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleUpdateCreditLimit}>Update Limit</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

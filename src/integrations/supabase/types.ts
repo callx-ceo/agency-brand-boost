@@ -27,6 +27,8 @@ export type Database = {
           billing_email: string | null
           company_name: string | null
           created_at: string | null
+          credit_limit: number
+          credit_used: number
           footer_text: string | null
           id: string
           legal_name: string | null
@@ -51,6 +53,8 @@ export type Database = {
           billing_email?: string | null
           company_name?: string | null
           created_at?: string | null
+          credit_limit?: number
+          credit_used?: number
           footer_text?: string | null
           id?: string
           legal_name?: string | null
@@ -75,6 +79,8 @@ export type Database = {
           billing_email?: string | null
           company_name?: string | null
           created_at?: string | null
+          credit_limit?: number
+          credit_used?: number
           footer_text?: string | null
           id?: string
           legal_name?: string | null
@@ -86,6 +92,51 @@ export type Database = {
           primary_contact_phone?: string | null
           secondary_color?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      agency_credit_limit_requests: {
+        Row: {
+          agency_id: string
+          created_at: string
+          current_limit: number
+          id: string
+          reason: string | null
+          requested_at: string
+          requested_limit: number
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string
+          current_limit: number
+          id?: string
+          reason?: string | null
+          requested_at?: string
+          requested_limit: number
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string
+          current_limit?: number
+          id?: string
+          reason?: string | null
+          requested_at?: string
+          requested_limit?: number
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }

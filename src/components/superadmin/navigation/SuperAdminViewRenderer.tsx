@@ -35,6 +35,7 @@ import { AgentVerticalManagement } from "../entities/AgentVerticalManagement";
 import BillingManagement from "../billing/BillingManagement";
 import ReferralManagement from "../entities/ReferralManagement";
 import AgencyNotificationManagement from "../entities/AgencyNotificationManagement";
+import SuperAdminCallCreditsManagement from "../entities/SuperAdminCallCreditsManagement";
 import AgentNotificationManagement from "../entities/AgentNotificationManagement";
 import NotificationTemplateManagement from "../entities/NotificationTemplateManagement";
 import NotificationBrandingOverview from "../entities/NotificationBrandingOverview";
@@ -198,6 +199,9 @@ const SuperAdminViewRenderer = ({
     
     case 'billing-management':
       return <BillingManagement />;
+    
+    case 'call-credits-management':
+      return <SuperAdminCallCreditsManagement onBackToDashboard={handleBackToDashboard} />;
     
     case 'referral-management':
       return <ReferralManagement onBackToDashboard={handleBackToDashboard} />;

@@ -45,6 +45,7 @@ export type SuperAdminViewType =
   | 'minimum-bid-management'
   | 'call-settings-management'
   | 'billing-management'
+  | 'call-credits-management'
   | 'referral-management'
   | 'agency-notification-management'
   | 'agent-notification-management'

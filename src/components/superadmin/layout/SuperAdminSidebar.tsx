@@ -28,7 +28,8 @@ import {
   Gift,
   Mail,
   Bell,
-  Palette
+  Palette,
+  Wallet
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -139,6 +140,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
   // Billing & Finance sections
   const billingSections = [
     { id: "billing-management", label: "Billing Management", icon: <DollarSign className="w-5 h-5" /> },
+    { id: "call-credits-management", label: "Call Credits Management", icon: <Wallet className="w-5 h-5" /> },
     { id: "referral-management", label: "Referral Management", icon: <Gift className="w-5 h-5" /> },
   ];
 

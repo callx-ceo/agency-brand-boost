@@ -32,7 +32,7 @@ const AIRecommendationsWidget = () => {
       {
         id: "1",
         title: "Optimize Agency Credit Limits",
-        description: "3 agencies approaching their credit limits. Consider increasing limits for consistent performers.",
+        description: "3 agencies approaching credit limits.",
         priority: "high",
         category: "Finance",
         impact: "Prevent service disruption",
@@ -40,29 +40,20 @@ const AIRecommendationsWidget = () => {
       },
       {
         id: "2",
-        title: "Scale Infrastructure",
-        description: "System capacity at 87%. Plan infrastructure scaling for anticipated 15% growth.",
-        priority: "medium",
-        category: "Operations",
-        impact: "Ensure performance",
-        actionRequired: false
-      },
-      {
-        id: "3",
         title: "Review Compliance Policies",
-        description: "2 new regulatory requirements detected. Update compliance framework by end of quarter.",
+        description: "2 new regulatory requirements detected.",
         priority: "high",
         category: "Compliance",
         impact: "Maintain certification",
         actionRequired: true
       },
       {
-        id: "4",
-        title: "Agent Performance Optimization",
-        description: "Top 10% agents using new AI features. Roll out training to increase adoption by 40%.",
+        id: "3",
+        title: "Scale Infrastructure",
+        description: "System capacity at 87%.",
         priority: "medium",
-        category: "Training",
-        impact: "Boost productivity",
+        category: "Operations",
+        impact: "Ensure performance",
         actionRequired: false
       }
     ];
@@ -106,9 +97,9 @@ const AIRecommendationsWidget = () => {
 
   return (
     <Card className="h-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-purple-600" />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-purple-600" />
           AI Recommendations
         </CardTitle>
         <Button
@@ -117,58 +108,57 @@ const AIRecommendationsWidget = () => {
           onClick={generateRecommendations}
           disabled={loading}
         >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
         </Button>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2">
         {loading ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
-            Analyzing platform data...
+          <div className="text-center py-4 text-muted-foreground">
+            <RefreshCw className="h-4 w-4 animate-spin mx-auto mb-1" />
+            <p className="text-xs">Analyzing...</p>
           </div>
         ) : recommendations.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>No recommendations at this time</p>
+          <div className="text-center py-4 text-muted-foreground">
+            <Sparkles className="h-5 w-5 mx-auto mb-1 opacity-50" />
+            <p className="text-xs">No recommendations</p>
           </div>
         ) : (
           recommendations.map((rec) => (
             <div
               key={rec.id}
               onClick={() => handleClick(rec)}
-              className="p-3 border rounded-lg hover:shadow-md transition-shadow cursor-pointer group relative"
+              className="p-2 border rounded hover:shadow-sm transition-shadow cursor-pointer group relative"
             >
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={(e) => handleDelete(rec.id, e)}
-                className="absolute top-2 right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1 right-1 h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X className="h-3 w-3" />
               </Button>
-              <div className="flex items-start justify-between gap-2 mb-2 pr-6">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-sm">{rec.title}</h4>
+              <div className="flex items-start justify-between gap-2 pr-5">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <h4 className="font-medium text-xs truncate">{rec.title}</h4>
                     {rec.actionRequired && (
-                      <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200">
-                        Action Required
+                      <Badge variant="outline" className="text-[10px] px-1 py-0 bg-red-50 text-red-700 border-red-200 shrink-0">
+                        Action
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mb-2">{rec.description}</p>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline" className={`text-xs ${getPriorityColor(rec.priority)}`}>
-                      <span className="mr-1">{getPriorityIcon(rec.priority)}</span>
+                  <p className="text-[11px] text-muted-foreground mb-1.5 line-clamp-2">{rec.description}</p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <Badge variant="outline" className={`text-[10px] px-1 py-0 ${getPriorityColor(rec.priority)}`}>
+                      <span className="mr-0.5">{getPriorityIcon(rec.priority)}</span>
                       {rec.priority}
                     </Badge>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="text-[10px] px-1 py-0">
                       {rec.category}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">• {rec.impact}</span>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors shrink-0 mt-0.5" />
               </div>
             </div>
           ))

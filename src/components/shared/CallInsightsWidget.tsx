@@ -34,12 +34,11 @@ const CallInsightsWidget = ({ role = "agent" }: CallInsightsWidgetProps) => {
 
   const insights: CallInsight[] = [
     {
-      category: "Top Objections (Today)",
+      category: "Top Objections",
       items: [
         { text: "Price concerns - comparing to competitors", count: 23, trend: "up", impact: "high" },
         { text: "Need to think it over / consult spouse", count: 18, trend: "stable", impact: "medium" },
         { text: "Already have coverage", count: 15, trend: "down", impact: "medium" },
-        { text: "Not interested right now", count: 12, trend: "stable", impact: "low" },
       ]
     },
     {
@@ -47,15 +46,6 @@ const CallInsightsWidget = ({ role = "agent" }: CallInsightsWidgetProps) => {
       items: [
         { text: "Starting with health questions builds trust", count: 34, trend: "up", impact: "high" },
         { text: "Comparing 3 carriers increases close rate 40%", count: 28, trend: "up", impact: "high" },
-        { text: "Addressing objections early improves conversion", count: 22, trend: "stable", impact: "high" },
-      ]
-    },
-    {
-      category: "Common Pain Points",
-      items: [
-        { text: "Confusion about deductibles vs premiums", count: 19, trend: "up", impact: "medium" },
-        { text: "Network provider concerns", count: 14, trend: "stable", impact: "medium" },
-        { text: "Pre-existing condition questions", count: 11, trend: "down", impact: "high" },
       ]
     },
     {
@@ -63,7 +53,6 @@ const CallInsightsWidget = ({ role = "agent" }: CallInsightsWidgetProps) => {
       items: [
         { text: "Medicare Advantage intro (Script 3A)", count: 45, trend: "up", impact: "high" },
         { text: "ACA marketplace comparison (Script 2B)", count: 38, trend: "stable", impact: "high" },
-        { text: "Final expense direct approach (Script 5C)", count: 31, trend: "up", impact: "medium" },
       ]
     }
   ];
@@ -115,55 +104,50 @@ const CallInsightsWidget = ({ role = "agent" }: CallInsightsWidgetProps) => {
 
   return (
     <Card className="h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-          <Lightbulb className="h-5 w-5 text-purple-600" />
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <Lightbulb className="h-4 w-4 text-purple-600" />
           {getRoleTitle()}
         </CardTitle>
-        <p className="text-xs text-muted-foreground mt-1">
-          {role === "agent" 
-            ? "Real-time insights from today's calls to help you close more deals"
-            : "Aggregated insights from all conversations to improve team performance"}
-        </p>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2">
         {insights.map((insight, idx) => (
-          <div key={idx} className="border rounded-lg overflow-hidden">
+          <div key={idx} className="border rounded overflow-hidden">
             <button
               onClick={() => toggleSection(insight.category)}
-              className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
+              className="w-full flex items-center justify-between p-2 hover:bg-muted/50 transition-colors"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 {getCategoryIcon(insight.category)}
-                <span className="font-medium text-sm">{insight.category}</span>
-                <Badge variant="outline" className="ml-2">
-                  {insight.items.length} insights
+                <span className="font-medium text-xs">{insight.category}</span>
+                <Badge variant="outline" className="ml-1 text-[10px] px-1 py-0">
+                  {insight.items.length}
                 </Badge>
               </div>
               {isExpanded(insight.category) ? (
-                <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />
               ) : (
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
               )}
             </button>
             
             {isExpanded(insight.category) && (
-              <div className="p-3 pt-0 space-y-2 bg-muted/20">
+              <div className="p-2 pt-0 space-y-1.5 bg-muted/20">
                 {insight.items.map((item, itemIdx) => (
                   <div
                     key={itemIdx}
-                    className="flex items-center justify-between p-2 bg-background rounded border hover:shadow-sm transition-shadow"
+                    className="flex items-center justify-between p-1.5 bg-background rounded border"
                   >
-                    <div className="flex items-start gap-2 flex-1">
-                      <div className="mt-1">{getTrendIcon(item.trend)}</div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{item.text}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className={`text-xs ${getImpactColor(item.impact)}`}>
-                            {item.impact} impact
+                    <div className="flex items-start gap-1.5 flex-1 min-w-0">
+                      <div className="mt-0.5 shrink-0">{getTrendIcon(item.trend)}</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium line-clamp-2">{item.text}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <Badge variant="outline" className={`text-[10px] px-1 py-0 ${getImpactColor(item.impact)}`}>
+                            {item.impact}
                           </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {item.count} occurrences
+                          <span className="text-[10px] text-muted-foreground">
+                            {item.count}
                           </span>
                         </div>
                       </div>
@@ -176,14 +160,13 @@ const CallInsightsWidget = ({ role = "agent" }: CallInsightsWidgetProps) => {
         ))}
         
         {role === "agent" && (
-          <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-            <div className="flex items-start gap-2">
-              <Lightbulb className="w-4 h-4 text-purple-600 mt-0.5" />
+          <div className="mt-2 p-2 bg-purple-50 border border-purple-200 rounded">
+            <div className="flex items-start gap-1.5">
+              <Lightbulb className="w-3.5 h-3.5 text-purple-600 mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-medium text-purple-900">Pro Tip</p>
-                <p className="text-xs text-purple-700 mt-1">
-                  Address the top objection ("Price concerns") early in your pitch. 
-                  Use Script 3A's comparison framework - it has a 40% higher close rate.
+                <p className="text-xs font-medium text-purple-900">Pro Tip</p>
+                <p className="text-[11px] text-purple-700 mt-0.5">
+                  Address price concerns early. Script 3A has a 40% higher close rate.
                 </p>
               </div>
             </div>

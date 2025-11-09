@@ -434,7 +434,7 @@ const mockAgents: AgentBillingData[] = [
 const EnhancedAgentBilling = () => {
   const [agents, setAgents] = useState<AgentBillingData[]>(mockAgents);
   const [agencyPaymentMethod, setAgencyPaymentMethod] = useState<AgencyPaymentMethod>("credit_card");
-  const [agencyCreditsBalance, setAgencyCreditsBalance] = useState<number>(0); // Start with 0 to show prompt
+  const [agencyCreditsBalance, setAgencyCreditsBalance] = useState<number>(42850.75); // Synced with Billing Dashboard
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentModeFilter, setPaymentModeFilter] = useState<"all" | PaymentMode>("all");
   const [updatingAgent, setUpdatingAgent] = useState<string | null>(null);

@@ -56,7 +56,7 @@ const AgentSubscriptionDashboard = () => {
   const [editAmount, setEditAmount] = useState("100");
 
   // Mock data - would come from Supabase agent_payment_settings
-  const paymentMode = "agent_paid" as "agency_paid" | "agent_paid"; // Change to "agency_paid" to see upgrade view
+  const paymentMode = "agency_paid" as "agency_paid" | "agent_paid"; // Change to "agency_paid" to see upgrade view
   const [subscription, setSubscription] = useState({
     status: "active",
     planName: "Agent Paid Plan",

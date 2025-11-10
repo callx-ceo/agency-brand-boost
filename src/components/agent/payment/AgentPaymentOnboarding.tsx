@@ -26,8 +26,8 @@ const AgentPaymentOnboarding = ({
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const { toast } = useToast();
 
-  const initialDeposit = 100;
-  const totalDue = proratedAmount + initialDeposit;
+  const initialDeposit = 250;
+  const totalDue = platformFee + initialDeposit;
 
   const handleNext = () => {
     if (step === 2 && !agreedToTerms) {
@@ -45,7 +45,7 @@ const AgentPaymentOnboarding = ({
     // This would integrate with Stripe
     toast({
       title: "Payment Successful!",
-      description: "Your Agent Paid account is now active with $100 in call credits.",
+      description: `Your Agent Paid account is now active with $${initialDeposit.toFixed(2)} in call credits.`,
     });
     setStep(4);
   };
@@ -116,50 +116,49 @@ const AgentPaymentOnboarding = ({
           {step === 2 && (
             <div className="space-y-6">
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold">Subscription Breakdown</h2>
-                <p className="text-muted-foreground">Review your charges and payment details</p>
+                <h2 className="text-2xl font-bold">Converting to Agent Paid</h2>
+                <p className="text-muted-foreground">You are converting from Agency Paid to Agent Paid</p>
               </div>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Billing Summary</CardTitle>
+                  <CardTitle>Your Initial Charge</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center py-2">
+                  <div className="flex justify-between items-center py-3">
                     <div>
-                      <p className="font-medium">Platform Fee (Monthly)</p>
-                      <p className="text-sm text-muted-foreground">
-                        Prorated: {Math.ceil((billingCycleEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days remaining
-                      </p>
+                      <p className="font-medium">Platform Fee</p>
+                      <p className="text-sm text-muted-foreground">Monthly subscription</p>
                     </div>
-                    <p className="text-lg font-semibold">${proratedAmount.toFixed(2)}</p>
+                    <p className="text-lg font-semibold">${platformFee.toFixed(2)}</p>
                   </div>
 
-                  <div className="flex justify-between items-center py-2">
+                  <div className="flex justify-between items-center py-3">
                     <div>
-                      <p className="font-medium">Initial Call Credit Deposit</p>
-                      <p className="text-sm text-muted-foreground">Ready to use immediately</p>
+                      <p className="font-medium">Initial Call Credits</p>
+                      <p className="text-sm text-muted-foreground">Available immediately</p>
                     </div>
                     <p className="text-lg font-semibold">${initialDeposit.toFixed(2)}</p>
                   </div>
 
                   <div className="border-t pt-4 flex justify-between items-center">
-                    <p className="text-xl font-bold">Total Due Today</p>
+                    <p className="text-xl font-bold">Total Charge Today</p>
                     <p className="text-2xl font-bold text-primary">${totalDue.toFixed(2)}</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-primary/20 bg-primary/5">
+              <Card className="border-border">
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-3">
                     <Checkbox
                       id="terms"
                       checked={agreedToTerms}
                       onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                      className="mt-0.5"
                     />
-                    <label htmlFor="terms" className="text-sm cursor-pointer">
-                      I understand that future calls will draw from my Call Credits balance, and I can add funds or enable auto-refill at any time.
+                    <label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
+                      You agree that Anthropic will charge your card in the amount above now and on a recurring annual basis until you cancel in accordance with our terms. You can cancel at any time in your account settings.
                     </label>
                   </div>
                 </CardContent>
@@ -196,11 +195,11 @@ const AgentPaymentOnboarding = ({
 
                   <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
                     <div className="flex justify-between text-sm">
-                      <span>Prorated Platform Fee</span>
-                      <span>${proratedAmount.toFixed(2)}</span>
+                      <span>Platform Fee</span>
+                      <span>${platformFee.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>Call Credits Deposit</span>
+                      <span>Initial Call Credits</span>
                       <span>${initialDeposit.toFixed(2)}</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-bold">
@@ -210,7 +209,7 @@ const AgentPaymentOnboarding = ({
                   </div>
 
                   <div className="text-sm text-muted-foreground text-center">
-                    By continuing, you'll be billed for the platform fee and ${initialDeposit} in call credits today.
+                    By continuing, you'll be billed ${platformFee.toFixed(2)} platform fee and ${initialDeposit.toFixed(2)} in call credits today.
                   </div>
                 </CardContent>
               </Card>

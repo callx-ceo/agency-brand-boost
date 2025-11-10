@@ -158,7 +158,7 @@ const AgentPaymentOnboarding = ({
                       className="mt-0.5"
                     />
                     <label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
-                      You agree that Anthropic will charge your card in the amount above now and on a recurring annual basis until you cancel in accordance with our terms. You can cancel at any time in your account settings.
+                      You agree that CallX, Inc. will charge your card in the amount above now and on a recurring annual basis until you cancel in accordance with our terms. You can cancel at any time in your account settings.
                     </label>
                   </div>
                 </CardContent>

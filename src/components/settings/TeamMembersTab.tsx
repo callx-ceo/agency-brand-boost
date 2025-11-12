@@ -13,8 +13,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, Copy, Link, CheckCircle2, DollarSign, MapPin } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, User, Shield, Users, ChevronDown, Search, Copy, Link, CheckCircle2, DollarSign, MapPin, CreditCard } from "lucide-react";
 import { useImpersonation } from "@/contexts/ImpersonationContext";
+import AgentPaymentOnboarding from "../agent/payment/AgentPaymentOnboarding";
 
 interface VerticalBid {
   vertical: string;
@@ -37,6 +38,7 @@ interface TeamMember {
   targetStates?: string[];
   presence?: "available" | "away" | "offline";
   canTakeCalls?: boolean;
+  paymentMode?: "agency_paid" | "agent_paid";
 }
 
 const AVAILABLE_VERTICALS = [
@@ -94,7 +96,8 @@ const TeamMembersTab = () => {
       bids: [],
       targetStates: [],
       presence: "offline",
-      canTakeCalls: false
+      canTakeCalls: false,
+      paymentMode: "agency_paid"
     },
     {
       id: "2",
@@ -113,7 +116,8 @@ const TeamMembersTab = () => {
       ],
       targetStates: ["California", "Texas", "Florida"],
       presence: "away",
-      canTakeCalls: true
+      canTakeCalls: true,
+      paymentMode: "agency_paid"
     },
     {
       id: "3",
@@ -132,7 +136,8 @@ const TeamMembersTab = () => {
       ],
       targetStates: ["New York", "New Jersey"],
       presence: "available",
-      canTakeCalls: true
+      canTakeCalls: true,
+      paymentMode: "agent_paid"
     },
     {
       id: "4",
@@ -148,7 +153,8 @@ const TeamMembersTab = () => {
       bids: [],
       targetStates: [],
       presence: "offline",
-      canTakeCalls: false
+      canTakeCalls: false,
+      paymentMode: "agency_paid"
     },
     {
       id: "5",
@@ -166,7 +172,8 @@ const TeamMembersTab = () => {
       ],
       targetStates: ["Illinois", "Michigan"],
       presence: "offline",
-      canTakeCalls: false
+      canTakeCalls: false,
+      paymentMode: "agency_paid"
     },
     {
       id: "6",
@@ -184,7 +191,8 @@ const TeamMembersTab = () => {
       ],
       targetStates: ["Washington", "Oregon"],
       presence: "offline",
-      canTakeCalls: false
+      canTakeCalls: false,
+      paymentMode: "agency_paid"
     },
     {
       id: "7",
@@ -200,7 +208,8 @@ const TeamMembersTab = () => {
       bids: [],
       targetStates: [],
       presence: "offline",
-      canTakeCalls: false
+      canTakeCalls: false,
+      paymentMode: "agency_paid"
     },
     {
       id: "8",
@@ -218,7 +227,8 @@ const TeamMembersTab = () => {
       ],
       targetStates: ["Arizona", "Nevada"],
       presence: "available",
-      canTakeCalls: true
+      canTakeCalls: true,
+      paymentMode: "agency_paid"
     },
     {
       id: "9",
@@ -234,7 +244,8 @@ const TeamMembersTab = () => {
       bids: [],
       targetStates: [],
       presence: "offline",
-      canTakeCalls: false
+      canTakeCalls: false,
+      paymentMode: "agency_paid"
     },
     {
       id: "10",
@@ -250,7 +261,8 @@ const TeamMembersTab = () => {
       bids: [],
       targetStates: [],
       presence: "offline",
-      canTakeCalls: false
+      canTakeCalls: false,
+      paymentMode: "agency_paid"
     }
   ]);
 
@@ -273,6 +285,8 @@ const TeamMembersTab = () => {
   const [selectedVerticals, setSelectedVerticals] = useState<string[]>([]);
   const [bidSettings, setBidSettings] = useState<VerticalBid[]>([]);
   const [targetStates, setTargetStates] = useState<string[]>([]);
+  const [paymentOnboardingOpen, setPaymentOnboardingOpen] = useState(false);
+  const [selectedAgentForPayment, setSelectedAgentForPayment] = useState<TeamMember | null>(null);
 
   // Get count for each filter
   const getFilterCount = useCallback((filter: string) => {
@@ -577,6 +591,35 @@ const TeamMembersTab = () => {
         ? { ...m, canTakeCalls: !m.canTakeCalls }
         : m
     ));
+  };
+
+  const handleSwitchToAgentPaid = (member: TeamMember) => {
+    if (member.paymentMode === "agent_paid") {
+      toast.error(`${member.name} is already on Agent Paid mode`);
+      return;
+    }
+    setSelectedAgentForPayment(member);
+    setPaymentOnboardingOpen(true);
+  };
+
+  const handlePaymentOnboardingClose = () => {
+    setPaymentOnboardingOpen(false);
+    // Update the payment mode after successful onboarding
+    if (selectedAgentForPayment) {
+      setTeamMembers(prev => prev.map(m =>
+        m.id === selectedAgentForPayment.id
+          ? { ...m, paymentMode: "agent_paid" }
+          : m
+      ));
+    }
+    setSelectedAgentForPayment(null);
+  };
+
+  const getPaymentModeBadge = (paymentMode?: "agency_paid" | "agent_paid") => {
+    if (paymentMode === "agent_paid") {
+      return <Badge className="bg-blue-100 text-blue-700">Agent Paid</Badge>;
+    }
+    return <Badge className="bg-purple-100 text-purple-700">Agency Paid</Badge>;
   };
 
   const getPresenceBadge = (presence?: string) => {
@@ -946,6 +989,7 @@ const TeamMembersTab = () => {
                         <TableHead>Role</TableHead>
                         <TableHead>Verticals</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Payment Mode</TableHead>
                         <TableHead>Presence</TableHead>
                         <TableHead>Can Take Calls</TableHead>
                         <TableHead>Last Seen</TableHead>
@@ -1058,6 +1102,23 @@ const TeamMembersTab = () => {
                             </div>
                           </TableCell>
                           <TableCell>
+                            {(member.role === "agent" || member.role === "manager") && (
+                              <div className="flex items-center gap-2">
+                                {getPaymentModeBadge(member.paymentMode)}
+                                {member.paymentMode === "agency_paid" && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleSwitchToAgentPaid(member)}
+                                    className="h-6 px-2 text-xs"
+                                  >
+                                    Switch to Agent Paid
+                                  </Button>
+                                )}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
                             {getPresenceBadge(member.presence)}
                           </TableCell>
                           <TableCell>
@@ -1094,38 +1155,49 @@ const TeamMembersTab = () => {
                                 >
                                   <User className="w-4 h-4" />
                                 </Button>
-                              )}
-                              {(member.role === "agent" || member.role === "manager") && (
-                                <>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => handleOpenVerticals(member)}
-                                    title="Manage Verticals"
-                                  >
-                                    <CheckCircle2 className="w-4 h-4" />
-                                  </Button>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => handleOpenBids(member)}
-                                    title="Manage Bids"
-                                  >
-                                    <DollarSign className="w-4 h-4" />
-                                  </Button>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => handleOpenStates(member)}
-                                    title="Manage States"
-                                  >
-                                    <MapPin className="w-4 h-4" />
-                                  </Button>
-                                </>
-                              )}
-                              <Button variant="outline" size="sm">
-                                <Edit className="w-4 h-4" />
-                              </Button>
+                               )}
+                               {(member.role === "agent" || member.role === "manager") && (
+                                 <>
+                                   <Button 
+                                     variant="outline" 
+                                     size="sm"
+                                     onClick={() => handleOpenVerticals(member)}
+                                     title="Manage Verticals"
+                                   >
+                                     <CheckCircle2 className="w-4 h-4" />
+                                   </Button>
+                                   <Button 
+                                     variant="outline" 
+                                     size="sm"
+                                     onClick={() => handleOpenBids(member)}
+                                     title="Manage Bids"
+                                   >
+                                     <DollarSign className="w-4 h-4" />
+                                   </Button>
+                                   <Button 
+                                     variant="outline" 
+                                     size="sm"
+                                     onClick={() => handleOpenStates(member)}
+                                     title="Manage States"
+                                   >
+                                     <MapPin className="w-4 h-4" />
+                                   </Button>
+                                   {member.paymentMode === "agency_paid" && (
+                                     <Button 
+                                       variant="outline" 
+                                       size="sm"
+                                       onClick={() => handleSwitchToAgentPaid(member)}
+                                       title="Switch to Agent Paid"
+                                       className="text-blue-600 hover:text-blue-700"
+                                     >
+                                       <CreditCard className="w-4 h-4" />
+                                     </Button>
+                                   )}
+                                 </>
+                               )}
+                               <Button variant="outline" size="sm">
+                                 <Edit className="w-4 h-4" />
+                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -1515,6 +1587,17 @@ const TeamMembersTab = () => {
           </Card>
         </DialogContent>
       </Dialog>
+
+      {/* Agent Payment Onboarding Modal */}
+      {selectedAgentForPayment && (
+        <AgentPaymentOnboarding
+          isOpen={paymentOnboardingOpen}
+          onClose={handlePaymentOnboardingClose}
+          platformFee={99.00}
+          proratedAmount={99.00}
+          billingCycleEnd={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
+        />
+      )}
     </div>
   );
 };

@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Send } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Clock, Send, FileText } from "lucide-react";
 
 interface SendTextModalProps {
   lead: {
@@ -16,10 +18,24 @@ interface SendTextModalProps {
 }
 
 const SendTextModal = ({ lead, onClose }: SendTextModalProps) => {
-  const [message, setMessage] = useState(
-    `Hi ${lead.name.split(" ")[0]}, I wanted to follow up on our conversation about ${lead.company}. Do you have a moment to discuss next steps?`
-  );
+  const messageTemplates = {
+    followup: `Hi ${lead?.name?.split(" ")[0] || "there"}, I wanted to follow up on our conversation about ${lead?.company || "your business"}. Do you have a moment to discuss next steps?`,
+    pricing: `Hi ${lead?.name?.split(" ")[0] || "there"}, I have the pricing information you requested for ${lead?.company || "your company"}. When's a good time to go over the details?`,
+    demo: `Hi ${lead?.name?.split(" ")[0] || "there"}, I'd love to show you a quick demo of how we can help ${lead?.company || "your business"}. Are you available this week?`,
+    checkin: `Hi ${lead?.name?.split(" ")[0] || "there"}, just checking in! How are things going with ${lead?.company || "your business"}? Let me know if you need anything.`,
+    custom: "",
+  };
+
+  const [selectedTemplate, setSelectedTemplate] = useState<keyof typeof messageTemplates>("followup");
+  const [message, setMessage] = useState(messageTemplates.followup);
   const [scheduleLater, setScheduleLater] = useState(false);
+
+  const handleTemplateChange = (template: keyof typeof messageTemplates) => {
+    setSelectedTemplate(template);
+    if (template !== "custom") {
+      setMessage(messageTemplates[template]);
+    }
+  };
 
   const handleSend = () => {
     console.log("Sending message:", message, "to", lead.name);
@@ -50,9 +66,29 @@ const SendTextModal = ({ lead, onClose }: SendTextModalProps) => {
             </Badge>
           </div>
 
+          {/* Template Selector */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Message Template
+            </Label>
+            <Select value={selectedTemplate} onValueChange={handleTemplateChange}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="followup">Follow-up Message</SelectItem>
+                <SelectItem value="pricing">Pricing Info</SelectItem>
+                <SelectItem value="demo">Demo Request</SelectItem>
+                <SelectItem value="checkin">Quick Check-in</SelectItem>
+                <SelectItem value="custom">Custom Message</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Message Input */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Message</label>
+            <Label>Message</Label>
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}

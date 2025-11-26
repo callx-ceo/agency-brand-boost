@@ -1,9 +1,9 @@
 
 import React from "react";
-import AgentDashboardNew from "../components/agent/AgentDashboardNew";
+import AgentDashboardActionFocused from "../components/agent/AgentDashboardActionFocused";
 
 const AgentDashboardPage = () => {
-  return <AgentDashboardNew />;
+  return <AgentDashboardActionFocused />;
 };
 
 export default AgentDashboardPage;

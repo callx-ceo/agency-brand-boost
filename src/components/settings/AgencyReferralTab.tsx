@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus } from "lucide-react";
+import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AssignReferrerModal } from "@/components/shared/AssignReferrerModal";
+import { EditReferralModal } from "@/components/settings/EditReferralModal";
 
 interface AgencyReferralData {
   id: string;
@@ -30,6 +31,7 @@ export const AgencyReferralTab = () => {
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
   const [showAssignReferrer, setShowAssignReferrer] = useState(false);
+  const [editingReferral, setEditingReferral] = useState<AgencyReferralData | null>(null);
 
   // Mock data - replace with Supabase queries filtering by agency
   const mockAgencyStats = {

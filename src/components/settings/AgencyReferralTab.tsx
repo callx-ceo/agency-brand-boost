@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus, Pencil } from "lucide-react";
+import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus, Pencil, Link, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AssignReferrerModal } from "@/components/shared/AssignReferrerModal";
 import { EditReferralModal } from "@/components/settings/EditReferralModal";

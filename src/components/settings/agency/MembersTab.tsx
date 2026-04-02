@@ -546,6 +546,13 @@ export const MembersTab: React.FC = () => {
                 </TableCell>
                 <TableCell>{getRoleBadge(member.role)}</TableCell>
                 <TableCell>
+                  {member.referredBy ? (
+                    <span className="text-sm font-medium">{member.referredBy}</span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  )}
+                </TableCell>
+                <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {member.verticals && member.verticals.length > 0 ? (
                       member.verticals.map((vertical) => (

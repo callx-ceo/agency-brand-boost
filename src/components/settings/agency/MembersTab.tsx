@@ -218,6 +218,13 @@ export const MembersTab: React.FC = () => {
     .map(m => m.name)
     .sort();
 
+  const mockAgencies = [
+    "Elite Insurance Group", "Premier Coverage LLC", "National Shield Agency",
+    "Summit Protection Inc", "Guardian Benefits Corp", "Apex Insurance Solutions",
+    "Liberty Coverage Partners", "Pinnacle Risk Agency", "Evergreen Insurance Co",
+    "Horizon Benefits Group"
+  ].sort();
+
   const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase());

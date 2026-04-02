@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MoreVertical, Search, UserPlus, Crown, Shield, User, Eye, ArrowLeftRight, UserMinus, CheckCircle2, DollarSign, MapPin, UserCog } from 'lucide-react';
+import { MoreVertical, Search, UserPlus, Crown, Shield, User, Eye, ArrowLeftRight, UserMinus, CheckCircle2, DollarSign, MapPin, UserCog, Pencil, X, Check } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -207,6 +207,8 @@ export const MembersTab: React.FC = () => {
   const [bidSettings, setBidSettings] = useState<VerticalBid[]>([]);
   const [viewDetailsMode, setViewDetailsMode] = useState(false);
   const [detailMember, setDetailMember] = useState<any>(null);
+  const [editingReferredBy, setEditingReferredBy] = useState<string | null>(null);
+  const [referredByInput, setReferredByInput] = useState("");
 
   const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -546,10 +548,49 @@ export const MembersTab: React.FC = () => {
                 </TableCell>
                 <TableCell>{getRoleBadge(member.role)}</TableCell>
                 <TableCell>
-                  {member.referredBy ? (
-                    <span className="text-sm font-medium">{member.referredBy}</span>
+                  {editingReferredBy === member.id ? (
+                    <div className="flex items-center gap-1">
+                      <Input
+                        value={referredByInput}
+                        onChange={(e) => setReferredByInput(e.target.value)}
+                        className="h-7 w-36 text-sm"
+                        placeholder="Agent name..."
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: referredByInput || undefined } : m));
+                            toast.success(`Referred by updated for ${member.name}`);
+                            setEditingReferredBy(null);
+                          } else if (e.key === 'Escape') {
+                            setEditingReferredBy(null);
+                          }
+                        }}
+                      />
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => {
+                        setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: referredByInput || undefined } : m));
+                        toast.success(`Referred by updated for ${member.name}`);
+                        setEditingReferredBy(null);
+                      }}>
+                        <Check className="h-3 w-3" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setEditingReferredBy(null)}>
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
                   ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
+                    <button
+                      className="text-sm hover:underline cursor-pointer text-left"
+                      onClick={() => {
+                        setEditingReferredBy(member.id);
+                        setReferredByInput(member.referredBy || "");
+                      }}
+                    >
+                      {member.referredBy ? (
+                        <span className="font-medium">{member.referredBy}</span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic">Click to assign</span>
+                      )}
+                    </button>
                   )}
                 </TableCell>
                 <TableCell>
@@ -608,6 +649,13 @@ export const MembersTab: React.FC = () => {
                             <MapPin className="h-4 w-4 mr-2" />
                             Manage States
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
+                            setEditingReferredBy(member.id);
+                            setReferredByInput(member.referredBy || "");
+                          }}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit Referred By
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
                         </>
                       )}
@@ -617,6 +665,21 @@ export const MembersTab: React.FC = () => {
                       </DropdownMenuItem>
                       {member.role !== 'Owner' && (
                         <>
+                          {member.role === 'Agent' && (
+                            <DropdownMenuItem onClick={() => handleRoleChange(member, 'Admin' as UserRole)}>
+                              <Shield className="h-4 w-4 mr-2" />
+                              Promote to Admin
+                            </DropdownMenuItem>
+                          )}
+                          {member.role === 'Admin' && (
+                            <DropdownMenuItem onClick={() => {
+                              setMembers(prev => prev.map(m => m.id === member.id ? { ...m, role: 'Agent' as UserRole } : m));
+                              toast.success(`${member.name} demoted to Agent`);
+                            }}>
+                              <User className="h-4 w-4 mr-2" />
+                              Demote to Agent
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem onClick={() => handleRoleChange(member, 'Owner')}>
                             <Crown className="h-4 w-4 mr-2" />
                             Promote to Owner

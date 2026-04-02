@@ -165,6 +165,7 @@ const generateMockMembers = (): AgencyMember[] => {
     const verticals = verticalsOptions[Math.floor(Math.random() * verticalsOptions.length)];
     const lastSeen = timeAgo[Math.floor(Math.random() * timeAgo.length)];
     const canTakeCalls = status === 'active' && Math.random() > 0.1;
+    const referredBy = Math.random() > 0.6 ? referrerNames[Math.floor(Math.random() * referrerNames.length)] : undefined;
     
     members.push({
       id: i.toString(),
@@ -175,7 +176,8 @@ const generateMockMembers = (): AgencyMember[] => {
       canTakeCalls,
       lastSeen,
       presence: status === 'suspended' ? 'offline' : presence,
-      verticals
+      verticals,
+      referredBy
     });
   }
   

@@ -236,13 +236,14 @@ export const AgencyReferralTab = () => {
                     <TableHead>Payment Date</TableHead>
                     <TableHead>Reward Amount</TableHead>
                     <TableHead>Reward Status</TableHead>
+                    <TableHead>Source</TableHead>
                     <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                         No referrals found
                       </TableCell>
                     </TableRow>

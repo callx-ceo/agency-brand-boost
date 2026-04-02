@@ -649,6 +649,13 @@ export const MembersTab: React.FC = () => {
                             <MapPin className="h-4 w-4 mr-2" />
                             Manage States
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
+                            setEditingReferredBy(member.id);
+                            setReferredByInput(member.referredBy || "");
+                          }}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit Referred By
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
                         </>
                       )}
@@ -658,6 +665,21 @@ export const MembersTab: React.FC = () => {
                       </DropdownMenuItem>
                       {member.role !== 'Owner' && (
                         <>
+                          {member.role === 'Agent' && (
+                            <DropdownMenuItem onClick={() => handleRoleChange(member, 'Admin' as UserRole)}>
+                              <Shield className="h-4 w-4 mr-2" />
+                              Promote to Admin
+                            </DropdownMenuItem>
+                          )}
+                          {member.role === 'Admin' && (
+                            <DropdownMenuItem onClick={() => {
+                              setMembers(prev => prev.map(m => m.id === member.id ? { ...m, role: 'Agent' as UserRole } : m));
+                              toast.success(`${member.name} demoted to Agent`);
+                            }}>
+                              <User className="h-4 w-4 mr-2" />
+                              Demote to Agent
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem onClick={() => handleRoleChange(member, 'Owner')}>
                             <Crown className="h-4 w-4 mr-2" />
                             Promote to Owner

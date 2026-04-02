@@ -577,7 +577,10 @@ export const MembersTab: React.FC = () => {
                         }}
                       >
                         {member.referredBy ? (
-                          <span className="font-medium">{member.referredBy}</span>
+                          <span className="font-medium flex items-center gap-1">
+                            {member.referredByType === 'agency' ? <Building2 className="h-3 w-3 text-muted-foreground" /> : <User className="h-3 w-3 text-muted-foreground" />}
+                            {member.referredBy}
+                          </span>
                         ) : (
                           <span className="text-xs text-muted-foreground italic">Click to assign</span>
                         )}

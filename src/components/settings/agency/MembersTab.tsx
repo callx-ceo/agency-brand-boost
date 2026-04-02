@@ -207,6 +207,8 @@ export const MembersTab: React.FC = () => {
   const [bidSettings, setBidSettings] = useState<VerticalBid[]>([]);
   const [viewDetailsMode, setViewDetailsMode] = useState(false);
   const [detailMember, setDetailMember] = useState<any>(null);
+  const [editingReferredBy, setEditingReferredBy] = useState<string | null>(null);
+  const [referredByInput, setReferredByInput] = useState("");
 
   const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

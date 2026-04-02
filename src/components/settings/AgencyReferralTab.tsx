@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon } from "lucide-react";
+import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AssignReferrerModal } from "@/components/shared/AssignReferrerModal";
 
 interface AgencyReferralData {
   id: string;
@@ -28,6 +29,7 @@ export const AgencyReferralTab = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
+  const [showAssignReferrer, setShowAssignReferrer] = useState(false);
 
   // Mock data - replace with Supabase queries filtering by agency
   const mockAgencyStats = {
@@ -91,13 +93,25 @@ export const AgencyReferralTab = () => {
     <div className="space-y-6">
       {/* Info Section */}
       <Card>
-        <CardHeader>
-          <CardTitle>Agency Referral Program</CardTitle>
-          <CardDescription>
-            Track referrals made by your agents. Each agent earns $100 credit when their referred agent makes their first payment.
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Agency Referral Program</CardTitle>
+            <CardDescription>
+              Track referrals made by your agents. Each agent earns $100 credit when their referred agent makes their first payment.
+            </CardDescription>
+          </div>
+          <Button onClick={() => setShowAssignReferrer(true)}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Assign Referrer to Legacy Agent
+          </Button>
         </CardHeader>
       </Card>
+
+      <AssignReferrerModal
+        open={showAssignReferrer}
+        onOpenChange={setShowAssignReferrer}
+        level="agency"
+      />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">

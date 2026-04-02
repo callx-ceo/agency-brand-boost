@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { Search, DollarSign, Users, TrendingUp, Gift, ChevronLeft, CalendarIcon, Edit, CheckCircle } from "lucide-react";
+import { Search, DollarSign, Users, TrendingUp, Gift, ChevronLeft, CalendarIcon, Edit, CheckCircle, UserPlus } from "lucide-react";
+import { AssignReferrerModal } from "@/components/shared/AssignReferrerModal";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -42,6 +43,7 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
   const [newRewardStatus, setNewRewardStatus] = useState("");
   const [defaultRewardAmount, setDefaultRewardAmount] = useState("100.00");
   const [isEditingDefault, setIsEditingDefault] = useState(false);
+  const [showAssignReferrer, setShowAssignReferrer] = useState(false);
 
   // Mock data - replace with Supabase queries
   const mockStats = {
@@ -168,7 +170,17 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
             <p className="text-muted-foreground">Monitor and manage the platform referral program</p>
           </div>
         </div>
+        <Button onClick={() => setShowAssignReferrer(true)}>
+          <UserPlus className="h-4 w-4 mr-2" />
+          Assign Referrer to Legacy Agent
+        </Button>
       </div>
+
+      <AssignReferrerModal
+        open={showAssignReferrer}
+        onOpenChange={setShowAssignReferrer}
+        level="superadmin"
+      />
 
       {/* Default Reward Settings */}
       <Card>

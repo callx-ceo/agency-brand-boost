@@ -93,13 +93,25 @@ export const AgencyReferralTab = () => {
     <div className="space-y-6">
       {/* Info Section */}
       <Card>
-        <CardHeader>
-          <CardTitle>Agency Referral Program</CardTitle>
-          <CardDescription>
-            Track referrals made by your agents. Each agent earns $100 credit when their referred agent makes their first payment.
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Agency Referral Program</CardTitle>
+            <CardDescription>
+              Track referrals made by your agents. Each agent earns $100 credit when their referred agent makes their first payment.
+            </CardDescription>
+          </div>
+          <Button onClick={() => setShowAssignReferrer(true)}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Assign Referrer to Legacy Agent
+          </Button>
         </CardHeader>
       </Card>
+
+      <AssignReferrerModal
+        open={showAssignReferrer}
+        onOpenChange={setShowAssignReferrer}
+        level="agency"
+      />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">

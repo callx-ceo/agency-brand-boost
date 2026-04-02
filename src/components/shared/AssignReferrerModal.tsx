@@ -261,9 +261,9 @@ export const AssignReferrerModal = ({
           </div>
 
           {/* Warning */}
-          <div className="flex items-start gap-2 rounded-md bg-amber-50 border border-amber-200 p-3">
-            <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-            <p className="text-xs text-amber-800">
+          <div className="flex items-start gap-2 rounded-md bg-destructive/10 border border-destructive/20 p-3">
+            <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+            <p className="text-xs text-destructive">
               This manually creates a referral record. The referring agent will receive commission credit based on the settings above. This action is logged for audit purposes.
             </p>
           </div>

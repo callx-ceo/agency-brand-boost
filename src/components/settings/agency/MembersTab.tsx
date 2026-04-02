@@ -44,7 +44,8 @@ interface AgencyMember {
   presence?: 'available' | 'away' | 'in-call' | 'offline';
   verticals?: string[];
   bids?: VerticalBid[];
-  targetStates?: Record<string, string[]>; // vertical -> states mapping
+  targetStates?: Record<string, string[]>;
+  referredBy?: string;
 }
 
 const AVAILABLE_VERTICALS = [
@@ -110,6 +111,8 @@ const generateMockMembers = (): AgencyMember[] => {
   
   const members: AgencyMember[] = [];
   
+  const referrerNames = ['John Smith', 'Sarah Johnson', 'Michael Davis', 'Lisa Brown', 'David Wilson'];
+
   // Add owner
   members.push({
     id: '1',
@@ -133,7 +136,8 @@ const generateMockMembers = (): AgencyMember[] => {
     canTakeCalls: true,
     lastSeen: '5 minutes ago',
     presence: 'in-call',
-    verticals: ['Medicare', 'Auto Insurance']
+    verticals: ['Medicare', 'Auto Insurance'],
+    referredBy: 'John Smith'
   });
   
   members.push({
@@ -145,7 +149,8 @@ const generateMockMembers = (): AgencyMember[] => {
     canTakeCalls: true,
     lastSeen: '10 minutes ago',
     presence: 'available',
-    verticals: ['Final Expense', 'Life Insurance']
+    verticals: ['Final Expense', 'Life Insurance'],
+    referredBy: 'John Smith'
   });
   
   // Generate 97 agents (total 100 with owner and 2 admins)
@@ -160,6 +165,7 @@ const generateMockMembers = (): AgencyMember[] => {
     const verticals = verticalsOptions[Math.floor(Math.random() * verticalsOptions.length)];
     const lastSeen = timeAgo[Math.floor(Math.random() * timeAgo.length)];
     const canTakeCalls = status === 'active' && Math.random() > 0.1;
+    const referredBy = Math.random() > 0.6 ? referrerNames[Math.floor(Math.random() * referrerNames.length)] : undefined;
     
     members.push({
       id: i.toString(),
@@ -170,7 +176,8 @@ const generateMockMembers = (): AgencyMember[] => {
       canTakeCalls,
       lastSeen,
       presence: status === 'suspended' ? 'offline' : presence,
-      verticals
+      verticals,
+      referredBy
     });
   }
   
@@ -519,6 +526,7 @@ export const MembersTab: React.FC = () => {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Referred By</TableHead>
               <TableHead>Verticals</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Presence</TableHead>
@@ -537,6 +545,13 @@ export const MembersTab: React.FC = () => {
                   </div>
                 </TableCell>
                 <TableCell>{getRoleBadge(member.role)}</TableCell>
+                <TableCell>
+                  {member.referredBy ? (
+                    <span className="text-sm font-medium">{member.referredBy}</span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  )}
+                </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {member.verticals && member.verticals.length > 0 ? (

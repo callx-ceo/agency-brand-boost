@@ -23,6 +23,7 @@ interface AgencyReferralData {
   first_payment_date: string | null;
   reward_amount: number;
   reward_status: string;
+  source: "automatic" | "manual";
 }
 
 export const AgencyReferralTab = () => {

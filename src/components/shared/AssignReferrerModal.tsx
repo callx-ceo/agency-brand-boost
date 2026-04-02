@@ -117,7 +117,7 @@ export const AssignReferrerModal = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-primary" />
-            Assign Referrer to Legacy Agent
+            Assign Referrer to Agent
           </DialogTitle>
           <DialogDescription>
             Manually assign a referring agent to a legacy agent for commission tracking. This creates a referral record retroactively.

@@ -318,13 +318,14 @@ export const AgencyReferralTab = () => {
                     <TableHead>Payment Date</TableHead>
                     <TableHead>Reward Amount</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Source</TableHead>
                     <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.filter(r => r.status === "rewarded").length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         No completed referrals yet
                       </TableCell>
                     </TableRow>
@@ -341,6 +342,7 @@ export const AgencyReferralTab = () => {
                         </TableCell>
                         <TableCell className="font-medium">${referral.reward_amount.toFixed(2)}</TableCell>
                         <TableCell>{getStatusBadge(referral.reward_status)}</TableCell>
+                        <TableCell>{renderSourceBadge(referral.source)}</TableCell>
                         <TableCell>{renderEditButton(referral)}</TableCell>
                       </TableRow>
                     ))

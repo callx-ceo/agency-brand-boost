@@ -170,7 +170,17 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
             <p className="text-muted-foreground">Monitor and manage the platform referral program</p>
           </div>
         </div>
+        <Button onClick={() => setShowAssignReferrer(true)}>
+          <UserPlus className="h-4 w-4 mr-2" />
+          Assign Referrer to Legacy Agent
+        </Button>
       </div>
+
+      <AssignReferrerModal
+        open={showAssignReferrer}
+        onOpenChange={setShowAssignReferrer}
+        level="superadmin"
+      />
 
       {/* Default Reward Settings */}
       <Card>

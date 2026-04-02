@@ -111,6 +111,8 @@ const generateMockMembers = (): AgencyMember[] => {
   
   const members: AgencyMember[] = [];
   
+  const referrerNames = ['John Smith', 'Sarah Johnson', 'Michael Davis', 'Lisa Brown', 'David Wilson'];
+
   // Add owner
   members.push({
     id: '1',
@@ -134,7 +136,8 @@ const generateMockMembers = (): AgencyMember[] => {
     canTakeCalls: true,
     lastSeen: '5 minutes ago',
     presence: 'in-call',
-    verticals: ['Medicare', 'Auto Insurance']
+    verticals: ['Medicare', 'Auto Insurance'],
+    referredBy: 'John Smith'
   });
   
   members.push({
@@ -146,7 +149,8 @@ const generateMockMembers = (): AgencyMember[] => {
     canTakeCalls: true,
     lastSeen: '10 minutes ago',
     presence: 'available',
-    verticals: ['Final Expense', 'Life Insurance']
+    verticals: ['Final Expense', 'Life Insurance'],
+    referredBy: 'John Smith'
   });
   
   // Generate 97 agents (total 100 with owner and 2 admins)

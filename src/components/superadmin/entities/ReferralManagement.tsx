@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { Search, DollarSign, Users, TrendingUp, Gift, ChevronLeft, CalendarIcon, Edit, CheckCircle } from "lucide-react";
+import { Search, DollarSign, Users, TrendingUp, Gift, ChevronLeft, CalendarIcon, Edit, CheckCircle, UserPlus } from "lucide-react";
+import { AssignReferrerModal } from "@/components/shared/AssignReferrerModal";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 

@@ -550,50 +550,72 @@ export const MembersTab: React.FC = () => {
                 </TableCell>
                 <TableCell>{getRoleBadge(member.role)}</TableCell>
                 <TableCell>
-                  {editingReferredBy === member.id ? (
-                    <div className="flex items-center gap-1">
-                      <Input
-                        value={referredByInput}
-                        onChange={(e) => setReferredByInput(e.target.value)}
-                        className="h-7 w-36 text-sm"
-                        placeholder="Agent name..."
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: referredByInput || undefined } : m));
-                            toast.success(`Referred by updated for ${member.name}`);
-                            setEditingReferredBy(null);
-                          } else if (e.key === 'Escape') {
-                            setEditingReferredBy(null);
-                          }
+                  <Popover
+                    open={editingReferredBy === member.id}
+                    onOpenChange={(open) => {
+                      if (!open) setEditingReferredBy(null);
+                    }}
+                  >
+                    <PopoverTrigger asChild>
+                      <button
+                        className="text-sm hover:underline cursor-pointer text-left"
+                        onClick={() => {
+                          setEditingReferredBy(member.id);
+                          setReferredByInput("");
                         }}
-                      />
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => {
-                        setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: referredByInput || undefined } : m));
-                        toast.success(`Referred by updated for ${member.name}`);
-                        setEditingReferredBy(null);
-                      }}>
-                        <Check className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setEditingReferredBy(null)}>
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <button
-                      className="text-sm hover:underline cursor-pointer text-left"
-                      onClick={() => {
-                        setEditingReferredBy(member.id);
-                        setReferredByInput(member.referredBy || "");
-                      }}
-                    >
-                      {member.referredBy ? (
-                        <span className="font-medium">{member.referredBy}</span>
-                      ) : (
-                        <span className="text-xs text-muted-foreground italic">Click to assign</span>
-                      )}
-                    </button>
-                  )}
+                      >
+                        {member.referredBy ? (
+                          <span className="font-medium">{member.referredBy}</span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground italic">Click to assign</span>
+                        )}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search agents..." />
+                        <CommandList>
+                          <CommandEmpty>No matching agents found</CommandEmpty>
+                          <CommandGroup heading="Active Agents">
+                            <ScrollArea className="h-48">
+                              {activeAgentNames
+                                .filter(name => name !== member.name)
+                                .map((name) => (
+                                  <CommandItem
+                                    key={name}
+                                    value={name}
+                                    onSelect={() => {
+                                      setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: name } : m));
+                                      toast.success(`${member.name} referred by set to ${name}`);
+                                      setEditingReferredBy(null);
+                                    }}
+                                  >
+                                    <User className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
+                                    <span>{name}</span>
+                                    {member.referredBy === name && <Check className="h-3.5 w-3.5 ml-auto" />}
+                                  </CommandItem>
+                                ))}
+                            </ScrollArea>
+                          </CommandGroup>
+                          {member.referredBy && (
+                            <CommandGroup>
+                              <CommandItem
+                                onSelect={() => {
+                                  setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: undefined } : m));
+                                  toast.success(`Referred by cleared for ${member.name}`);
+                                  setEditingReferredBy(null);
+                                }}
+                                className="text-destructive"
+                              >
+                                <X className="h-3.5 w-3.5 mr-2" />
+                                Clear referrer
+                              </CommandItem>
+                            </CommandGroup>
+                          )}
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">

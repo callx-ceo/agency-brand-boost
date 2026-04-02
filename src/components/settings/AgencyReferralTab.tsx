@@ -262,6 +262,7 @@ export const AgencyReferralTab = () => {
                         </TableCell>
                         <TableCell className="font-medium">${referral.reward_amount.toFixed(2)}</TableCell>
                         <TableCell>{getStatusBadge(referral.reward_status)}</TableCell>
+                        <TableCell>{renderSourceBadge(referral.source)}</TableCell>
                         <TableCell>{renderEditButton(referral)}</TableCell>
                       </TableRow>
                     ))

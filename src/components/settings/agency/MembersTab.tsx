@@ -210,7 +210,12 @@ export const MembersTab: React.FC = () => {
   const [viewDetailsMode, setViewDetailsMode] = useState(false);
   const [detailMember, setDetailMember] = useState<any>(null);
   const [editingReferredBy, setEditingReferredBy] = useState<string | null>(null);
-  const [referredByInput, setReferredByInput] = useState("");
+
+  // Only show active agents as potential referrers
+  const activeAgentNames = members
+    .filter(m => m.status === 'active')
+    .map(m => m.name)
+    .sort();
 
   const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

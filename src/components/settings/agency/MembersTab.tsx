@@ -588,26 +588,45 @@ export const MembersTab: React.FC = () => {
                     </PopoverTrigger>
                     <PopoverContent className="w-64 p-0" align="start">
                       <Command>
-                        <CommandInput placeholder="Search agents..." />
+                        <CommandInput placeholder="Search agents or agencies..." />
                         <CommandList>
-                          <CommandEmpty>No matching agents found</CommandEmpty>
+                          <CommandEmpty>No matches found</CommandEmpty>
+                          <CommandGroup heading="Agencies">
+                            <ScrollArea className="max-h-32">
+                              {mockAgencies.map((name) => (
+                                <CommandItem
+                                  key={`agency-${name}`}
+                                  value={`agency ${name}`}
+                                  onSelect={() => {
+                                    setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: name, referredByType: 'agency' as const } : m));
+                                    toast.success(`${member.name} referred by agency: ${name}`);
+                                    setEditingReferredBy(null);
+                                  }}
+                                >
+                                  <Building2 className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
+                                  <span>{name}</span>
+                                  {member.referredBy === name && member.referredByType === 'agency' && <Check className="h-3.5 w-3.5 ml-auto" />}
+                                </CommandItem>
+                              ))}
+                            </ScrollArea>
+                          </CommandGroup>
                           <CommandGroup heading="Active Agents">
-                            <ScrollArea className="h-48">
+                            <ScrollArea className="max-h-48">
                               {activeAgentNames
                                 .filter(name => name !== member.name)
                                 .map((name) => (
                                   <CommandItem
-                                    key={name}
-                                    value={name}
+                                    key={`agent-${name}`}
+                                    value={`agent ${name}`}
                                     onSelect={() => {
-                                      setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: name } : m));
-                                      toast.success(`${member.name} referred by set to ${name}`);
+                                      setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: name, referredByType: 'agent' as const } : m));
+                                      toast.success(`${member.name} referred by agent: ${name}`);
                                       setEditingReferredBy(null);
                                     }}
                                   >
                                     <User className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
                                     <span>{name}</span>
-                                    {member.referredBy === name && <Check className="h-3.5 w-3.5 ml-auto" />}
+                                    {member.referredBy === name && member.referredByType === 'agent' && <Check className="h-3.5 w-3.5 ml-auto" />}
                                   </CommandItem>
                                 ))}
                             </ScrollArea>

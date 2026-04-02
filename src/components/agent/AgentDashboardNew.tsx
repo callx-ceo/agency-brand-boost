@@ -52,7 +52,7 @@ const AgentDashboardNew = () => {
 
   // Timer effect for time online
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (isOnline) {
       interval = setInterval(() => {
         setTimeOnline(prev => {

@@ -679,7 +679,6 @@ export const MembersTab: React.FC = () => {
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => {
                             setEditingReferredBy(member.id);
-                            setReferredByInput(member.referredBy || "");
                           }}>
                             <Pencil className="h-4 w-4 mr-2" />
                             Edit Referred By

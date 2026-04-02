@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon } from "lucide-react";
+import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AssignReferrerModal } from "@/components/shared/AssignReferrerModal";
 
 interface AgencyReferralData {
   id: string;

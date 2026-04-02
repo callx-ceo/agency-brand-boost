@@ -82,7 +82,7 @@ export const AgencyReferralTab = () => {
     return <Badge variant={variants[status] || "default"}>{status}</Badge>;
   };
 
-  const filteredReferrals = mockAgencyReferrals.filter((ref) => {
+  const filteredReferrals = referrals.filter((ref) => {
     const matchesSearch = 
       ref.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ref.referred_name.toLowerCase().includes(searchTerm.toLowerCase());

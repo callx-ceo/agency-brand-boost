@@ -280,13 +280,14 @@ export const AgencyReferralTab = () => {
                     <TableHead>Referred Agency</TableHead>
                     <TableHead>Signup Date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Source</TableHead>
                     <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.filter(r => r.status === "pending").length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                         No pending referrals
                       </TableCell>
                     </TableRow>
@@ -298,6 +299,7 @@ export const AgencyReferralTab = () => {
                         <TableCell>{referral.referred_agency || "-"}</TableCell>
                         <TableCell>{new Date(referral.signup_date).toLocaleDateString()}</TableCell>
                         <TableCell>{getStatusBadge(referral.status)}</TableCell>
+                        <TableCell>{renderSourceBadge(referral.source)}</TableCell>
                         <TableCell>{renderEditButton(referral)}</TableCell>
                       </TableRow>
                     ))

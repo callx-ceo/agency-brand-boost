@@ -51,6 +51,7 @@ export const AgencyReferralTab = () => {
       first_payment_date: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
       reward_amount: 100.00,
       reward_status: "credited",
+      source: "automatic" as const,
     },
     {
       id: "2",
@@ -62,6 +63,7 @@ export const AgencyReferralTab = () => {
       first_payment_date: null,
       reward_amount: 100.00,
       reward_status: "pending",
+      source: "manual" as const,
     },
   ]);
 

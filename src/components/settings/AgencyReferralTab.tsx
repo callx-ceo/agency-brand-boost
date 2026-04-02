@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus } from "lucide-react";
+import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AssignReferrerModal } from "@/components/shared/AssignReferrerModal";
+import { EditReferralModal } from "@/components/settings/EditReferralModal";
 
 interface AgencyReferralData {
   id: string;
@@ -30,8 +31,8 @@ export const AgencyReferralTab = () => {
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
   const [showAssignReferrer, setShowAssignReferrer] = useState(false);
+  const [editingReferral, setEditingReferral] = useState<AgencyReferralData | null>(null);
 
-  // Mock data - replace with Supabase queries filtering by agency
   const mockAgencyStats = {
     totalReferralsByAgents: 42,
     activeReferrals: 18,
@@ -39,7 +40,7 @@ export const AgencyReferralTab = () => {
     pendingRewards: 1800.00,
   };
 
-  const mockAgencyReferrals: AgencyReferralData[] = [
+  const [referrals, setReferrals] = useState<AgencyReferralData[]>([
     {
       id: "1",
       agent_name: "John Smith",
@@ -62,7 +63,11 @@ export const AgencyReferralTab = () => {
       reward_amount: 100.00,
       reward_status: "pending",
     },
-  ];
+  ]);
+
+  const handleSaveReferral = (updated: AgencyReferralData) => {
+    setReferrals(prev => prev.map(r => r.id === updated.id ? updated : r));
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "success" | "warning" | "destructive"> = {
@@ -76,22 +81,25 @@ export const AgencyReferralTab = () => {
     return <Badge variant={variants[status] || "default"}>{status}</Badge>;
   };
 
-  const filteredReferrals = mockAgencyReferrals.filter((ref) => {
-    const matchesSearch = 
+  const filteredReferrals = referrals.filter((ref) => {
+    const matchesSearch =
       ref.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ref.referred_name.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const signupDate = new Date(ref.signup_date);
-    const matchesDateRange = 
+    const matchesDateRange =
       (!dateFrom || signupDate >= dateFrom) &&
       (!dateTo || signupDate <= dateTo);
-    
     return matchesSearch && matchesDateRange;
   });
 
+  const renderEditButton = (referral: AgencyReferralData) => (
+    <Button variant="ghost" size="icon" onClick={() => setEditingReferral(referral)}>
+      <Pencil className="h-4 w-4" />
+    </Button>
+  );
+
   return (
     <div className="space-y-6">
-      {/* Info Section */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -113,7 +121,6 @@ export const AgencyReferralTab = () => {
         level="agency"
       />
 
-      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -125,7 +132,6 @@ export const AgencyReferralTab = () => {
             <p className="text-xs text-muted-foreground">By your agents</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Referrals</CardTitle>
@@ -136,7 +142,6 @@ export const AgencyReferralTab = () => {
             <p className="text-xs text-muted-foreground">Pending payment</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Rewards Earned</CardTitle>
@@ -147,7 +152,6 @@ export const AgencyReferralTab = () => {
             <p className="text-xs text-muted-foreground">Credits to agents</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Rewards</CardTitle>
@@ -160,7 +164,6 @@ export const AgencyReferralTab = () => {
         </Card>
       </div>
 
-      {/* Referrals Table */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -180,7 +183,6 @@ export const AgencyReferralTab = () => {
                   <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
                 </PopoverContent>
               </Popover>
-              
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className={cn("justify-start text-left font-normal", !dateTo && "text-muted-foreground")}>
@@ -192,7 +194,6 @@ export const AgencyReferralTab = () => {
                   <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
                 </PopoverContent>
               </Popover>
-              
               <div className="relative w-72">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -225,12 +226,13 @@ export const AgencyReferralTab = () => {
                     <TableHead>Payment Date</TableHead>
                     <TableHead>Reward Amount</TableHead>
                     <TableHead>Reward Status</TableHead>
+                    <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                         No referrals found
                       </TableCell>
                     </TableRow>
@@ -240,19 +242,16 @@ export const AgencyReferralTab = () => {
                         <TableCell className="font-medium">{referral.agent_name}</TableCell>
                         <TableCell className="font-medium">{referral.referred_name}</TableCell>
                         <TableCell>{referral.referred_agency || "-"}</TableCell>
-                        <TableCell>
-                          {new Date(referral.signup_date).toLocaleDateString()}
-                        </TableCell>
+                        <TableCell>{new Date(referral.signup_date).toLocaleDateString()}</TableCell>
                         <TableCell>{getStatusBadge(referral.status)}</TableCell>
                         <TableCell>
                           {referral.first_payment_date
                             ? new Date(referral.first_payment_date).toLocaleDateString()
                             : "-"}
                         </TableCell>
-                        <TableCell className="font-medium">
-                          ${referral.reward_amount.toFixed(2)}
-                        </TableCell>
+                        <TableCell className="font-medium">${referral.reward_amount.toFixed(2)}</TableCell>
                         <TableCell>{getStatusBadge(referral.reward_status)}</TableCell>
+                        <TableCell>{renderEditButton(referral)}</TableCell>
                       </TableRow>
                     ))
                   )}
@@ -269,29 +268,27 @@ export const AgencyReferralTab = () => {
                     <TableHead>Referred Agency</TableHead>
                     <TableHead>Signup Date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.filter(r => r.status === "pending").length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                         No pending referrals
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredReferrals
-                      .filter(r => r.status === "pending")
-                      .map((referral) => (
-                        <TableRow key={referral.id}>
-                          <TableCell className="font-medium">{referral.agent_name}</TableCell>
-                          <TableCell className="font-medium">{referral.referred_name}</TableCell>
-                          <TableCell>{referral.referred_agency || "-"}</TableCell>
-                          <TableCell>
-                            {new Date(referral.signup_date).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>{getStatusBadge(referral.status)}</TableCell>
-                        </TableRow>
-                      ))
+                    filteredReferrals.filter(r => r.status === "pending").map((referral) => (
+                      <TableRow key={referral.id}>
+                        <TableCell className="font-medium">{referral.agent_name}</TableCell>
+                        <TableCell className="font-medium">{referral.referred_name}</TableCell>
+                        <TableCell>{referral.referred_agency || "-"}</TableCell>
+                        <TableCell>{new Date(referral.signup_date).toLocaleDateString()}</TableCell>
+                        <TableCell>{getStatusBadge(referral.status)}</TableCell>
+                        <TableCell>{renderEditButton(referral)}</TableCell>
+                      </TableRow>
+                    ))
                   )}
                 </TableBody>
               </Table>
@@ -307,34 +304,32 @@ export const AgencyReferralTab = () => {
                     <TableHead>Payment Date</TableHead>
                     <TableHead>Reward Amount</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.filter(r => r.status === "rewarded").length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                         No completed referrals yet
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredReferrals
-                      .filter(r => r.status === "rewarded")
-                      .map((referral) => (
-                        <TableRow key={referral.id}>
-                          <TableCell className="font-medium">{referral.agent_name}</TableCell>
-                          <TableCell className="font-medium">{referral.referred_name}</TableCell>
-                          <TableCell>{referral.referred_agency || "-"}</TableCell>
-                          <TableCell>
-                            {referral.first_payment_date
-                              ? new Date(referral.first_payment_date).toLocaleDateString()
-                              : "-"}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            ${referral.reward_amount.toFixed(2)}
-                          </TableCell>
-                          <TableCell>{getStatusBadge(referral.reward_status)}</TableCell>
-                        </TableRow>
-                      ))
+                    filteredReferrals.filter(r => r.status === "rewarded").map((referral) => (
+                      <TableRow key={referral.id}>
+                        <TableCell className="font-medium">{referral.agent_name}</TableCell>
+                        <TableCell className="font-medium">{referral.referred_name}</TableCell>
+                        <TableCell>{referral.referred_agency || "-"}</TableCell>
+                        <TableCell>
+                          {referral.first_payment_date
+                            ? new Date(referral.first_payment_date).toLocaleDateString()
+                            : "-"}
+                        </TableCell>
+                        <TableCell className="font-medium">${referral.reward_amount.toFixed(2)}</TableCell>
+                        <TableCell>{getStatusBadge(referral.reward_status)}</TableCell>
+                        <TableCell>{renderEditButton(referral)}</TableCell>
+                      </TableRow>
+                    ))
                   )}
                 </TableBody>
               </Table>
@@ -342,6 +337,13 @@ export const AgencyReferralTab = () => {
           </Tabs>
         </CardContent>
       </Card>
+
+      <EditReferralModal
+        open={!!editingReferral}
+        onOpenChange={(open) => { if (!open) setEditingReferral(null); }}
+        referral={editingReferral}
+        onSave={handleSaveReferral}
+      />
     </div>
   );
 };

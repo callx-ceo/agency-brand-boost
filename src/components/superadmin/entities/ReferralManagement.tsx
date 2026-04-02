@@ -43,6 +43,7 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
   const [newRewardStatus, setNewRewardStatus] = useState("");
   const [defaultRewardAmount, setDefaultRewardAmount] = useState("100.00");
   const [isEditingDefault, setIsEditingDefault] = useState(false);
+  const [showAssignReferrer, setShowAssignReferrer] = useState(false);
 
   // Mock data - replace with Supabase queries
   const mockStats = {

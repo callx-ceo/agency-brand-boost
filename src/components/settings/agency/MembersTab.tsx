@@ -548,10 +548,49 @@ export const MembersTab: React.FC = () => {
                 </TableCell>
                 <TableCell>{getRoleBadge(member.role)}</TableCell>
                 <TableCell>
-                  {member.referredBy ? (
-                    <span className="text-sm font-medium">{member.referredBy}</span>
+                  {editingReferredBy === member.id ? (
+                    <div className="flex items-center gap-1">
+                      <Input
+                        value={referredByInput}
+                        onChange={(e) => setReferredByInput(e.target.value)}
+                        className="h-7 w-36 text-sm"
+                        placeholder="Agent name..."
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: referredByInput || undefined } : m));
+                            toast.success(`Referred by updated for ${member.name}`);
+                            setEditingReferredBy(null);
+                          } else if (e.key === 'Escape') {
+                            setEditingReferredBy(null);
+                          }
+                        }}
+                      />
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => {
+                        setMembers(prev => prev.map(m => m.id === member.id ? { ...m, referredBy: referredByInput || undefined } : m));
+                        toast.success(`Referred by updated for ${member.name}`);
+                        setEditingReferredBy(null);
+                      }}>
+                        <Check className="h-3 w-3" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setEditingReferredBy(null)}>
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
                   ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
+                    <button
+                      className="text-sm hover:underline cursor-pointer text-left"
+                      onClick={() => {
+                        setEditingReferredBy(member.id);
+                        setReferredByInput(member.referredBy || "");
+                      }}
+                    >
+                      {member.referredBy ? (
+                        <span className="font-medium">{member.referredBy}</span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic">Click to assign</span>
+                      )}
+                    </button>
                   )}
                 </TableCell>
                 <TableCell>

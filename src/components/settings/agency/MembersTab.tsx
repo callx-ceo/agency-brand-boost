@@ -526,6 +526,7 @@ export const MembersTab: React.FC = () => {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Referred By</TableHead>
               <TableHead>Verticals</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Presence</TableHead>

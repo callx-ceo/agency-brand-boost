@@ -41,7 +41,7 @@ export const AgencyReferralTab = () => {
     pendingRewards: 1800.00,
   };
 
-  const mockAgencyReferrals: AgencyReferralData[] = [
+  const [referrals, setReferrals] = useState<AgencyReferralData[]>([
     {
       id: "1",
       agent_name: "John Smith",
@@ -64,7 +64,11 @@ export const AgencyReferralTab = () => {
       reward_amount: 100.00,
       reward_status: "pending",
     },
-  ];
+  ]);
+
+  const handleSaveReferral = (updated: AgencyReferralData) => {
+    setReferrals(prev => prev.map(r => r.id === updated.id ? updated : r));
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "success" | "warning" | "destructive"> = {

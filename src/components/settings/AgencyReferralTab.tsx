@@ -95,6 +95,13 @@ export const AgencyReferralTab = () => {
     return matchesSearch && matchesDateRange;
   });
 
+  const renderSourceBadge = (source: "automatic" | "manual") => (
+    <Badge variant={source === "automatic" ? "secondary" : "outline"} className="gap-1">
+      {source === "automatic" ? <Link className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+      {source === "automatic" ? "Referral Link" : "Manual"}
+    </Badge>
+  );
+
   const renderEditButton = (referral: AgencyReferralData) => (
     <Button variant="ghost" size="icon" onClick={() => setEditingReferral(referral)}>
       <Pencil className="h-4 w-4" />

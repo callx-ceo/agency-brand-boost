@@ -566,7 +566,6 @@ export const MembersTab: React.FC = () => {
                         className="text-sm hover:underline cursor-pointer text-left"
                         onClick={() => {
                           setEditingReferredBy(member.id);
-                          setReferredByInput("");
                         }}
                       >
                         {member.referredBy ? (

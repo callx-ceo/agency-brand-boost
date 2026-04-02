@@ -44,7 +44,8 @@ interface AgencyMember {
   presence?: 'available' | 'away' | 'in-call' | 'offline';
   verticals?: string[];
   bids?: VerticalBid[];
-  targetStates?: Record<string, string[]>; // vertical -> states mapping
+  targetStates?: Record<string, string[]>;
+  referredBy?: string;
 }
 
 const AVAILABLE_VERTICALS = [

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus, Pencil } from "lucide-react";
+import { DollarSign, Users, TrendingUp, Gift, Search, CalendarIcon, UserPlus, Pencil, Link, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AssignReferrerModal } from "@/components/shared/AssignReferrerModal";
 import { EditReferralModal } from "@/components/settings/EditReferralModal";
@@ -23,6 +23,7 @@ interface AgencyReferralData {
   first_payment_date: string | null;
   reward_amount: number;
   reward_status: string;
+  source: "automatic" | "manual";
 }
 
 export const AgencyReferralTab = () => {
@@ -51,6 +52,7 @@ export const AgencyReferralTab = () => {
       first_payment_date: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
       reward_amount: 100.00,
       reward_status: "credited",
+      source: "automatic" as const,
     },
     {
       id: "2",
@@ -62,6 +64,7 @@ export const AgencyReferralTab = () => {
       first_payment_date: null,
       reward_amount: 100.00,
       reward_status: "pending",
+      source: "manual" as const,
     },
   ]);
 
@@ -92,6 +95,13 @@ export const AgencyReferralTab = () => {
     return matchesSearch && matchesDateRange;
   });
 
+  const renderSourceBadge = (source: "automatic" | "manual") => (
+    <Badge variant={source === "automatic" ? "secondary" : "outline"} className="gap-1">
+      {source === "automatic" ? <Link className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+      {source === "automatic" ? "Referral Link" : "Manual"}
+    </Badge>
+  );
+
   const renderEditButton = (referral: AgencyReferralData) => (
     <Button variant="ghost" size="icon" onClick={() => setEditingReferral(referral)}>
       <Pencil className="h-4 w-4" />
@@ -110,7 +120,7 @@ export const AgencyReferralTab = () => {
           </div>
           <Button onClick={() => setShowAssignReferrer(true)}>
             <UserPlus className="h-4 w-4 mr-2" />
-            Assign Referrer to Legacy Agent
+            Assign Referrer to Agent
           </Button>
         </CardHeader>
       </Card>
@@ -226,13 +236,14 @@ export const AgencyReferralTab = () => {
                     <TableHead>Payment Date</TableHead>
                     <TableHead>Reward Amount</TableHead>
                     <TableHead>Reward Status</TableHead>
+                    <TableHead>Source</TableHead>
                     <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                         No referrals found
                       </TableCell>
                     </TableRow>
@@ -251,6 +262,7 @@ export const AgencyReferralTab = () => {
                         </TableCell>
                         <TableCell className="font-medium">${referral.reward_amount.toFixed(2)}</TableCell>
                         <TableCell>{getStatusBadge(referral.reward_status)}</TableCell>
+                        <TableCell>{renderSourceBadge(referral.source)}</TableCell>
                         <TableCell>{renderEditButton(referral)}</TableCell>
                       </TableRow>
                     ))
@@ -268,13 +280,14 @@ export const AgencyReferralTab = () => {
                     <TableHead>Referred Agency</TableHead>
                     <TableHead>Signup Date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Source</TableHead>
                     <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.filter(r => r.status === "pending").length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                         No pending referrals
                       </TableCell>
                     </TableRow>
@@ -286,6 +299,7 @@ export const AgencyReferralTab = () => {
                         <TableCell>{referral.referred_agency || "-"}</TableCell>
                         <TableCell>{new Date(referral.signup_date).toLocaleDateString()}</TableCell>
                         <TableCell>{getStatusBadge(referral.status)}</TableCell>
+                        <TableCell>{renderSourceBadge(referral.source)}</TableCell>
                         <TableCell>{renderEditButton(referral)}</TableCell>
                       </TableRow>
                     ))
@@ -304,13 +318,14 @@ export const AgencyReferralTab = () => {
                     <TableHead>Payment Date</TableHead>
                     <TableHead>Reward Amount</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Source</TableHead>
                     <TableHead className="w-[60px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredReferrals.filter(r => r.status === "rewarded").length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         No completed referrals yet
                       </TableCell>
                     </TableRow>
@@ -327,6 +342,7 @@ export const AgencyReferralTab = () => {
                         </TableCell>
                         <TableCell className="font-medium">${referral.reward_amount.toFixed(2)}</TableCell>
                         <TableCell>{getStatusBadge(referral.reward_status)}</TableCell>
+                        <TableCell>{renderSourceBadge(referral.source)}</TableCell>
                         <TableCell>{renderEditButton(referral)}</TableCell>
                       </TableRow>
                     ))

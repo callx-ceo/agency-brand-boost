@@ -172,7 +172,7 @@ const ReferralManagement = ({ onBackToDashboard }: ReferralManagementProps) => {
         </div>
         <Button onClick={() => setShowAssignReferrer(true)}>
           <UserPlus className="h-4 w-4 mr-2" />
-          Assign Referrer to Legacy Agent
+          Assign Referrer to Agent
         </Button>
       </div>
 

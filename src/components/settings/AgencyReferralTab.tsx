@@ -29,6 +29,7 @@ export const AgencyReferralTab = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
+  const [showAssignReferrer, setShowAssignReferrer] = useState(false);
 
   // Mock data - replace with Supabase queries filtering by agency
   const mockAgencyStats = {

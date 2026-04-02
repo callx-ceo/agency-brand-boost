@@ -48,6 +48,7 @@ interface AgencyMember {
   bids?: VerticalBid[];
   targetStates?: Record<string, string[]>;
   referredBy?: string;
+  referredByType?: 'agent' | 'agency';
 }
 
 const AVAILABLE_VERTICALS = [

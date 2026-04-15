@@ -11,7 +11,7 @@ import {
   Phone,
   PhoneOff,
   Mic,
-  MicOff,
+  
   Headphones,
   Settings,
   ChevronLeft,
@@ -34,9 +34,8 @@ interface ScriptStep {
 
 const LiveCallWorkspace = () => {
   const [isLive, setIsLive] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [callDuration, setCallDuration] = useState("00:00:00");
+  const [callDuration] = useState("00:00:00");
   const [formData, setFormData] = useState<Record<string, string>>({});
 
   const scriptSteps: ScriptStep[] = [

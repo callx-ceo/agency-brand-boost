@@ -70,7 +70,7 @@ const RealtimeReport = () => {
 
   const getRowClassName = (call: typeof mockRealtimeData[0]) => {
     if (call.isLive) return "bg-green-50 hover:bg-green-100 border-l-4 border-l-green-500";
-    if (call.isPaid) return "bg-blue-50 hover:bg-blue-100 text-blue-700";
+    if (call.isPaid) return "text-blue-600 hover:bg-muted/50";
     return "hover:bg-muted/50";
   };
 
@@ -138,8 +138,8 @@ const RealtimeReport = () => {
         {/* Legend */}
         <div className="flex gap-4 text-xs">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-blue-200 border border-blue-400" />
-            <span className="text-muted-foreground">Paid Calls</span>
+            <span className="text-blue-600 font-medium text-sm">Aa</span>
+            <span className="text-muted-foreground">Paid Calls (blue text)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded bg-green-200 border border-green-500" />

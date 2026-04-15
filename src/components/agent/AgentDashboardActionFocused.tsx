@@ -159,7 +159,7 @@ const AgentDashboardActionFocused = () => {
   const [activeAgentView, setActiveAgentView] = useState<string>("dashboard");
 
   const navItems = [
-    { icon: Phone, label: "Live Calls", id: "live-calls", active: activeAgentView === "live-calls" },
+    { icon: Phone, label: "My Workspace", id: "live-calls", active: activeAgentView === "live-calls" },
     { icon: Home, label: "Dashboard", id: "dashboard", active: activeAgentView === "dashboard" },
     { icon: Users, label: "Leads", id: "leads", active: activeAgentView === "leads" },
     { icon: MessageSquare, label: "Messages", id: "messages", active: activeAgentView === "messages" },

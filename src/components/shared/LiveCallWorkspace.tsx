@@ -11,7 +11,6 @@ import {
   Phone,
   PhoneOff,
   Mic,
-  
   Headphones,
   Settings,
   ChevronLeft,
@@ -23,7 +22,14 @@ import {
   User,
   MapPin,
   Clock,
+  History,
+  Contact,
+  ClipboardList,
+  Gift,
+  LifeBuoy,
 } from "lucide-react";
+
+type WorkspaceTab = "live-calls" | "my-history" | "my-contacts" | "my-applications" | "my-referrals" | "my-settings" | "my-support";
 
 interface ScriptStep {
   id: number;
@@ -32,7 +38,18 @@ interface ScriptStep {
   fields: { label: string; type: string; placeholder?: string; halfWidth?: boolean }[];
 }
 
+const workspaceTabs = [
+  { id: "live-calls" as WorkspaceTab, label: "Live Calls", icon: Phone },
+  { id: "my-history" as WorkspaceTab, label: "My History", icon: History },
+  { id: "my-contacts" as WorkspaceTab, label: "My Contacts", icon: Contact },
+  { id: "my-applications" as WorkspaceTab, label: "My Applications", icon: ClipboardList },
+  { id: "my-referrals" as WorkspaceTab, label: "My Referrals", icon: Gift },
+  { id: "my-settings" as WorkspaceTab, label: "My Settings", icon: Settings },
+  { id: "my-support" as WorkspaceTab, label: "My Support", icon: LifeBuoy },
+];
+
 const LiveCallWorkspace = () => {
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>("live-calls");
   const [isLive, setIsLive] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [callDuration] = useState("00:00:00");
@@ -85,8 +102,39 @@ const LiveCallWorkspace = () => {
     setFormData((prev) => ({ ...prev, [label]: value }));
   };
 
-  return (
-    <div className="flex flex-col h-full min-h-[calc(100vh-80px)]">
+  const renderPlaceholderTab = (title: string, description: string) => (
+    <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+      <Card className="max-w-md w-full">
+        <CardContent className="p-12 text-center space-y-4">
+          <h2 className="text-2xl font-bold">{title}</h2>
+          <p className="text-muted-foreground">{description}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "my-history":
+        return renderPlaceholderTab("My History", "View your call history and past interactions.");
+      case "my-contacts":
+        return renderPlaceholderTab("My Contacts", "Manage your personal contacts and leads.");
+      case "my-applications":
+        return renderPlaceholderTab("My Applications", "Track your submitted applications and their status.");
+      case "my-referrals":
+        return renderPlaceholderTab("My Referrals", "View and manage your referral activity.");
+      case "my-settings":
+        return renderPlaceholderTab("My Settings", "Configure your personal workspace preferences.");
+      case "my-support":
+        return renderPlaceholderTab("My Support", "Get help and access support resources.");
+      case "live-calls":
+      default:
+        return renderLiveCallsContent();
+    }
+  };
+
+  const renderLiveCallsContent = () => (
+    <div className="flex flex-col h-full min-h-[calc(100vh-200px)]">
       {/* Top Control Bar */}
       <div className="flex items-center justify-between gap-4 mb-4">
         {/* Left: Status & Controls */}
@@ -153,7 +201,6 @@ const LiveCallWorkspace = () => {
                 <CardTitle className="text-lg">Script</CardTitle>
                 <span className="text-sm text-muted-foreground">{currentScript.title}</span>
               </div>
-              {/* Progress bar */}
               <div className="flex gap-1 mt-2">
                 {scriptSteps.map((step) => (
                   <div
@@ -171,18 +218,9 @@ const LiveCallWorkspace = () => {
               </p>
               <div className="space-y-4">
                 {currentScript.fields.map((field, idx) => {
-                  const isHalfWidth = field.halfWidth;
                   const nextField = currentScript.fields[idx + 1];
-                  const prevField = idx > 0 ? currentScript.fields[idx - 1] : null;
 
-                  // Skip if this is the second of a pair
-                  if (isHalfWidth && prevField?.halfWidth && idx % 2 !== 0) {
-                    // Check if the previous rendered field was also half-width
-                    // Simple approach: render pairs
-                  }
-
-                  if (isHalfWidth) {
-                    // Find the pair
+                  if (field.halfWidth) {
                     const isFirst =
                       idx === 0 || !currentScript.fields[idx - 1]?.halfWidth;
                     if (!isFirst) return null;
@@ -229,7 +267,6 @@ const LiveCallWorkspace = () => {
                 })}
               </div>
             </CardContent>
-            {/* Navigation */}
             <div className="flex items-center justify-between px-6 py-3 border-t">
               <Button
                 variant="ghost"
@@ -255,7 +292,6 @@ const LiveCallWorkspace = () => {
 
         {/* Right Column: Transcription + Summary/Client */}
         <div className="flex flex-col gap-4 min-h-0">
-          {/* Live AI Transcription */}
           <Card className="flex-1 flex flex-col min-h-0">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -282,9 +318,7 @@ const LiveCallWorkspace = () => {
             </CardContent>
           </Card>
 
-          {/* Bottom: Summary + Client Info */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Summary */}
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -298,13 +332,11 @@ const LiveCallWorkspace = () => {
                 <p className="font-semibold text-sm mb-2">Subtitle</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh
-                  euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad
-                  minim sed diam nonummy nibh euismod tincidunt ut laoreet dolor.
+                  euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Client Info */}
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -349,6 +381,34 @@ const LiveCallWorkspace = () => {
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Workspace Subtabs */}
+      <div className="flex items-center gap-1 mb-4 border-b pb-2 overflow-x-auto">
+        {workspaceTabs.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                activeTab === tab.id
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Tab Content */}
+      {renderTabContent()}
     </div>
   );
 };

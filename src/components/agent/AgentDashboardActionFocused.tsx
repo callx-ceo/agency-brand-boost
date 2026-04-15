@@ -155,13 +155,15 @@ const AgentDashboardActionFocused = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCelebrationModal, setShowCelebrationModal] = useState(false);
 
+  const [activeAgentView, setActiveAgentView] = useState<string>("dashboard");
+
   const navItems = [
-    { icon: Home, label: "Dashboard", active: true },
-    { icon: Users, label: "Leads", active: false },
-    { icon: Phone, label: "Calls", active: false },
-    { icon: MessageSquare, label: "Messages", active: false },
-    { icon: BarChart3, label: "Performance", active: false },
-    { icon: Settings, label: "Settings", active: false },
+    { icon: Phone, label: "Live Calls", id: "live-calls", active: activeAgentView === "live-calls" },
+    { icon: Home, label: "Dashboard", id: "dashboard", active: activeAgentView === "dashboard" },
+    { icon: Users, label: "Leads", id: "leads", active: activeAgentView === "leads" },
+    { icon: MessageSquare, label: "Messages", id: "messages", active: activeAgentView === "messages" },
+    { icon: BarChart3, label: "Performance", id: "performance", active: activeAgentView === "performance" },
+    { icon: Settings, label: "Settings", id: "settings", active: activeAgentView === "settings" },
   ];
 
   const remainingOpportunities = visibleLeads.length;
@@ -307,6 +309,7 @@ const AgentDashboardActionFocused = () => {
           {navItems.map((item) => (
             <button
               key={item.label}
+              onClick={() => setActiveAgentView(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 item.active
                   ? "bg-white/10 text-white"

@@ -58,6 +58,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
   // Dashboard & Analytics sections
   const dashboardSections = [
     { id: "dashboard", label: "Executive Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
+    { id: "live-calls", label: "Live Calls", icon: <PhoneCall className="w-5 h-5" /> },
     { id: "analytics", label: "Advanced Analytics", icon: <TrendingUp className="w-5 h-5" /> },
     { id: "compliance", label: "Compliance Reporting", icon: <Shield className="w-5 h-5" /> },
   ];

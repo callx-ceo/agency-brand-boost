@@ -28,6 +28,7 @@ import {
 import SendTextModal from "./SendTextModal";
 import LeadDetailsPanel from "./LeadDetailsPanel";
 import EditLeadModal from "./EditLeadModal";
+import LiveCallWorkspace from "../shared/LiveCallWorkspace";
 
 interface Lead {
   id: string;
@@ -155,13 +156,15 @@ const AgentDashboardActionFocused = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCelebrationModal, setShowCelebrationModal] = useState(false);
 
+  const [activeAgentView, setActiveAgentView] = useState<string>("dashboard");
+
   const navItems = [
-    { icon: Home, label: "Dashboard", active: true },
-    { icon: Users, label: "Leads", active: false },
-    { icon: Phone, label: "Calls", active: false },
-    { icon: MessageSquare, label: "Messages", active: false },
-    { icon: BarChart3, label: "Performance", active: false },
-    { icon: Settings, label: "Settings", active: false },
+    { icon: Phone, label: "Live Calls", id: "live-calls", active: activeAgentView === "live-calls" },
+    { icon: Home, label: "Dashboard", id: "dashboard", active: activeAgentView === "dashboard" },
+    { icon: Users, label: "Leads", id: "leads", active: activeAgentView === "leads" },
+    { icon: MessageSquare, label: "Messages", id: "messages", active: activeAgentView === "messages" },
+    { icon: BarChart3, label: "Performance", id: "performance", active: activeAgentView === "performance" },
+    { icon: Settings, label: "Settings", id: "settings", active: activeAgentView === "settings" },
   ];
 
   const remainingOpportunities = visibleLeads.length;
@@ -307,6 +310,7 @@ const AgentDashboardActionFocused = () => {
           {navItems.map((item) => (
             <button
               key={item.label}
+              onClick={() => setActiveAgentView(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 item.active
                   ? "bg-white/10 text-white"
@@ -369,6 +373,10 @@ const AgentDashboardActionFocused = () => {
 
         {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto p-8 space-y-6">
+          {activeAgentView === "live-calls" ? (
+            <LiveCallWorkspace />
+          ) : (
+          <>
           {/* Priority Status Banner */}
           <section className={`${getBannerGradient()} rounded-2xl p-10 text-white shadow-2xl transition-all duration-600 border border-white/10 backdrop-blur-sm`}>
             <div className="text-center space-y-5">
@@ -687,6 +695,8 @@ const AgentDashboardActionFocused = () => {
               </Card>
             </div>
           </section>
+          </>
+          )}
         </main>
       </div>
 

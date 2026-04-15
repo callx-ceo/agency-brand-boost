@@ -51,4 +51,5 @@ export type SuperAdminViewType =
   | 'agent-notification-management'
   | 'notification-templates'
   | 'notification-branding-overview'
-  | 'settings';
+  | 'settings'
+  | 'live-calls';

@@ -28,6 +28,7 @@ import {
 import SendTextModal from "./SendTextModal";
 import LeadDetailsPanel from "./LeadDetailsPanel";
 import EditLeadModal from "./EditLeadModal";
+import LiveCallWorkspace from "../shared/LiveCallWorkspace";
 
 interface Lead {
   id: string;
@@ -372,6 +373,10 @@ const AgentDashboardActionFocused = () => {
 
         {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto p-8 space-y-6">
+          {activeAgentView === "live-calls" ? (
+            <LiveCallWorkspace />
+          ) : (
+          <>
           {/* Priority Status Banner */}
           <section className={`${getBannerGradient()} rounded-2xl p-10 text-white shadow-2xl transition-all duration-600 border border-white/10 backdrop-blur-sm`}>
             <div className="text-center space-y-5">

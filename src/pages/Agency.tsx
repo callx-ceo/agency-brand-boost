@@ -13,6 +13,7 @@ import BillingTab from "../components/settings/BillingTab";
 import BrandingSettings from "../components/settings/BrandingSettings";
 import AgentDashboard from "../components/agent/AgentDashboard";
 import { AgencyReferralTab } from "../components/settings/AgencyReferralTab";
+import LiveCallWorkspace from "../components/shared/LiveCallWorkspace";
 import { Toaster } from "sonner";
 
 const Agency = () => {
@@ -79,7 +80,7 @@ const Agency = () => {
           </div>
         );
       case "go-live":
-        return <AgentDashboard />;
+        return <LiveCallWorkspace />;
       case "team":
         return <AgencySettings onBackToDashboard={() => setActiveSection("dashboard")} />;
       case "branding":

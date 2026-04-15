@@ -40,6 +40,7 @@ import AgentNotificationManagement from "../entities/AgentNotificationManagement
 import NotificationTemplateManagement from "../entities/NotificationTemplateManagement";
 import NotificationBrandingOverview from "../entities/NotificationBrandingOverview";
 import PlatformSettings from "../settings/PlatformSettings";
+import LiveCallWorkspace from "../../shared/LiveCallWorkspace";
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -221,6 +222,9 @@ const SuperAdminViewRenderer = ({
     
     case 'settings':
       return <PlatformSettings onBackToDashboard={handleBackToDashboard} />;
+    
+    case 'live-calls':
+      return <LiveCallWorkspace />;
     
     default:
       return (

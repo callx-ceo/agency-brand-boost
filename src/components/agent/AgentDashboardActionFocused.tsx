@@ -695,6 +695,8 @@ const AgentDashboardActionFocused = () => {
               </Card>
             </div>
           </section>
+          </>
+          )}
         </main>
       </div>
 

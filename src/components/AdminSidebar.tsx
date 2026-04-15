@@ -1,24 +1,9 @@
-
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { 
-  BarChart3, 
-  Users, 
-  Settings, 
-  Phone, 
-  FileText, 
-  UserPlus, 
-  Target,
-  Gift,
-  Bell,
-  CreditCard,
-  Home,
-  Contact,
-  History,
-  UserCheck,
-  Briefcase,
-  Headphones,
-  Mail,
-  Palette
+  BarChart3, Users, Settings, Phone, FileText, UserPlus, Target, Gift, Bell,
+  CreditCard, Home, Contact, History, UserCheck, Briefcase, Headphones, Palette,
+  ChevronDown, ChevronRight
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -26,92 +11,140 @@ interface AdminSidebarProps {
   setActiveSection: (section: string) => void;
 }
 
+interface NavSection {
+  key: string;
+  label: string;
+  items: { id: string; label: string; icon: React.ElementType }[];
+}
+
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
-  const menuItems = [
-    { 
-      category: "Dashboard", 
+  const sections: NavSection[] = [
+    {
+      key: "dashboard",
+      label: "Dashboard",
       items: [
         { id: "dashboard", label: "Dashboard", icon: Home },
-      ]
-    },
-    { 
-      category: "Agent Operations", 
-      items: [
         { id: "go-live", label: "My Workspace", icon: Headphones },
-      ]
+      ],
     },
-    { 
-      category: "Campaign Management", 
+    {
+      key: "campaigns",
+      label: "Campaign Management",
       items: [
         { id: "offers", label: "Offers", icon: Briefcase },
         { id: "campaigns", label: "Campaigns", icon: Target },
         { id: "publishers", label: "Publishers", icon: UserPlus },
-      ]
+      ],
     },
-    { 
-      category: "Reports & Analytics", 
+    {
+      key: "reports",
+      label: "Reports & Analytics",
       items: [
         { id: "reports", label: "Realtime Report", icon: BarChart3 },
         { id: "applications", label: "Applications", icon: FileText },
         { id: "call-history", label: "Call History", icon: History },
         { id: "contacts", label: "Contacts", icon: Contact },
         { id: "leads-list", label: "Leads List", icon: UserCheck },
-      ]
+      ],
     },
-    { 
-      category: "General Settings", 
+    {
+      key: "settings",
+      label: "General Settings",
       items: [
         { id: "general", label: "General", icon: Settings },
         { id: "branding", label: "Branding & Emails", icon: Palette },
         { id: "scripts", label: "Scripts & AI", icon: Phone },
         { id: "notifications", label: "Notifications", icon: Bell },
-      ]
+      ],
     },
-    { 
-      category: "Team & Finance", 
+    {
+      key: "team",
+      label: "Team & Finance",
       items: [
         { id: "team", label: "Team Members", icon: Users },
         { id: "billing", label: "Billing", icon: CreditCard },
         { id: "upgrade", label: "Upgrade Plans", icon: CreditCard },
         { id: "referrals", label: "Referrals", icon: Gift },
-      ]
-    }
+      ],
+    },
   ];
 
+  const findSectionForItem = (id: string): string | null => {
+    for (const s of sections) {
+      if (s.items.some(i => i.id === id)) return s.key;
+    }
+    return null;
+  };
+
+  const activeKey = findSectionForItem(activeSection);
+  const [expanded, setExpanded] = useState<Set<string>>(
+    new Set(activeKey ? [activeKey] : ["dashboard"])
+  );
+
+  useEffect(() => {
+    const key = findSectionForItem(activeSection);
+    if (key && !expanded.has(key)) {
+      setExpanded(prev => new Set([...prev, key]));
+    }
+  }, [activeSection]);
+
+  const toggle = (key: string) => {
+    setExpanded(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
+
   return (
-    <div className="w-64 bg-white shadow-lg h-screen overflow-y-auto">
-      <div className="p-6 border-b">
-        <h2 className="text-xl font-bold text-gray-800">Agency Portal</h2>
+    <div className="w-60 bg-card border-r flex flex-col h-screen">
+      <div className="p-4 border-b">
+        <h2 className="text-lg font-bold text-foreground">Agency Portal</h2>
       </div>
-      
-      <nav className="mt-6">
-        {menuItems.map((category) => (
-          <div key={category.category} className="mb-6">
-            <h3 className="px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-              {category.category}
-            </h3>
-            <ul>
-              {category.items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <li key={item.id}>
-                    <button
-                      onClick={() => setActiveSection(item.id)}
-                      className={`w-full flex items-center px-6 py-3 text-left text-sm font-medium transition-colors duration-200 ${
-                        activeSection === item.id
-                          ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                      }`}
-                    >
-                      <Icon className="mr-3 h-5 w-5" />
-                      {item.label}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+
+      <nav className="flex-1 overflow-y-auto py-2 space-y-0.5">
+        {sections.map((section) => {
+          const isExpanded = expanded.has(section.key);
+          const hasActive = section.items.some(i => i.id === activeSection);
+
+          return (
+            <div key={section.key}>
+              <button
+                onClick={() => toggle(section.key)}
+                className={cn(
+                  "w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors",
+                  hasActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="flex-1 text-left">{section.label}</span>
+                {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+              </button>
+
+              {isExpanded && (
+                <div className="space-y-0.5 pb-1">
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => setActiveSection(item.id)}
+                        className={cn(
+                          "w-full flex items-center gap-2.5 px-4 py-2 rounded-md text-left text-sm transition-colors",
+                          activeSection === item.id
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </nav>
     </div>
   );

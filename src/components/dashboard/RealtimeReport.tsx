@@ -1,471 +1,255 @@
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Download, Search, Filter, ChevronDown, ChevronRight, Headphones, Eye, Phone, Radio, Building2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import DateRangeSelector from "./DateRangeSelector";
+import { Download, Search, Phone, ChevronLeft, ChevronRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import LiveCallModal from "./LiveCallModal";
 
-// Enhanced mock real-time call data with agency information
+// Mock data matching the reference screenshot layout
 const mockRealtimeData = [
-  {
-    id: "rt-001",
-    dateTime: "5/2/25 15:55",
-    callRecordId: "5C3654BC-8D58-474C-B39F-D409F4C2945",
-    callerId: "479-236-5208",
-    promoNumber: "877-700-0622",
-    callType: "Inbound",
-    publisherName: "Google 9 (rag@nowbereads.com)",
-    campaignName: "Final Expense - Social - No IVR",
-    type: "Bundled",
-    forwarded: "Yes",
-    ageSelectedOfferName: "Family First (Sen) - No IVR",
-    offerName: "Family First (Sen) - No IVR",
-    aiScore: 85,
-    duration: "2:15",
-    agent: "Sarah Johnson",
-    agency: "Elite Insurance Group",
-    agencyId: "agency-001",
-    status: "Active",
-    contact: {
-      name: "Robert Martinez",
-      email: "robert.martinez@email.com",
-      address: "123 Oak St, Austin, TX 78701",
-      age: 67,
-      insurance: "Currently uninsured"
-    },
-    aiBreakdown: {
-      scriptAdherence: 90,
-      customerHandling: 85,
-      problemSolving: 80,
-      overallScore: 85
-    },
-    keyTopics: ["Final expense insurance", "Premium quotes", "Coverage options"],
-    sentiment: "Positive",
-    actionItems: [
-      "Send quote via email",
-      "Schedule follow-up call"
-    ],
-    summary: "Customer is actively discussing final expense insurance options. The agent is providing detailed information about coverage amounts and premium costs. Customer shows strong interest and is asking specific questions about beneficiaries and claim processes."
-  },
-  {
-    id: "rt-002",
-    dateTime: "5/2/25 15:51",
-    callRecordId: "2446B ED2-63E3-45C4-B8AE-79EC4A70F244",
-    callerId: "832-885-3122",
-    promoNumber: "888-603-7484",
-    callType: "Inbound",
-    publisherName: "Google 9 (rag@nowbereads.com)",
-    campaignName: "Final Expense Bundle",
-    type: "Bundled",
-    forwarded: "Yes",
-    ageSelectedOfferName: "Inspire - Search",
-    offerName: "Inspire - Search",
-    aiScore: 62,
-    duration: "1:45",
-    agent: "Mike Wilson",
-    agency: "Premier Call Solutions",
-    agencyId: "agency-002",
-    status: "On Hold",
-    contact: {
-      name: "Linda Thompson",
-      email: "linda.thompson@email.com",
-      address: "456 Pine Ave, Dallas, TX 75201",
-      age: 72,
-      insurance: "Has existing policy"
-    },
-    aiBreakdown: {
-      scriptAdherence: 65,
-      customerHandling: 60,
-      problemSolving: 62,
-      overallScore: 62
-    },
-    keyTopics: ["Policy comparison", "Premium rates"],
-    sentiment: "Neutral",
-    actionItems: [
-      "Provide competitor comparison"
-    ],
-    summary: "Customer is comparing our rates with existing policy. Currently on hold while agent researches competitor rates."
-  },
-  {
-    id: "rt-003",
-    dateTime: "5/2/25 15:50",
-    callRecordId: "7C5D438E-04C8-4E85-953E-8B243E53A85F",
-    callerId: "618-696-2020",
-    promoNumber: "888-603-7484",
-    callType: "Inbound",
-    publisherName: "Google 9 (rag@nowbereads.com)",
-    campaignName: "Final Expense Bundle",
-    type: "Bundled",
-    forwarded: "Yes",
-    ageSelectedOfferName: "Inspire - Search",
-    offerName: "Inspire - Search",
-    aiScore: 74,
-    duration: "3:20",
-    agent: "Jennifer Davis",
-    agency: "Elite Insurance Group",
-    agencyId: "agency-001",
-    status: "Completed",
-    contact: {
-      name: "William Garcia",
-      email: "william.garcia@email.com",
-      address: "789 Maple Dr, Houston, TX 77001",
-      age: 69,
-      insurance: "Previously declined"
-    },
-    aiBreakdown: {
-      scriptAdherence: 75,
-      customerHandling: 74,
-      problemSolving: 73,
-      overallScore: 74
-    },
-    keyTopics: ["Health questions", "Application process", "Premium payment"],
-    sentiment: "Positive",
-    actionItems: [
-      "Process application",
-      "Send confirmation email"
-    ],
-    summary: "Successfully completed application process. Customer answered all health questions and agreed to monthly premium payments. Application submitted for underwriting review."
-  }
+  { id: "rt-001", dateTime: "4/14/26 18:58", callRecordId: "EE21581B-D2EF-4C42-BB8B-104DEF5001F3", callerId: "314-599-0733", promoNumber: "833-824-4807", callType: "Inbound", publisherName: "Upforce Media", campaignName: "Final Expense-IVR-T2", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: true, isLive: false },
+  { id: "rt-002", dateTime: "4/14/26 18:43", callRecordId: "D58D2AE1-4DF6-416B-9462-45BC05B0AD39", callerId: "719-960-6351", promoNumber: "877-843-0572", callType: "Inbound", publisherName: "Facebook", campaignName: "Final Expense-IVR-T2", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: false, isLive: false },
+  { id: "rt-003", dateTime: "4/14/26 18:41", callRecordId: "9F17BDC2-F59C-47AF-B5E9-7E9593BD6FA8", callerId: "513-687-0373", promoNumber: "866-407-1963", callType: "Inbound", publisherName: "Google 8 (smrtti@callx.io)", campaignName: "Final Expense Bundle", type: "Bundled", forwarded: "Yes", status: "Active", isPaid: false, isLive: true },
+  { id: "rt-004", dateTime: "4/14/26 18:22", callRecordId: "80523014-E05D-42AF-A0A5-3E1147650103", callerId: "870-227-3662", promoNumber: "855-785-4362", callType: "Inbound", publisherName: "RingMax Ltd.", campaignName: "Home Insurance Bundle (Copy1)", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: true, isLive: false },
+  { id: "rt-005", dateTime: "4/14/26 18:22", callRecordId: "D1CA0E73-045F-4350-B68B-56D9CAF49FB6", callerId: "870-227-3662", promoNumber: "855-785-4362", callType: "Inbound", publisherName: "RingMax Ltd.", campaignName: "Home Insurance Bundle (Copy1)", type: "Bundled", forwarded: "Yes", status: "Active", isPaid: false, isLive: true },
+  { id: "rt-006", dateTime: "4/14/26 18:19", callRecordId: "2438BCE7-1D2D-4C8E-A738-64E8691717OD", callerId: "518-588-8433", promoNumber: "877-385-4666", callType: "Inbound", publisherName: "Refer Blue Limited", campaignName: "Credit Repair Bundle", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: true, isLive: false },
+  { id: "rt-007", dateTime: "4/14/26 18:09", callRecordId: "BE7DF7E9-B84F-481F-B983-852A12FCE1CC", callerId: "919-437-9939", promoNumber: "844-774-4293", callType: "Inbound", publisherName: "Insurex Insurance (Google 1)", campaignName: "Final Expense Bundle", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: false, isLive: false },
+  { id: "rt-008", dateTime: "4/14/26 17:26", callRecordId: "628ECEFB-672D-4F98-B720-42B68B094E0F", callerId: "302-452-0300", promoNumber: "877-224-3408", callType: "Inbound", publisherName: "Bing", campaignName: "Health Insurance Bundle - ACA", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: true, isLive: false },
+  { id: "rt-009", dateTime: "4/14/26 17:18", callRecordId: "02BC0062-6B1E-47B4-4C29-8A1B99155832", callerId: "415-360-7203", promoNumber: "877-843-0572", callType: "Inbound", publisherName: "Facebook", campaignName: "Final Expense-IVR-T2", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: false, isLive: false },
+  { id: "rt-010", dateTime: "4/14/26 17:10", callRecordId: "A986B06A-6186-43FC-B82A-3DA863EA19B0", callerId: "678-201-3169", promoNumber: "855-785-4362", callType: "Inbound", publisherName: "RingMax Ltd.", campaignName: "Home Insurance Bundle (Copy1)", type: "Bundled", forwarded: "Yes", status: "Active", isPaid: true, isLive: true },
+  { id: "rt-011", dateTime: "4/14/26 17:09", callRecordId: "FA6D00D5-CA29-414F-950E-BF69CF2F9D94", callerId: "678-201-3169", promoNumber: "855-785-4362", callType: "Inbound", publisherName: "RingMax Ltd.", campaignName: "Home Insurance Bundle (Copy1)", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: false, isLive: false },
+  { id: "rt-012", dateTime: "4/14/26 17:08", callRecordId: "A6A6283A-13DB-4CBA-9ED8-C10C94FF4A62", callerId: "818-848-5578", promoNumber: "888-718-9483", callType: "Inbound", publisherName: "Zhan Feng", campaignName: "Auto Bundle - Private 2", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: true, isLive: false },
+  { id: "rt-013", dateTime: "4/14/26 16:55", callRecordId: "D54D24DC-8E3B-4983-ABF5-87AD00C2AEF", callerId: "678-201-3169", promoNumber: "855-785-4362", callType: "Inbound", publisherName: "RingMax Ltd.", campaignName: "Home Insurance Bundle (Copy1)", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: true, isLive: false },
+  { id: "rt-014", dateTime: "4/14/26 16:44", callRecordId: "80D7ED3D-4A81-43D3-96AF-106AD5495D22", callerId: "314-359-4102", promoNumber: "866-407-1963", callType: "Inbound", publisherName: "Google 8 (smrtti@callx.io)", campaignName: "Final Expense Bundle", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: false, isLive: false },
+  { id: "rt-015", dateTime: "4/14/26 16:42", callRecordId: "06CA46D9-6F4D-4DFC-A4AC-B0D6985418S4", callerId: "314-359-4102", promoNumber: "866-407-1963", callType: "Inbound", publisherName: "Google 8 (smrtti@callx.io)", campaignName: "Final Expense Bundle", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: false, isLive: false },
+  { id: "rt-016", dateTime: "4/14/26 16:40", callRecordId: "C725FF42-66BF-4FF3-848D-2CFD268FC53F", callerId: "314-359-4102", promoNumber: "866-407-1963", callType: "Inbound", publisherName: "Google 8 (smrtti@callx.io)", campaignName: "Final Expense Bundle", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: true, isLive: false },
+  { id: "rt-017", dateTime: "4/14/26 16:40", callRecordId: "C9D210F2-A9F8-4687-A143-F0601f195C12", callerId: "337-247-8022", promoNumber: "866-407-1963", callType: "Inbound", publisherName: "Google 8 (smrtti@callx.io)", campaignName: "Final Expense Bundle", type: "Bundled", forwarded: "Yes", status: "Completed", isPaid: false, isLive: false },
 ];
+
+const ITEMS_PER_PAGE = 15;
 
 const RealtimeReport = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [expandedCall, setExpandedCall] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedCallForLive, setSelectedCallForLive] = useState<any>(null);
   const [isLiveModalOpen, setIsLiveModalOpen] = useState(false);
-  const [dateRange, setDateRange] = useState({
-    from: new Date(),
-    to: new Date()
-  });
 
-  const filteredData = mockRealtimeData.filter(call => 
-    call.callerId.includes(searchTerm) ||
-    call.publisherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    call.campaignName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    call.contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    call.agency.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Column filters
+  const [filterCallType, setFilterCallType] = useState("all");
+  const [filterPublisher, setFilterPublisher] = useState("all");
+  const [filterCampaign, setFilterCampaign] = useState("all");
+  const [filterType, setFilterType] = useState("all");
+  const [filterCallerId, setFilterCallerId] = useState("");
+  const [filterPromoNumber, setFilterPromoNumber] = useState("");
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-600";
-    if (score >= 60) return "text-yellow-600";
-    return "text-red-600";
-  };
+  const uniquePublishers = useMemo(() => [...new Set(mockRealtimeData.map(c => c.publisherName))], []);
+  const uniqueCampaigns = useMemo(() => [...new Set(mockRealtimeData.map(c => c.campaignName))], []);
+  const uniqueTypes = useMemo(() => [...new Set(mockRealtimeData.map(c => c.type))], []);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Active": return "bg-green-100 text-green-800";
-      case "On Hold": return "bg-yellow-100 text-yellow-800";
-      case "Completed": return "bg-blue-100 text-blue-800";
-      default: return "bg-gray-100 text-gray-800";
-    }
-  };
+  const filteredData = useMemo(() => {
+    return mockRealtimeData.filter(call => {
+      const matchesSearch = !searchTerm || 
+        call.callerId.includes(searchTerm) ||
+        call.publisherName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        call.campaignName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        call.callRecordId.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCallType = filterCallType === "all" || call.callType === filterCallType;
+      const matchesPublisher = filterPublisher === "all" || call.publisherName === filterPublisher;
+      const matchesCampaign = filterCampaign === "all" || call.campaignName === filterCampaign;
+      const matchesType = filterType === "all" || call.type === filterType;
+      const matchesCaller = !filterCallerId || call.callerId.includes(filterCallerId);
+      const matchesPromo = !filterPromoNumber || call.promoNumber.includes(filterPromoNumber);
+      return matchesSearch && matchesCallType && matchesPublisher && matchesCampaign && matchesType && matchesCaller && matchesPromo;
+    });
+  }, [searchTerm, filterCallType, filterPublisher, filterCampaign, filterType, filterCallerId, filterPromoNumber]);
 
-  const toggleExpanded = (callId: string) => {
-    setExpandedCall(expandedCall === callId ? null : callId);
-  };
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+  const paginatedData = filteredData.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  const handleListenRecording = (callId: string) => {
-    console.log("Listen to live call:", callId);
-    // TODO: Implement live call listening
+  const getRowClassName = (call: typeof mockRealtimeData[0]) => {
+    if (call.isLive) return "bg-green-50 hover:bg-green-100 border-l-4 border-l-green-500";
+    if (call.isPaid) return "bg-blue-50 hover:bg-blue-100 text-blue-700";
+    return "hover:bg-muted/50";
   };
 
   const handleLiveMonitoring = (call: any) => {
-    console.log("Start live monitoring for call:", call.id);
     setSelectedCallForLive({
       id: call.id,
-      contact: {
-        name: call.contact.name,
-        phone: call.callerId,
-      },
-      agent: call.agent,
-      duration: call.duration,
+      contact: { name: "", phone: call.callerId },
+      agent: "",
+      duration: "",
       status: call.status,
-      aiScore: call.aiScore,
+      aiScore: 0,
       campaign: call.campaignName
     });
     setIsLiveModalOpen(true);
   };
 
-  const handleDownloadRecording = (callId: string) => {
-    console.log("Download recording for call:", callId);
-    // TODO: Implement recording download
-  };
-
-  const handleViewContact = (callId: string) => {
-    console.log("View contact for call:", callId);
-    // TODO: Implement contact view
-  };
-
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Realtime Calls (Total: 1322)</CardTitle>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-              <Button size="sm">
-                <Download className="w-4 h-4 mr-2" />
-                EXPORT
-              </Button>
-            </div>
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Phone className="w-5 h-5" />
+            <h2 className="text-xl font-semibold">Realtime List</h2>
           </div>
-          <div className="flex gap-4 items-center flex-wrap">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <DateRangeSelector
-              value={dateRange}
-              onChange={setDateRange}
+          <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
+            <Download className="w-4 h-4 mr-2" />
+            EXPORT
+          </Button>
+        </div>
+
+        {/* Title + Search */}
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-medium">Realtime Calls (Total: {filteredData.length})</h3>
+          <div className="relative w-64">
+            <Input
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              className="pr-10"
             />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {/* Table Headers */}
-            <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
-              <div className="col-span-2">Contact</div>
-              <div>Caller ID</div>
-              <div>Agency</div>
-              <div>Campaign</div>
-              <div>Duration</div>
-              <div>Agent</div>
-              <div>Status</div>
-              <div>AI Score</div>
-              <div>Actions</div>
-            </div>
+        </div>
 
-            {/* Table Rows */}
-            {filteredData.map((call) => (
-              <div key={call.id} className="space-y-2">
-                <div 
-                  className="grid grid-cols-12 gap-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
-                  onClick={(e) => {
-                    // Only toggle expansion if not clicking on action buttons
-                    if (!(e.target as HTMLElement).closest('.action-buttons')) {
-                      toggleExpanded(call.id);
-                    }
-                  }}
+        {/* Pagination */}
+        <div className="flex items-center gap-1">
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>First</Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
+          {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+            const page = Math.max(1, Math.min(currentPage - 1, totalPages - 2)) + i;
+            if (page > totalPages) return null;
+            return (
+              <Button key={page} variant={page === currentPage ? "default" : "outline"} size="sm" onClick={() => setCurrentPage(page)}
+                className={page === currentPage ? "bg-blue-500 text-white" : ""}>
+                {page}
+              </Button>
+            );
+          })}
+          {totalPages > 3 && <span className="px-2 text-muted-foreground">...</span>}
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>Last</Button>
+        </div>
+
+        {/* Legend */}
+        <div className="flex gap-4 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-blue-200 border border-blue-400" />
+            <span className="text-muted-foreground">Paid Calls</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-green-200 border border-green-500" />
+            <span className="text-muted-foreground">Live Calls</span>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="border rounded-lg overflow-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/30">
+                <TableHead className="text-blue-600 font-semibold min-w-[140px]">Date/Time</TableHead>
+                <TableHead className="min-w-[280px]">Call Record ID</TableHead>
+                <TableHead className="min-w-[120px]">Caller ID</TableHead>
+                <TableHead className="min-w-[120px]">Promo Number</TableHead>
+                <TableHead className="min-w-[100px]">Call Type</TableHead>
+                <TableHead className="min-w-[200px]">Publisher Name</TableHead>
+                <TableHead className="min-w-[220px]">Campaign Name</TableHead>
+                <TableHead className="min-w-[100px]">Type</TableHead>
+                <TableHead className="min-w-[80px]">Forwarded</TableHead>
+              </TableRow>
+              {/* Filter row */}
+              <TableRow className="bg-muted/10">
+                <TableHead>
+                  <Select value="all" onValueChange={() => {}}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue placeholder="All" /></SelectTrigger>
+                    <SelectContent><SelectItem value="all">All</SelectItem></SelectContent>
+                  </Select>
+                </TableHead>
+                <TableHead></TableHead>
+                <TableHead>
+                  <Input className="h-7 text-xs" placeholder="" value={filterCallerId} onChange={e => { setFilterCallerId(e.target.value); setCurrentPage(1); }} />
+                </TableHead>
+                <TableHead>
+                  <Input className="h-7 text-xs" placeholder="" value={filterPromoNumber} onChange={e => { setFilterPromoNumber(e.target.value); setCurrentPage(1); }} />
+                </TableHead>
+                <TableHead>
+                  <Select value={filterCallType} onValueChange={v => { setFilterCallType(v); setCurrentPage(1); }}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="Inbound">Inbound</SelectItem>
+                      <SelectItem value="Outbound">Outbound</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </TableHead>
+                <TableHead>
+                  <Select value={filterPublisher} onValueChange={v => { setFilterPublisher(v); setCurrentPage(1); }}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      {uniquePublishers.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </TableHead>
+                <TableHead>
+                  <Select value={filterCampaign} onValueChange={v => { setFilterCampaign(v); setCurrentPage(1); }}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      {uniqueCampaigns.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </TableHead>
+                <TableHead>
+                  <Select value={filterType} onValueChange={v => { setFilterType(v); setCurrentPage(1); }}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      {uniqueTypes.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </TableHead>
+                <TableHead>
+                  <Select value="all" onValueChange={() => {}}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue placeholder="All" /></SelectTrigger>
+                    <SelectContent><SelectItem value="all">All</SelectItem></SelectContent>
+                  </Select>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedData.map((call) => (
+                <TableRow 
+                  key={call.id} 
+                  className={`cursor-pointer text-sm ${getRowClassName(call)}`}
+                  onClick={() => call.isLive && handleLiveMonitoring(call)}
                 >
-                  <div className="col-span-2 flex items-center gap-2">
-                    {expandedCall === call.id ? (
-                      <ChevronDown className="w-4 h-4" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4" />
-                    )}
-                    <Phone className="w-4 h-4 text-blue-600" />
-                    <div>
-                      <div className="font-medium text-blue-600">{call.contact.name}</div>
-                      <div className="text-xs text-gray-500">{call.dateTime}</div>
-                    </div>
-                  </div>
-                  <div>{call.callerId}</div>
-                  <div className="flex items-center gap-1">
-                    <Building2 className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-blue-600 font-medium">{call.agency}</span>
-                  </div>
-                  <div className="text-sm truncate" title={call.campaignName}>{call.campaignName}</div>
-                  <div>{call.duration}</div>
-                  <div className="text-sm">{call.agent}</div>
-                  <div>
-                    <Badge className={getStatusColor(call.status)}>{call.status}</Badge>
-                  </div>
-                  <div className={`font-semibold ${getScoreColor(call.aiScore)}`}>
-                    {call.aiScore}%
-                  </div>
-                  <div className="action-buttons flex gap-1">
-                    {call.status === "Active" && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLiveMonitoring(call);
-                        }}
-                        className="h-8 w-8 p-0"
-                        title="Live monitoring"
-                      >
-                        <Radio className="w-4 h-4 text-green-600" />
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleListenRecording(call.id);
-                      }}
-                      className="h-8 w-8 p-0"
-                      title="Listen to recording"
-                    >
-                      <Headphones className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownloadRecording(call.id);
-                      }}
-                      className="h-8 w-8 p-0"
-                      title="Download recording"
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleViewContact(call.id);
-                      }}
-                      className="h-8 w-8 p-0"
-                      title="View contact"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                  <TableCell className="font-medium text-xs">{call.dateTime}</TableCell>
+                  <TableCell className="text-xs font-mono">{call.callRecordId}</TableCell>
+                  <TableCell className="text-xs">{call.callerId}</TableCell>
+                  <TableCell className="text-xs">{call.promoNumber}</TableCell>
+                  <TableCell className="text-xs">{call.callType}</TableCell>
+                  <TableCell className="text-xs">{call.publisherName}</TableCell>
+                  <TableCell className="text-xs">{call.campaignName}</TableCell>
+                  <TableCell className="text-xs">{call.type}</TableCell>
+                  <TableCell className="text-xs">{call.forwarded}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
 
-                {/* Expanded Details */}
-                {expandedCall === call.id && (
-                  <div className="ml-6 p-4 bg-gray-50 rounded-lg space-y-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      {/* Call Details */}
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">Call Details</h4>
-                        <div className="space-y-2 text-sm">
-                          <div><span className="font-medium">Call Record ID:</span> {call.callRecordId}</div>
-                          <div><span className="font-medium">Promo Number:</span> {call.promoNumber}</div>
-                          <div><span className="font-medium">Call Type:</span> {call.callType}</div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">Agency:</span> 
-                            <Building2 className="w-4 h-4 text-gray-500" />
-                            <span className="text-blue-600 font-medium">{call.agency}</span>
-                          </div>
-                          <div><span className="font-medium">Publisher:</span> {call.publisherName}</div>
-                          <div><span className="font-medium">Campaign:</span> {call.campaignName}</div>
-                          <div><span className="font-medium">Type:</span> {call.type}</div>
-                          <div><span className="font-medium">Forwarded:</span> {call.forwarded}</div>
-                          <div><span className="font-medium">Duration:</span> {call.duration}</div>
-                        </div>
-
-                        <div className="mt-4">
-                          <h5 className="font-medium mb-2">Key Topics</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {call.keyTopics.map((topic, index) => (
-                              <Badge key={index} variant="outline">{topic}</Badge>
-                            ))}
-                          </div>
-                          <div className="mt-2">
-                            <span className="font-medium">Sentiment: </span>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
-                              {call.sentiment}
-                            </Badge>
-                          </div>
-                        </div>
-
-                        {call.actionItems.length > 0 && (
-                          <div>
-                            <h5 className="font-medium mb-2">Action Items</h5>
-                            <ul className="list-disc list-inside text-sm space-y-1">
-                              {call.actionItems.map((item, index) => (
-                                <li key={index}>{item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Contact Information */}
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">Contact Information</h4>
-                        <div className="space-y-2 text-sm">
-                          <div><span className="font-medium">Name:</span> {call.contact.name}</div>
-                          <div><span className="font-medium">Phone:</span> {call.callerId}</div>
-                          <div><span className="font-medium">Email:</span> {call.contact.email}</div>
-                          <div><span className="font-medium">Address:</span> {call.contact.address}</div>
-                          <div><span className="font-medium">Age:</span> {call.contact.age}</div>
-                          <div><span className="font-medium">Insurance Status:</span> {call.contact.insurance}</div>
-                        </div>
-                      </div>
-
-                      {/* AI Score Breakdown */}
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">AI Score Breakdown</h4>
-                        <div className="space-y-3">
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Script Adherence</span>
-                              <span>{call.aiBreakdown.scriptAdherence}%</span>
-                            </div>
-                            <Progress value={call.aiBreakdown.scriptAdherence} className="h-2" />
-                          </div>
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Customer Handling</span>
-                              <span>{call.aiBreakdown.customerHandling}%</span>
-                            </div>
-                            <Progress value={call.aiBreakdown.customerHandling} className="h-2" />
-                          </div>
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Problem Solving</span>
-                              <span>{call.aiBreakdown.problemSolving}%</span>
-                            </div>
-                            <Progress value={call.aiBreakdown.problemSolving} className="h-2" />
-                          </div>
-                          <div className="border-t pt-2">
-                            <div className="flex justify-between text-sm font-semibold">
-                              <span>Overall Score</span>
-                              <span className={getScoreColor(call.aiBreakdown.overallScore)}>
-                                {call.aiBreakdown.overallScore}%
-                              </span>
-                            </div>
-                            <Progress value={call.aiBreakdown.overallScore} className="h-3 mt-1" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* AI Summary */}
-                    <div>
-                      <h4 className="font-semibold mb-2">Real-time AI Summary</h4>
-                      <div className="bg-white p-3 rounded border text-sm leading-relaxed">
-                        {call.summary}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Live Call Monitoring Modal */}
       {selectedCallForLive && (
         <LiveCallModal
           isOpen={isLiveModalOpen}
-          onClose={() => {
-            setIsLiveModalOpen(false);
-            setSelectedCallForLive(null);
-          }}
+          onClose={() => { setIsLiveModalOpen(false); setSelectedCallForLive(null); }}
           callData={selectedCallForLive}
         />
       )}

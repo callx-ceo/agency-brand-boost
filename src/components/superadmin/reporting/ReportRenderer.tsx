@@ -2,6 +2,7 @@
 import React from "react";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 import CampaignsReport from "./CampaignsReport";
+import CampaignsByPublisherReport from "./CampaignsByPublisherReport";
 import AgentReports from "@/components/dashboard/AgentReports";
 import AgencyReports from "./AgencyReports";
 import RealtimeReport from "@/components/dashboard/RealtimeReport";

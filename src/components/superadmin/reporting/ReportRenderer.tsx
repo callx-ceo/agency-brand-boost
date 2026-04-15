@@ -111,13 +111,7 @@ const ReportRenderer = ({ activeView, onBackToDashboard }: ReportRendererProps) 
       );
     
     case 'reports-campaigns-by-publisher':
-      return (
-        <PlaceholderReport 
-          title="Campaigns by Publisher"
-          description="Campaign performance broken down by publisher"
-          onBackToDashboard={onBackToDashboard}
-        />
-      );
+      return <CampaignsByPublisherReport onBackToDashboard={onBackToDashboard} />;
     
     case 'reports-publisher-by-manager':
       return (

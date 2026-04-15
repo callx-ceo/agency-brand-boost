@@ -37,7 +37,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
     { 
       category: "Agent Operations", 
       items: [
-        { id: "go-live", label: "Go Live", icon: Headphones },
+        { id: "go-live", label: "My Workspace", icon: Headphones },
       ]
     },
     { 

@@ -2,6 +2,7 @@
 import React from "react";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
 import CampaignsReport from "./CampaignsReport";
+import CampaignsByPublisherReport from "./CampaignsByPublisherReport";
 import AgentReports from "@/components/dashboard/AgentReports";
 import AgencyReports from "./AgencyReports";
 import RealtimeReport from "@/components/dashboard/RealtimeReport";
@@ -110,13 +111,7 @@ const ReportRenderer = ({ activeView, onBackToDashboard }: ReportRendererProps) 
       );
     
     case 'reports-campaigns-by-publisher':
-      return (
-        <PlaceholderReport 
-          title="Campaigns by Publisher"
-          description="Campaign performance broken down by publisher"
-          onBackToDashboard={onBackToDashboard}
-        />
-      );
+      return <CampaignsByPublisherReport onBackToDashboard={onBackToDashboard} />;
     
     case 'reports-publisher-by-manager':
       return (

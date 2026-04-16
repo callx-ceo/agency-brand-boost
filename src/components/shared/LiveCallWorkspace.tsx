@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import PostCallScreen from "@/components/agent/PostCallScreen";
+import AgentContactsView from "@/components/agent/AgentContactsView";
 import {
   Phone,
   PhoneOff,
@@ -109,7 +110,7 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
       case "my-history":
         return renderPlaceholderTab("My History", "View your call history and past interactions.");
       case "my-contacts":
-        return renderPlaceholderTab("My Contacts", "Manage your personal contacts and leads.");
+        return <AgentContactsView />;
       case "my-applications":
         return renderPlaceholderTab("My Applications", "Track your submitted applications and their status.");
       case "my-referrals":

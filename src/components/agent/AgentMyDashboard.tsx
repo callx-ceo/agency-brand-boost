@@ -45,14 +45,6 @@ const smartActions = [
     primaryBtn: { label: "View Contact" },
   },
   {
-    priority: "live",
-    type: "Inbound call",
-    name: "Unknown Caller",
-    detail: "Est. $22/mo · Final expense",
-    primaryBtn: { label: "Take Call", icon: Phone },
-    hideCommunication: true,
-  },
-  {
     priority: "info",
     type: "Low score",
     name: "James Rutherford",
@@ -163,7 +155,7 @@ const AgentMyDashboard = () => {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <h2 className="text-[13px] font-semibold text-[#1a1a1a]">Smart Actions</h2>
-                <span className="text-[11px] font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">5 pending</span>
+                <span className="text-[11px] font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">4 pending</span>
               </div>
               <button className="text-[12px] text-[#8a8a86] hover:text-[#1a1a1a] transition-colors flex items-center gap-0.5">
                 View all <ChevronRight className="w-3 h-3" />
@@ -182,7 +174,7 @@ const AgentMyDashboard = () => {
                     <div className="text-[12px] text-[#8a8a86] mt-0.5">{a.detail}</div>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {!a.hideCommunication && (
+                    {(
                       <>
                         <button className="flex items-center gap-1 text-[11px] font-medium text-[#8a8a86] hover:text-[#1a1a1a] px-2 py-1.5 rounded-lg hover:bg-[#f5f4f1] transition-colors" title="Send SMS with AI Assist">
                           <MessageSquare className="w-3 h-3" />

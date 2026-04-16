@@ -42,6 +42,7 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<Phase>("analyzing");
   const [selectedDisposition, setSelectedDisposition] = useState<string | null>(null);
+  const [showOtherOptions, setShowOtherOptions] = useState(false);
   const [suggestedDisposition] = useState("callback");
 
   // Progress bar

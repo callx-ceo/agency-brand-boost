@@ -3,7 +3,7 @@ import {
   Phone, ArrowUpRight, ArrowDownRight,
   Trophy, Flame, Brain, PhoneIncoming, PhoneOutgoing,
   PhoneMissed, ChevronRight, FileText, Play, Sparkles,
-  MessageSquare, Mail, Wand2, Target
+  MessageSquare, Mail, Wand2
 } from "lucide-react";
 import GoalBuilderModal from "./goals/GoalBuilderModal";
 import type { SuccessPlan } from "./goals/GoalBuilderChat";

@@ -53,8 +53,10 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
   const [formData, setFormData] = useState<Record<string, string>>({});
 
   const [alerts, setAlerts] = useState<AlertMessage[]>([
+    { id: "goals", text: "You haven't set your goals yet — let Copilot build your Success Plan.", action: { label: "Set Goals", onClick: () => {} } },
+    { id: "phone", text: "Purchase a phone number to start receiving calls and enable outbound dialing.", action: { label: "Get Number →", onClick: () => {} } },
+    { id: "profile", text: "Complete your profile — add your phone number to receive important notifications and enable call features.", action: { label: "Add now →", onClick: () => {} } },
     { id: "cal", text: "No calendars connected. Connect your calendar to sync bookings and check availability.", action: { label: "Connect", onClick: () => {} } },
-    { id: "license", text: "Your insurance license expires in 30 days. Renew now to avoid disruption.", action: { label: "Renew", onClick: () => {} } },
   ]);
 
   const handleDismissAlert = useCallback((id: string) => {

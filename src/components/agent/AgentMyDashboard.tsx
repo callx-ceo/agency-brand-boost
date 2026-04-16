@@ -102,9 +102,38 @@ const AgentMyDashboard = () => {
 
   const greeting = getTimeGreeting();
   const timeNudge = getTimeNudge();
+  const notifications: { text: string; action: string; onClick: () => void }[] = [];
+  if (!activePlan) {
+    notifications.push({
+      text: "You haven't set your goals yet — let Copilot build your Success Plan",
+      action: "Set Goals",
+      onClick: () => setGoalBuilderOpen(true),
+    });
+  }
 
   return (
-    <div className="h-full overflow-auto bg-[#fafaf9] px-8 py-6">
+    <div className="h-full overflow-auto bg-[#fafaf9]">
+      {/* NOTIFICATION TOP BAR */}
+      {notifications.length > 0 && (
+        <div className="bg-[#1a1a1a] px-8">
+          {notifications.map((n, i) => (
+            <div key={i} className="flex items-center justify-between py-2.5">
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />
+                <span className="text-[12px] text-white/80">{n.text}</span>
+              </div>
+              <button
+                onClick={n.onClick}
+                className="text-[11px] font-semibold text-white bg-white/15 hover:bg-white/25 px-3 py-1 rounded-md transition-colors"
+              >
+                {n.action}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="px-8 py-6">
       {/* HEADER */}
       <div className="flex items-end justify-between mb-5">
         <div>
@@ -419,6 +448,7 @@ const AgentMyDashboard = () => {
             </div>
           </section>
         </div>
+      </div>
       </div>
 
       <GoalBuilderModal

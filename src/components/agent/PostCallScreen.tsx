@@ -91,7 +91,7 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
   // Feed items appear one by one
   useEffect(() => {
     if (phase !== "analyzing") return;
-    const timers: NodeJS.Timeout[] = [];
+    const timers: ReturnType<typeof setTimeout>[] = [];
     feedItems.forEach((_, idx) => {
       timers.push(setTimeout(() => {
         setVisibleFeedItems((prev) => [...prev, idx]);

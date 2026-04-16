@@ -40,6 +40,19 @@ const ActivityTab = () => {
   const [channel, setChannel] = useState<"sms" | "email">("sms");
   const [message, setMessage] = useState("");
   const [timeline, setTimeline] = useState(initialTimeline);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  const handleAISuggest = () => {
+    setIsAiLoading(true);
+    setTimeout(() => {
+      if (channel === "sms") {
+        setMessage("Hi Michael, just a friendly reminder — your $18/mo rate for $5,000 coverage is still available. Want me to lock that in for you? 😊");
+      } else {
+        setMessage("Hi Michael,\n\nI wanted to follow up on the Final Expense quote we discussed. Your $5,000 coverage at ~$18/mo is one of the most competitive rates available.\n\nWould you like to schedule a quick 10-minute call to finalize everything?\n\nBest,\nBenjamin");
+      }
+      setIsAiLoading(false);
+    }, 800);
+  };
 
   const handleSend = () => {
     if (!message.trim()) return;
@@ -103,8 +116,8 @@ const ActivityTab = () => {
             className="text-sm h-9 flex-1"
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
-          <Button variant="outline" size="sm" className="h-9 text-xs gap-1">
-            <Sparkles className="w-3.5 h-3.5" /> AI suggest
+          <Button variant="outline" size="sm" className="h-9 text-xs gap-1" onClick={handleAISuggest} disabled={isAiLoading}>
+            <Sparkles className={`w-3.5 h-3.5 ${isAiLoading ? "animate-spin" : ""}`} /> {isAiLoading ? "Thinking..." : "AI Suggest"}
           </Button>
           <Button size="sm" className="h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-xs" onClick={handleSend}>
             Send

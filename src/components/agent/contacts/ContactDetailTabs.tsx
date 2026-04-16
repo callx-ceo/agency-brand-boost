@@ -7,12 +7,24 @@ import { Phone, Mail, Sparkles, Play } from "lucide-react";
 
 // ── Emails Tab ──
 export const EmailsTab = () => {
+  const [subject, setSubject] = React.useState("");
+  const [body, setBody] = React.useState("");
+  const [isAiLoading, setIsAiLoading] = React.useState(false);
   const emails = [
     { id: 1, direction: "inbound", unread: true, from: "Michael Hayden", subject: "Re: Your Final Expense Coverage Options", preview: "Thanks for reaching out — I'm still interested...", date: "Apr 14, 3:48 PM" },
     { id: 2, direction: "inbound", unread: true, from: "Michael Hayden", subject: "Question about coverage", preview: "Hi, I had a question about the beneficiary section...", date: "Apr 13, 10:22 AM" },
     { id: 3, direction: "outbound", unread: false, from: "Benjamin", subject: "Your Final Expense Coverage Options", preview: "Quote summary + policy comparison PDF attached.", date: "Apr 14, 3:15 PM", opens: 3 },
     { id: 4, direction: "outbound", unread: false, from: "Benjamin", subject: "Welcome — let's find the right coverage", preview: "Hi Michael, thanks for your interest in final expense...", date: "Apr 10, 11:00 AM", opens: 5 },
   ];
+
+  const handleAIDraft = () => {
+    setIsAiLoading(true);
+    setTimeout(() => {
+      setSubject("Quick follow-up on your Final Expense coverage");
+      setBody("Hi Michael,\n\nI hope you're doing well! I wanted to follow up on our recent conversation about your Final Expense coverage.\n\nHere's a quick recap of what we discussed:\n• Coverage: $5,000 face value\n• Premium: ~$18/mo\n• Beneficiary: Moksha Mathy (Wife)\n• Draft: 1st of month via Chase Bank\n\nYour rate is locked in and I'd love to help you finalize everything. Would you be available for a quick 10-minute call this week?\n\nIf you have any questions in the meantime, don't hesitate to reach out.\n\nBest regards,\nBenjamin");
+      setIsAiLoading(false);
+    }, 800);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -23,13 +35,13 @@ export const EmailsTab = () => {
           <span className="font-medium">m.hayden@gmail.com</span>
           <span className="ml-auto text-muted-foreground">From: benjamin@agency.com</span>
         </div>
-        <Input placeholder="Subject" className="h-8 text-sm" />
-        <Textarea placeholder="Write your email..." className="min-h-[70px] text-sm resize-none" />
+        <Input placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} className="h-8 text-sm" />
+        <Textarea placeholder="Write your email..." value={body} onChange={(e) => setBody(e.target.value)} className="min-h-[70px] text-sm resize-none" />
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="text-xs gap-1">
-            <Sparkles className="w-3.5 h-3.5" /> AI draft
+          <Button variant="outline" size="sm" className="text-xs gap-1" onClick={handleAIDraft} disabled={isAiLoading}>
+            <Sparkles className={`w-3.5 h-3.5 ${isAiLoading ? "animate-spin" : ""}`} /> {isAiLoading ? "Drafting..." : "AI Draft"}
           </Button>
-          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs ml-auto">Send</Button>
+          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs ml-auto" disabled={!subject.trim() || !body.trim()}>Send</Button>
         </div>
       </div>
 
@@ -108,6 +120,7 @@ export const CallsTab = () => {
 // ── Chats Tab ──
 export const ChatsTab = () => {
   const [msg, setMsg] = React.useState("");
+  const [isAiLoading, setIsAiLoading] = React.useState(false);
   const [messages, setMessages] = React.useState([
     { id: 1, from: "agent", text: "Hi Michael, I tried calling earlier — did you have a chance to look over the quote?", time: "Apr 14, 11:25 AM" },
     { id: 2, from: "customer", text: "Hey! Yeah sorry I missed the call. I was at work.", time: "Apr 14, 12:10 PM" },
@@ -117,6 +130,19 @@ export const ChatsTab = () => {
     { id: 6, from: "customer", text: "Thanks! We'll look it over tonight.", time: "Apr 14, 6:00 PM" },
     { id: 7, from: "customer", text: "Still thinking it over. Can I have until Friday?", time: "Apr 15, 11:15 AM" },
   ]);
+
+  const handleAISuggest = () => {
+    setIsAiLoading(true);
+    setTimeout(() => {
+      const lastCustomerMsg = messages.filter(m => m.from === "customer").pop();
+      if (lastCustomerMsg?.text.includes("Friday")) {
+        setMsg("Of course, take your time! Just so you know, your $18/mo rate is locked in through Friday. I'll check back then — and if any questions come up before that, I'm here! 👍");
+      } else {
+        setMsg("Hi Michael! Just wanted to follow up — do you have any questions about the coverage we discussed? Happy to help anytime.");
+      }
+      setIsAiLoading(false);
+    }, 800);
+  };
 
   const handleSend = () => {
     if (!msg.trim()) return;
@@ -138,17 +164,22 @@ export const ChatsTab = () => {
           </div>
         ))}
       </div>
-      <div className="flex gap-2 p-4 border-t bg-background">
+      <div className="p-4 border-t bg-background space-y-2">
         <Textarea
           placeholder="Type a message..."
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
-          className="min-h-[40px] max-h-[80px] text-sm resize-none flex-1"
+          className="min-h-[40px] max-h-[80px] text-sm resize-none"
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
         />
-        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs self-end" onClick={handleSend}>
-          Send
-        </Button>
+        <div className="flex items-center justify-between">
+          <Button variant="outline" size="sm" className="text-xs gap-1" onClick={handleAISuggest} disabled={isAiLoading}>
+            <Sparkles className={`w-3.5 h-3.5 ${isAiLoading ? "animate-spin" : ""}`} /> {isAiLoading ? "Thinking..." : "AI Suggest"}
+          </Button>
+          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs" onClick={handleSend} disabled={!msg.trim()}>
+            Send
+          </Button>
+        </div>
       </div>
     </div>
   );

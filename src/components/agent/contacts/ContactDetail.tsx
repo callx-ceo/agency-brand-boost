@@ -8,6 +8,7 @@ import ContactLeftPanel from "./ContactLeftPanel";
 import SmartActionsTab from "./SmartActionsTab";
 import ActivityTab from "./ActivityTab";
 import { EmailsTab, CallsTab, ChatsTab, NotesTab, ApplicationsTab } from "./ContactDetailTabs";
+import { CallModal, SMSModal, EmailModal } from "./ContactQuickModals";
 import { useToast } from "@/hooks/use-toast";
 
 interface ContactDetailProps {
@@ -29,6 +30,9 @@ const ContactDetail = ({ contact, onBack }: ContactDetailProps) => {
   const [activeTab, setActiveTab] = useState("smart");
   const [pendingStage, setPendingStage] = useState(contact.stage);
   const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
+  const [callOpen, setCallOpen] = useState(false);
+  const [smsOpen, setSmsOpen] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
   const { toast } = useToast();
 
   const hasUnsavedStage = pendingStage !== contact.stage;
@@ -97,7 +101,12 @@ const ContactDetail = ({ contact, onBack }: ContactDetailProps) => {
 
       {/* Two-column layout */}
       <div className="flex flex-1 overflow-hidden">
-        <ContactLeftPanel contact={contact} />
+        <ContactLeftPanel
+          contact={contact}
+          onCall={() => setCallOpen(true)}
+          onSms={() => setSmsOpen(true)}
+          onEmail={() => setEmailOpen(true)}
+        />
 
         {/* Right main area */}
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -126,6 +135,9 @@ const ContactDetail = ({ contact, onBack }: ContactDetailProps) => {
           </div>
         </div>
       </div>
+      <CallModal contact={contact} open={callOpen} onClose={() => setCallOpen(false)} />
+      <SMSModal contact={contact} open={smsOpen} onClose={() => setSmsOpen(false)} />
+      <EmailModal contact={contact} open={emailOpen} onClose={() => setEmailOpen(false)} />
     </div>
   );
 };

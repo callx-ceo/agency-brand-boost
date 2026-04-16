@@ -329,6 +329,41 @@ const AgentDashboardActionFocused = () => {
           <h1 className="text-2xl font-bold">CallX</h1>
         </div>
         <nav className="flex-1 p-4 space-y-1">
+          {/* My Workspace collapsible section */}
+          <div>
+            <button
+              onClick={() => {
+                if (!isWorkspaceActive) setActiveAgentView("workspace-live-calls");
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                isWorkspaceActive
+                  ? "bg-white/10 text-white"
+                  : "text-white/70 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <Phone className="w-5 h-5" />
+              <span className="flex-1 text-left">My Workspace</span>
+              {isWorkspaceActive ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            </button>
+            {isWorkspaceActive && (
+              <div className="ml-4 mt-1 space-y-0.5">
+                {workspaceSubItems.map((sub) => (
+                  <button
+                    key={sub.id}
+                    onClick={() => setActiveAgentView(sub.id)}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm transition-colors ${
+                      activeAgentView === sub.id
+                        ? "bg-white/15 text-white font-medium"
+                        : "text-white/60 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    <sub.icon className="w-4 h-4" />
+                    <span>{sub.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           {navItems.map((item) => (
             <button
               key={item.label}
@@ -395,8 +430,8 @@ const AgentDashboardActionFocused = () => {
 
         {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto p-8 space-y-6">
-          {activeAgentView === "live-calls" ? (
-            <LiveCallWorkspace />
+          {activeAgentView.startsWith("workspace-") || activeAgentView === "live-calls" ? (
+            <LiveCallWorkspace activeTab={agentWorkspaceTabMap[activeAgentView] || 'live-calls'} />
           ) : (
           <>
           {/* Priority Status Banner */}

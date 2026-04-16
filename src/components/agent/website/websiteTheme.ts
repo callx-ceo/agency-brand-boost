@@ -1,3 +1,5 @@
+import * as React from "react";
+
 export const COLORS = {
   bg: "#f5f4f1",
   surface: "#ffffff",
@@ -92,4 +94,17 @@ export const ghostBtnStyle: React.CSSProperties = {
   cursor: "pointer",
 };
 
-import * as React from "react";
+export const subtleBtnStyle: React.CSSProperties = {
+  background: "transparent",
+  color: COLORS.text2,
+  border: "none",
+  padding: "6px 8px",
+  fontSize: 12,
+  cursor: "pointer",
+};
+
+export const sectionCardStyle: React.CSSProperties = {
+  ...cardStyle,
+  padding: "20px 22px",
+  marginBottom: 16,
+};

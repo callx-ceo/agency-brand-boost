@@ -152,6 +152,17 @@ const ContactsList = ({ contacts, onSelectContact }: ContactsListProps) => {
           })
         )}
       </div>
+
+      {/* Modals */}
+      {activeModal?.type === "call" && (
+        <CallModal contact={activeModal.contact} open onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal?.type === "sms" && (
+        <SMSModal contact={activeModal.contact} open onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal?.type === "email" && (
+        <EmailModal contact={activeModal.contact} open onClose={() => setActiveModal(null)} />
+      )}
     </div>
   );
 };

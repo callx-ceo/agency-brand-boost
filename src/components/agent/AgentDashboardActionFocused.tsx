@@ -28,7 +28,18 @@ import {
 import SendTextModal from "./SendTextModal";
 import LeadDetailsPanel from "./LeadDetailsPanel";
 import EditLeadModal from "./EditLeadModal";
-import LiveCallWorkspace from "../shared/LiveCallWorkspace";
+import LiveCallWorkspace, { WorkspaceTab } from "../shared/LiveCallWorkspace";
+
+const agentWorkspaceTabMap: Record<string, WorkspaceTab> = {
+  'workspace-live-calls': 'live-calls',
+  'workspace-history': 'my-history',
+  'workspace-contacts': 'my-contacts',
+  'workspace-applications': 'my-applications',
+  'workspace-referrals': 'my-referrals',
+  'workspace-settings': 'my-settings',
+  'workspace-support': 'my-support',
+  'live-calls': 'live-calls',
+};
 
 interface Lead {
   id: string;

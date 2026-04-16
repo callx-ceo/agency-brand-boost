@@ -98,11 +98,26 @@ export const CallModal = ({ contact, open, onClose }: ModalProps) => {
 // ─── SMS Modal ───
 export const SMSModal = ({ contact, open, onClose }: ModalProps) => {
   const [message, setMessage] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const [thread, setThread] = useState([
     { from: "agent", text: "Hi, just following up on our conversation. Let me know if you have questions!", time: "10:30 AM" },
     { from: "contact", text: "Thanks — still thinking it over...", time: "11:15 AM" },
   ]);
   const { toast } = useToast();
+
+  const handleAISuggest = () => {
+    setIsAiLoading(true);
+    setTimeout(() => {
+      const lastMsg = thread.filter(t => t.from === "contact").pop();
+      const suggestions: Record<string, string> = {
+        "Thanks — still thinking it over...": `Hi ${contact.firstName}, totally understand! Just wanted to let you know your ${contact.estPremium || "$18/mo"} rate for ${contact.faceValue || "$5,000"} coverage is locked in until Friday. Happy to answer any questions — no pressure at all!`,
+        default: `Hi ${contact.firstName}, just checking in on your ${contact.product || "insurance"} quote. Your coverage at ${contact.estPremium || "the quoted rate"} is a great value. Would you like to schedule a quick call to go over any questions?`,
+      };
+      setMessage(suggestions[lastMsg?.text || ""] || suggestions.default);
+      setIsAiLoading(false);
+      toast({ title: "AI suggestion ready", duration: 2000 });
+    }, 800);
+  };
 
   const handleSend = () => {
     if (!message.trim()) return;
@@ -136,17 +151,22 @@ export const SMSModal = ({ contact, open, onClose }: ModalProps) => {
         </div>
 
         {/* Compose */}
-        <div className="flex items-end gap-2 border-t pt-3">
+        <div className="space-y-2 border-t pt-3">
           <Textarea
             placeholder="Type a message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="text-sm h-16 resize-none flex-1"
+            className="text-sm h-16 resize-none"
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
           />
-          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white h-9" onClick={handleSend} disabled={!message.trim()}>
-            <Send className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" className="text-xs gap-1" onClick={handleAISuggest} disabled={isAiLoading}>
+              <Sparkles className={`w-3.5 h-3.5 ${isAiLoading ? "animate-spin" : ""}`} /> {isAiLoading ? "Thinking..." : "AI Suggest"}
+            </Button>
+            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleSend} disabled={!message.trim()}>
+              <Send className="w-4 h-4 mr-1" /> Send
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

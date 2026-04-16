@@ -37,6 +37,7 @@ const agentWorkspaceTabMap: Record<string, WorkspaceTab> = {
   'workspace-history': 'my-history',
   'workspace-contacts': 'my-contacts',
   'workspace-applications': 'my-applications',
+  'workspace-recommendations': 'my-recommendations',
   'workspace-referrals': 'my-referrals',
   'workspace-settings': 'my-settings',
   'workspace-support': 'my-support',

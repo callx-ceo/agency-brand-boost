@@ -3,7 +3,7 @@ import {
   Phone, ArrowUpRight, ArrowDownRight,
   Trophy, Flame, Brain, PhoneIncoming, PhoneOutgoing,
   PhoneMissed, ChevronRight, FileText, Play, Sparkles,
-  MessageSquare, Mail, Wand2
+  MessageSquare, Mail, Wand2, Clock, Calendar, AlertTriangle
 } from "lucide-react";
 import GoalBuilderModal from "./goals/GoalBuilderModal";
 import type { SuccessPlan } from "./goals/GoalBuilderChat";
@@ -102,12 +102,33 @@ const AgentMyDashboard = () => {
 
   const greeting = getTimeGreeting();
   const timeNudge = getTimeNudge();
-  const notifications: { text: string; action: string; onClick: () => void }[] = [];
+  const [hasPhoneNumber] = useState(false);
+  const [hasCompletedProfile] = useState(false);
+
+  const notifications: { text: string; action: string; onClick: () => void; icon?: React.ReactNode; color?: string }[] = [];
   if (!activePlan) {
     notifications.push({
       text: "You haven't set your goals yet — let Copilot build your Success Plan",
       action: "Set Goals",
       onClick: () => setGoalBuilderOpen(true),
+    });
+  }
+  if (!hasPhoneNumber) {
+    notifications.push({
+      text: "Purchase a phone number to start receiving calls and enable outbound dialing",
+      action: "Get Number →",
+      onClick: () => {},
+      icon: <Phone className="w-3.5 h-3.5 text-amber-400" />,
+      color: "amber",
+    });
+  }
+  if (!hasCompletedProfile) {
+    notifications.push({
+      text: "Complete your profile — add your phone number to receive important notifications and enable call features",
+      action: "Add now →",
+      onClick: () => {},
+      icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />,
+      color: "amber",
     });
   }
 
@@ -117,14 +138,14 @@ const AgentMyDashboard = () => {
       {notifications.length > 0 && (
         <div className="bg-[#1a1a1a] px-8">
           {notifications.map((n, i) => (
-            <div key={i} className="flex items-center justify-between py-2.5">
+            <div key={i} className={`flex items-center justify-between py-2.5 ${i > 0 ? "border-t border-white/10" : ""}`}>
               <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />
+                {n.icon || <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />}
                 <span className="text-[12px] text-white/80">{n.text}</span>
               </div>
               <button
                 onClick={n.onClick}
-                className="text-[11px] font-semibold text-white bg-white/15 hover:bg-white/25 px-3 py-1 rounded-md transition-colors"
+                className="text-[11px] font-semibold text-white bg-white/15 hover:bg-white/25 px-3 py-1 rounded-md transition-colors whitespace-nowrap"
               >
                 {n.action}
               </button>
@@ -419,6 +440,58 @@ const AgentMyDashboard = () => {
                 </div>
               ))}
             </div>
+          </section>
+          {/* Time Saved This Month */}
+          <section className="bg-white border border-emerald-100 rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center">
+                <Clock className="w-3.5 h-3.5 text-emerald-600" />
+              </div>
+              <h2 className="text-[13px] font-semibold text-[#1a1a1a]">Time Saved This Month</h2>
+            </div>
+            <div className="text-[28px] font-bold text-emerald-600 mb-1">42 <span className="text-[14px] font-medium">min</span></div>
+            <p className="text-[12px] text-[#8a8a86]">AI-assisted app drafts, auto-summaries, and smart routing saved you time this month.</p>
+            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+              {[
+                { label: "App Drafts", val: "18 min" },
+                { label: "Summaries", val: "14 min" },
+                { label: "Routing", val: "10 min" },
+              ].map((t) => (
+                <div key={t.label} className="bg-emerald-50 rounded-lg py-2 px-1">
+                  <div className="text-[12px] font-semibold text-emerald-700">{t.val}</div>
+                  <div className="text-[10px] text-emerald-600">{t.label}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Upcoming Events */}
+          <section className="bg-white border border-[#e8e8e5] rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Calendar className="w-4 h-4 text-blue-500" />
+              <h2 className="text-[13px] font-semibold text-[#1a1a1a]">Upcoming Events</h2>
+            </div>
+            <div className="space-y-2.5">
+              {[
+                { time: "2:00 PM", title: "Follow-up: Michael Hayden", type: "Call", color: "bg-red-500" },
+                { time: "3:30 PM", title: "AEP Training Webinar", type: "Training", color: "bg-blue-500" },
+                { time: "Tomorrow", title: "Compliance Review Deadline", type: "Deadline", color: "bg-amber-500" },
+              ].map((e, i) => (
+                <div key={i} className="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-[#fafaf9] transition-colors cursor-pointer">
+                  <div className={`w-1.5 h-full min-h-[32px] rounded-full ${e.color} shrink-0 mt-0.5`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium text-[#1a1a1a]">{e.title}</div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[11px] text-[#8a8a86]">{e.time}</span>
+                      <span className="text-[10px] font-medium text-[#8a8a86] bg-[#f5f4f1] px-1.5 py-0.5 rounded">{e.type}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="w-full text-[11px] font-medium text-[#8a8a86] hover:text-[#1a1a1a] mt-3 py-2 border border-[#e8e8e5] rounded-lg transition-colors">
+              View Full Calendar
+            </button>
           </section>
         </div>
       </div>

@@ -41,9 +41,21 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       label: "Dashboard & Analytics",
       items: [
         { id: "dashboard", label: "Executive Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
-        { id: "live-calls", label: "My Workspace", icon: <PhoneCall className="w-4 h-4" /> },
         { id: "analytics", label: "Advanced Analytics", icon: <TrendingUp className="w-4 h-4" /> },
         { id: "compliance", label: "Compliance Reporting", icon: <Shield className="w-4 h-4" /> },
+      ],
+    },
+    {
+      key: "workspace",
+      label: "My Workspace",
+      items: [
+        { id: "workspace-live-calls", label: "Live Calls", icon: <PhoneCall className="w-4 h-4" /> },
+        { id: "workspace-history", label: "My History", icon: <Activity className="w-4 h-4" /> },
+        { id: "workspace-contacts", label: "My Contacts", icon: <ContactRound className="w-4 h-4" /> },
+        { id: "workspace-applications", label: "My Applications", icon: <FileText className="w-4 h-4" /> },
+        { id: "workspace-referrals", label: "My Referrals", icon: <Gift className="w-4 h-4" /> },
+        { id: "workspace-settings", label: "My Settings", icon: <Settings className="w-4 h-4" /> },
+        { id: "workspace-support", label: "My Support", icon: <Shield className="w-4 h-4" /> },
       ],
     },
     {

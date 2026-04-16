@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Home,
@@ -28,7 +29,18 @@ import {
 import SendTextModal from "./SendTextModal";
 import LeadDetailsPanel from "./LeadDetailsPanel";
 import EditLeadModal from "./EditLeadModal";
-import LiveCallWorkspace from "../shared/LiveCallWorkspace";
+import LiveCallWorkspace, { WorkspaceTab } from "../shared/LiveCallWorkspace";
+
+const agentWorkspaceTabMap: Record<string, WorkspaceTab> = {
+  'workspace-live-calls': 'live-calls',
+  'workspace-history': 'my-history',
+  'workspace-contacts': 'my-contacts',
+  'workspace-applications': 'my-applications',
+  'workspace-referrals': 'my-referrals',
+  'workspace-settings': 'my-settings',
+  'workspace-support': 'my-support',
+  'live-calls': 'live-calls',
+};
 
 interface Lead {
   id: string;
@@ -159,13 +171,24 @@ const AgentDashboardActionFocused = () => {
   const [activeAgentView, setActiveAgentView] = useState<string>("dashboard");
 
   const navItems = [
-    { icon: Phone, label: "My Workspace", id: "live-calls", active: activeAgentView === "live-calls" },
     { icon: Home, label: "Dashboard", id: "dashboard", active: activeAgentView === "dashboard" },
     { icon: Users, label: "Leads", id: "leads", active: activeAgentView === "leads" },
     { icon: MessageSquare, label: "Messages", id: "messages", active: activeAgentView === "messages" },
     { icon: BarChart3, label: "Performance", id: "performance", active: activeAgentView === "performance" },
     { icon: Settings, label: "Settings", id: "settings", active: activeAgentView === "settings" },
   ];
+
+  const workspaceSubItems = [
+    { icon: Phone, label: "Live Calls", id: "workspace-live-calls" },
+    { icon: Clock, label: "My History", id: "workspace-history" },
+    { icon: Users, label: "My Contacts", id: "workspace-contacts" },
+    { icon: BarChart3, label: "My Applications", id: "workspace-applications" },
+    { icon: TrendingUp, label: "My Referrals", id: "workspace-referrals" },
+    { icon: Settings, label: "My Settings", id: "workspace-settings" },
+    { icon: Flame, label: "My Support", id: "workspace-support" },
+  ];
+
+  const isWorkspaceActive = activeAgentView.startsWith("workspace-") || activeAgentView === "live-calls";
 
   const remainingOpportunities = visibleLeads.length;
   const totalOpportunities = 8;
@@ -307,6 +330,41 @@ const AgentDashboardActionFocused = () => {
           <h1 className="text-2xl font-bold">CallX</h1>
         </div>
         <nav className="flex-1 p-4 space-y-1">
+          {/* My Workspace collapsible section */}
+          <div>
+            <button
+              onClick={() => {
+                if (!isWorkspaceActive) setActiveAgentView("workspace-live-calls");
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                isWorkspaceActive
+                  ? "bg-white/10 text-white"
+                  : "text-white/70 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <Phone className="w-5 h-5" />
+              <span className="flex-1 text-left">My Workspace</span>
+              {isWorkspaceActive ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            </button>
+            {isWorkspaceActive && (
+              <div className="ml-4 mt-1 space-y-0.5">
+                {workspaceSubItems.map((sub) => (
+                  <button
+                    key={sub.id}
+                    onClick={() => setActiveAgentView(sub.id)}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm transition-colors ${
+                      activeAgentView === sub.id
+                        ? "bg-white/15 text-white font-medium"
+                        : "text-white/60 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    <sub.icon className="w-4 h-4" />
+                    <span>{sub.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           {navItems.map((item) => (
             <button
               key={item.label}
@@ -373,8 +431,8 @@ const AgentDashboardActionFocused = () => {
 
         {/* Scrollable Content */}
         <main className="flex-1 overflow-y-auto p-8 space-y-6">
-          {activeAgentView === "live-calls" ? (
-            <LiveCallWorkspace />
+          {activeAgentView.startsWith("workspace-") || activeAgentView === "live-calls" ? (
+            <LiveCallWorkspace activeTab={agentWorkspaceTabMap[activeAgentView] || 'live-calls'} />
           ) : (
           <>
           {/* Priority Status Banner */}

@@ -40,7 +40,18 @@ import AgentNotificationManagement from "../entities/AgentNotificationManagement
 import NotificationTemplateManagement from "../entities/NotificationTemplateManagement";
 import NotificationBrandingOverview from "../entities/NotificationBrandingOverview";
 import PlatformSettings from "../settings/PlatformSettings";
-import LiveCallWorkspace from "../../shared/LiveCallWorkspace";
+import LiveCallWorkspace, { WorkspaceTab } from "../../shared/LiveCallWorkspace";
+
+const workspaceTabMap: Record<string, WorkspaceTab> = {
+  'workspace-live-calls': 'live-calls',
+  'workspace-history': 'my-history',
+  'workspace-contacts': 'my-contacts',
+  'workspace-applications': 'my-applications',
+  'workspace-referrals': 'my-referrals',
+  'workspace-settings': 'my-settings',
+  'workspace-support': 'my-support',
+  'live-calls': 'live-calls',
+};
 
 interface SuperAdminViewRendererProps {
   activeView: SuperAdminViewType;
@@ -224,7 +235,14 @@ const SuperAdminViewRenderer = ({
       return <PlatformSettings onBackToDashboard={handleBackToDashboard} />;
     
     case 'live-calls':
-      return <LiveCallWorkspace />;
+    case 'workspace-live-calls':
+    case 'workspace-history':
+    case 'workspace-contacts':
+    case 'workspace-applications':
+    case 'workspace-referrals':
+    case 'workspace-settings':
+    case 'workspace-support':
+      return <LiveCallWorkspace activeTab={workspaceTabMap[activeView] || 'live-calls'} />;
     
     default:
       return (

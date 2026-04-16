@@ -13,7 +13,18 @@ import BillingTab from "../components/settings/BillingTab";
 import BrandingSettings from "../components/settings/BrandingSettings";
 
 import { AgencyReferralTab } from "../components/settings/AgencyReferralTab";
-import LiveCallWorkspace from "../components/shared/LiveCallWorkspace";
+import LiveCallWorkspace, { WorkspaceTab } from "../components/shared/LiveCallWorkspace";
+
+const workspaceTabMap: Record<string, WorkspaceTab> = {
+  'workspace-live-calls': 'live-calls',
+  'workspace-history': 'my-history',
+  'workspace-contacts': 'my-contacts',
+  'workspace-applications': 'my-applications',
+  'workspace-referrals': 'my-referrals',
+  'workspace-settings': 'my-settings',
+  'workspace-support': 'my-support',
+  'go-live': 'live-calls',
+};
 import { Toaster } from "sonner";
 
 const Agency = () => {
@@ -80,7 +91,14 @@ const Agency = () => {
           </div>
         );
       case "go-live":
-        return <LiveCallWorkspace />;
+      case "workspace-live-calls":
+      case "workspace-history":
+      case "workspace-contacts":
+      case "workspace-applications":
+      case "workspace-referrals":
+      case "workspace-settings":
+      case "workspace-support":
+        return <LiveCallWorkspace activeTab={workspaceTabMap[activeSection] || 'live-calls'} />;
       case "team":
         return <AgencySettings onBackToDashboard={() => setActiveSection("dashboard")} />;
       case "branding":

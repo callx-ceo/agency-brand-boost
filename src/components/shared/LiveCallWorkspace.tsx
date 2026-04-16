@@ -13,7 +13,7 @@ import AgentContactsView from "@/components/agent/AgentContactsView";
 import AgentMyDashboard from "@/components/agent/AgentMyDashboard";
 import AgentHistoryView from "@/components/agent/AgentHistoryView";
 import AgentCalendarView from "@/components/agent/AgentCalendarView";
-import AgentApplicationsView from "@/components/agent/AgentApplicationsView";
+import AgentApplicationsView from "@/components/agent/AgentApplicationsView"; // workspace apps
 import {
   Phone,
   PhoneOff,

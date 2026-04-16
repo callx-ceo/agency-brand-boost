@@ -12,6 +12,7 @@ import PostCallScreen from "@/components/agent/PostCallScreen";
 import AgentContactsView from "@/components/agent/AgentContactsView";
 import AgentMyDashboard from "@/components/agent/AgentMyDashboard";
 import AgentHistoryView from "@/components/agent/AgentHistoryView";
+import AgentCalendarView from "@/components/agent/AgentCalendarView";
 import {
   Phone,
   PhoneOff,

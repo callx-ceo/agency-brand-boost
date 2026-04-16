@@ -168,6 +168,11 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
             />
             <span className="text-sm font-medium">Go Live</span>
           </div>
+          {isLive && (
+            <Button size="sm" variant="destructive" className="ml-2 text-xs" onClick={() => { setIsLive(false); setShowPostCall(true); }}>
+              End Call
+            </Button>
+          )}
         </div>
 
         {/* Right: Stats */}
@@ -383,7 +388,8 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <div className="flex flex-col h-full">

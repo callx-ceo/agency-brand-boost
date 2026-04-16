@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Target, Clock, Phone, DollarSign, TrendingUp, CheckCircle2, Sparkles, Calendar } from "lucide-react";
+import { Target, CheckCircle2, Sparkles, Calendar } from "lucide-react";
 import type { SuccessPlan } from "./GoalBuilderChat";
 
 interface SuccessPlanReviewProps {

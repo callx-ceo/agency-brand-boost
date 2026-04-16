@@ -15,6 +15,7 @@ import AgentMyDashboard from "@/components/agent/AgentMyDashboard";
 import AgentHistoryView from "@/components/agent/AgentHistoryView";
 import AgentCalendarView from "@/components/agent/AgentCalendarView";
 import AgentApplicationsView from "@/components/agent/AgentApplicationsView"; // workspace apps
+import AgentRecommendationsView from "@/components/agent/AgentRecommendationsView";
 import {
   Phone,
   PhoneOff,
@@ -32,7 +33,7 @@ import {
   Clock,
 } from "lucide-react";
 
-export type WorkspaceTab = "live-calls" | "my-dashboard" | "my-history" | "my-contacts" | "my-applications" | "my-calendar" | "my-referrals" | "my-settings" | "my-support";
+export type WorkspaceTab = "live-calls" | "my-dashboard" | "my-history" | "my-contacts" | "my-applications" | "my-calendar" | "my-recommendations" | "my-referrals" | "my-settings" | "my-support";
 
 interface LiveCallWorkspaceProps {
   activeTab?: WorkspaceTab;
@@ -133,6 +134,8 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
         return <AgentApplicationsView />;
       case "my-calendar":
         return <AgentCalendarView />;
+      case "my-recommendations":
+        return <AgentRecommendationsView />;
       case "my-referrals":
         return renderPlaceholderTab("My Referrals", "View and manage your referral activity.");
       case "my-settings":

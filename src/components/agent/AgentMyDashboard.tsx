@@ -183,24 +183,6 @@ const AgentMyDashboard = () => {
         </div>
       </div>
 
-      {/* GOAL BUILDER CTA — show when no plan is active */}
-      {!activePlan && (
-        <button
-          onClick={() => setGoalBuilderOpen(true)}
-          className="w-full flex items-center gap-4 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-5 py-4 mb-5 text-left hover:from-violet-700 hover:to-blue-700 transition-all group"
-        >
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-            <Target className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex-1">
-            <p className="text-[14px] font-semibold text-white">You haven't set your goals yet</p>
-            <p className="text-[12px] text-white/70 mt-0.5">Let Copilot build a personalized Success Plan — it takes 60 seconds</p>
-          </div>
-          <span className="text-[12px] font-semibold text-white bg-white/20 px-4 py-2 rounded-lg group-hover:bg-white/30 transition-colors flex items-center gap-1.5">
-            Build My Plan <ArrowUpRight className="w-3.5 h-3.5" />
-          </span>
-        </button>
-      )}
 
       {/* ROTATING COPILOT NUDGE */}
       <div className="flex items-center gap-2.5 rounded-lg bg-[#f5f3ff] border border-violet-100 px-4 py-2 mb-6">

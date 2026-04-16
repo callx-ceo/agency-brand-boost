@@ -12,6 +12,23 @@ const copilotMessages = [
   "2 missed revenue opportunities detected",
 ];
 
+const getTimeGreeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+};
+
+const getTimeNudge = () => {
+  const h = new Date().getHours();
+  const remaining = 17 - h;
+  if (h < 9) return "Your day starts soon — review your priorities before calls begin.";
+  if (remaining > 4) return "Plenty of runway today. Front-load your hot leads while energy is high.";
+  if (remaining > 2) return `${remaining} hours left today. Focus on high-value actions to hit your goal.`;
+  if (remaining > 0) return "Final stretch — prioritize closeable leads and pending apps.";
+  return "Day's wrapping up. Prep tomorrow's top 3 actions before logging off.";
+};
+
 const smartActions = [
   {
     priority: "urgent",
@@ -87,26 +104,50 @@ const AgentMyDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const greeting = getTimeGreeting();
+  const timeNudge = getTimeNudge();
+
   return (
     <div className="h-full overflow-auto bg-[#fafaf9] px-8 py-6">
       {/* HEADER */}
-      <div className="flex items-end justify-between mb-6">
+      <div className="flex items-end justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight text-[#1a1a1a]">Command Center</h1>
-          <p className="text-[13px] text-[#8a8a86] mt-0.5">Good morning, Benjamin — you're pacing <span className="text-emerald-600 font-medium">+18%</span> above yesterday.</p>
+          <p className="text-[13px] text-[#8a8a86] mt-0.5">Wed, Apr 16</p>
         </div>
         <div className="flex items-center gap-5 text-[13px] text-[#8a8a86]">
           <span className="font-medium text-[#1a1a1a]">$2,140 <span className="text-[#8a8a86] font-normal">today</span></span>
           <span>14 calls</span>
           <span>28% close</span>
-          <span>Wed, Apr 16</span>
         </div>
       </div>
 
-      {/* COPILOT STRIP */}
-      <div className="flex items-center gap-2.5 rounded-xl bg-[#f5f3ff] border border-violet-100 px-4 py-2.5 mb-6">
-        <Sparkles className="w-4 h-4 text-violet-500 shrink-0" />
-        <span className={`text-[13px] text-violet-700 font-medium transition-opacity duration-250 ${fade ? "opacity-100" : "opacity-0"}`}>
+      {/* AI DAILY BRIEFING */}
+      <div className="rounded-xl bg-white border border-[#e8e8e5] px-5 py-4 mb-5">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center shrink-0 mt-0.5">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[13px] font-semibold text-[#1a1a1a]">CallX Copilot</span>
+              <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Active</span>
+            </div>
+            <p className="text-[13px] text-[#1a1a1a] leading-relaxed">
+              {greeting}, Benjamin. You have <span className="font-semibold">4 hot leads</span> worth $18.2K, <span className="font-semibold">1 pending app</span> for Priya Nambiar, and you're <span className="text-emerald-600 font-semibold">$860 away</span> from your daily goal. I'd start with Michael Hayden — his follow-up window closes today.
+            </p>
+            <p className="text-[12px] text-[#8a8a86] mt-2 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+              {timeNudge}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ROTATING COPILOT NUDGE */}
+      <div className="flex items-center gap-2.5 rounded-lg bg-[#f5f3ff] border border-violet-100 px-4 py-2 mb-6">
+        <Sparkles className="w-3.5 h-3.5 text-violet-500 shrink-0" />
+        <span className={`text-[12px] text-violet-700 font-medium transition-opacity duration-250 ${fade ? "opacity-100" : "opacity-0"}`}>
           {copilotMessages[msgIndex]}
         </span>
       </div>

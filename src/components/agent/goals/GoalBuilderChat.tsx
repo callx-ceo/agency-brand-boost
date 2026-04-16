@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Sparkles, Send, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 interface GoalBuilderChatProps {
   onPlanGenerated: (plan: SuccessPlan) => void;

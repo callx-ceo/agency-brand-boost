@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Target, Clock, Phone, DollarSign, TrendingUp, CheckCircle2, Edit3, Sparkles } from "lucide-react";
+import { Target, Clock, Phone, DollarSign, TrendingUp, CheckCircle2, Sparkles } from "lucide-react";
 import type { SuccessPlan } from "./GoalBuilderChat";
 
 interface SuccessPlanReviewProps {
@@ -9,7 +9,7 @@ interface SuccessPlanReviewProps {
 }
 
 const SuccessPlanReview = ({ plan, onConfirm, onBack }: SuccessPlanReviewProps) => {
-  const [editingField, setEditingField] = useState<string | null>(null);
+  
   const [localPlan, setLocalPlan] = useState<SuccessPlan>({ ...plan });
 
   const recalculate = (updated: Partial<SuccessPlan>) => {

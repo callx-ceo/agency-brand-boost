@@ -3,8 +3,10 @@ import {
   Phone, ArrowUpRight, ArrowDownRight,
   Trophy, Flame, Brain, PhoneIncoming, PhoneOutgoing,
   PhoneMissed, ChevronRight, FileText, Play, Sparkles,
-  MessageSquare, Mail, Wand2
+  MessageSquare, Mail, Wand2, Target
 } from "lucide-react";
+import GoalBuilderModal from "./goals/GoalBuilderModal";
+import type { SuccessPlan } from "./goals/GoalBuilderChat";
 
 const copilotMessages = [
   "3 leads need follow-up before today ends",

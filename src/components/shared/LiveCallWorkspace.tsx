@@ -123,7 +123,18 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
     }
   };
 
-  const renderLiveCallsContent = () => (
+  const renderLiveCallsContent = () => {
+    if (showPostCall) {
+      return (
+        <PostCallScreen
+          onTakeNextCall={() => setShowPostCall(false)}
+          onReviewBreakdown={() => {}}
+          onViewTrends={() => {}}
+        />
+      );
+    }
+
+    return (
     <div className="flex flex-col h-full min-h-[calc(100vh-200px)]">
       {/* Top Control Bar */}
       <div className="flex items-center justify-between gap-4 mb-4">

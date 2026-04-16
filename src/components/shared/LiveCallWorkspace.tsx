@@ -13,6 +13,7 @@ import AgentContactsView from "@/components/agent/AgentContactsView";
 import AgentMyDashboard from "@/components/agent/AgentMyDashboard";
 import AgentHistoryView from "@/components/agent/AgentHistoryView";
 import AgentCalendarView from "@/components/agent/AgentCalendarView";
+import AgentApplicationsView from "@/components/agent/AgentApplicationsView";
 import {
   Phone,
   PhoneOff,
@@ -117,7 +118,7 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
       case "my-contacts":
         return <AgentContactsView />;
       case "my-applications":
-        return renderPlaceholderTab("My Applications", "Track your submitted applications and their status.");
+        return <AgentApplicationsView />;
       case "my-calendar":
         return <AgentCalendarView />;
       case "my-referrals":

@@ -180,7 +180,7 @@ const AgentDashboardActionFocused = () => {
   ];
 
   const workspaceSubItems = [
-    { icon: BarChart3, label: "My Dashboard", id: "workspace-dashboard" },
+    { icon: BarChart3, label: "Command Center", id: "workspace-dashboard" },
     { icon: Phone, label: "Live Calls", id: "workspace-live-calls" },
     { icon: Clock, label: "My History", id: "workspace-history" },
     { icon: Users, label: "My Contacts", id: "workspace-contacts" },

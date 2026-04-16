@@ -138,14 +138,14 @@ const AgentMyDashboard = () => {
       {notifications.length > 0 && (
         <div className="bg-[#1a1a1a] px-8">
           {notifications.map((n, i) => (
-            <div key={i} className="flex items-center justify-between py-2.5">
+            <div key={i} className={`flex items-center justify-between py-2.5 ${i > 0 ? "border-t border-white/10" : ""}`}>
               <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />
+                {n.icon || <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />}
                 <span className="text-[12px] text-white/80">{n.text}</span>
               </div>
               <button
                 onClick={n.onClick}
-                className="text-[11px] font-semibold text-white bg-white/15 hover:bg-white/25 px-3 py-1 rounded-md transition-colors"
+                className="text-[11px] font-semibold text-white bg-white/15 hover:bg-white/25 px-3 py-1 rounded-md transition-colors whitespace-nowrap"
               >
                 {n.action}
               </button>

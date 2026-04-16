@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { 
   BarChart3, Users, Settings, Phone, FileText, UserPlus, Target, Gift, Bell,
   CreditCard, Home, Contact, History, UserCheck, Briefcase, Headphones, Palette,
-  ChevronDown, ChevronRight
+  ChevronDown, ChevronRight, Sparkles
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -35,6 +35,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
         { id: "workspace-history", label: "My History", icon: History },
         { id: "workspace-contacts", label: "My Contacts", icon: Contact },
         { id: "workspace-applications", label: "My Applications", icon: FileText },
+        { id: "workspace-recommendations", label: "Recommendations", icon: Sparkles },
         { id: "workspace-referrals", label: "My Referrals", icon: Gift },
         { id: "workspace-settings", label: "My Settings", icon: Settings },
         { id: "workspace-support", label: "My Support", icon: Headphones },

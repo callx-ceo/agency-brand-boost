@@ -25,6 +25,7 @@ import {
   Loader2,
   Edit2,
   MoreVertical,
+  Sparkles,
 } from "lucide-react";
 import SendTextModal from "./SendTextModal";
 import LeadDetailsPanel from "./LeadDetailsPanel";
@@ -186,6 +187,7 @@ const AgentDashboardActionFocused = () => {
     { icon: Clock, label: "My History", id: "workspace-history" },
     { icon: Users, label: "My Contacts", id: "workspace-contacts" },
     { icon: BarChart3, label: "My Applications", id: "workspace-applications" },
+    { icon: Sparkles, label: "Recommendations", id: "workspace-recommendations" },
     { icon: TrendingUp, label: "My Referrals", id: "workspace-referrals" },
     { icon: Settings, label: "My Settings", id: "workspace-settings" },
     { icon: Flame, label: "My Support", id: "workspace-support" },

@@ -174,7 +174,7 @@ const AgentMyDashboard = () => {
                     <div className="text-[12px] text-[#8a8a86] mt-0.5">{a.detail}</div>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {!a.hideCommunication && (
+                    {(
                       <>
                         <button className="flex items-center gap-1 text-[11px] font-medium text-[#8a8a86] hover:text-[#1a1a1a] px-2 py-1.5 rounded-lg hover:bg-[#f5f4f1] transition-colors" title="Send SMS with AI Assist">
                           <MessageSquare className="w-3 h-3" />

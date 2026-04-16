@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Plus, Phone, MessageSquare, Mail } from "lucide-react";
-import { ContactItem, stages, getStageColor, getScoreColor } from "./contactData";
+import { ContactItem, stages, getStageColor } from "./contactData";
 
 interface ContactsListProps {
   contacts: ContactItem[];

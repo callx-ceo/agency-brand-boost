@@ -22,6 +22,7 @@ const workspaceTabMap: Record<string, WorkspaceTab> = {
   'workspace-contacts': 'my-contacts',
   'workspace-applications': 'my-applications',
   'workspace-recommendations': 'my-recommendations',
+  'workspace-website': 'my-website',
   'workspace-referrals': 'my-referrals',
   'workspace-settings': 'my-settings',
   'workspace-support': 'my-support',
@@ -99,6 +100,7 @@ const Agency = () => {
       case "workspace-contacts":
       case "workspace-applications":
       case "workspace-recommendations":
+      case "workspace-website":
       case "workspace-referrals":
       case "workspace-settings":
       case "workspace-support":

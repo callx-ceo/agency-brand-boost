@@ -61,5 +61,6 @@ export type SuperAdminViewType =
   | 'workspace-referrals'
   | 'workspace-calendar'
   | 'workspace-recommendations'
+  | 'workspace-website'
   | 'workspace-settings'
   | 'workspace-support';

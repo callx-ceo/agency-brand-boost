@@ -117,6 +117,8 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
         return <AgentContactsView />;
       case "my-applications":
         return renderPlaceholderTab("My Applications", "Track your submitted applications and their status.");
+      case "my-calendar":
+        return <AgentCalendarView />;
       case "my-referrals":
         return renderPlaceholderTab("My Referrals", "View and manage your referral activity.");
       case "my-settings":

@@ -155,7 +155,7 @@ const AgentMyDashboard = () => {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <h2 className="text-[13px] font-semibold text-[#1a1a1a]">Smart Actions</h2>
-                <span className="text-[11px] font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">5 pending</span>
+                <span className="text-[11px] font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">4 pending</span>
               </div>
               <button className="text-[12px] text-[#8a8a86] hover:text-[#1a1a1a] transition-colors flex items-center gap-0.5">
                 View all <ChevronRight className="w-3 h-3" />

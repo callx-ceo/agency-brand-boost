@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -12,12 +12,16 @@ import {
   Sparkles,
   X,
   Send,
-  ArrowRight,
   CheckCircle,
   PhoneOff,
   PhoneMissed,
   UserX,
   CalendarClock,
+  AlertTriangle,
+  DollarSign,
+  XCircle,
+  BarChart3,
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +34,21 @@ interface PostCallScreenProps {
 
 type Phase = "analyzing" | "disposition" | "actions";
 
+const statusMessages = [
+  "Transcribing conversation…",
+  "Detecting buying signals…",
+  "Scoring call quality…",
+  "Generating follow-ups…",
+];
+
+const feedItems = [
+  { icon: <CheckCircle className="w-4 h-4" />, text: "Strong rapport built early", color: "text-green-600", bg: "bg-green-50" },
+  { icon: <DollarSign className="w-4 h-4" />, text: "High intent signal detected", color: "text-amber-600", bg: "bg-amber-50" },
+  { icon: <AlertTriangle className="w-4 h-4" />, text: "Missed affordability check", color: "text-orange-500", bg: "bg-orange-50" },
+  { icon: <Brain className="w-4 h-4" />, text: "Objection detected — price concern", color: "text-blue-600", bg: "bg-blue-50" },
+  { icon: <XCircle className="w-4 h-4" />, text: "Draft date not confirmed", color: "text-red-500", bg: "bg-red-50" },
+];
+
 const dispositions = [
   { id: "sale", label: "Sale", icon: <CheckCircle className="w-4 h-4" />, color: "border-green-300 bg-green-50 hover:border-green-500 text-green-700", selectedColor: "border-green-500 bg-green-100 ring-2 ring-green-500/30" },
   { id: "callback", label: "Callback", icon: <CalendarClock className="w-4 h-4" />, color: "border-blue-300 bg-blue-50 hover:border-blue-500 text-blue-700", selectedColor: "border-blue-500 bg-blue-100 ring-2 ring-blue-500/30" },
@@ -41,27 +60,58 @@ const dispositions = [
 const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<Phase>("analyzing");
+  const [statusIndex, setStatusIndex] = useState(0);
+  const [visibleFeedItems, setVisibleFeedItems] = useState<number[]>([]);
   const [selectedDisposition, setSelectedDisposition] = useState<string | null>(null);
   const [showOtherOptions, setShowOtherOptions] = useState(false);
   const [suggestedDisposition] = useState("callback");
+  const feedEndRef = useRef<HTMLDivElement>(null);
 
-  // Progress bar
+  // Progress bar — fills over ~12 seconds
   useEffect(() => {
+    if (phase !== "analyzing") return;
     const interval = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) { clearInterval(interval); return 100; }
-        return p + 3;
+        return p + 0.85;
       });
-    }, 80);
+    }, 100);
     return () => clearInterval(interval);
-  }, []);
+  }, [phase]);
 
-  // Move to disposition phase after brief analysis
+  // Rotate status text every 3s
   useEffect(() => {
-    if (progress >= 40 && phase === "analyzing") {
-      setPhase("disposition");
+    if (phase !== "analyzing") return;
+    const interval = setInterval(() => {
+      setStatusIndex((i) => (i + 1) % statusMessages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  // Feed items appear one by one
+  useEffect(() => {
+    if (phase !== "analyzing") return;
+    const timers: NodeJS.Timeout[] = [];
+    feedItems.forEach((_, idx) => {
+      timers.push(setTimeout(() => {
+        setVisibleFeedItems((prev) => [...prev, idx]);
+      }, 1500 + idx * 1800));
+    });
+    return () => timers.forEach(clearTimeout);
+  }, [phase]);
+
+  // Auto-scroll feed
+  useEffect(() => {
+    feedEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [visibleFeedItems]);
+
+  // Transition to disposition after all feed items + progress done
+  useEffect(() => {
+    if (phase === "analyzing" && progress >= 100 && visibleFeedItems.length === feedItems.length) {
+      const timer = setTimeout(() => setPhase("disposition"), 800);
+      return () => clearTimeout(timer);
     }
-  }, [progress, phase]);
+  }, [progress, visibleFeedItems, phase]);
 
   const handleDispositionSelect = (id: string) => {
     setSelectedDisposition(id);
@@ -85,7 +135,6 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
       label: "Send Email Summary",
       description: "Personalized pricing breakdown with next steps",
       impact: "+12% re-engagement",
-      urgency: null,
       color: "bg-purple-50 border-purple-200 hover:border-purple-400",
       iconBg: "bg-purple-100 text-purple-600",
       buttonClass: "bg-purple-600 hover:bg-purple-700",
@@ -96,7 +145,6 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
       label: "Schedule Callback",
       description: "Customer showed interest — book a follow-up",
       impact: "+22% conversion",
-      urgency: null,
       color: "bg-green-50 border-green-200 hover:border-green-400",
       iconBg: "bg-green-100 text-green-600",
       buttonClass: "bg-green-600 hover:bg-green-700",
@@ -109,55 +157,95 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
       {/* Close */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-20 p-1.5 rounded-full hover:bg-muted transition-colors text-muted-foreground"
+        className="absolute top-3 right-4 z-20 p-1.5 rounded-full hover:bg-muted transition-colors text-muted-foreground"
       >
         <X className="w-4 h-4" />
       </button>
 
-      {/* Progress Header */}
-      <div className="px-8 pt-6 pb-4">
-        <div className="flex items-center gap-2.5 mb-3">
+      {/* Sticky AI Header */}
+      <div className="sticky top-0 z-10 bg-background border-b">
+        <div className="px-6 py-3 flex items-center gap-2.5">
           <div className="p-1.5 bg-blue-100 rounded-lg">
             <Brain className="w-4 h-4 text-blue-600" />
           </div>
           <span className="text-sm font-medium text-foreground">
-            {phase === "analyzing" && "Analyzing your call…"}
-            {phase === "disposition" && "How did this call end?"}
-            {phase === "actions" && "Here's what you should do next"}
+            {phase === "analyzing" && "CallX Copilot is analyzing your call…"}
+            {phase === "disposition" && "Your recording has been processed"}
+            {phase === "actions" && "Recommended next steps"}
           </span>
           {phase === "analyzing" && (
-            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+            <div className="ml-auto text-xs text-muted-foreground animate-fade-in" key={statusIndex}>
+              {statusMessages[statusIndex]}
+            </div>
+          )}
+          {phase === "disposition" && (
+            <Badge className="ml-auto bg-green-100 text-green-700 border-0 text-xs">
+              <CheckCircle className="w-3 h-3 mr-1" />
+              Complete
+            </Badge>
+          )}
+          {phase === "actions" && (
+            <Badge className="ml-auto bg-green-100 text-green-700 border-0 text-xs">
+              <CheckCircle className="w-3 h-3 mr-1" />
+              {dispositions.find(d => d.id === selectedDisposition)?.label}
+            </Badge>
           )}
         </div>
-        <Progress value={Math.min(progress, 100)} className="h-1" />
+        {phase === "analyzing" && (
+          <Progress value={Math.min(progress, 100)} className="h-0.5 rounded-none" />
+        )}
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 pb-6 overflow-auto">
+      <div className="flex-1 overflow-auto px-6 py-6">
 
-        {/* Phase 1: Analyzing */}
+        {/* Phase 1: Live AI Feed */}
         {phase === "analyzing" && (
-          <div className="text-center animate-fade-in">
-            <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
-              <Brain className="w-6 h-6 text-blue-600 animate-pulse" />
+          <div className="max-w-lg mx-auto">
+            <div className="space-y-2">
+              {visibleFeedItems.map((idx) => {
+                const item = feedItems[idx];
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 p-3 rounded-lg border bg-card animate-fade-in"
+                  >
+                    <div className={cn("p-1.5 rounded-md", item.bg, item.color)}>
+                      {item.icon}
+                    </div>
+                    <span className="text-sm text-foreground">{item.text}</span>
+                  </div>
+                );
+              })}
+              <div ref={feedEndRef} />
             </div>
-            <p className="text-sm text-muted-foreground">Processing call audio & transcript…</p>
+            {visibleFeedItems.length === 0 && (
+              <div className="text-center py-12 animate-fade-in">
+                <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-blue-600 animate-pulse" />
+                </div>
+                <p className="text-sm text-muted-foreground">Listening to your call…</p>
+              </div>
+            )}
           </div>
         )}
 
         {/* Phase 2: Disposition */}
         {phase === "disposition" && (
-          <div className="w-full max-w-md animate-fade-in">
+          <div className="max-w-md mx-auto animate-fade-in">
             <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium mb-3">
+                <CheckCircle className="w-3 h-3" />
+                Recording processed
+              </div>
               <h2 className="text-lg font-semibold text-foreground mb-1">
-                AI Suggested Disposition
+                Is this the correct disposition?
               </h2>
               <p className="text-sm text-muted-foreground">
-                Based on the call analysis, we recommend:
+                Based on AI analysis, we suggest:
               </p>
             </div>
 
-            {/* Suggested disposition - prominent */}
             {!showOtherOptions && (
               <div className="space-y-4 animate-fade-in">
                 <div className={cn(
@@ -198,9 +286,8 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
               </div>
             )}
 
-            {/* Other options - shown when "Change" is clicked */}
             {showOtherOptions && (
-              <div className="space-y-3 animate-fade-in">
+              <div className="space-y-2 animate-fade-in">
                 {dispositions.map((d) => (
                   <button
                     key={d.id}
@@ -208,7 +295,6 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
                     className={cn(
                       "w-full flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all text-left",
                       selectedDisposition === d.id ? d.selectedColor : d.color,
-                      d.id === suggestedDisposition && "relative"
                     )}
                   >
                     {d.icon}
@@ -225,12 +311,8 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
 
         {/* Phase 3: Actions */}
         {phase === "actions" && (
-          <div className="w-full max-w-2xl animate-fade-in">
+          <div className="max-w-2xl mx-auto animate-fade-in">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium mb-3">
-                <CheckCircle className="w-3 h-3" />
-                Disposition saved: {dispositions.find(d => d.id === selectedDisposition)?.label}
-              </div>
               <h2 className="text-lg font-semibold text-foreground mb-1">
                 Recommended next steps
               </h2>
@@ -247,7 +329,6 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
                     "flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer",
                     action.color
                   )}
-                  style={{ animationDelay: `${idx * 100}ms` }}
                 >
                   <div className={cn("p-2.5 rounded-lg shrink-0", action.iconBg)}>
                     {action.icon}
@@ -275,10 +356,19 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
               ))}
             </div>
 
+            {/* Review Call Score link */}
+            <div className="mt-5 flex items-center justify-center">
+              <button className="inline-flex items-center gap-2 text-sm text-primary hover:underline transition-colors">
+                <BarChart3 className="w-4 h-4" />
+                Review your full call score
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
             {/* Coaching tip */}
-            <div className="mt-5">
+            <div className="mt-4">
               <div className="flex items-start gap-2.5 p-3 rounded-lg bg-muted/50">
-                <ArrowRight className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
                 <p className="text-xs text-muted-foreground">
                   <span className="font-medium text-foreground">Tip:</span> You didn't ask for commitment — try closing earlier next call.
                 </p>
@@ -288,9 +378,9 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
         )}
       </div>
 
-      {/* Bottom CTA — only show after disposition */}
+      {/* Bottom CTA */}
       {phase === "actions" && (
-        <div className="border-t bg-background px-8 py-4">
+        <div className="border-t bg-background px-6 py-4">
           <div className="flex items-center justify-between max-w-2xl mx-auto">
             <span className="text-xs text-muted-foreground italic">Don't lose momentum</span>
             <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white gap-2 px-6" onClick={onTakeNextCall}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Edit3 } from "lucide-react";
 
 interface GoalBuilderChatProps {
   onPlanGenerated: (plan: SuccessPlan) => void;
@@ -22,13 +22,27 @@ interface ChatMessage {
   role: "copilot" | "user";
   text: string;
   options?: string[];
+  allowCustom?: boolean;
+  customPlaceholder?: string;
 }
 
-const QUESTIONS = [
+interface QuestionDef {
+  text: string;
+  options: string[];
+  key: string;
+  multi?: boolean;
+  suggested?: string;
+  allowCustom?: boolean;
+  customPlaceholder?: string;
+}
+
+const QUESTIONS: QuestionDef[] = [
   {
     text: "Let's build your Success Plan. First — what's your **monthly income goal**?",
-    options: ["$4,000", "$6,000", "$8,000", "$10,000+"],
+    options: ["$4,000", "$6,000", "$8,000", "$10,000"],
     key: "incomeGoal",
+    allowCustom: true,
+    customPlaceholder: "e.g. 40000",
   },
   {
     text: "Great target. What **verticals** do you sell? (select all that apply)",
@@ -38,34 +52,39 @@ const QUESTIONS = [
   },
   {
     text: "What's your **average premium per policy**? I pulled $480 from your recent history.",
-    options: ["~$300", "~$480 (suggested)", "~$600", "~$800+"],
+    options: ["~$300", "~$480 (suggested)", "~$600", "~$800"],
     key: "avgPremium",
     suggested: "$480",
+    allowCustom: true,
+    customPlaceholder: "e.g. 1200",
   },
   {
     text: "How many **days per week** can you commit to calling?",
     options: ["3 days", "4 days", "5 days", "6 days"],
     key: "workDays",
+    allowCustom: true,
+    customPlaceholder: "e.g. 7",
   },
   {
     text: "Last one — your **close rate** over the past 30 days was about 5.2%. Does that sound right?",
-    options: ["Yes, ~5%", "I think closer to 7%", "Probably lower, ~3%", "I'm not sure"],
+    options: ["Yes, ~5%", "I think closer to 7%", "Probably lower, ~3%"],
     key: "closeRate",
     suggested: "5.2%",
+    allowCustom: true,
+    customPlaceholder: "e.g. 12",
   },
 ];
 
 const parseNumber = (val: string, key: string): number => {
   const cleaned = val.replace(/[^0-9.]/g, "");
   const num = parseFloat(cleaned);
-  if (key === "incomeGoal" && val.includes("10,000")) return 10000;
   if (key === "avgPremium" && val.includes("suggested")) return 480;
   if (key === "workDays") return parseInt(cleaned) || 5;
   if (key === "closeRate") {
     if (val.includes("5%") || val.includes("sure")) return 5;
     if (val.includes("7%")) return 7;
     if (val.includes("3%")) return 3;
-    return 5;
+    return num || 5;
   }
   return num || 0;
 };
@@ -76,13 +95,16 @@ const GoalBuilderChat = ({ onPlanGenerated }: GoalBuilderChatProps) => {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [selectedMulti, setSelectedMulti] = useState<string[]>([]);
   const [typing, setTyping] = useState(false);
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [customValue, setCustomValue] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const customInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Show first question after a brief delay
     setTyping(true);
     const t = setTimeout(() => {
-      setMessages([{ role: "copilot", text: QUESTIONS[0].text, options: QUESTIONS[0].options }]);
+      const q = QUESTIONS[0];
+      setMessages([{ role: "copilot", text: q.text, options: q.options, allowCustom: q.allowCustom, customPlaceholder: q.customPlaceholder }]);
       setTyping(false);
     }, 600);
     return () => clearTimeout(t);
@@ -90,7 +112,13 @@ const GoalBuilderChat = ({ onPlanGenerated }: GoalBuilderChatProps) => {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, typing]);
+  }, [messages, typing, showCustomInput]);
+
+  useEffect(() => {
+    if (showCustomInput && customInputRef.current) {
+      customInputRef.current.focus();
+    }
+  }, [showCustomInput]);
 
   const handleSelect = (option: string) => {
     const q = QUESTIONS[step];
@@ -100,6 +128,8 @@ const GoalBuilderChat = ({ onPlanGenerated }: GoalBuilderChatProps) => {
       );
       return;
     }
+    setShowCustomInput(false);
+    setCustomValue("");
     advanceWithAnswer(option);
   };
 
@@ -108,29 +138,40 @@ const GoalBuilderChat = ({ onPlanGenerated }: GoalBuilderChatProps) => {
     advanceWithAnswer(selectedMulti.join(", "));
   };
 
+  const handleCustomSubmit = () => {
+    if (!customValue.trim()) return;
+    const q = QUESTIONS[step];
+    let display = customValue.trim();
+    if (q.key === "incomeGoal") display = `$${parseInt(customValue).toLocaleString()}`;
+    else if (q.key === "avgPremium") display = `$${parseInt(customValue).toLocaleString()}`;
+    else if (q.key === "workDays") display = `${customValue} days`;
+    else if (q.key === "closeRate") display = `${customValue}%`;
+    setShowCustomInput(false);
+    setCustomValue("");
+    advanceWithAnswer(display);
+  };
+
   const advanceWithAnswer = (answer: string) => {
     const q = QUESTIONS[step];
     const newAnswers = { ...answers, [q.key]: answer };
     setAnswers(newAnswers);
 
-    // Add user message
     setMessages((prev) => [...prev, { role: "user", text: answer }]);
     setSelectedMulti([]);
 
     const nextStep = step + 1;
     if (nextStep < QUESTIONS.length) {
-      // Show next question with typing delay
       setTyping(true);
       setTimeout(() => {
+        const nq = QUESTIONS[nextStep];
         setMessages((prev) => [
           ...prev,
-          { role: "copilot", text: QUESTIONS[nextStep].text, options: QUESTIONS[nextStep].options },
+          { role: "copilot", text: nq.text, options: nq.options, allowCustom: nq.allowCustom, customPlaceholder: nq.customPlaceholder },
         ]);
         setTyping(false);
         setStep(nextStep);
       }, 800);
     } else {
-      // Generate the plan
       setTyping(true);
       setTimeout(() => {
         const plan = generatePlan(newAnswers);
@@ -158,8 +199,8 @@ const GoalBuilderChat = ({ onPlanGenerated }: GoalBuilderChatProps) => {
     const callsRequired = Math.ceil(policiesNeeded / closeRate);
     const workingDaysMonth = workDays * 4;
     const dailyCalls = Math.ceil(callsRequired / workingDaysMonth);
-    const hoursPerDay = Math.round((dailyCalls * 15) / 60 * 10) / 10; // ~15 min avg per call
-    const monthlyInvestment = Math.round(callsRequired * 3.5); // ~$3.50 per lead
+    const hoursPerDay = Math.round((dailyCalls * 15) / 60 * 10) / 10;
+    const monthlyInvestment = Math.round(callsRequired * 3.5);
 
     return {
       incomeGoal,
@@ -179,7 +220,6 @@ const GoalBuilderChat = ({ onPlanGenerated }: GoalBuilderChatProps) => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Chat messages */}
       <div ref={scrollRef} className="flex-1 overflow-auto px-5 py-4 space-y-3">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -198,31 +238,66 @@ const GoalBuilderChat = ({ onPlanGenerated }: GoalBuilderChatProps) => {
                 <p className="text-[13px]">{msg.text}</p>
               )}
               {msg.role === "copilot" && msg.options && i === messages.length - 1 && (
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  {msg.options.map((opt) => {
-                    const isMulti = currentQ?.multi;
-                    const isSelected = isMulti && selectedMulti.includes(opt);
-                    return (
+                <div className="mt-3 space-y-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {msg.options.map((opt) => {
+                      const isMulti = currentQ?.multi;
+                      const isSelected = isMulti && selectedMulti.includes(opt);
+                      return (
+                        <button
+                          key={opt}
+                          onClick={() => handleSelect(opt)}
+                          className={`text-[12px] font-medium px-3 py-1.5 rounded-full border transition-all ${
+                            isSelected
+                              ? "bg-violet-100 border-violet-300 text-violet-700"
+                              : "bg-white border-[#e8e8e5] text-[#1a1a1a] hover:border-violet-300 hover:bg-violet-50"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      );
+                    })}
+                    {currentQ?.multi && selectedMulti.length > 0 && (
                       <button
-                        key={opt}
-                        onClick={() => handleSelect(opt)}
-                        className={`text-[12px] font-medium px-3 py-1.5 rounded-full border transition-all ${
-                          isSelected
-                            ? "bg-violet-100 border-violet-300 text-violet-700"
-                            : "bg-white border-[#e8e8e5] text-[#1a1a1a] hover:border-violet-300 hover:bg-violet-50"
-                        }`}
+                        onClick={confirmMulti}
+                        className="text-[12px] font-semibold px-3 py-1.5 rounded-full bg-violet-600 text-white hover:bg-violet-700 transition-colors flex items-center gap-1"
                       >
-                        {opt}
+                        Continue <ArrowRight className="w-3 h-3" />
                       </button>
-                    );
-                  })}
-                  {currentQ?.multi && selectedMulti.length > 0 && (
+                    )}
+                  </div>
+
+                  {/* Custom input toggle */}
+                  {msg.allowCustom && !showCustomInput && (
                     <button
-                      onClick={confirmMulti}
-                      className="text-[12px] font-semibold px-3 py-1.5 rounded-full bg-violet-600 text-white hover:bg-violet-700 transition-colors flex items-center gap-1"
+                      onClick={() => setShowCustomInput(true)}
+                      className="text-[11px] font-medium text-violet-600 hover:text-violet-700 flex items-center gap-1 transition-colors mt-1"
                     >
-                      Continue <ArrowRight className="w-3 h-3" />
+                      <Edit3 className="w-3 h-3" />
+                      Enter a different amount
                     </button>
+                  )}
+
+                  {/* Custom input field */}
+                  {msg.allowCustom && showCustomInput && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        ref={customInputRef}
+                        type="number"
+                        value={customValue}
+                        onChange={(e) => setCustomValue(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleCustomSubmit()}
+                        placeholder={msg.customPlaceholder || "Enter value"}
+                        className="flex-1 text-[12px] border border-[#e8e8e5] rounded-lg px-3 py-1.5 focus:outline-none focus:border-violet-300 focus:ring-1 focus:ring-violet-100 bg-white"
+                      />
+                      <button
+                        onClick={handleCustomSubmit}
+                        disabled={!customValue.trim()}
+                        className="text-[12px] font-semibold px-3 py-1.5 rounded-lg bg-[#1a1a1a] text-white hover:bg-[#333] transition-colors disabled:opacity-40"
+                      >
+                        Submit
+                      </button>
+                    </div>
                   )}
                 </div>
               )}

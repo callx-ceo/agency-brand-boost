@@ -22,6 +22,10 @@ import {
   Users,
   CheckCircle2,
 } from "lucide-react";
+import ProfileTab from "./website/ProfileTab";
+import ContactTab from "./website/ContactTab";
+import CoverageTab from "./website/CoverageTab";
+import ReviewsTab from "./website/ReviewsTab";
 
 type WebsiteTab = "overview" | "profile" | "contact" | "coverage" | "reviews";
 type DeviceMode = "desktop" | "mobile";
@@ -978,10 +982,10 @@ const AgentMyWebsiteView: React.FC = () => {
           {ActivityAndReviewsRow}
         </>
       )}
-      {activeTab === "profile" && <PlaceholderTab name="Profile" />}
-      {activeTab === "contact" && <PlaceholderTab name="Contact" />}
-      {activeTab === "coverage" && <PlaceholderTab name="Coverage" />}
-      {activeTab === "reviews" && <PlaceholderTab name="Reviews" />}
+      {activeTab === "profile" && <ProfileTab />}
+      {activeTab === "contact" && <ContactTab />}
+      {activeTab === "coverage" && <CoverageTab />}
+      {activeTab === "reviews" && <ReviewsTab />}
     </div>
   );
 };

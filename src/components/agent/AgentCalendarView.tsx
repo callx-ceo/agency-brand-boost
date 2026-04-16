@@ -239,19 +239,14 @@ const AgentCalendarView = () => {
 
       {/* No connections banner */}
       <Card className="border-border/60 bg-muted/20">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-              <CalendarDays className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">No calendars connected</p>
-              <p className="text-xs text-muted-foreground">Connect your third-party calendar(s) to sync bookings and check availability</p>
-            </div>
+        <CardContent className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+            <CalendarDays className="w-5 h-5 text-amber-600" />
           </div>
-          <Button size="sm" variant="outline" onClick={() => setShowSettings(true)}>
-            Connect
-          </Button>
+          <div>
+            <p className="text-sm font-medium text-foreground">No calendars connected</p>
+            <p className="text-xs text-muted-foreground">Connect your third-party calendar(s) to sync bookings and check availability</p>
+          </div>
         </CardContent>
       </Card>
 

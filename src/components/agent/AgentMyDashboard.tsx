@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
   Phone, ArrowUpRight, ArrowDownRight,
   Trophy, Flame, Brain, PhoneIncoming, PhoneOutgoing,
-  PhoneMissed, ChevronRight, FileText, Play, Sparkles
+  PhoneMissed, ChevronRight, FileText, Play, Sparkles,
+  MessageSquare, Mail, Wand2
 } from "lucide-react";
 
 const copilotMessages = [

@@ -126,9 +126,23 @@ const AgentMyDashboard = () => {
               <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Active</span>
             </div>
             <p className="text-[13px] text-[#1a1a1a] leading-relaxed">
-              {greeting}, Benjamin. You have <span className="font-semibold">4 hot leads</span> worth $18.2K, <span className="font-semibold">1 pending app</span> for Priya Nambiar, and you're <span className="text-emerald-600 font-semibold">$860 away</span> from your daily goal. I'd start with Michael Hayden — his follow-up window closes today.
+              {greeting}, Benjamin. You're <span className="text-emerald-600 font-semibold">$860 away</span> from your daily goal. Here's your priority stack:
             </p>
-            <p className="text-[12px] text-[#8a8a86] mt-2 flex items-center gap-1.5">
+            <ol className="mt-2.5 space-y-1.5 text-[13px] text-[#1a1a1a]">
+              <li className="flex items-start gap-2">
+                <span className="text-[11px] font-bold text-white bg-red-500 rounded w-4 h-4 flex items-center justify-center shrink-0 mt-0.5">1</span>
+                <span><span className="font-semibold">Call Michael Hayden</span> — quoted $5K, follow-up window closes today</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[11px] font-bold text-white bg-amber-500 rounded w-4 h-4 flex items-center justify-center shrink-0 mt-0.5">2</span>
+                <span><span className="font-semibold">Fix Sandra Okonkwo's data</span> — underwriting will reject without it</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[11px] font-bold text-white bg-violet-500 rounded w-4 h-4 flex items-center justify-center shrink-0 mt-0.5">3</span>
+                <span><span className="font-semibold">Submit Priya Nambiar's app</span> — 6 of 8 fields already pre-filled</span>
+              </li>
+            </ol>
+            <p className="text-[12px] text-[#8a8a86] mt-3 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
               {timeNudge}
             </p>

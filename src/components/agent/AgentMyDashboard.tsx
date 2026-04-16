@@ -449,8 +449,8 @@ const AgentMyDashboard = () => {
           </section>
         </div>
       </div>
+      </div>
 
-      <GoalBuilderModal
         open={goalBuilderOpen}
         onClose={() => setGoalBuilderOpen(false)}
         onPlanActivated={(plan) => setActivePlan(plan)}

@@ -80,7 +80,7 @@ const AgentHistoryView = () => {
     <div className="space-y-4">
       {/* Header with shortcuts */}
       <div className="flex items-center justify-between">
-        <h1 className="text-[22px] font-semibold tracking-tight text-[#1a1a1a]">Call History</h1>
+        <h1 className="text-[22px] font-semibold tracking-tight text-[#1a1a1a]">My History</h1>
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-1.5 text-[12px] font-medium text-[#1a1a1a] bg-white border border-[#e8e8e5] hover:border-[#d0d0cc] px-3 py-1.5 rounded-lg transition-colors">
             <Phone className="w-3.5 h-3.5" /> Callback Queue

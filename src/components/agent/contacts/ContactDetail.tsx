@@ -101,7 +101,12 @@ const ContactDetail = ({ contact, onBack }: ContactDetailProps) => {
 
       {/* Two-column layout */}
       <div className="flex flex-1 overflow-hidden">
-        <ContactLeftPanel contact={contact} />
+        <ContactLeftPanel
+          contact={contact}
+          onCall={() => setCallOpen(true)}
+          onSms={() => setSmsOpen(true)}
+          onEmail={() => setEmailOpen(true)}
+        />
 
         {/* Right main area */}
         <div className="flex-1 flex flex-col overflow-hidden">

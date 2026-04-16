@@ -42,6 +42,7 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<Phase>("analyzing");
   const [selectedDisposition, setSelectedDisposition] = useState<string | null>(null);
+  const [showOtherOptions, setShowOtherOptions] = useState(false);
   const [suggestedDisposition] = useState("callback");
 
   // Progress bar
@@ -146,48 +147,79 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
 
         {/* Phase 2: Disposition */}
         {phase === "disposition" && (
-          <div className="w-full max-w-lg animate-fade-in">
+          <div className="w-full max-w-md animate-fade-in">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium mb-3">
-                <Sparkles className="w-3 h-3" />
-                AI Suggestion: {dispositions.find(d => d.id === suggestedDisposition)?.label}
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">
-                Select call disposition
+              <h2 className="text-lg font-semibold text-foreground mb-1">
+                AI Suggested Disposition
               </h2>
+              <p className="text-sm text-muted-foreground">
+                Based on the call analysis, we recommend:
+              </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mb-3">
-              {dispositions.slice(0, 3).map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => handleDispositionSelect(d.id)}
-                  className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                    selectedDisposition === d.id ? d.selectedColor : d.color,
-                    d.id === suggestedDisposition && !selectedDisposition && "ring-2 ring-amber-400/40"
-                  )}
-                >
-                  {d.icon}
-                  <span className="text-xs font-medium">{d.label}</span>
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {dispositions.slice(3).map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => handleDispositionSelect(d.id)}
-                  className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                    selectedDisposition === d.id ? d.selectedColor : d.color,
-                  )}
-                >
-                  {d.icon}
-                  <span className="text-xs font-medium">{d.label}</span>
-                </button>
-              ))}
-            </div>
+            {/* Suggested disposition - prominent */}
+            {!showOtherOptions && (
+              <div className="space-y-4 animate-fade-in">
+                <div className={cn(
+                  "flex items-center gap-4 p-5 rounded-xl border-2 transition-all",
+                  dispositions.find(d => d.id === suggestedDisposition)?.selectedColor
+                )}>
+                  <div className="p-2.5 rounded-lg bg-white/80">
+                    {dispositions.find(d => d.id === suggestedDisposition)?.icon}
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-base font-semibold text-foreground">
+                      {dispositions.find(d => d.id === suggestedDisposition)?.label}
+                    </span>
+                    <p className="text-xs text-muted-foreground mt-0.5">Customer showed interest but didn't commit</p>
+                  </div>
+                  <Badge className="bg-amber-100 text-amber-800 border-0 text-[10px]">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    AI Pick
+                  </Badge>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white h-10"
+                    onClick={() => handleDispositionSelect(suggestedDisposition)}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Accept
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-10"
+                    onClick={() => setShowOtherOptions(true)}
+                  >
+                    Change
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Other options - shown when "Change" is clicked */}
+            {showOtherOptions && (
+              <div className="space-y-3 animate-fade-in">
+                {dispositions.map((d) => (
+                  <button
+                    key={d.id}
+                    onClick={() => handleDispositionSelect(d.id)}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all text-left",
+                      selectedDisposition === d.id ? d.selectedColor : d.color,
+                      d.id === suggestedDisposition && "relative"
+                    )}
+                  >
+                    {d.icon}
+                    <span className="text-sm font-medium">{d.label}</span>
+                    {d.id === suggestedDisposition && (
+                      <Badge className="ml-auto bg-amber-100 text-amber-700 border-0 text-[10px]">Suggested</Badge>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

@@ -20,7 +20,7 @@ const SuccessPlanReview = ({ plan, onConfirm, onBack }: SuccessPlanReviewProps) 
     const workingDays = p.workDays * 4;
     p.dailyCalls = Math.ceil(p.callsRequired / workingDays);
     p.hoursPerDay = Math.round((p.dailyCalls * 15) / 60 * 10) / 10;
-    p.monthlyInvestment = Math.round(p.callsRequired * 3.5);
+    p.monthlyInvestment = Math.round(p.callsRequired * 75); // $65-85 per call avg
     setLocalPlan(p);
   };
 

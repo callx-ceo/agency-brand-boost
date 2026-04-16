@@ -200,7 +200,7 @@ const GoalBuilderChat = ({ onPlanGenerated }: GoalBuilderChatProps) => {
     const workingDaysMonth = workDays * 4;
     const dailyCalls = Math.ceil(callsRequired / workingDaysMonth);
     const hoursPerDay = Math.round((dailyCalls * 15) / 60 * 10) / 10;
-    const monthlyInvestment = Math.round(callsRequired * 3.5);
+    const monthlyInvestment = Math.round(callsRequired * 75); // $65-85 per call avg
 
     return {
       incomeGoal,

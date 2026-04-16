@@ -224,7 +224,13 @@ export const NotesTab = () => {
 
 // ── Applications Tab ──
 export const ApplicationsTab = () => (
-  <div className="p-4">
+  <div className="p-4 space-y-4">
+    <div className="flex items-center justify-between">
+      <h3 className="text-sm font-semibold">Applications</h3>
+      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1">
+        <Plus className="w-3.5 h-3.5" /> Add Application
+      </Button>
+    </div>
     <div className="border rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
         <div>

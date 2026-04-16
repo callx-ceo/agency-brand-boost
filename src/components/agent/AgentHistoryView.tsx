@@ -70,7 +70,7 @@ const AgentHistoryView = () => {
       if (hideIrrelevant && c.relevance < 80) return false;
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
-        return c.agent.toLowerCase().includes(term) || c.disposition.toLowerCase().includes(term) || c.process.toLowerCase().includes(term);
+        return c.contactName.toLowerCase().includes(term) || c.callerId.includes(term) || c.disposition.toLowerCase().includes(term) || c.process.toLowerCase().includes(term);
       }
       return true;
     })

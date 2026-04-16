@@ -67,35 +67,39 @@ const PostCallScreen = ({ onTakeNextCall, onClose }: PostCallScreenProps) => {
   const [suggestedDisposition] = useState("callback");
   const feedEndRef = useRef<HTMLDivElement>(null);
 
-  // Progress bar — fills over ~12 seconds
+  const ANALYSIS_DURATION = 60; // seconds
+
+  // Progress bar — fills over 60 seconds
   useEffect(() => {
     if (phase !== "analyzing") return;
+    const start = Date.now();
     const interval = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 100) { clearInterval(interval); return 100; }
-        return p + 0.85;
-      });
-    }, 100);
+      const elapsed = (Date.now() - start) / 1000;
+      const pct = Math.min((elapsed / ANALYSIS_DURATION) * 100, 100);
+      setProgress(pct);
+      if (pct >= 100) clearInterval(interval);
+    }, 200);
     return () => clearInterval(interval);
   }, [phase]);
 
-  // Rotate status text every 3s
+  // Rotate status text every 4s
   useEffect(() => {
     if (phase !== "analyzing") return;
     const interval = setInterval(() => {
       setStatusIndex((i) => (i + 1) % statusMessages.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval);
   }, [phase]);
 
-  // Feed items appear one by one
+  // Feed items spaced evenly across 60s
   useEffect(() => {
     if (phase !== "analyzing") return;
     const timers: ReturnType<typeof setTimeout>[] = [];
+    const interval = (ANALYSIS_DURATION * 1000) / (feedItems.length + 1);
     feedItems.forEach((_, idx) => {
       timers.push(setTimeout(() => {
         setVisibleFeedItems((prev) => [...prev, idx]);
-      }, 1500 + idx * 1800));
+      }, interval * (idx + 1)));
     });
     return () => timers.forEach(clearTimeout);
   }, [phase]);

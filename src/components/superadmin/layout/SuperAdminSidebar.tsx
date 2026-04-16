@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Building2, Users, Megaphone, Globe, BarChart3, Shield, Activity,
   UserCheck, Settings, TrendingUp, PhoneCall, DollarSign, FileText, ChevronDown,
   ChevronRight, Hash, ContactRound, UserCog, Target, Package, ClipboardList, Gift,
-  Bell, Palette, Wallet
+  Bell, Palette, Wallet, CalendarDays
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -54,7 +54,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
         { id: "workspace-history", label: "My History", icon: <Activity className="w-4 h-4" /> },
         { id: "workspace-contacts", label: "My Contacts", icon: <ContactRound className="w-4 h-4" /> },
         { id: "workspace-applications", label: "My Applications", icon: <FileText className="w-4 h-4" /> },
-        { id: "workspace-calendar", label: "My Calendar", icon: <ClipboardList className="w-4 h-4" /> },
+        { id: "workspace-calendar", label: "My Calendar", icon: <CalendarDays className="w-4 h-4" /> },
         { id: "workspace-referrals", label: "My Referrals", icon: <Gift className="w-4 h-4" /> },
         { id: "workspace-settings", label: "My Settings", icon: <Settings className="w-4 h-4" /> },
         { id: "workspace-support", label: "My Support", icon: <Shield className="w-4 h-4" /> },

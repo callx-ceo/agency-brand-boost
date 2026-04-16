@@ -386,6 +386,17 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
   return (
     <div className="flex flex-col h-full">
       {renderTabContent()}
+
+      <Dialog open={showPostCall} onOpenChange={(open) => { if (!open) setShowPostCall(false); }}>
+        <DialogContent className="max-w-[95vw] w-[95vw] h-[90vh] max-h-[90vh] p-0 overflow-hidden">
+          <PostCallScreen
+            onTakeNextCall={() => setShowPostCall(false)}
+            onReviewBreakdown={() => {}}
+            onViewTrends={() => {}}
+            onClose={() => setShowPostCall(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

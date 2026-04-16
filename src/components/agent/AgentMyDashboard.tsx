@@ -86,6 +86,8 @@ const scoreColor = (s: number) =>
 const AgentMyDashboard = () => {
   const [msgIndex, setMsgIndex] = useState(0);
   const [fade, setFade] = useState(true);
+  const [goalBuilderOpen, setGoalBuilderOpen] = useState(false);
+  const [activePlan, setActivePlan] = useState<SuccessPlan | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {

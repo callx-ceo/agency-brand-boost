@@ -45,14 +45,6 @@ const smartActions = [
     primaryBtn: { label: "View Contact" },
   },
   {
-    priority: "live",
-    type: "Inbound call",
-    name: "Unknown Caller",
-    detail: "Est. $22/mo · Final expense",
-    primaryBtn: { label: "Take Call", icon: Phone },
-    hideCommunication: true,
-  },
-  {
     priority: "info",
     type: "Low score",
     name: "James Rutherford",

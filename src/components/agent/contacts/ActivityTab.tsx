@@ -116,8 +116,8 @@ const ActivityTab = () => {
             className="text-sm h-9 flex-1"
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
-          <Button variant="outline" size="sm" className="h-9 text-xs gap-1">
-            <Sparkles className="w-3.5 h-3.5" /> AI suggest
+          <Button variant="outline" size="sm" className="h-9 text-xs gap-1" onClick={handleAISuggest} disabled={isAiLoading}>
+            <Sparkles className={`w-3.5 h-3.5 ${isAiLoading ? "animate-spin" : ""}`} /> {isAiLoading ? "Thinking..." : "AI Suggest"}
           </Button>
           <Button size="sm" className="h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-xs" onClick={handleSend}>
             Send

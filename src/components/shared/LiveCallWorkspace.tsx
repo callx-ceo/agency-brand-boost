@@ -22,14 +22,13 @@ import {
   User,
   MapPin,
   Clock,
-  History,
-  Contact,
-  ClipboardList,
-  Gift,
-  LifeBuoy,
 } from "lucide-react";
 
-type WorkspaceTab = "live-calls" | "my-history" | "my-contacts" | "my-applications" | "my-referrals" | "my-settings" | "my-support";
+export type WorkspaceTab = "live-calls" | "my-history" | "my-contacts" | "my-applications" | "my-referrals" | "my-settings" | "my-support";
+
+interface LiveCallWorkspaceProps {
+  activeTab?: WorkspaceTab;
+}
 
 interface ScriptStep {
   id: number;
@@ -38,18 +37,7 @@ interface ScriptStep {
   fields: { label: string; type: string; placeholder?: string; halfWidth?: boolean }[];
 }
 
-const workspaceTabs = [
-  { id: "live-calls" as WorkspaceTab, label: "Live Calls", icon: Phone },
-  { id: "my-history" as WorkspaceTab, label: "My History", icon: History },
-  { id: "my-contacts" as WorkspaceTab, label: "My Contacts", icon: Contact },
-  { id: "my-applications" as WorkspaceTab, label: "My Applications", icon: ClipboardList },
-  { id: "my-referrals" as WorkspaceTab, label: "My Referrals", icon: Gift },
-  { id: "my-settings" as WorkspaceTab, label: "My Settings", icon: Settings },
-  { id: "my-support" as WorkspaceTab, label: "My Support", icon: LifeBuoy },
-];
-
-const LiveCallWorkspace = () => {
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>("live-calls");
+const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps) => {
   const [isLive, setIsLive] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [callDuration] = useState("00:00:00");
@@ -386,28 +374,6 @@ const LiveCallWorkspace = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Workspace Subtabs */}
-      <div className="flex items-center gap-1 mb-4 border-b pb-2 overflow-x-auto">
-        {workspaceTabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                activeTab === tab.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tab Content */}
       {renderTabContent()}
     </div>
   );

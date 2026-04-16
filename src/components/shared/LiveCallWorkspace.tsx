@@ -40,6 +40,7 @@ interface ScriptStep {
 
 const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps) => {
   const [isLive, setIsLive] = useState(false);
+  const [showPostCall, setShowPostCall] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [callDuration] = useState("00:00:00");
   const [formData, setFormData] = useState<Record<string, string>>({});

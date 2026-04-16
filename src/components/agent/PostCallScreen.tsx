@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import {
   Brain,
   DollarSign,
@@ -17,7 +16,7 @@ import {
   Phone,
   TrendingUp,
   Clock,
-  ChevronRight,
+  
   Sparkles,
   Shield,
   Heart,
@@ -50,7 +49,7 @@ const rotatingMessages = [
   "This call may still convert…",
 ];
 
-const PostCallScreen = ({ onTakeNextCall, onReviewBreakdown, onViewTrends, onClose }: PostCallScreenProps) => {
+const PostCallScreen = ({ onTakeNextCall, onReviewBreakdown, onViewTrends }: PostCallScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
   const [visibleInsights, setVisibleInsights] = useState(0);

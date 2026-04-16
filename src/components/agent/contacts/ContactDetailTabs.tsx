@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, MessageSquare, Sparkles, Play, FileText } from "lucide-react";
+import { Phone, Mail, Sparkles, Play } from "lucide-react";
 
 // ── Emails Tab ──
 export const EmailsTab = () => {

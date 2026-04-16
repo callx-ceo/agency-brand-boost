@@ -250,8 +250,7 @@ const AgentCalendarView = () => {
             </div>
           </div>
           <Button size="sm" variant="outline" onClick={() => setShowSettings(true)}>
-            <Plus className="w-4 h-4 mr-1" />
-            Add New
+            Connect
           </Button>
         </CardContent>
       </Card>

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import PostCallScreen from "@/components/agent/PostCallScreen";
 import {
   Phone,
   PhoneOff,
@@ -39,6 +40,7 @@ interface ScriptStep {
 
 const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps) => {
   const [isLive, setIsLive] = useState(false);
+  const [showPostCall, setShowPostCall] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [callDuration] = useState("00:00:00");
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -121,7 +123,18 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
     }
   };
 
-  const renderLiveCallsContent = () => (
+  const renderLiveCallsContent = () => {
+    if (showPostCall) {
+      return (
+        <PostCallScreen
+          onTakeNextCall={() => setShowPostCall(false)}
+          onReviewBreakdown={() => {}}
+          onViewTrends={() => {}}
+        />
+      );
+    }
+
+    return (
     <div className="flex flex-col h-full min-h-[calc(100vh-200px)]">
       {/* Top Control Bar */}
       <div className="flex items-center justify-between gap-4 mb-4">
@@ -155,6 +168,11 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
             />
             <span className="text-sm font-medium">Go Live</span>
           </div>
+          {isLive && (
+            <Button size="sm" variant="destructive" className="ml-2 text-xs" onClick={() => { setIsLive(false); setShowPostCall(true); }}>
+              End Call
+            </Button>
+          )}
         </div>
 
         {/* Right: Stats */}
@@ -370,7 +388,8 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <div className="flex flex-col h-full">

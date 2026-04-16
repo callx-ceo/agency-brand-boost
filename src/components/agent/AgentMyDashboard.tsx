@@ -105,7 +105,8 @@ const AgentMyDashboard = () => {
   const [hasPhoneNumber] = useState(false);
   const [hasCompletedProfile] = useState(false);
 
-  // Notifications are now consolidated in the top-level AlertBanner
+  return (
+    <div className="h-full overflow-auto bg-[#fafaf9]">
       <div className="px-8 py-6">
       {/* HEADER */}
       <div className="flex items-end justify-between mb-5">

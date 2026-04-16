@@ -52,4 +52,11 @@ export type SuperAdminViewType =
   | 'notification-templates'
   | 'notification-branding-overview'
   | 'settings'
-  | 'live-calls';
+  | 'live-calls'
+  | 'workspace-live-calls'
+  | 'workspace-history'
+  | 'workspace-contacts'
+  | 'workspace-applications'
+  | 'workspace-referrals'
+  | 'workspace-settings'
+  | 'workspace-support';

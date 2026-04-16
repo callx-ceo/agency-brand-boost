@@ -24,7 +24,19 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       label: "Dashboard",
       items: [
         { id: "dashboard", label: "Dashboard", icon: Home },
-        { id: "go-live", label: "My Workspace", icon: Headphones },
+      ],
+    },
+    {
+      key: "workspace",
+      label: "My Workspace",
+      items: [
+        { id: "workspace-live-calls", label: "Live Calls", icon: Phone },
+        { id: "workspace-history", label: "My History", icon: History },
+        { id: "workspace-contacts", label: "My Contacts", icon: Contact },
+        { id: "workspace-applications", label: "My Applications", icon: FileText },
+        { id: "workspace-referrals", label: "My Referrals", icon: Gift },
+        { id: "workspace-settings", label: "My Settings", icon: Settings },
+        { id: "workspace-support", label: "My Support", icon: Headphones },
       ],
     },
     {

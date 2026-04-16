@@ -32,6 +32,7 @@ import EditLeadModal from "./EditLeadModal";
 import LiveCallWorkspace, { WorkspaceTab } from "../shared/LiveCallWorkspace";
 
 const agentWorkspaceTabMap: Record<string, WorkspaceTab> = {
+  'workspace-dashboard': 'my-dashboard',
   'workspace-live-calls': 'live-calls',
   'workspace-history': 'my-history',
   'workspace-contacts': 'my-contacts',

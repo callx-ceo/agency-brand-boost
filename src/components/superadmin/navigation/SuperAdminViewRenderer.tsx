@@ -43,6 +43,7 @@ import PlatformSettings from "../settings/PlatformSettings";
 import LiveCallWorkspace, { WorkspaceTab } from "../../shared/LiveCallWorkspace";
 
 const workspaceTabMap: Record<string, WorkspaceTab> = {
+  'workspace-dashboard': 'my-dashboard',
   'workspace-live-calls': 'live-calls',
   'workspace-history': 'my-history',
   'workspace-contacts': 'my-contacts',

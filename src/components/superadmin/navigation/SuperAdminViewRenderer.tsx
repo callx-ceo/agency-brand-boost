@@ -236,6 +236,7 @@ const SuperAdminViewRenderer = ({
       return <PlatformSettings onBackToDashboard={handleBackToDashboard} />;
     
     case 'live-calls':
+    case 'workspace-dashboard':
     case 'workspace-live-calls':
     case 'workspace-history':
     case 'workspace-contacts':

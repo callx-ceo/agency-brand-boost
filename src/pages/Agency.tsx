@@ -92,6 +92,7 @@ const Agency = () => {
           </div>
         );
       case "go-live":
+      case "workspace-dashboard":
       case "workspace-live-calls":
       case "workspace-history":
       case "workspace-contacts":

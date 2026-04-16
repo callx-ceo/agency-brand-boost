@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Target, Clock, Phone, DollarSign, TrendingUp, CheckCircle2, Sparkles } from "lucide-react";
+import { Target, Clock, Phone, DollarSign, TrendingUp, CheckCircle2, Sparkles, Calendar } from "lucide-react";
 import type { SuccessPlan } from "./GoalBuilderChat";
 
 interface SuccessPlanReviewProps {
@@ -20,66 +20,15 @@ const SuccessPlanReview = ({ plan, onConfirm, onBack }: SuccessPlanReviewProps) 
     const workingDays = p.workDays * 4;
     p.dailyCalls = Math.ceil(p.callsRequired / workingDays);
     p.hoursPerDay = Math.round((p.dailyCalls * 15) / 60 * 10) / 10;
-    p.monthlyInvestment = Math.round(p.callsRequired * 75); // $65-85 per call avg
+    p.monthlyInvestment = Math.round(p.callsRequired * 75);
     setLocalPlan(p);
   };
 
-  const metrics = [
-    {
-      key: "incomeGoal",
-      icon: DollarSign,
-      label: "Monthly Income Goal",
-      value: `$${localPlan.incomeGoal.toLocaleString()}`,
-      editable: true,
-      color: "text-emerald-600 bg-emerald-50",
-      inputType: "number" as const,
-    },
-    {
-      key: "policiesNeeded",
-      icon: Target,
-      label: "Policies Needed",
-      value: `${localPlan.policiesNeeded} policies`,
-      sublabel: `@ $${localPlan.avgPremium} avg premium`,
-      editable: false,
-      color: "text-blue-600 bg-blue-50",
-    },
-    {
-      key: "callsRequired",
-      icon: Phone,
-      label: "Total Calls This Month",
-      value: `${localPlan.callsRequired.toLocaleString()} calls`,
-      sublabel: `${localPlan.closeRate}% close rate`,
-      editable: false,
-      color: "text-violet-600 bg-violet-50",
-    },
-    {
-      key: "dailyCalls",
-      icon: TrendingUp,
-      label: "Daily Call Target",
-      value: `${localPlan.dailyCalls} calls/day`,
-      sublabel: `${localPlan.workDays} days/week`,
-      editable: false,
-      color: "text-amber-600 bg-amber-50",
-    },
-    {
-      key: "hoursPerDay",
-      icon: Clock,
-      label: "Hours of Active Calling",
-      value: `${localPlan.hoursPerDay} hrs/day`,
-      sublabel: "~15 min avg per call",
-      editable: false,
-      color: "text-sky-600 bg-sky-50",
-    },
-    {
-      key: "monthlyInvestment",
-      icon: DollarSign,
-      label: "Estimated Monthly Investment",
-      value: `$${localPlan.monthlyInvestment.toLocaleString()}`,
-      sublabel: "Call credits at current bid rates",
-      editable: false,
-      color: "text-rose-600 bg-rose-50",
-    },
-  ];
+  const weeksInMonth = 4;
+  const weeklyIncome = Math.round(localPlan.incomeGoal / weeksInMonth);
+  const weeklyPolicies = Math.ceil(localPlan.policiesNeeded / weeksInMonth);
+  const weeklyCalls = Math.ceil(localPlan.callsRequired / weeksInMonth);
+  const weeklyInvestment = Math.round(localPlan.monthlyInvestment / weeksInMonth);
 
   const editableInputs = [
     { key: "incomeGoal", label: "Income Goal ($)", value: localPlan.incomeGoal },
@@ -121,20 +70,79 @@ const SuccessPlanReview = ({ plan, onConfirm, onBack }: SuccessPlanReviewProps) 
         ))}
       </div>
 
-      {/* Calculated Results */}
+      {/* Monthly → Weekly Breakdown */}
       <div className="space-y-2">
-        <p className="text-[11px] uppercase tracking-wider font-semibold text-[#8a8a86] px-1">What it takes</p>
-        {metrics.filter(m => !m.editable).map((m) => (
-          <div key={m.key} className="flex items-center gap-3 bg-white border border-[#e8e8e5] rounded-xl px-4 py-3">
-            <div className={`w-8 h-8 rounded-lg ${m.color} flex items-center justify-center shrink-0`}>
-              <m.icon className="w-4 h-4" />
+        <div className="flex items-center gap-2 px-1">
+          <Calendar className="w-3.5 h-3.5 text-[#8a8a86]" />
+          <p className="text-[11px] uppercase tracking-wider font-semibold text-[#8a8a86]">Monthly → Weekly Breakdown</p>
+        </div>
+        <div className="bg-white border border-[#e8e8e5] rounded-xl overflow-hidden">
+          <div className="grid grid-cols-2 divide-x divide-[#e8e8e5]">
+            {/* Monthly column */}
+            <div className="p-4">
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-[#8a8a86] mb-3">This Month</p>
+              <div className="space-y-3">
+                <div>
+                  <div className="text-[20px] font-bold text-emerald-600">${localPlan.incomeGoal.toLocaleString()}</div>
+                  <div className="text-[11px] text-[#8a8a86]">income target</div>
+                </div>
+                <div className="flex items-baseline gap-4">
+                  <div>
+                    <div className="text-[16px] font-semibold text-[#1a1a1a]">{localPlan.policiesNeeded}</div>
+                    <div className="text-[10px] text-[#8a8a86]">policies</div>
+                  </div>
+                  <div>
+                    <div className="text-[16px] font-semibold text-[#1a1a1a]">{localPlan.callsRequired.toLocaleString()}</div>
+                    <div className="text-[10px] text-[#8a8a86]">calls</div>
+                  </div>
+                  <div>
+                    <div className="text-[16px] font-semibold text-[#1a1a1a]">${localPlan.monthlyInvestment.toLocaleString()}</div>
+                    <div className="text-[10px] text-[#8a8a86]">investment</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <p className="text-[13px] font-semibold text-[#1a1a1a]">{m.value}</p>
-              <p className="text-[11px] text-[#8a8a86]">{m.label}{m.sublabel ? ` · ${m.sublabel}` : ""}</p>
+            {/* Weekly column */}
+            <div className="p-4 bg-[#fafaf9]">
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-[#8a8a86] mb-3">Each Week</p>
+              <div className="space-y-3">
+                <div>
+                  <div className="text-[20px] font-bold text-blue-600">${weeklyIncome.toLocaleString()}</div>
+                  <div className="text-[11px] text-[#8a8a86]">income target</div>
+                </div>
+                <div className="flex items-baseline gap-4">
+                  <div>
+                    <div className="text-[16px] font-semibold text-[#1a1a1a]">{weeklyPolicies}</div>
+                    <div className="text-[10px] text-[#8a8a86]">policies</div>
+                  </div>
+                  <div>
+                    <div className="text-[16px] font-semibold text-[#1a1a1a]">{weeklyCalls}</div>
+                    <div className="text-[10px] text-[#8a8a86]">calls</div>
+                  </div>
+                  <div>
+                    <div className="text-[16px] font-semibold text-[#1a1a1a]">${weeklyInvestment.toLocaleString()}</div>
+                    <div className="text-[10px] text-[#8a8a86]">investment</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        ))}
+          {/* Daily row */}
+          <div className="border-t border-[#e8e8e5] px-4 py-3 bg-[#f5f4f1]">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="text-[11px] uppercase tracking-wider font-semibold text-[#8a8a86]">Daily</div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[13px] font-semibold text-[#1a1a1a]">{localPlan.dailyCalls} calls</span>
+                  <span className="text-[11px] text-[#8a8a86]">·</span>
+                  <span className="text-[13px] font-semibold text-[#1a1a1a]">{localPlan.hoursPerDay} hrs</span>
+                  <span className="text-[11px] text-[#8a8a86]">·</span>
+                  <span className="text-[13px] font-semibold text-[#1a1a1a]">{localPlan.workDays} days/wk</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* AI Insight */}

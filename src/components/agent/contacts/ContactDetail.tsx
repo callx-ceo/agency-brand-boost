@@ -30,6 +30,9 @@ const ContactDetail = ({ contact, onBack }: ContactDetailProps) => {
   const [activeTab, setActiveTab] = useState("smart");
   const [pendingStage, setPendingStage] = useState(contact.stage);
   const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
+  const [callOpen, setCallOpen] = useState(false);
+  const [smsOpen, setSmsOpen] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
   const { toast } = useToast();
 
   const hasUnsavedStage = pendingStage !== contact.stage;

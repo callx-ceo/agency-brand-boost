@@ -49,6 +49,7 @@ const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps)
       key: "workspace",
       label: "My Workspace",
       items: [
+        { id: "workspace-dashboard", label: "My Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
         { id: "workspace-live-calls", label: "Live Calls", icon: <PhoneCall className="w-4 h-4" /> },
         { id: "workspace-history", label: "My History", icon: <Activity className="w-4 h-4" /> },
         { id: "workspace-contacts", label: "My Contacts", icon: <ContactRound className="w-4 h-4" /> },

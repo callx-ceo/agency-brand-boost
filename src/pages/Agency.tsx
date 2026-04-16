@@ -16,6 +16,7 @@ import { AgencyReferralTab } from "../components/settings/AgencyReferralTab";
 import LiveCallWorkspace, { WorkspaceTab } from "../components/shared/LiveCallWorkspace";
 
 const workspaceTabMap: Record<string, WorkspaceTab> = {
+  'workspace-dashboard': 'my-dashboard',
   'workspace-live-calls': 'live-calls',
   'workspace-history': 'my-history',
   'workspace-contacts': 'my-contacts',
@@ -91,6 +92,7 @@ const Agency = () => {
           </div>
         );
       case "go-live":
+      case "workspace-dashboard":
       case "workspace-live-calls":
       case "workspace-history":
       case "workspace-contacts":

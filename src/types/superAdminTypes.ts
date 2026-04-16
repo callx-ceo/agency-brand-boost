@@ -53,6 +53,7 @@ export type SuperAdminViewType =
   | 'notification-branding-overview'
   | 'settings'
   | 'live-calls'
+  | 'workspace-dashboard'
   | 'workspace-live-calls'
   | 'workspace-history'
   | 'workspace-contacts'

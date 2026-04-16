@@ -32,6 +32,7 @@ import EditLeadModal from "./EditLeadModal";
 import LiveCallWorkspace, { WorkspaceTab } from "../shared/LiveCallWorkspace";
 
 const agentWorkspaceTabMap: Record<string, WorkspaceTab> = {
+  'workspace-dashboard': 'my-dashboard',
   'workspace-live-calls': 'live-calls',
   'workspace-history': 'my-history',
   'workspace-contacts': 'my-contacts',
@@ -179,6 +180,7 @@ const AgentDashboardActionFocused = () => {
   ];
 
   const workspaceSubItems = [
+    { icon: BarChart3, label: "My Dashboard", id: "workspace-dashboard" },
     { icon: Phone, label: "Live Calls", id: "workspace-live-calls" },
     { icon: Clock, label: "My History", id: "workspace-history" },
     { icon: Users, label: "My Contacts", id: "workspace-contacts" },

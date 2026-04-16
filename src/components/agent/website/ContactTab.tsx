@@ -7,7 +7,7 @@ import {
   inputStyle,
   labelStyle,
   helperStyle,
-  primaryBtnStyle,
+  primaryBtnStyle: _primaryBtnStyle,
   ghostBtnStyle,
   sectionLabelStyle,
 } from "./websiteTheme";

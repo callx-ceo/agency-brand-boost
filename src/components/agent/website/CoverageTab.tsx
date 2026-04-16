@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { GripVertical, ChevronDown, ChevronUp, Shield, Heart, Activity, Briefcase, Smile, TrendingUp } from "lucide-react";
+import { GripVertical, ChevronDown, ChevronUp, Shield, Heart, Activity, Briefcase, Smile, TrendingUp, type LucideIcon } from "lucide-react";
 import {
   COLORS,
   cardStyle,

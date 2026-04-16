@@ -8,6 +8,7 @@ import ContactLeftPanel from "./ContactLeftPanel";
 import SmartActionsTab from "./SmartActionsTab";
 import ActivityTab from "./ActivityTab";
 import { EmailsTab, CallsTab, ChatsTab, NotesTab, ApplicationsTab } from "./ContactDetailTabs";
+import { CallModal, SMSModal, EmailModal } from "./ContactQuickModals";
 import { useToast } from "@/hooks/use-toast";
 
 interface ContactDetailProps {

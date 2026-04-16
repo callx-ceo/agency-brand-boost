@@ -29,7 +29,7 @@ import {
   Clock,
 } from "lucide-react";
 
-export type WorkspaceTab = "live-calls" | "my-dashboard" | "my-history" | "my-contacts" | "my-applications" | "my-referrals" | "my-settings" | "my-support";
+export type WorkspaceTab = "live-calls" | "my-dashboard" | "my-history" | "my-contacts" | "my-applications" | "my-calendar" | "my-referrals" | "my-settings" | "my-support";
 
 interface LiveCallWorkspaceProps {
   activeTab?: WorkspaceTab;

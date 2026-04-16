@@ -102,12 +102,33 @@ const AgentMyDashboard = () => {
 
   const greeting = getTimeGreeting();
   const timeNudge = getTimeNudge();
-  const notifications: { text: string; action: string; onClick: () => void }[] = [];
+  const [hasPhoneNumber] = useState(false);
+  const [hasCompletedProfile] = useState(false);
+
+  const notifications: { text: string; action: string; onClick: () => void; icon?: React.ReactNode; color?: string }[] = [];
   if (!activePlan) {
     notifications.push({
       text: "You haven't set your goals yet — let Copilot build your Success Plan",
       action: "Set Goals",
       onClick: () => setGoalBuilderOpen(true),
+    });
+  }
+  if (!hasPhoneNumber) {
+    notifications.push({
+      text: "Purchase a phone number to start receiving calls and enable outbound dialing",
+      action: "Get Number →",
+      onClick: () => {},
+      icon: <Phone className="w-3.5 h-3.5 text-amber-400" />,
+      color: "amber",
+    });
+  }
+  if (!hasCompletedProfile) {
+    notifications.push({
+      text: "Complete your profile — add your phone number to receive important notifications and enable call features",
+      action: "Add now →",
+      onClick: () => {},
+      icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />,
+      color: "amber",
     });
   }
 

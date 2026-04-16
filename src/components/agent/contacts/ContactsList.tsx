@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Plus, Phone, MessageSquare, Mail } from "lucide-react";
 import { ContactItem, stages, getStageColor } from "./contactData";
+import { CallModal, SMSModal, EmailModal } from "./ContactQuickModals";
 
 interface ContactsListProps {
   contacts: ContactItem[];
@@ -14,6 +15,7 @@ const ContactsList = ({ contacts, onSelectContact }: ContactsListProps) => {
   const [search, setSearch] = useState("");
   const [activeStage, setActiveStage] = useState("All");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [activeModal, setActiveModal] = useState<{ type: "call" | "sms" | "email"; contact: ContactItem } | null>(null);
 
   const filtered = contacts.filter((c) => {
     const matchesSearch =

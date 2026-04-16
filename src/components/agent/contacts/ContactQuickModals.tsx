@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Phone, PhoneOff, Mic, MicOff, Pause, UserPlus, Send } from "lucide-react";
+import { Phone, PhoneOff, Mic, MicOff, Pause, UserPlus, Send, Sparkles } from "lucide-react";
 import { ContactItem } from "./contactData";
 import { useToast } from "@/hooks/use-toast";
 

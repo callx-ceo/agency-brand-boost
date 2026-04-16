@@ -129,6 +129,12 @@ const AgentHistoryView = () => {
                 <span className="flex items-center gap-1">Dir <ChevronDown className="w-3 h-3" /></span>
               </th>
               <th className="text-left px-3 py-2.5 font-semibold text-[#8a8a86]">
+                <span className="flex items-center gap-1">Contact <ChevronDown className="w-3 h-3" /></span>
+              </th>
+              <th className="text-left px-3 py-2.5 font-semibold text-[#8a8a86]">
+                <span className="flex items-center gap-1">Caller ID <ChevronDown className="w-3 h-3" /></span>
+              </th>
+              <th className="text-left px-3 py-2.5 font-semibold text-[#8a8a86]">
                 <span className="flex items-center gap-1">Score <ChevronDown className="w-3 h-3" /></span>
               </th>
               <th className="text-left px-3 py-2.5 font-semibold text-[#8a8a86]">

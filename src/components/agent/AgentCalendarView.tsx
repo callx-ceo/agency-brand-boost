@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,6 +14,10 @@ import {
   User,
   Video,
   FileText,
+  Info,
+  CalendarDays,
+  Mail,
+  Cloud,
 } from "lucide-react";
 
 interface CalendarEvent {
@@ -25,15 +30,24 @@ interface CalendarEvent {
   status?: "upcoming" | "completed" | "missed";
 }
 
+interface CalendarConnection {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  connected: boolean;
+}
+
 const AgentCalendarView = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [activeSettingsTab, setActiveSettingsTab] = useState("calendars");
+  const [showSettings, setShowSettings] = useState(false);
 
   const today = new Date();
   const formatDate = (d: Date) =>
     d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
-  // Mock events for selected date
   const eventsForDate: CalendarEvent[] = [
     { id: "1", title: "Follow-up: John Martinez", time: "9:00 AM", type: "follow-up", contact: "John Martinez", duration: "15 min", status: "upcoming" },
     { id: "2", title: "Policy Review Call", time: "10:30 AM", type: "call", contact: "Sarah Williams", duration: "30 min", status: "upcoming" },
@@ -56,7 +70,6 @@ const AgentCalendarView = () => {
     task: { icon: FileText, color: "bg-purple-500/10 text-purple-600", label: "Task" },
   };
 
-  // Dates with events (for dot indicators)
   const datesWithEvents = [
     new Date(today.getFullYear(), today.getMonth(), today.getDate()),
     new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
@@ -66,6 +79,145 @@ const AgentCalendarView = () => {
     new Date(today.getFullYear(), today.getMonth(), today.getDate() - 3),
   ];
 
+  const calendarConnections: CalendarConnection[] = [
+    { id: "google", name: "Google Calendar", description: "Connect your Google Calendar", icon: <CalendarDays className="w-5 h-5 text-blue-600" />, connected: false },
+    { id: "outlook", name: "Outlook Calendar", description: "Connect your Office 365, Outlook.com, live.com, or hotmail calendar", icon: <Mail className="w-5 h-5 text-blue-700" />, connected: false },
+    { id: "icloud", name: "iCloud Calendar", description: "Connect your iCloud Calendar", icon: <Cloud className="w-5 h-5 text-sky-500" />, connected: false },
+    { id: "calendly", name: "Calendly", description: "Connect your Calendly account to sync all calendly events into the system", icon: <CalendarDays className="w-5 h-5 text-blue-500" />, connected: false },
+  ];
+
+  const videoConnections = [
+    { id: "zoom", name: "Zoom", description: "Connect your Zoom account for video meetings", icon: <Video className="w-5 h-5 text-blue-600" />, connected: false },
+    { id: "teams", name: "Microsoft Teams", description: "Connect your Microsoft Teams for video calls", icon: <Video className="w-5 h-5 text-purple-600" />, connected: false },
+    { id: "google-meet", name: "Google Meet", description: "Connect Google Meet for video conferencing", icon: <Video className="w-5 h-5 text-green-600" />, connected: false },
+  ];
+
+  // Settings / Connections View
+  if (showSettings) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground">Calendar Settings</h2>
+            <p className="text-sm text-muted-foreground">Manage your calendar connections and preferences</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setShowSettings(false)}>
+            Back to Calendar
+          </Button>
+        </div>
+
+        <Card className="border-border/60">
+          <CardContent className="p-0">
+            <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab}>
+              <div className="border-b border-border/60 px-4">
+                <TabsList className="bg-transparent h-auto p-0 gap-6">
+                  <TabsTrigger
+                    value="calendars"
+                    className="bg-transparent rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 pb-3 pt-3 text-sm"
+                  >
+                    Calendars
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="video"
+                    className="bg-transparent rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 pb-3 pt-3 text-sm"
+                  >
+                    Video Conferencing
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="booking"
+                    className="bg-transparent rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 pb-3 pt-3 text-sm"
+                  >
+                    Google Organic Booking
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="calendars" className="p-4 mt-0">
+                <h3 className="font-semibold text-foreground mb-1">Connected Calendars</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Easily connect your third-party calendar(s) to check availability, update appointments as they're scheduled and avoid double bookings.
+                </p>
+
+                <div className="space-y-3">
+                  {calendarConnections.map((cal) => (
+                    <div
+                      key={cal.id}
+                      className="flex items-center justify-between p-4 border border-border/60 rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center">
+                          {cal.icon}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-medium text-sm text-foreground">{cal.name}</span>
+                            <Info className="w-3.5 h-3.5 text-muted-foreground" />
+                          </div>
+                          <p className="text-xs text-muted-foreground">{cal.description}</p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        className={cal.connected ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+                      >
+                        {cal.connected ? "Connected" : "Connect"}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="video" className="p-4 mt-0">
+                <h3 className="font-semibold text-foreground mb-1">Video Conferencing</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Connect your video conferencing tools to automatically create meeting links.
+                </p>
+
+                <div className="space-y-3">
+                  {videoConnections.map((vc) => (
+                    <div
+                      key={vc.id}
+                      className="flex items-center justify-between p-4 border border-border/60 rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center">
+                          {vc.icon}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-medium text-sm text-foreground">{vc.name}</span>
+                            <Info className="w-3.5 h-3.5 text-muted-foreground" />
+                          </div>
+                          <p className="text-xs text-muted-foreground">{vc.description}</p>
+                        </div>
+                      </div>
+                      <Button size="sm">Connect</Button>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="booking" className="p-4 mt-0">
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <CalendarDays className="w-12 h-12 text-muted-foreground/40 mb-3" />
+                  <h3 className="font-semibold text-foreground mb-1">Google Organic Booking</h3>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    Allow clients to book appointments directly from Google Search and Maps. Connect your Google Business Profile to get started.
+                  </p>
+                  <Button size="sm" className="mt-4 gap-1.5">
+                    <Plus className="w-4 h-4" />
+                    Set Up
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Main Calendar View
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -74,11 +226,35 @@ const AgentCalendarView = () => {
           <h2 className="text-xl font-semibold text-foreground">My Calendar</h2>
           <p className="text-sm text-muted-foreground">{formatDate(today)}</p>
         </div>
-        <Button size="sm" className="gap-1.5">
-          <Plus className="w-4 h-4" />
-          New Event
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowSettings(true)}>
+            Connect Calendars
+          </Button>
+          <Button size="sm" className="gap-1.5">
+            <Plus className="w-4 h-4" />
+            New Event
+          </Button>
+        </div>
       </div>
+
+      {/* No connections banner */}
+      <Card className="border-border/60 bg-muted/20">
+        <CardContent className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <CalendarDays className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground">No calendars connected</p>
+              <p className="text-xs text-muted-foreground">Connect your third-party calendar(s) to sync bookings and check availability</p>
+            </div>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setShowSettings(true)}>
+            <Plus className="w-4 h-4 mr-1" />
+            Add New
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-4 gap-3">

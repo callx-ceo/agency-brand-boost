@@ -11,6 +11,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import PostCallScreen from "@/components/agent/PostCallScreen";
 import AgentContactsView from "@/components/agent/AgentContactsView";
 import AgentMyDashboard from "@/components/agent/AgentMyDashboard";
+import AgentHistoryView from "@/components/agent/AgentHistoryView";
 import {
   Phone,
   PhoneOff,
@@ -111,7 +112,7 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
       case "my-dashboard":
         return <AgentMyDashboard />;
       case "my-history":
-        return renderPlaceholderTab("My History", "View your call history and past interactions.");
+        return <AgentHistoryView />;
       case "my-contacts":
         return <AgentContactsView />;
       case "my-applications":

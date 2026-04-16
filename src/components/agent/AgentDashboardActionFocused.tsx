@@ -170,13 +170,24 @@ const AgentDashboardActionFocused = () => {
   const [activeAgentView, setActiveAgentView] = useState<string>("dashboard");
 
   const navItems = [
-    { icon: Phone, label: "My Workspace", id: "live-calls", active: activeAgentView === "live-calls" },
     { icon: Home, label: "Dashboard", id: "dashboard", active: activeAgentView === "dashboard" },
     { icon: Users, label: "Leads", id: "leads", active: activeAgentView === "leads" },
     { icon: MessageSquare, label: "Messages", id: "messages", active: activeAgentView === "messages" },
     { icon: BarChart3, label: "Performance", id: "performance", active: activeAgentView === "performance" },
     { icon: Settings, label: "Settings", id: "settings", active: activeAgentView === "settings" },
   ];
+
+  const workspaceSubItems = [
+    { icon: Phone, label: "Live Calls", id: "workspace-live-calls" },
+    { icon: Clock, label: "My History", id: "workspace-history" },
+    { icon: Users, label: "My Contacts", id: "workspace-contacts" },
+    { icon: BarChart3, label: "My Applications", id: "workspace-applications" },
+    { icon: TrendingUp, label: "My Referrals", id: "workspace-referrals" },
+    { icon: Settings, label: "My Settings", id: "workspace-settings" },
+    { icon: Flame, label: "My Support", id: "workspace-support" },
+  ];
+
+  const isWorkspaceActive = activeAgentView.startsWith("workspace-") || activeAgentView === "live-calls";
 
   const remainingOpportunities = visibleLeads.length;
   const totalOpportunities = 8;

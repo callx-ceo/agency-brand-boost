@@ -8,7 +8,7 @@ import {
   inputStyle,
   primaryBtnStyle,
   ghostBtnStyle,
-  helperStyle: _helperStyle,
+  helperStyle,
 } from "./websiteTheme";
 
 interface Review {

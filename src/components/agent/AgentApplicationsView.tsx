@@ -1,208 +1,140 @@
+
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, FileText, Calendar, DollarSign, Eye, AlertCircle, Clock } from "lucide-react";
+import { Search, SlidersHorizontal, ExternalLink, Pencil } from "lucide-react";
+
+interface Application {
+  id: number;
+  name: string;
+  phone: string;
+  carrier: string;
+  product: string;
+  policyNo: string;
+  state: string;
+  submitDate: string;
+  effectiveDate: string;
+  submittedAP: { monthly: string; yearly: string };
+  agent: string;
+  splitAgent: string;
+  status: "Approved" | "Underwriting" | "Pending" | "Declined";
+}
 
 const AgentApplicationsView = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Mock data for agent's applications
-  const applications = [
-    {
-      id: 1,
-      applicationId: "APP-2024-001",
-      customerName: "John Smith",
-      product: "Life Insurance",
-      coverage: "$250,000",
-      premium: "$85/month",
-      status: "pending",
-      submittedDate: "2024-01-15",
-      carrier: "State Farm"
-    },
-    {
-      id: 2,
-      applicationId: "APP-2024-002", 
-      customerName: "Sarah Johnson",
-      product: "Auto Insurance",
-      coverage: "$100,000",
-      premium: "$120/month",
-      status: "approved",
-      submittedDate: "2024-01-14",
-      carrier: "Progressive"
-    },
-    {
-      id: 3,
-      applicationId: "APP-2024-003",
-      customerName: "Mike Wilson",
-      product: "Home Insurance",
-      coverage: "$300,000",
-      premium: "$95/month",
-      status: "under-review",
-      submittedDate: "2024-01-13",
-      carrier: "Allstate"
-    },
-    {
-      id: 4,
-      applicationId: "APP-2024-004",
-      customerName: "Emily Davis",
-      product: "Life Insurance",
-      coverage: "$500,000",
-      premium: "$165/month",
-      status: "rejected",
-      submittedDate: "2024-01-12",
-      carrier: "MetLife"
-    }
+  const applications: Application[] = [
+    { id: 1, name: "Gary Andrews", phone: "903-746-5217", carrier: "Other", product: "Other", policyNo: "9801802", state: "TX", submitDate: "04/15/2026", effectiveDate: "04/15/2026", submittedAP: { monthly: "$136.11/mo", yearly: "$1,633.32/yr" }, agent: "Zach Enyeart", splitAgent: "Harold Durana", status: "Underwriting" },
+    { id: 2, name: "Kisha Goode", phone: "209-390-2352", carrier: "Mutual of Omaha", product: "Living Promise", policyNo: "BU6565868", state: "CA", submitDate: "04/14/2026", effectiveDate: "04/14/2026", submittedAP: { monthly: "$131.18/mo", yearly: "$1,574.16/yr" }, agent: "Zach Enyeart", splitAgent: "Harold Durana", status: "Approved" },
+    { id: 3, name: "Bonnie Harris-Crum", phone: "435-749-0695", carrier: "Transamerica", product: "Immediate Solution", policyNo: "FEXB452012", state: "UT", submitDate: "04/10/2026", effectiveDate: "04/10/2026", submittedAP: { monthly: "$114.01/mo", yearly: "$1,368.12/yr" }, agent: "Zach Enyeart", splitAgent: "Harold Durana", status: "Approved" },
+    { id: 4, name: "Linda Hurley", phone: "405-829-7219", carrier: "Other", product: "Other", policyNo: "7GG60184", state: "OK", submitDate: "04/10/2026", effectiveDate: "05/03/2026", submittedAP: { monthly: "$42.02/mo", yearly: "$504.24/yr" }, agent: "Zach Enyeart", splitAgent: "", status: "Approved" },
+    { id: 5, name: "Quinton Hockoday", phone: "931-302-4174", carrier: "Transamerica", product: "Immediate Solution", policyNo: "FEX", state: "TN", submitDate: "04/10/2026", effectiveDate: "05/01/2026", submittedAP: { monthly: "$129.52/mo", yearly: "$1,554.24/yr" }, agent: "Zach Enyeart", splitAgent: "Harold Durana", status: "Underwriting" },
+    { id: 6, name: "Keith Douglas", phone: "774-433-4965", carrier: "Aetna", product: "Accendo", policyNo: "ACC7189564", state: "MA", submitDate: "04/08/2026", effectiveDate: "05/01/2026", submittedAP: { monthly: "$91.83/mo", yearly: "$1,101.96/yr" }, agent: "Zach Enyeart", splitAgent: "Harold Durana", status: "Approved" },
+    { id: 7, name: "Jose Pinela", phone: "760-391-7196", carrier: "Gerber", product: "Final Expense", policyNo: "NA", state: "CA", submitDate: "04/08/2026", effectiveDate: "04/09/2026", submittedAP: { monthly: "$11.04/mo", yearly: "$132.48/yr" }, agent: "Zach Enyeart", splitAgent: "", status: "Approved" },
+    { id: 8, name: "Jose Pinela", phone: "760-391-7196", carrier: "Other", product: "Other", policyNo: "2200073614", state: "CA", submitDate: "04/08/2026", effectiveDate: "04/09/2026", submittedAP: { monthly: "$132.04/mo", yearly: "$1,584.48/yr" }, agent: "Zach Enyeart", splitAgent: "", status: "Approved" },
+    { id: 9, name: "Linda Washington", phone: "414-628-2266", carrier: "Americo", product: "Eagle Select", policyNo: "AM03190052", state: "WI", submitDate: "04/07/2026", effectiveDate: "05/04/2026", submittedAP: { monthly: "$47.33/mo", yearly: "$567.96/yr" }, agent: "Zach Enyeart", splitAgent: "", status: "Approved" },
+    { id: 10, name: "Mark Sizemore", phone: "864-517-6368", carrier: "Aetna", product: "Accendo", policyNo: "ACC7188780", state: "SC", submitDate: "04/07/2026", effectiveDate: "05/01/2026", submittedAP: { monthly: "$110.08/mo", yearly: "$1,320.96/yr" }, agent: "Zach Enyeart", splitAgent: "Harold Durana", status: "Approved" },
+    { id: 11, name: "David Elliott", phone: "614-720-5759", carrier: "Mutual of Omaha", product: "Living Promise", policyNo: "na", state: "OH", submitDate: "04/03/2026", effectiveDate: "04/03/2026", submittedAP: { monthly: "$36.27/mo", yearly: "$435.24/yr" }, agent: "Zach Enyeart", splitAgent: "Harold Durana", status: "Approved" },
+    { id: 12, name: "Myra Johnson", phone: "334-544-4151", carrier: "Transamerica", product: "Immediate Solution", policyNo: "FEXB433931v", state: "AL", submitDate: "04/01/2026", effectiveDate: "04/01/2026", submittedAP: { monthly: "$138.93/mo", yearly: "$1,667.16/yr" }, agent: "Zach Enyeart", splitAgent: "Harold Durana", status: "Approved" },
+    { id: 13, name: "Geraldine Kinard", phone: "864-981-3573", carrier: "Mutual of Omaha", product: "Living Promise", policyNo: "BU6530842", state: "SC", submitDate: "03/31/2026", effectiveDate: "03/31/2026", submittedAP: { monthly: "$68.35/mo", yearly: "$820.20/yr" }, agent: "Zach Enyeart", splitAgent: "", status: "Underwriting" },
+    { id: 14, name: "Cecil Alford", phone: "405-885-7950", carrier: "Other", product: "Other", policyNo: "7G59410", state: "OK", submitDate: "03/31/2026", effectiveDate: "04/03/2026", submittedAP: { monthly: "$113.19/mo", yearly: "$1,358.28/yr" }, agent: "Zach Enyeart", splitAgent: "", status: "Approved" },
   ];
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: Application["status"]) => {
     switch (status) {
-      case "pending":
-        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
-      case "approved":
-        return <Badge variant="default" className="bg-green-100 text-green-800">Approved</Badge>;
-      case "rejected":
-        return <Badge variant="destructive">Rejected</Badge>;
-      case "under-review":
-        return <Badge variant="secondary" className="bg-blue-100 text-blue-800">Under Review</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
+      case "Approved":
+        return <span className="text-emerald-600 font-medium text-sm">Approved</span>;
+      case "Underwriting":
+        return <span className="text-amber-600 font-medium text-sm">Underwriting</span>;
+      case "Pending":
+        return <span className="text-blue-600 font-medium text-sm">Pending</span>;
+      case "Declined":
+        return <span className="text-red-600 font-medium text-sm">Declined</span>;
     }
   };
 
-  const getUrgencyIndicator = (submittedDate: string) => {
-    const daysSinceSubmission = Math.floor((new Date().getTime() - new Date(submittedDate).getTime()) / (1000 * 60 * 60 * 24));
-    if (daysSinceSubmission > 7) {
-      return <AlertCircle className="w-4 h-4 text-red-500" />;
-    } else if (daysSinceSubmission > 5) {
-      return <Clock className="w-4 h-4 text-orange-500" />;
-    }
-    return null;
-  };
-
-  const filteredApplications = applications.filter(app =>
-    app.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.applicationId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.carrier.toLowerCase().includes(searchTerm.toLowerCase())
+  const filtered = applications.filter(app =>
+    app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    app.phone.includes(searchTerm)
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">My Applications</h1>
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold text-foreground">Applications</h2>
+
+      <div className="flex items-center justify-between">
+        <div className="relative w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Name or Phone Number"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 h-9 text-sm"
+          />
+        </div>
+        <Button variant="outline" size="sm" className="gap-1.5 text-sm">
+          <SlidersHorizontal className="w-4 h-4" />
+          Filters
+        </Button>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{applications.length}</div>
-            <div className="text-sm text-gray-500">Total Applications</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-yellow-600">
-              {applications.filter(app => app.status === "pending").length}
-            </div>
-            <div className="text-sm text-gray-500">Pending</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {applications.filter(app => app.status === "approved").length}
-            </div>
-            <div className="text-sm text-gray-500">Approved</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">
-              {applications.filter(app => app.status === "rejected").length}
-            </div>
-            <div className="text-sm text-gray-500">Rejected</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Applications Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Application History</span>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search applications..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 w-64"
-                />
-              </div>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Application ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Product</TableHead>
-                <TableHead>Coverage</TableHead>
-                <TableHead>Premium</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredApplications.map((application) => (
-                <TableRow key={application.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-gray-400" />
-                      <span className="font-mono text-sm">{application.applicationId}</span>
-                      {getUrgencyIndicator(application.submittedDate)}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{application.customerName}</div>
-                      <div className="text-sm text-gray-500">{application.carrier}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{application.product}</TableCell>
-                  <TableCell>
+      <div className="border border-border/60 rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border/60 bg-muted/30">
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Name</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Phone Number</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Carrier</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Product</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Policy No</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">State</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Submit Date</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Effective Date</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Submitted AP</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Agent</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Split Agent</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Status</th>
+                <th className="text-left px-3 py-2.5 font-medium text-muted-foreground text-xs">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((app) => (
+                <tr key={app.id} className="border-b border-border/30 hover:bg-muted/20 transition-colors">
+                  <td className="px-3 py-2.5">
+                    <a href="#" className="text-blue-600 hover:underline font-medium text-sm">{app.name}</a>
+                  </td>
+                  <td className="px-3 py-2.5 text-foreground">{app.phone}</td>
+                  <td className="px-3 py-2.5 text-foreground">{app.carrier}</td>
+                  <td className="px-3 py-2.5 text-foreground">{app.product}</td>
+                  <td className="px-3 py-2.5 text-foreground font-mono text-xs">{app.policyNo}</td>
+                  <td className="px-3 py-2.5 text-foreground">{app.state}</td>
+                  <td className="px-3 py-2.5 text-foreground">{app.submitDate}</td>
+                  <td className="px-3 py-2.5 text-foreground">{app.effectiveDate}</td>
+                  <td className="px-3 py-2.5">
+                    <div className="text-foreground text-sm">{app.submittedAP.monthly}</div>
+                    <div className="text-muted-foreground text-xs">{app.submittedAP.yearly}</div>
+                  </td>
+                  <td className="px-3 py-2.5 text-foreground">{app.agent}</td>
+                  <td className="px-3 py-2.5 text-foreground">{app.splitAgent || "—"}</td>
+                  <td className="px-3 py-2.5">{getStatusBadge(app.status)}</td>
+                  <td className="px-3 py-2.5">
                     <div className="flex items-center gap-1">
-                      <DollarSign className="w-4 h-4 text-gray-400" />
-                      {application.coverage}
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </Button>
                     </div>
-                  </TableCell>
-                  <TableCell>{application.premium}</TableCell>
-                  <TableCell>{getStatusBadge(application.status)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      {application.submittedDate}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Button size="sm" variant="outline">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

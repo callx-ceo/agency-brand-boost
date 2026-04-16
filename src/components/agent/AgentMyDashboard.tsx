@@ -328,6 +328,7 @@ const AgentMyDashboard = () => {
                   {activePlan ? "Edit Plan" : "Set Goals"}
                 </button>
               </div>
+            </div>
 
             <div className="mt-4 pt-4 border-t border-[#f0f0ee]">
               <div className="flex items-center justify-between text-[11px] mb-2">

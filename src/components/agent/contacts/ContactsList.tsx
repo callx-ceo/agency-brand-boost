@@ -137,13 +137,13 @@ const ContactsList = ({ contacts, onSelectContact }: ContactsListProps) => {
 
                 {/* Quick actions */}
                 <div className={`flex items-center gap-1 w-24 justify-end transition-opacity ${hoveredId === c.id ? 'opacity-100' : 'opacity-0'}`}>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); setActiveModal({ type: "call", contact: c }); }}>
                     <Phone className="w-3.5 h-3.5" />
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); setActiveModal({ type: "sms", contact: c }); }}>
                     <MessageSquare className="w-3.5 h-3.5" />
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); setActiveModal({ type: "email", contact: c }); }}>
                     <Mail className="w-3.5 h-3.5" />
                   </Button>
                 </div>

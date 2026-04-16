@@ -172,6 +172,12 @@ const AgentHistoryView = () => {
                     <DirIcon className={`w-4 h-4 ${dirColor}`} />
                   </td>
                   <td className="px-3 py-3">
+                    <span className={`font-medium ${c.contactName === "Unknown" ? "text-[#8a8a86] italic" : "text-[#1a1a1a]"}`}>
+                      {c.contactName}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-[#8a8a86] font-mono text-[11px]">{c.callerId}</td>
+                  <td className="px-3 py-3">
                     <span className={`inline-flex items-center justify-center w-7 h-5 rounded text-[11px] font-bold ${scoreColor(c.score)}`}>
                       {c.score}
                     </span>

@@ -12,6 +12,23 @@ const copilotMessages = [
   "2 missed revenue opportunities detected",
 ];
 
+const getTimeGreeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+};
+
+const getTimeNudge = () => {
+  const h = new Date().getHours();
+  const remaining = 17 - h;
+  if (h < 9) return "Your day starts soon — review your priorities before calls begin.";
+  if (remaining > 4) return "Plenty of runway today. Front-load your hot leads while energy is high.";
+  if (remaining > 2) return `${remaining} hours left today. Focus on high-value actions to hit your goal.`;
+  if (remaining > 0) return "Final stretch — prioritize closeable leads and pending apps.";
+  return "Day's wrapping up. Prep tomorrow's top 3 actions before logging off.";
+};
+
 const smartActions = [
   {
     priority: "urgent",

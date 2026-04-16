@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Plus, Phone, MessageSquare, Mail } from "lucide-react";
 import { ContactItem, stages, getStageColor } from "./contactData";
+import { CallModal, SMSModal, EmailModal } from "./ContactQuickModals";
 
 interface ContactsListProps {
   contacts: ContactItem[];
@@ -14,6 +15,7 @@ const ContactsList = ({ contacts, onSelectContact }: ContactsListProps) => {
   const [search, setSearch] = useState("");
   const [activeStage, setActiveStage] = useState("All");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [activeModal, setActiveModal] = useState<{ type: "call" | "sms" | "email"; contact: ContactItem } | null>(null);
 
   const filtered = contacts.filter((c) => {
     const matchesSearch =
@@ -135,13 +137,13 @@ const ContactsList = ({ contacts, onSelectContact }: ContactsListProps) => {
 
                 {/* Quick actions */}
                 <div className={`flex items-center gap-1 w-24 justify-end transition-opacity ${hoveredId === c.id ? 'opacity-100' : 'opacity-0'}`}>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); setActiveModal({ type: "call", contact: c }); }}>
                     <Phone className="w-3.5 h-3.5" />
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); setActiveModal({ type: "sms", contact: c }); }}>
                     <MessageSquare className="w-3.5 h-3.5" />
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); setActiveModal({ type: "email", contact: c }); }}>
                     <Mail className="w-3.5 h-3.5" />
                   </Button>
                 </div>
@@ -150,6 +152,17 @@ const ContactsList = ({ contacts, onSelectContact }: ContactsListProps) => {
           })
         )}
       </div>
+
+      {/* Modals */}
+      {activeModal?.type === "call" && (
+        <CallModal contact={activeModal.contact} open onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal?.type === "sms" && (
+        <SMSModal contact={activeModal.contact} open onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal?.type === "email" && (
+        <EmailModal contact={activeModal.contact} open onClose={() => setActiveModal(null)} />
+      )}
     </div>
   );
 };

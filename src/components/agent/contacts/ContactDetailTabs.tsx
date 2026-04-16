@@ -108,6 +108,7 @@ export const CallsTab = () => {
 // ── Chats Tab ──
 export const ChatsTab = () => {
   const [msg, setMsg] = React.useState("");
+  const [isAiLoading, setIsAiLoading] = React.useState(false);
   const [messages, setMessages] = React.useState([
     { id: 1, from: "agent", text: "Hi Michael, I tried calling earlier — did you have a chance to look over the quote?", time: "Apr 14, 11:25 AM" },
     { id: 2, from: "customer", text: "Hey! Yeah sorry I missed the call. I was at work.", time: "Apr 14, 12:10 PM" },
@@ -117,6 +118,19 @@ export const ChatsTab = () => {
     { id: 6, from: "customer", text: "Thanks! We'll look it over tonight.", time: "Apr 14, 6:00 PM" },
     { id: 7, from: "customer", text: "Still thinking it over. Can I have until Friday?", time: "Apr 15, 11:15 AM" },
   ]);
+
+  const handleAISuggest = () => {
+    setIsAiLoading(true);
+    setTimeout(() => {
+      const lastCustomerMsg = messages.filter(m => m.from === "customer").pop();
+      if (lastCustomerMsg?.text.includes("Friday")) {
+        setMsg("Of course, take your time! Just so you know, your $18/mo rate is locked in through Friday. I'll check back then — and if any questions come up before that, I'm here! 👍");
+      } else {
+        setMsg("Hi Michael! Just wanted to follow up — do you have any questions about the coverage we discussed? Happy to help anytime.");
+      }
+      setIsAiLoading(false);
+    }, 800);
+  };
 
   const handleSend = () => {
     if (!msg.trim()) return;
@@ -138,17 +152,22 @@ export const ChatsTab = () => {
           </div>
         ))}
       </div>
-      <div className="flex gap-2 p-4 border-t bg-background">
+      <div className="p-4 border-t bg-background space-y-2">
         <Textarea
           placeholder="Type a message..."
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
-          className="min-h-[40px] max-h-[80px] text-sm resize-none flex-1"
+          className="min-h-[40px] max-h-[80px] text-sm resize-none"
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
         />
-        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs self-end" onClick={handleSend}>
-          Send
-        </Button>
+        <div className="flex items-center justify-between">
+          <Button variant="outline" size="sm" className="text-xs gap-1" onClick={handleAISuggest} disabled={isAiLoading}>
+            <Sparkles className={`w-3.5 h-3.5 ${isAiLoading ? "animate-spin" : ""}`} /> {isAiLoading ? "Thinking..." : "AI Suggest"}
+          </Button>
+          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs" onClick={handleSend} disabled={!msg.trim()}>
+            Send
+          </Button>
+        </div>
       </div>
     </div>
   );

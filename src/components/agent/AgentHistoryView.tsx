@@ -11,7 +11,8 @@ interface CallRecord {
   status: "ended" | "missed" | "voicemail";
   hasAlert: boolean;
   direction: "inbound" | "outbound";
-  agent: string;
+  contactName: string;
+  callerId: string;
   score: number;
   relevance: number;
   process: string;

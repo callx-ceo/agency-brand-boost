@@ -366,16 +366,7 @@ const AgentMyDashboard = () => {
               <div className="w-full h-1.5 rounded-full bg-[#f0f0ee]">
                 <div className="h-full rounded-full bg-emerald-500 transition-all duration-1000" style={{ width: "71%" }} />
               </div>
-              <div className="flex items-center justify-between mt-1.5">
-                <span className="text-[11px] text-[#8a8a86]">$860 to go</span>
-                <button
-                  onClick={() => setGoalBuilderOpen(true)}
-                  className="text-[11px] font-medium text-violet-600 hover:text-violet-700 flex items-center gap-1 transition-colors"
-                >
-                  <Target className="w-3 h-3" />
-                  {activePlan ? "Edit Plan" : "Set Goals"}
-                </button>
-              </div>
+              <div className="text-[11px] text-[#8a8a86] mt-1.5">$860 to go</div>
             </div>
 
             <div className="mt-4 pt-4 border-t border-[#f0f0ee]">

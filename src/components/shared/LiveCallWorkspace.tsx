@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import PostCallScreen from "@/components/agent/PostCallScreen";
 import {
   Phone,
@@ -124,15 +125,6 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
   };
 
   const renderLiveCallsContent = () => {
-    if (showPostCall) {
-      return (
-        <PostCallScreen
-          onTakeNextCall={() => setShowPostCall(false)}
-          onReviewBreakdown={() => {}}
-          onViewTrends={() => {}}
-        />
-      );
-    }
 
     return (
     <div className="flex flex-col h-full min-h-[calc(100vh-200px)]">

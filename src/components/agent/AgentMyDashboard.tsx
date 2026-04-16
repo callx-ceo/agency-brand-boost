@@ -3,7 +3,7 @@ import {
   Phone, ArrowUpRight, ArrowDownRight,
   Trophy, Flame, Brain, PhoneIncoming, PhoneOutgoing,
   PhoneMissed, ChevronRight, FileText, Play, Sparkles,
-  MessageSquare, Mail, Wand2, Clock, Calendar, AlertTriangle
+  MessageSquare, Mail, Wand2, Clock, Calendar
 } from "lucide-react";
 import GoalBuilderModal from "./goals/GoalBuilderModal";
 import type { SuccessPlan } from "./goals/GoalBuilderChat";
@@ -102,8 +102,6 @@ const AgentMyDashboard = () => {
 
   const greeting = getTimeGreeting();
   const timeNudge = getTimeNudge();
-  const [hasPhoneNumber] = useState(false);
-  const [hasCompletedProfile] = useState(false);
 
   return (
     <div className="h-full overflow-auto bg-[#fafaf9]">

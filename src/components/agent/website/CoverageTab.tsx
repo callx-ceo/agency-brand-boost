@@ -18,7 +18,7 @@ interface Product {
   enabled: boolean;
   name: string;
   defaultName: string;
-  Icon: React.ComponentType<{ size?: number; color?: string }>;
+  Icon: LucideIcon;
   bg: string;
   color: string;
   description: string;

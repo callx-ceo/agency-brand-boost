@@ -135,6 +135,9 @@ const ContactDetail = ({ contact, onBack }: ContactDetailProps) => {
           </div>
         </div>
       </div>
+      <CallModal contact={contact} open={callOpen} onClose={() => setCallOpen(false)} />
+      <SMSModal contact={contact} open={smsOpen} onClose={() => setSmsOpen(false)} />
+      <EmailModal contact={contact} open={emailOpen} onClose={() => setEmailOpen(false)} />
     </div>
   );
 };

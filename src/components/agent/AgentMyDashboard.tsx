@@ -136,16 +136,23 @@ const AgentMyDashboard = () => {
     <div className="h-full overflow-auto bg-[#fafaf9]">
       {/* NOTIFICATION TOP BAR */}
       {notifications.length > 0 && (
-        <div className="bg-[#1a1a1a] px-8">
+        <div className="bg-[#FFF7ED] border-b border-[#FDBA74]/30 px-8">
           {notifications.map((n, i) => (
-            <div key={i} className={`flex items-center justify-between py-2.5 ${i > 0 ? "border-t border-white/10" : ""}`}>
-              <div className="flex items-center gap-2.5">
-                {n.icon || <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />}
-                <span className="text-[12px] text-white/80">{n.text}</span>
+            <div key={i} className={`flex items-center justify-between py-3 ${i > 0 ? "border-t border-[#FDBA74]/20" : ""}`}>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#FFF1E0] flex items-center justify-center shrink-0">
+                  {n.icon || <Phone className="w-4 h-4 text-[#D97706]" />}
+                </div>
+                <div>
+                  <span className="text-[13px] font-semibold text-[#92400E]">{n.text.split(' — ')[0]}</span>
+                  {n.text.includes(' — ') && (
+                    <p className="text-[12px] text-[#B45309] mt-0.5">{n.text.split(' — ')[1]}</p>
+                  )}
+                </div>
               </div>
               <button
                 onClick={n.onClick}
-                className="text-[11px] font-semibold text-white bg-white/15 hover:bg-white/25 px-3 py-1 rounded-md transition-colors whitespace-nowrap"
+                className="text-[12px] font-semibold text-[#C2410C] hover:text-[#9A3412] px-3 py-1 transition-colors whitespace-nowrap"
               >
                 {n.action}
               </button>

@@ -3,8 +3,10 @@ import {
   Phone, ArrowUpRight, ArrowDownRight,
   Trophy, Flame, Brain, PhoneIncoming, PhoneOutgoing,
   PhoneMissed, ChevronRight, FileText, Play, Sparkles,
-  MessageSquare, Mail, Wand2
+  MessageSquare, Mail, Wand2, Target
 } from "lucide-react";
+import GoalBuilderModal from "./goals/GoalBuilderModal";
+import type { SuccessPlan } from "./goals/GoalBuilderChat";
 
 const copilotMessages = [
   "3 leads need follow-up before today ends",
@@ -84,6 +86,8 @@ const scoreColor = (s: number) =>
 const AgentMyDashboard = () => {
   const [msgIndex, setMsgIndex] = useState(0);
   const [fade, setFade] = useState(true);
+  const [goalBuilderOpen, setGoalBuilderOpen] = useState(false);
+  const [activePlan, setActivePlan] = useState<SuccessPlan | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -314,7 +318,16 @@ const AgentMyDashboard = () => {
               <div className="w-full h-1.5 rounded-full bg-[#f0f0ee]">
                 <div className="h-full rounded-full bg-emerald-500 transition-all duration-1000" style={{ width: "71%" }} />
               </div>
-              <div className="text-[11px] text-[#8a8a86] mt-1.5">$860 to go</div>
+              <div className="flex items-center justify-between mt-1.5">
+                <span className="text-[11px] text-[#8a8a86]">$860 to go</span>
+                <button
+                  onClick={() => setGoalBuilderOpen(true)}
+                  className="text-[11px] font-medium text-violet-600 hover:text-violet-700 flex items-center gap-1 transition-colors"
+                >
+                  <Target className="w-3 h-3" />
+                  {activePlan ? "Edit Plan" : "Set Goals"}
+                </button>
+              </div>
             </div>
 
             <div className="mt-4 pt-4 border-t border-[#f0f0ee]">
@@ -388,6 +401,12 @@ const AgentMyDashboard = () => {
           </section>
         </div>
       </div>
+
+      <GoalBuilderModal
+        open={goalBuilderOpen}
+        onClose={() => setGoalBuilderOpen(false)}
+        onPlanActivated={(plan) => setActivePlan(plan)}
+      />
     </div>
   );
 };

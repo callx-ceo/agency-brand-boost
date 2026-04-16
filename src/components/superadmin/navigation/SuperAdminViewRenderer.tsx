@@ -48,6 +48,7 @@ const workspaceTabMap: Record<string, WorkspaceTab> = {
   'workspace-history': 'my-history',
   'workspace-contacts': 'my-contacts',
   'workspace-applications': 'my-applications',
+  'workspace-calendar': 'my-calendar',
   'workspace-referrals': 'my-referrals',
   'workspace-settings': 'my-settings',
   'workspace-support': 'my-support',
@@ -241,6 +242,7 @@ const SuperAdminViewRenderer = ({
     case 'workspace-history':
     case 'workspace-contacts':
     case 'workspace-applications':
+    case 'workspace-calendar':
     case 'workspace-referrals':
     case 'workspace-settings':
     case 'workspace-support':

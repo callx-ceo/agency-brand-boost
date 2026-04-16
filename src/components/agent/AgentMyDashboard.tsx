@@ -19,15 +19,13 @@ const smartActions = [
     name: "Michael Hayden",
     detail: "Quoted $5,000 · follow-up window closes today",
     primaryBtn: { label: "Call Now", icon: Phone },
-    secondaryBtn: "Send SMS",
   },
   {
     priority: "warning",
     type: "Verify data",
     name: "Sandra Okonkwo",
     detail: "Underwriting will reject without correction",
-    primaryBtn: { label: "Send SMS" },
-    secondaryBtn: "View Contact",
+    primaryBtn: { label: "View Contact" },
   },
   {
     priority: "live",
@@ -35,6 +33,7 @@ const smartActions = [
     name: "Unknown Caller",
     detail: "Est. $22/mo · Final expense",
     primaryBtn: { label: "Take Call", icon: Phone },
+    hideCommunication: true,
   },
   {
     priority: "info",
@@ -42,7 +41,6 @@ const smartActions = [
     name: "James Rutherford",
     detail: "Score 44 · close not attempted",
     primaryBtn: { label: "Call Back", icon: Phone },
-    secondaryBtn: "AI Summary",
   },
   {
     priority: "ready",
@@ -50,7 +48,6 @@ const smartActions = [
     name: "Priya Nambiar",
     detail: "6 of 8 fields pre-filled by AI",
     primaryBtn: { label: "Start Draft", icon: FileText },
-    secondaryBtn: "View Contact",
   },
 ];
 

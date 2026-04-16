@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import PostCallScreen from "@/components/agent/PostCallScreen";
 import AgentContactsView from "@/components/agent/AgentContactsView";
+import AgentMyDashboard from "@/components/agent/AgentMyDashboard";
 import {
   Phone,
   PhoneOff,
@@ -27,7 +28,7 @@ import {
   Clock,
 } from "lucide-react";
 
-export type WorkspaceTab = "live-calls" | "my-history" | "my-contacts" | "my-applications" | "my-referrals" | "my-settings" | "my-support";
+export type WorkspaceTab = "live-calls" | "my-dashboard" | "my-history" | "my-contacts" | "my-applications" | "my-referrals" | "my-settings" | "my-support";
 
 interface LiveCallWorkspaceProps {
   activeTab?: WorkspaceTab;
@@ -107,6 +108,8 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case "my-dashboard":
+        return <AgentMyDashboard />;
       case "my-history":
         return renderPlaceholderTab("My History", "View your call history and past interactions.");
       case "my-contacts":

@@ -30,6 +30,7 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       key: "workspace",
       label: "My Workspace",
       items: [
+        { id: "workspace-dashboard", label: "My Dashboard", icon: Home },
         { id: "workspace-live-calls", label: "Live Calls", icon: Phone },
         { id: "workspace-history", label: "My History", icon: History },
         { id: "workspace-contacts", label: "My Contacts", icon: Contact },

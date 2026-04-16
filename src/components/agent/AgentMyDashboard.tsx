@@ -105,62 +105,7 @@ const AgentMyDashboard = () => {
   const [hasPhoneNumber] = useState(false);
   const [hasCompletedProfile] = useState(false);
 
-  const notifications: { text: string; action: string; onClick: () => void; icon?: React.ReactNode; color?: string }[] = [];
-  if (!activePlan) {
-    notifications.push({
-      text: "You haven't set your goals yet — let Copilot build your Success Plan",
-      action: "Set Goals",
-      onClick: () => setGoalBuilderOpen(true),
-    });
-  }
-  if (!hasPhoneNumber) {
-    notifications.push({
-      text: "Purchase a phone number to start receiving calls and enable outbound dialing",
-      action: "Get Number →",
-      onClick: () => {},
-      icon: <Phone className="w-3.5 h-3.5 text-amber-400" />,
-      color: "amber",
-    });
-  }
-  if (!hasCompletedProfile) {
-    notifications.push({
-      text: "Complete your profile — add your phone number to receive important notifications and enable call features",
-      action: "Add now →",
-      onClick: () => {},
-      icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />,
-      color: "amber",
-    });
-  }
-
-  return (
-    <div className="h-full overflow-auto bg-[#fafaf9]">
-      {/* NOTIFICATION TOP BAR */}
-      {notifications.length > 0 && (
-        <div className="bg-[#FFF7ED] border-b border-[#FDBA74]/30 px-8">
-          {notifications.map((n, i) => (
-            <div key={i} className={`flex items-center justify-between py-3 ${i > 0 ? "border-t border-[#FDBA74]/20" : ""}`}>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#FFF1E0] flex items-center justify-center shrink-0">
-                  {n.icon || <Phone className="w-4 h-4 text-[#D97706]" />}
-                </div>
-                <div>
-                  <span className="text-[13px] font-semibold text-[#92400E]">{n.text.split(' — ')[0]}</span>
-                  {n.text.includes(' — ') && (
-                    <p className="text-[12px] text-[#B45309] mt-0.5">{n.text.split(' — ')[1]}</p>
-                  )}
-                </div>
-              </div>
-              <button
-                onClick={n.onClick}
-                className="text-[12px] font-semibold text-[#C2410C] hover:text-[#9A3412] px-3 py-1 transition-colors whitespace-nowrap"
-              >
-                {n.action}
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
+  // Notifications are now consolidated in the top-level AlertBanner
       <div className="px-8 py-6">
       {/* HEADER */}
       <div className="flex items-end justify-between mb-5">

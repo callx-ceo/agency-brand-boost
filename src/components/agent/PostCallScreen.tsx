@@ -42,11 +42,24 @@ const statusMessages = [
 ];
 
 const feedItems = [
-  { icon: <CheckCircle className="w-4 h-4" />, text: "Strong rapport built early", color: "text-green-600", bg: "bg-green-50" },
-  { icon: <DollarSign className="w-4 h-4" />, text: "High intent signal detected", color: "text-amber-600", bg: "bg-amber-50" },
-  { icon: <AlertTriangle className="w-4 h-4" />, text: "Missed affordability check", color: "text-orange-500", bg: "bg-orange-50" },
-  { icon: <Brain className="w-4 h-4" />, text: "Objection detected — price concern", color: "text-blue-600", bg: "bg-blue-50" },
-  { icon: <XCircle className="w-4 h-4" />, text: "Draft date not confirmed", color: "text-red-500", bg: "bg-red-50" },
+  // Call analysis insights
+  { icon: <CheckCircle className="w-4 h-4" />, text: "Strong rapport built in first 30 seconds", color: "text-green-600", bg: "bg-green-50", category: "insight" },
+  { icon: <DollarSign className="w-4 h-4" />, text: "High intent signal detected — customer asked about pricing twice", color: "text-amber-600", bg: "bg-amber-50", category: "insight" },
+  { icon: <AlertTriangle className="w-4 h-4" />, text: "Missed affordability check — customer mentioned budget concerns at 2:14", color: "text-orange-500", bg: "bg-orange-50", category: "insight" },
+  // Coaching tips
+  { icon: <Sparkles className="w-4 h-4" />, text: "Tip: When a customer mentions budget, pivot to value — not discounts", color: "text-purple-600", bg: "bg-purple-50", category: "coaching" },
+  { icon: <Brain className="w-4 h-4" />, text: "Objection detected — price concern raised but not fully addressed", color: "text-blue-600", bg: "bg-blue-50", category: "insight" },
+  { icon: <Sparkles className="w-4 h-4" />, text: "Try: \"What would make this feel like the right investment for you?\"", color: "text-purple-600", bg: "bg-purple-50", category: "coaching" },
+  // More analysis
+  { icon: <Clock className="w-4 h-4" />, text: "Talk-to-listen ratio: 62/38 — aim for 50/50 or less talking", color: "text-blue-600", bg: "bg-blue-50", category: "insight" },
+  { icon: <XCircle className="w-4 h-4" />, text: "Draft date not confirmed — customer was ready but wasn't asked", color: "text-red-500", bg: "bg-red-50", category: "insight" },
+  { icon: <Sparkles className="w-4 h-4" />, text: "Next call: Ask \"When would you like coverage to start?\" before the 3-min mark", color: "text-purple-600", bg: "bg-purple-50", category: "coaching" },
+  // Sentiment & scoring
+  { icon: <CheckCircle className="w-4 h-4" />, text: "Customer sentiment: Positive overall — ended on a good note", color: "text-green-600", bg: "bg-green-50", category: "insight" },
+  { icon: <AlertTriangle className="w-4 h-4" />, text: "No urgency language used — try time-bound phrases like \"rates lock Friday\"", color: "text-orange-500", bg: "bg-orange-50", category: "coaching" },
+  { icon: <BarChart3 className="w-4 h-4" />, text: "Preliminary call score: 72/100 — above your weekly average of 68", color: "text-blue-600", bg: "bg-blue-50", category: "insight" },
+  { icon: <Sparkles className="w-4 h-4" />, text: "Top agents on this campaign close 23% more by confirming next steps before hang-up", color: "text-purple-600", bg: "bg-purple-50", category: "coaching" },
+  { icon: <CheckCircle className="w-4 h-4" />, text: "Compliance check passed — all required disclosures were made", color: "text-green-600", bg: "bg-green-50", category: "insight" },
 ];
 
 const dispositions = [

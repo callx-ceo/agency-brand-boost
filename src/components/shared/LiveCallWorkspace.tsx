@@ -1,5 +1,6 @@
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import AlertBanner, { AlertMessage } from "@/components/shared/AlertBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +51,15 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
   const [currentStep, setCurrentStep] = useState(1);
   const [callDuration] = useState("00:00:00");
   const [formData, setFormData] = useState<Record<string, string>>({});
+
+  const [alerts, setAlerts] = useState<AlertMessage[]>([
+    { id: "cal", text: "No calendars connected. Connect your calendar to sync bookings and check availability.", action: { label: "Connect", onClick: () => {} } },
+    { id: "license", text: "Your insurance license expires in 30 days. Renew now to avoid disruption.", action: { label: "Renew", onClick: () => {} } },
+  ]);
+
+  const handleDismissAlert = useCallback((id: string) => {
+    setAlerts((prev) => prev.filter((a) => a.id !== id));
+  }, []);
 
   const scriptSteps: ScriptStep[] = [
     {
@@ -394,6 +404,11 @@ const LiveCallWorkspace = ({ activeTab = "live-calls" }: LiveCallWorkspaceProps)
 
   return (
     <div className="flex flex-col h-full">
+      {alerts.length > 0 && (
+        <div className="mb-3">
+          <AlertBanner messages={alerts} onDismiss={handleDismissAlert} />
+        </div>
+      )}
       {renderTabContent()}
 
       <Dialog open={showPostCall} onOpenChange={(open) => { if (!open) setShowPostCall(false); }}>

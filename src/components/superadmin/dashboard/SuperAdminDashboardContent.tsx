@@ -171,7 +171,7 @@ const SuperAdminDashboardContent = ({ activeView, onViewChange }: SuperAdminDash
                   key={m}
                   onClick={() => setChartMode(m)}
                   className={`px-3 py-1 text-xs font-medium rounded-full transition ${
-                    chartMode === m ? "bg-sky-400 text-white" : "text-muted-foreground"
+                    chartMode === m ? "bg-teal-700 text-white" : "text-muted-foreground"
                   }`}
                 >
                   {m}
@@ -243,7 +243,7 @@ const SuperAdminDashboardContent = ({ activeView, onViewChange }: SuperAdminDash
                   <div key={item.name} className="flex items-center justify-between py-1.5 border-b border-border last:border-0">
                     <div className="flex items-center gap-3 min-w-0">
                       <span className="text-sm text-muted-foreground w-5">{i + 1}.</span>
-                      <span className="text-sm text-sky-600 hover:underline cursor-pointer truncate">{item.name}</span>
+                      <span className="text-sm text-teal-700 hover:underline cursor-pointer truncate">{item.name}</span>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
                       <span className="text-sm font-semibold text-foreground">{item.value}</span>

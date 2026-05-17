@@ -125,12 +125,12 @@ const RealtimeCallsView = () => {
                     {r.live && <span className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-400" />}
                     {r.time}
                   </td>
-                  <td className="px-4 py-3 text-sky-600 font-mono text-xs hover:underline cursor-pointer">{r.id}</td>
+                  <td className="px-4 py-3 text-teal-700 font-mono text-xs hover:underline cursor-pointer">{r.id}</td>
                   <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{r.caller}</td>
                   <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{r.promo}</td>
                   <td className="px-4 py-3 text-foreground">{r.type}</td>
-                  <td className="px-4 py-3 text-sky-600 hover:underline cursor-pointer">{r.publisher}</td>
-                  <td className="px-4 py-3 text-sky-600 hover:underline cursor-pointer">{r.campaign}</td>
+                  <td className="px-4 py-3 text-teal-700 hover:underline cursor-pointer">{r.publisher}</td>
+                  <td className="px-4 py-3 text-teal-700 hover:underline cursor-pointer">{r.campaign}</td>
                   <td className="px-4 py-3 text-foreground">{r.bundle}</td>
                   <td className={`px-4 py-3 ${r.persistent === "Yes" ? "text-emerald-600" : "text-muted-foreground"}`}>{r.persistent}</td>
                 </tr>

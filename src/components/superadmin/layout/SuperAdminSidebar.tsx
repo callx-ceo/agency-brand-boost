@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 import { SuperAdminViewType } from "@/types/superAdminTypes";
-import { 
-  LayoutDashboard, Building2, Users, Megaphone, Globe, BarChart3, Shield, Activity,
-  UserCheck, Settings, TrendingUp, PhoneCall, DollarSign, FileText, ChevronDown,
-  ChevronRight, Hash, ContactRound, UserCog, Target, Package, ClipboardList, Gift,
-  Bell, Palette, Wallet, CalendarDays, Sparkles, Globe as GlobeIcon
+import {
+  LayoutDashboard, Activity, Monitor, Megaphone, Tag, Globe, Users, Layers,
+  GitBranch, PhoneCall, BarChart3, Building2, UserCircle, UserCog, User, Headphones,
+  Search, ChevronDown, ChevronRight,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 interface SuperAdminSidebarProps {
   activeView: SuperAdminViewType;
@@ -15,251 +15,153 @@ interface SuperAdminSidebarProps {
 }
 
 interface NavItem {
-  id: string;
+  id: SuperAdminViewType;
   label: string;
   icon: React.ReactNode;
   badge?: number;
-  badgeVariant?: "outline" | "secondary";
 }
 
 interface NavSection {
   key: string;
   label: string;
+  collapsible?: boolean;
   items: NavItem[];
-  children?: { key: string; label: string; items: NavItem[] }[];
 }
 
 const SuperAdminSidebar = ({ activeView, onViewChange }: SuperAdminSidebarProps) => {
-  const mockAlerts = {
-    pendingAgencies: 3, suspendedAgents: 8, fraudAlerts: 2, complianceIssues: 1,
-    systemAlerts: 5, newLeads: 47, pendingContacts: 12, pendingApplications: 15, apiFailures: 5
-  };
-
   const sections: NavSection[] = [
     {
-      key: "dashboard",
-      label: "Dashboard & Analytics",
+      key: "overview",
+      label: "Overview",
+      collapsible: true,
       items: [
-        { id: "dashboard", label: "Executive Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
-        { id: "analytics", label: "Advanced Analytics", icon: <TrendingUp className="w-4 h-4" /> },
-        { id: "compliance", label: "Compliance Reporting", icon: <Shield className="w-4 h-4" /> },
+        { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
+        { id: "reports-realtime", label: "Realtime", icon: <Activity className="w-4 h-4" />, badge: 35 },
+        { id: "live-calls", label: "Live Monitor", icon: <Monitor className="w-4 h-4" />, badge: 12 },
       ],
     },
     {
-      key: "workspace",
-      label: "My Workspace",
+      key: "marketplace",
+      label: "Marketplace Operations",
+      collapsible: true,
       items: [
-        { id: "workspace-dashboard", label: "Command Center", icon: <LayoutDashboard className="w-4 h-4" /> },
-        { id: "workspace-live-calls", label: "Live Calls", icon: <PhoneCall className="w-4 h-4" /> },
-        { id: "workspace-history", label: "My History", icon: <Activity className="w-4 h-4" /> },
-        { id: "workspace-contacts", label: "My Contacts", icon: <ContactRound className="w-4 h-4" /> },
-        { id: "workspace-applications", label: "My Applications", icon: <FileText className="w-4 h-4" /> },
-        { id: "workspace-calendar", label: "My Calendar", icon: <CalendarDays className="w-4 h-4" /> },
-        { id: "workspace-recommendations", label: "Recommendations", icon: <Sparkles className="w-4 h-4" /> },
-        { id: "workspace-website", label: "My Website", icon: <GlobeIcon className="w-4 h-4" /> },
-        { id: "workspace-referrals", label: "My Referrals", icon: <Gift className="w-4 h-4" /> },
-        { id: "workspace-settings", label: "My Settings", icon: <Settings className="w-4 h-4" /> },
-        { id: "workspace-support", label: "My Support", icon: <Shield className="w-4 h-4" /> },
+        { id: "campaigns", label: "Campaigns", icon: <Megaphone className="w-4 h-4" /> },
+        { id: "offers", label: "Offers", icon: <Tag className="w-4 h-4" /> },
+        { id: "publishers", label: "Publishers", icon: <Globe className="w-4 h-4" />, badge: 3 },
+        { id: "advertisers", label: "Advertisers", icon: <Users className="w-4 h-4" />, badge: 1 },
+        { id: "verticals", label: "Verticals", icon: <Layers className="w-4 h-4" /> },
+        { id: "settings", label: "Workflows", icon: <GitBranch className="w-4 h-4" /> },
+        { id: "reports-campaigns", label: "Call Details", icon: <PhoneCall className="w-4 h-4" /> },
+        { id: "global-reporting", label: "Reports", icon: <BarChart3 className="w-4 h-4" /> },
       ],
     },
     {
-      key: "reports",
-      label: "Reports",
-      items: [],
-      children: [{
-        key: "reports-sub",
-        label: "All Reports",
-        items: [
-          { id: "reports-realtime", label: "Realtime", icon: <Activity className="w-4 h-4" /> },
-          { id: "reports-campaigns", label: "Campaigns", icon: <PhoneCall className="w-4 h-4" /> },
-          { id: "reports-campaigns-by-publisher", label: "Campaigns by Publisher", icon: <Users className="w-4 h-4" /> },
-          { id: "reports-publisher-by-manager", label: "Publisher by Manager", icon: <UserCheck className="w-4 h-4" /> },
-          { id: "reports-offers", label: "Offers", icon: <DollarSign className="w-4 h-4" /> },
-          { id: "reports-offers-by-publisher", label: "Offers by Publisher", icon: <Globe className="w-4 h-4" /> },
-          { id: "reports-promo-numbers", label: "Promo Numbers", icon: <Hash className="w-4 h-4" /> },
-          { id: "reports-offers-by-promo", label: "Offers by Promo #", icon: <Hash className="w-4 h-4" /> },
-          { id: "reports-advertisers", label: "Advertisers", icon: <Megaphone className="w-4 h-4" /> },
-          { id: "reports-publishers", label: "Publishers", icon: <Globe className="w-4 h-4" /> },
-          { id: "reports-agents", label: "Agents", icon: <Users className="w-4 h-4" /> },
-          { id: "reports-agent-list", label: "Agent List Report", icon: <UserCog className="w-4 h-4" /> },
-          { id: "reports-agencies", label: "Agencies", icon: <Building2 className="w-4 h-4" /> },
-          { id: "reports-ivr-fees", label: "IVR Fees", icon: <PhoneCall className="w-4 h-4" /> },
-          { id: "reports-key-press", label: "Key Press", icon: <Hash className="w-4 h-4" /> },
-        ]
-      }]
-    },
-    {
-      key: "platform",
-      label: "Platform Management",
+      key: "agent-ops",
+      label: "Agent & Agency Operations",
+      collapsible: true,
       items: [
-        { id: "agencies", label: "Agencies", icon: <Building2 className="w-4 h-4" />, badge: mockAlerts.pendingAgencies },
-        { id: "agents", label: "Agents", icon: <Users className="w-4 h-4" />, badge: mockAlerts.suspendedAgents },
-        { id: "publishers", label: "Publishers", icon: <Globe className="w-4 h-4" /> },
-        { id: "advertisers", label: "Advertisers", icon: <Megaphone className="w-4 h-4" /> },
-        { id: "campaigns", label: "Campaigns", icon: <PhoneCall className="w-4 h-4" /> },
-        { id: "offers", label: "Offers", icon: <DollarSign className="w-4 h-4" /> },
-        { id: "verticals", label: "Verticals", icon: <Target className="w-4 h-4" /> },
-        { id: "languages", label: "Languages", icon: <Globe className="w-4 h-4" /> },
-      ],
-    },
-    {
-      key: "agency-ops",
-      label: "Agency Operations",
-      items: [
-        { id: "agency-applications", label: "Agency Applications", icon: <ClipboardList className="w-4 h-4" />, badge: mockAlerts.pendingApplications },
-        { id: "products", label: "Products", icon: <Package className="w-4 h-4" /> },
-        { id: "carriers", label: "Carriers", icon: <Building2 className="w-4 h-4" /> },
-        { id: "notification-branding-overview", label: "Agency Branding", icon: <Palette className="w-4 h-4" /> },
-      ],
-    },
-    {
-      key: "leads",
-      label: "Lead & Contact Management",
-      items: [
-        { id: "leads", label: "Leads Management", icon: <Target className="w-4 h-4" />, badge: mockAlerts.newLeads, badgeVariant: "secondary" },
-        { id: "contacts", label: "Contacts Management", icon: <ContactRound className="w-4 h-4" />, badge: mockAlerts.pendingContacts },
-        { id: "customers", label: "Customer Management", icon: <Users className="w-4 h-4" /> },
-      ],
-    },
-    {
-      key: "billing",
-      label: "Billing & Finance",
-      items: [
-        { id: "billing-management", label: "Billing Management", icon: <DollarSign className="w-4 h-4" /> },
-        { id: "call-credits-management", label: "Call Credits", icon: <Wallet className="w-4 h-4" /> },
-        { id: "cost-api-management", label: "Cost & API Management", icon: <DollarSign className="w-4 h-4" />, badge: mockAlerts.apiFailures },
-        { id: "minimum-bid-management", label: "Minimum Bids", icon: <Target className="w-4 h-4" /> },
-        { id: "referral-management", label: "Referrals", icon: <Gift className="w-4 h-4" /> },
-      ],
-    },
-    {
-      key: "system",
-      label: "System & Administration",
-      items: [
-        { id: "system-health", label: "System Health", icon: <Activity className="w-4 h-4" />, badge: mockAlerts.systemAlerts },
-        { id: "user-management", label: "User & Roles", icon: <UserCheck className="w-4 h-4" /> },
-        { id: "goals-management", label: "Goals", icon: <TrendingUp className="w-4 h-4" /> },
-        { id: "call-settings-management", label: "Call Settings", icon: <PhoneCall className="w-4 h-4" /> },
-        { id: "prompt-management", label: "AI Prompts", icon: <Settings className="w-4 h-4" /> },
-        { id: "notification-templates", label: "Notifications", icon: <Bell className="w-4 h-4" /> },
-        { id: "settings", label: "Platform Settings", icon: <Settings className="w-4 h-4" /> },
+        { id: "workspace-dashboard", label: "My Agency", icon: <Building2 className="w-4 h-4" /> },
+        { id: "agencies", label: "Agencies", icon: <Building2 className="w-4 h-4" /> },
+        { id: "user-management", label: "Agency Owner", icon: <UserCircle className="w-4 h-4" /> },
+        { id: "user-management", label: "Managers", icon: <UserCog className="w-4 h-4" /> },
+        { id: "agents", label: "Agents", icon: <User className="w-4 h-4" /> },
+        { id: "user-management", label: "CSRs", icon: <Headphones className="w-4 h-4" /> },
       ],
     },
   ];
 
-  // Determine which section the active view belongs to
-  const findSectionForView = (view: string): string | null => {
-    for (const section of sections) {
-      if (section.items.some(item => item.id === view)) return section.key;
-      if (section.children?.some(child => child.items.some(item => item.id === view))) return section.key;
-    }
-    return null;
-  };
+  const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({
+    overview: true,
+    marketplace: true,
+    "agent-ops": true,
+  });
 
-  const activeSection = findSectionForView(activeView);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(activeSection ? [activeSection] : ["dashboard"])
-  );
-  const [reportsExpanded, setReportsExpanded] = useState(activeView.startsWith("reports-"));
-
-  useEffect(() => {
-    const section = findSectionForView(activeView);
-    if (section && !expandedSections.has(section)) {
-      setExpandedSections(prev => new Set([...prev, section]));
-    }
-    if (activeView.startsWith("reports-")) {
-      setReportsExpanded(true);
-    }
-  }, [activeView]);
-
-  const toggleSection = (key: string) => {
-    setExpandedSections(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
-
-  const renderItem = (item: NavItem, indent = false) => (
-    <button
-      key={item.id}
-      onClick={() => onViewChange(item.id as SuperAdminViewType)}
-      className={cn(
-        "w-full flex items-center gap-2.5 rounded-md text-left transition-colors text-sm",
-        indent ? "px-8 py-1.5" : "px-3 py-2",
-        activeView === item.id
-          ? "bg-primary/10 text-primary font-medium"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-      )}
-    >
-      {item.icon}
-      <span className="flex-1 truncate">{item.label}</span>
-      {item.badge && (
-        <Badge variant={item.badgeVariant || "outline"} className="text-[10px] px-1.5 py-0 h-5">
-          {item.badge}
-        </Badge>
-      )}
-    </button>
-  );
+  const toggle = (k: string) => setOpenSections((p) => ({ ...p, [k]: !p[k] }));
 
   return (
-    <div className="w-60 bg-card border-r flex flex-col min-h-screen">
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-bold text-foreground">CallX</h2>
-        <p className="text-xs text-muted-foreground">SuperAdmin Portal</p>
+    <div className="w-64 bg-slate-900 text-slate-200 flex flex-col min-h-screen">
+      {/* Brand */}
+      <div className="px-5 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xl font-bold text-white">Call</span>
+          <span className="text-cyan-400 text-xl">▸</span>
+        </div>
+        <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full">
+          ● ADMIN
+        </Badge>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-2 space-y-0.5">
+      {/* Search */}
+      <div className="px-3 pb-3">
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Input
+            placeholder="Search publishers, advertis…"
+            className="h-9 pl-8 pr-10 bg-slate-800 border-slate-700 text-xs text-slate-300 placeholder:text-slate-500 focus-visible:ring-cyan-500/30"
+          />
+          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">⌘K</kbd>
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto px-2 pb-2 space-y-1">
         {sections.map((section) => {
-          const isExpanded = expandedSections.has(section.key);
-          const hasActiveChild = section.items.some(i => i.id === activeView) ||
-            section.children?.some(c => c.items.some(i => i.id === activeView));
-
+          const open = openSections[section.key];
           return (
-            <div key={section.key}>
+            <div key={section.key} className="pt-2">
               <button
-                onClick={() => toggleSection(section.key)}
-                className={cn(
-                  "w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors",
-                  hasActiveChild ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                )}
+                onClick={() => toggle(section.key)}
+                className="w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-semibold tracking-wider uppercase text-slate-500 hover:text-slate-300"
               >
-                <span className="flex-1 text-left">{section.label}</span>
-                {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                <span>{section.label}</span>
+                {open ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
               </button>
-
-              {isExpanded && (
-                <div className="space-y-0.5 pb-1">
-                  {section.items.map(item => renderItem(item))}
-                  {section.children?.map(child => (
-                    <div key={child.key}>
+              {open && (
+                <div className="mt-0.5 space-y-0.5">
+                  {section.items.map((item, idx) => {
+                    const isActive = activeView === item.id;
+                    return (
                       <button
-                        onClick={() => setReportsExpanded(!reportsExpanded)}
+                        key={`${item.id}-${idx}`}
+                        onClick={() => onViewChange(item.id)}
                         className={cn(
-                          "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-left text-sm transition-colors",
-                          activeView.startsWith("reports-")
-                            ? "text-primary font-medium"
-                            : "text-muted-foreground hover:bg-muted"
+                          "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+                          isActive
+                            ? "bg-cyan-500/15 text-cyan-300 font-medium"
+                            : "text-slate-300 hover:bg-slate-800 hover:text-white"
                         )}
                       >
-                        <FileText className="w-4 h-4" />
-                        <span className="flex-1">{child.label}</span>
-                        {reportsExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                        <span className={cn(isActive ? "text-cyan-400" : "text-slate-400")}>{item.icon}</span>
+                        <span className="flex-1 text-left truncate">{item.label}</span>
+                        {item.badge !== undefined && (
+                          <span className="text-[10px] font-semibold bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+                            {item.badge}
+                          </span>
+                        )}
                       </button>
-                      {reportsExpanded && (
-                        <div className="space-y-0.5">
-                          {child.items.map(item => renderItem(item, true))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
           );
         })}
       </nav>
+
+      {/* User footer */}
+      <div className="border-t border-slate-800 p-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white text-xs font-semibold">
+          BC
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm text-white font-medium truncate">Brian Carrozzi</span>
+            <Badge className="bg-pink-500/20 text-pink-300 border-0 text-[9px] px-1.5 py-0">SUPER</Badge>
+          </div>
+          <div className="text-[11px] text-slate-500 truncate">brian@callx.com</div>
+        </div>
+        <ChevronDown className="w-4 h-4 text-slate-500" />
+      </div>
     </div>
   );
 };

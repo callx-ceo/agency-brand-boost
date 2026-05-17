@@ -41,6 +41,7 @@ import NotificationTemplateManagement from "../entities/NotificationTemplateMana
 import NotificationBrandingOverview from "../entities/NotificationBrandingOverview";
 import PlatformSettings from "../settings/PlatformSettings";
 import LiveCallWorkspace, { WorkspaceTab } from "../../shared/LiveCallWorkspace";
+import RealtimeCallsView from "../reporting/RealtimeCallsView";
 
 const workspaceTabMap: Record<string, WorkspaceTab> = {
   'workspace-dashboard': 'my-dashboard',
@@ -184,6 +185,7 @@ const SuperAdminViewRenderer = ({
       );
     
     case 'reports-realtime':
+      return <RealtimeCallsView />;
     case 'reports-campaigns':
     case 'reports-campaigns-by-publisher':
     case 'reports-publisher-by-manager':
